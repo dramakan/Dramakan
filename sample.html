@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dramakan - Watch Korean, Japanese, Chinese Dramas Online</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    /* CSS Reset and Global Styles */
+    :root {
+      --primary-color: #8A2BE2;
+      /* A vibrant purple, similar to the inspiration site */
+      --secondary-color: #E50914;
+      /* A pop of red for contrast */
+      --background-color: #0B0C10;
+      --surface-color: #1A1A1D;
+      --text-color: #F5F5F5;
+      --text-muted-color: #a0a0a0;
+      --border-color: #2c2c34;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      overflow-x: hidden;
+      /* Prevent horizontal scroll */
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text-color);
+    }
+
+    /* Disclaimer Bar */
+    .disclaimer-bar {
+      background-color: var(--secondary-color);
+      color: white;
+      text-align: center;
+      padding: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    /* Header / Navbar */
+    .main-header {
+      background-color: rgba(11, 12, 16, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 15px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .main-header .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .logo span {
+      color: var(--primary-color);
+    }
+
+    .search-bar {
+      flex-grow: 1;
+      margin: 0 30px;
+      position: relative;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 10px 15px 10px 40px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      background-color: var(--surface-color);
+      color: var(--text-color);
+      font-size: 1rem;
+    }
+
+    .search-bar i {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%);
+      color: var(--text-muted-color);
+    }
+
+    .nav-links ul {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+    }
+
+    .nav-links a {
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--primary-color);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      /* Adjust gap as needed */
+    }
+
+    .btn {
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+      border: 1px solid var(--primary-color);
+    }
+
+    .btn-primary:hover {
+      background-color: transparent;
+      color: var(--primary-color);
+    }
+
+    .btn-icon {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-size: 1.2rem;
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* === HERO SLIDER - REVISED === */
+    .hero-slider {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      overflow: hidden;
+    }
+
+    .slider-wrapper {
+      display: flex;
+      height: 100%;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .slide {
+      min-width: 100%;
+      height: 100%;
+      position: relative;
+      color: white;
+      display: flex;
+      align-items: center;
+    }
+
+    .slide-bg-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .slide::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      /* REVISED GRADIENT for better separation */
+      background: linear-gradient(90deg, rgba(11, 12, 16, 1) 0%, rgba(11, 12, 16, 0.95) 35%, rgba(11, 12, 16, 0.7) 50%, rgba(11, 12, 16, 0) 70%);
+      z-index: 2;
+    }
+
+    .slide-content {
+      position: relative;
+      z-index: 3;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      text-align: left;
+      /* REVISED width and padding for strict left alignment */
+      max-width: 45%;
+      padding-left: 5vw;
+      /* Use viewport width for responsive padding */
+      padding-right: 20px;
+    }
+
+    .slide-title {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .slide-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+    }
+
+    .slide-meta span {
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 3px 8px;
+      border-radius: 3px;
+    }
+
+    .slide-desc {
+      font-size: 1rem;
+      margin-bottom: 20px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .slider-nav {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 4;
+    }
+
+    .slider-nav button {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid white;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .slider-nav button:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Main Content Sections */
+    main {
+      padding: 40px 0;
+    }
+
+    /* Drama Card Grid */
+    .drama-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+    }
+
+    .drama-card {
+      background-color: var(--surface-color);
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .drama-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .drama-card-img {
+      position: relative;
+    }
+
+    .drama-card-img img {
+      width: 100%;
+      aspect-ratio: 2/3;
+      object-fit: cover;
+    }
+
+    .episode-badge {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .drama-card-info {
+      padding: 10px;
+    }
+
+    .drama-card-title {
+      font-size: 1rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .drama-card-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted-color);
+    }
+
+    /* Schedule Section */
+    .schedule-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .schedule-tabs .tab-btn {
+      padding: 10px 20px;
+      background-color: var(--surface-color);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .schedule-tabs .tab-btn.active,
+    .schedule-tabs .tab-btn:hover {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+      color: white;
+    }
+
+    .schedule-content {
+      display: none;
+    }
+
+    .schedule-content.active {
+      display: block;
+    }
+
+    .schedule-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .schedule-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: var(--surface-color);
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .schedule-item img {
+      width: 60px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .schedule-item-info {
+      flex-grow: 1;
+    }
+
+    .schedule-item-title {
+      font-weight: 500;
+    }
+
+    .schedule-item-time {
+      color: var(--text-muted-color);
+      font-size: 0.9rem;
+    }
+
+    /* Footer */
+    .main-footer {
+      background-color: var(--surface-color);
+      padding: 40px 0 20px;
+      margin-top: 40px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .footer-socials a {
+      font-size: 1.5rem;
+      margin: 0 10px;
+      color: var(--text-muted-color);
+      transition: color 0.3s;
+    }
+
+    .footer-socials a:hover {
+      color: var(--primary-color);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-muted-color);
+      border-top: 1px solid var(--border-color);
+      padding-top: 20px;
+    }
+
+    /* Search Dropdown */
+    .search-results {
+      position: absolute;
+      top: 110%;
+      left: 0;
+      width: 100%;
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+      display: none;
+      z-index: 2000
+    }
+
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      transition: .2s
+    }
+
+    .search-result-item img {
+      width: 40px;
+      height: 55px;
+      object-fit: cover;
+      border-radius: 4px
+    }
+
+    .search-result-item:hover {
+      background: var(--primary-color);
+      color: #fff
+    }
+
+    .no-result {
+      padding: 10px;
+      color: var(--text-muted-color)
+    }
+
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+
+      .nav-links,
+      .header-actions .btn-primary {
+        display: none;
+      }
+
+      .mobile-menu-toggle {
+        display: block;
+      }
+
+      .search-bar {
+        margin: 0 15px;
+      }
+
+      .slide-content {
+        max-width: 55%;
+      }
+
+      .slide-title {
+        font-size: 2.2rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .slide-content {
+        max-width: 65%;
+        padding-left: 20px;
+      }
+
+      .slide-title {
+        font-size: 2rem;
+      }
+
+      .drama-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+    }
+
+    @media (max-width: 576px) {
+      .main-header .container {
+        flex-wrap: wrap;
+      }
+
+      .search-bar {
+        order: 3;
+        width: 100%;
+        margin: 15px 0 0 0;
+      }
+
+      .hero-slider {
+        height: 450px;
+      }
+
+      .slide-content {
+        max-width: 100%;
+        /* On very small screens, let it take more space */
+        padding: 20px;
+        background: linear-gradient(90deg, rgba(11, 12, 16, 0.95), rgba(11, 12, 16, 0.8));
+        /* Add background for readability */
+      }
+
+      .slide::after {
+        /* Make the fade much quicker on mobile */
+        background: linear-gradient(90deg, rgba(11, 12, 16, 1) 10%, rgba(11, 12, 16, 0.7) 40%, rgba(11, 12, 16, 0) 60%);
+      }
+
+      .slide-title {
+        font-size: 1.8rem;
+      }
+
+      .slide-desc {
+        font-size: 0.9rem;
+      }
+
+      .drama-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .slider-nav {
+        left: auto;
+        right: 15px;
+        transform: none;
+        bottom: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="disclaimer-bar">
+    This site is for only information of drama does not support any type of piracy and all copyright reserved by their owner.
+  </div>
+
+  <header class="main-header">
+    <div class="container">
+      <a href="#" class="logo">Drama<span>Kan</span></a>
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input id="searchInput" type="text" placeholder="Search drama...">
+        <div id="searchResults" class="search-results"></div>
+      </div>
+      <div class="header-right">
+        <nav class="nav-links">
+          <ul>
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="korean.html">K-Drama</a></li>
+            <li><a href="japanese.html">J-Drama</a></li>
+            <li><a href="chinese.html">C-Drama</a></li>
+          </ul>
+        </nav>
+
+        <div class="header-actions">
+          <a href="login.html" id="login-button" class="btn btn-primary">Login</a>
+          <a href="profile.html" id="profile-button" class="btn-icon" style="display: none;"><i class="fas fa-user"></i></a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero-slider">
+    <div class="slider-wrapper">
+      <div class="slide">
+        <img class="slide-bg-image" src="https://data.ibtimes.sg/en/full/30687/crash-landing-you.jpg" alt="Crash Landing on You">
+        <div class="slide-content">
+          <h1 class="slide-title">Crash Landing on You</h1>
+          <div class="slide-meta"><span>⭐ 8.7</span><span>K-Drama</span><span>Romance</span></div>
+          <p class="slide-desc">A paragliding mishap drops a South Korean heiress in North Korea - and into the life of an army officer, who decides he will help her hide.</p>
+          <a href="Crash.html" class="btn btn-primary">Watch Now</a>
+        </div>
+      </div>
+      <div class="slide">
+        <img class="slide-bg-image" src="https://d32qys9a6wm9no.cloudfront.net/images/tvs/backdrop/4a/7dfea69447b284099e193900e2f73dfb_1280x720.jpg?t=1655416964" alt="Alchemy of Souls">
+        <div class="slide-content">
+          <h1 class="slide-title">Alchemy of Souls</h1>
+          <div class="slide-meta"><span>⭐ 8.8</span><span>K-Drama</span><span>Fantasy</span></div>
+          <p class="slide-desc">A powerful sorceress in a blind woman's body encounters a man from a prestigious family, who wants her help to change his destiny.</p>
+          <a href="alchemy.html" class="btn btn-primary">Watch Now</a>
+        </div>
+      </div>
+      <div class="slide">
+        <img class="slide-bg-image" src="https://a.ltrbxd.com/resized/sm/upload/2g/k0/kc/f2/silent-1200-1200-675-675-crop-000000.jpg?v=0826b518a5" alt="Silent">
+        <div class="slide-content">
+          <h1 class="slide-title">Silent</h1>
+          <div class="slide-meta"><span>⭐ 8.5</span><span>J-Drama</span><span>Melodrama</span></div>
+          <p class="slide-desc">Tsumugi Aoba and Sou Sakura were high school classmates and shared a love for music. After Sou abruptly breaks up with her, they meet eight years later and Tsumugi learns the heartbreaking truth.</p>
+          <a href="silent.html" class="btn btn-primary">Watch Now</a>
+        </div>
+      </div>
+    </div>
+    <div class="slider-nav">
+      <button id="prevSlide"><i class="fas fa-chevron-left"></i></button>
+      <button id="nextSlide"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </section>
+
+  <main>
+    <section class="latest-episodes">
+      <div class="container">
+        <h2 class="section-title">Latest Episodes</h2>
+        <div class="drama-grid">
+          <a class="drama-card">
+            <div class="drama-card-img">
+              <img src="https://i.pinimg.com/736x/0b/2e/9f/0b2e9f2a20b251450178800397c419b2.jpg" alt="Queen of Tears">
+              <span class="episode-badge">Ep 16</span>
+            </div>
+            <div class="drama-card-info">
+              <h3 class="drama-card-title">Queen of Tears</h3>
+              <p class="drama-card-meta">K-Drama</p>
+            </div>
+          </a>
+          <a class="drama-card">
+            <div class="drama-card-img">
+              <img src="https://m.media-amazon.com/images/M/MV5BNTg5YmU0OTYtNzIzNy00MzM1LWI0OWEtYzc5ZmRlNmJlODk5XkEyXkFqcGc@._V1_.jpg" alt="My Demon">
+              <span class="episode-badge">Ep 12</span>
+            </div>
+            <div class="drama-card-info">
+              <h3 class="drama-card-title">My Demon</h3>
+              <p class="drama-card-meta">K-Drama</p>
+            </div>
+          </a>
+          <a class="drama-card">
+            <div class="drama-card-img">
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJSgjiAM44dY9usKbwO1Uglb9U-NY2MGmYnQ&s" alt="The Untamed">
+              <span class="episode-badge">Ep 50</span>
+            </div>
+            <div class="drama-card-info">
+              <h3 class="drama-card-title">The Untamed</h3>
+              <p class="drama-card-meta">C-Drama</p>
+            </div>
+          </a>
+          <a class="drama-card">
+            <div class="drama-card-img">
+              <img src="https://m.media-amazon.com/images/M/MV5BYzlkNjU0NzUtMmNkNi00OTBiLWEyN2YtNjkxNzc0ODhkYjExXkEyXkFqcGc@._V1_.jpg" alt="First Love">
+              <span class="episode-badge">Ep 9</span>
+            </div>
+            <div class="drama-card-info">
+              <h3 class="drama-card-title">First Love: Hatsukoi</h3>
+              <p class="drama-card-meta">J-Drama</p>
+            </div>
+          </a>
+          <a class="drama-card">
+            <div class="drama-card-img">
+              <img src="https://m.media-amazon.com/images/M/MV5BNWIyNTA3MmItNzY5ZS00NmZhLThjMWYtZjIxYzllZWU5YWIzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Goblin">
+              <span class="episode-badge">Ep 16</span>
+            </div>
+            <div class="drama-card-info">
+              <h3 class="drama-card-title">Guardian: The Lonely and Great God</h3>
+              <p class="drama-card-meta">K-Drama</p>
+            </div>
+          </a>
+          <a class="drama-card">
+            <div class="drama-card-img">
+              <img src="https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png" alt="Lovely Runner">
+              <span class="episode-badge">Ep 8</span>
+            </div>
+            <div class="drama-card-info">
+              <h3 class="drama-card-title">Lovely Runner</h3>
+              <p class="drama-card-meta">K-Drama</p>
+            </div>
+          </a>
+          <a class="drama-card">
+            <div class="drama-card-img">
+              <img src="https://m.media-amazon.com/images/M/MV5BYTQ3MWI2MjEtM2Q3NS00YjU4LWFkZGItNDA0OTc2NjcwZWY3XkEyXkFqcGc@._V1_.jpg" alt="Descendants Of The Sun">
+              <span class="episode-badge">Ep 16</span>
+            </div>
+            <div class="drama-card-info">
+              <h3 class="drama-card-title">Descendants Of The Sun</h3>
+              <p class="drama-card-meta">K-Drama</p>
+            </div>
+          </a>
+          <a class="drama-card">
+            <div class="drama-card-img">
+              <img src="https://m.media-amazon.com/images/M/MV5BZmFmYTU0YTItZTk4ZS00ZWMzLThmOTgtOGIyOTBkY2QwZjc0XkEyXkFqcGc@._V1_.jpg" alt="Hotel Del Luna">
+              <span class="episode-badge">Ep 16</span>
+            </div>
+            <div class="drama-card-info">
+              <h3 class="drama-card-title">Hotel Del Luna</h3>
+              <p class="drama-card-meta">K-Drama</p>
+            </div>
+          </a>
+          <a class="drama-card">
+            <div class="drama-card-img">
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTriCWaftmuFdXvCdxP_IDRpy1IsGkc3GaOQQ&s" alt="The King: Eternal Monarch">
+              <span class="episode-badge">Ep 16</span>
+            </div>
+            <div class="drama-card-info">
+              <h3 class="drama-card-title">The King: Eternal Monarch</h3>
+              <p class="drama-card-meta">K-Drama</p>
+            </div>
+          </a>
+          <a class="drama-card">
+            <div class="drama-card-img">
+              <img src="https://m.media-amazon.com/images/M/MV5BNWYxNDM2NDYtM2EwOS00NTMxLThmNGQtMTJiZWEzMDJiMDQ1XkEyXkFqcGc@._V1_.jpg" alt="Tale of the Nine Tailed">
+              <span class="episode-badge">Ep 16</span>
+            </div>
+            <div class="drama-card-info">
+              <h3 class="drama-card-title">Tale of the Nine Tailed</h3>
+              <p class="drama-card-meta">K-Drama</p>
+            </div>
+          </a>
+          <a class="drama-card">
+            <div class="drama-card-img">
+              <img src="https://upload.wikimedia.org/wikipedia/en/2/29/Our_Beloved_Summer.jpg" alt="Our Beloved Summer">
+              <span class="episode-badge">Ep 16</span>
+            </div>
+            <div class="drama-card-info">
+              <h3 class="drama-card-title">Our Beloved Summer</h3>
+              <p class="drama-card-meta">K-Drama</p>
+            </div>
+          </a>
+          <a class="drama-card">
+            <div class="drama-card-img">
+              <img src="https://m.media-amazon.com/images/M/MV5BMjFkYzIwMTctYzljYS00M2RiLTlhNmItZDM3MjFiOTFiOTY5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="My Mister">
+              <span class="episode-badge">Ep 16</span>
+            </div>
+            <div class="drama-card-info">
+              <h3 class="drama-card-title">My Mister</h3>
+              <p class="drama-card-meta">K-Drama</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="schedule" style="margin-top:40px;">
+      <div class="container">
+        <h2 class="section-title">Airing Schedule</h2>
+        <div class="schedule-tabs">
+          <button class="tab-btn" data-day="sun">Sunday</button>
+          <button class="tab-btn" data-day="mon">Monday</button>
+          <button class="tab-btn" data-day="tue">Tuesday</button>
+          <button class="tab-btn" data-day="wed">Wednesday</button>
+          <button class="tab-btn" data-day="thu">Thursday</button>
+          <button class="tab-btn" data-day="fri">Friday</button>
+          <button class="tab-btn" data-day="sat">Saturday</button>
+        </div>
+
+        <div id="sun" class="schedule-content">
+          <div class="schedule-list">
+            <a href="vincenzo.html" class="schedule-item">
+              <img src="https://m.media-amazon.com/images/M/MV5BNjA1YmJiNTMtMDc4OC00ZjlkLTgyMjctYzRmMWJhMmZhMjkyXkEyXkFqcGc@._V1_.jpg" alt="Vincenzo">
+              <div class="schedule-item-info">
+                <h4 class="schedule-item-title">Vincenzo</h4>
+                <p class="schedule-item-time">Airs at 21:00 KST</p>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div id="mon" class="schedule-content">
+          <div class="schedule-list">
+            <a href="lovelyrunner.html" class="schedule-item">
+              <img src="https://i.mydramalist.com/x4K4VE_4f.jpg" alt="Lovely Runner">
+              <div class="schedule-item-info">
+                <h4 class="schedule-item-title">Lovely Runner</h4>
+                <p class="schedule-item-time">Airs at 20:50 KST</p>
+              </div>
+            </a>
+            <a href="marrymyhusband.html" class="schedule-item">
+              <img src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTHhS1ue8sQ4wNxQxWGW8MgI38uw3G80PjD5OzBrUQfaWB6wG8VyByuzuK6bX36meu2zLYafQ" alt="Marry My Husband">
+              <div class="schedule-item-info">
+                <h4 class="schedule-item-title">Marry My Husband</h4>
+                <p class="schedule-item-time">Airs at 20:50 KST</p>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div id="tue" class="schedule-content">
+          <div class="schedule-list">
+            <a href="lovelyrunner.html" class="schedule-item">
+              <img src="https://i.mydramalist.com/x4K4VE_4f.jpg" alt="Lovely Runner">
+              <div class="schedule-item-info">
+                <h4 class="schedule-item-title">Lovely Runner</h4>
+                <p class="schedule-item-time">Airs at 20:50 KST</p>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div id="wed" class="schedule-content">
+          <div class="schedule-list">
+            <a href="lovelyrunner.html" class="schedule-item">
+              <img src="https://i.mydramalist.com/x4K4VE_4f.jpg" alt="Lovely Runner">
+              <div class="schedule-item-info">
+                <h4 class="schedule-item-title">Lovely Runner</h4>
+                <p class="schedule-item-time">Airs at 20:50 KST</p>
+              </div>
+            </a>
+            <a href="marrymyhusband.html" class="schedule-item">
+              <img src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTHhS1ue8sQ4wNxQxWGW8MgI38uw3G80PjD5OzBrUQfaWB6wG8VyByuzuK6bX36meu2zLYafQ" alt="Marry My Husband">
+              <div class="schedule-item-info">
+                <h4 class="schedule-item-title">Marry My Husband</h4>
+                <p class="schedule-item-time">Airs at 20:50 KST</p>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div id="thu" class="schedule-content">
+          <div class="schedule-list">
+            <a href="lovelyrunner.html" class="schedule-item">
+              <img src="https://i.mydramalist.com/x4K4VE_4f.jpg" alt="Lovely Runner">
+              <div class="schedule-item-info">
+                <h4 class="schedule-item-title">Lovely Runner</h4>
+                <p class="schedule-item-time">Airs at 20:50 KST</p>
+              </div>
+            </a>
+            <a href="marrymyhusband.html" class="schedule-item">
+              <img src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTHhS1ue8sQ4wNxQxWGW8MgI38uw3G80PjD5OzBrUQfaWB6wG8VyByuzuK6bX36meu2zLYafQ" alt="Marry My Husband">
+              <div class="schedule-item-info">
+                <h4 class="schedule-item-title">Marry My Husband</h4>
+                <p class="schedule-item-time">Airs at 20:50 KST</p>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div id="fri" class="schedule-content">
+          <div class="schedule-list">
+            <a href="theglory.html" class="schedule-item">
+              <img src="https://m.media-amazon.com/images/M/MV5BOTYxYzA1YmMtYzEzYy00NzY3LThlZmItMWM3NzkwMzcyOGVhXkEyXkFqcGc@._V1_.jpg" alt="The Glory">
+              <div class="schedule-item-info">
+                <h4 class="schedule-item-title">The Glory</h4>
+                <p class="schedule-item-time">New episodes on Netflix</p>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div id="sat" class="schedule-content">
+          <div class="schedule-list">
+            <a href="queenoftears.html" class="schedule-item">
+              <img src="https://i.pinimg.com/736x/0b/2e/9f/0b2e9f2a20b251450178800397c419b2.jpg" alt="Queen of Tears">
+              <div class="schedule-item-info">
+                <h4 class="schedule-item-title">Queen of Tears</h4>
+                <p class="schedule-item-time">Airs at 21:10 KST</p>
+              </div>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-content">
+        <a href="#" class="logo">Drama<span>Kan</span></a>
+        <div class="footer-socials">
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-discord"></i></a>
+          <a href="#"><i class="fab fa-telegram"></i></a>
+          <a href="privacy.html"><i class="fab fa-reddit"></i></a>
+        </div>
+      </div>
+      <div class="footer-bottom">&copy; 2025 Dramakan. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+      // --- LOGIN & PROFILE BUTTON VISIBILITY ---
+      // This script checks the user's login status from localStorage and updates the header buttons accordingly.
+      const userString = localStorage.getItem('dramaKanUser');
+      const loginButton = document.getElementById('login-button');
+      const profileButton = document.getElementById('profile-button');
+
+      if (loginButton && profileButton) {
+        let isLoggedIn = false;
+        if (userString) {
+          try {
+            const user = JSON.parse(userString);
+            isLoggedIn = user.isLoggedIn;
+          } catch (e) {
+            console.error("Error parsing user data from localStorage", e);
+          }
+        }
+
+        if (isLoggedIn) {
+          // User is logged in: show profile, hide login
+          loginButton.style.display = 'none';
+          profileButton.style.display = 'inline-block';
+        } else {
+          // User is not logged in or no data found: show login, hide profile
+          loginButton.style.display = 'inline-block';
+          profileButton.style.display = 'none';
+        }
+      }
+
+      // === HERO SLIDER ===
+      const sliderWrapper = document.querySelector('.slider-wrapper');
+      if (sliderWrapper) {
+        const slides = document.querySelectorAll('.slide');
+        const nextBtn = document.getElementById('nextSlide');
+        const prevBtn = document.getElementById('prevSlide');
+        let currentIndex = 0;
+        let slideInterval = setInterval(nextSlide, 5000);
+
+        function updateSlider() {
+          sliderWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+        }
+
+        function nextSlide() {
+          currentIndex = (currentIndex + 1) % slides.length;
+          updateSlider();
+        }
+
+        function prevSlide() {
+          currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+          updateSlider();
+        }
+        
+        function resetInterval() {
+            clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        nextBtn.addEventListener('click', () => {
+          nextSlide();
+          resetInterval();
+        });
+        prevBtn.addEventListener('click', () => {
+          prevSlide();
+          resetInterval();
+        });
+      }
+
+      // === AIRING SCHEDULE TABS ===
+      const tabButtons = document.querySelectorAll('.schedule-tabs .tab-btn');
+      const scheduleContents = document.querySelectorAll('.schedule-content');
+
+      function setActiveTab(day) {
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        scheduleContents.forEach(content => content.classList.remove('active'));
+
+        const activeBtn = document.querySelector(`.tab-btn[data-day="${day}"]`);
+        const activeContent = document.getElementById(day);
+
+        if (activeBtn) activeBtn.classList.add('active');
+        if (activeContent) activeContent.classList.add('active');
+      }
+
+      // Automatically activate today's tab
+      const today = new Date().toLocaleString('en-US', { weekday: 'short' }).toLowerCase();
+      setActiveTab(today);
+
+      // Add click listeners for manual tab switching
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const dayToActivate = button.getAttribute('data-day');
+          setActiveTab(dayToActivate);
+        });
+      });
+
+      // === SEARCH FUNCTIONALITY ===
+      const searchInput = document.getElementById('searchInput');
+      const searchResultsContainer = document.getElementById('searchResults');
+      // The drama database is now a clean JavaScript array.
+      const dramas = [
+        { title: 'Alchemy of Souls', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BOGFhNGQzMWUtZWJhNi00NGZiLTg1MjEtMTQzZmU4Njg2MWRhXkEyXkFqcGc@._V1_.jpg', link: 'alchemy.html' },
+        { title: 'Bulgasal: Immortal Souls', type: 'K-Drama', img: 'https://upload.wikimedia.org/wikipedia/en/c/c1/Bulgasal_Immortal_Souls.jpg', link: 'bulgals.html' },
+        { title: 'Cherry Magic!', type: 'J-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNmE3NzhjYmMtMWY3MS00YjAxLWI2N2MtMmM0NDdhNTQ3NWM2XkEyXkFqcGc@._V1_QL75_UY281_CR18,0,190,281_.jpg', link: 'cherrymagic.html' },
+        { title: 'Crash Landing on You', type: 'K-Drama', img: 'https://rukminim2.flixcart.com/image/704/844/kri3xjk0/poster/a/l/u/large-crash-landing-on-you-korean-tv-series-poster-k-drama-original-imag5a4epdvtync4.jpeg?q=90&crop=false', link: 'Crash.html' },
+        { title: 'Descendants of the Sun', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BYTQ3MWI2MjEtM2Q3NS00YjU4LWFkZGItNDA0OTc2NjcwZWY3XkEyXkFqcGc@._V1_.jpg', link: 'decendantsofthesun.html' },
+        { title: 'Destined with You', type: 'K-Drama', img: 'https://image.tmdb.org/t/p/w500/r5555y1Yg2yXpjw25sCg8yv2sTu.jpg', link: 'destined.html' },
+        { title: 'Doom at Your Service', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMDhlN2U3YjUtNmI3Zi00Njk0LWJmMTctYjFhYTY2Y2RiN2NhXkEyXkFqcGc@._V1_.jpg', link: 'doomatyourservice.html' },
+        { title: 'Fight for My Way', type: 'K-Drama', img: 'https://image.tmdb.org/t/p/w500/5Go0TjAirOk1h6V8Xl5S8Mf0C6e.jpg', link: 'fightformyway.html' },
+        { title: 'First Love: Hatsukoi', type: 'J-Drama', img: 'https://image.tmdb.org/t/p/w500/9CabcF7ciq26ggbXw2nydZ2XJGW.jpg', link: 'firstlovehatsukoi.html' },
+        { title: 'Flower of Evil', type: 'K-Drama', img: 'https://image.tmdb.org/t/p/w500/314mS2WfDgbW5s3TzRifvS0xJET.jpg', link: 'flowerofevil.html' },
+        { title: 'Guardian: The Lonely and Great God', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNWIyNTA3MmItNzY5ZS00NmZhLThjMWYtZjIxYzllZWU5YWIzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'goblin.html' },
+        { title: 'Healer', type: 'K-Drama', img: 'https://images.plex.tv/photo?size=large-1280&url=https%3A%2F%2Fmetadata-static.plex.tv%2F5%2Fgracenote%2F548770922e51188df74f8628ec46d5ee.jpg', link: 'healer.html' },
+        { title: 'Hotel Del Luna', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZmFmYTU0YTItZTk4ZS00ZWMzLThmOTgtOGIyOTBkY2QwZjc0XkEyXkFqcGc@._V1_.jpg', link: 'hoteldelluna.html' },
+        { title: "It's Okay to Not Be Okay", type: 'K-Drama', img: 'https://image.tmdb.org/t/p/w500/3ZpGIb9VPz7e6xM6yZzY2u4vJ51.jpg', link: 'itsokaynotbeokay.html' },
+        { title: 'Kill Me, Heal Me', type: 'K-Drama', img: 'https://image.tmdb.org/t/p/w500/gW5AFdE4q2eY2T5zG2wzC5a5dG.jpg', link: 'killmehealme.html' },
+        { title: 'Legend of the Blue Sea', type: 'K-Drama', img: 'https://image.tmdb.org/t/p/w500/8j39d02n0fNbvHCp32K18P5gRxp.jpg', link: 'legendofthebluesea.html' },
+        { title: 'Love Lasts Forever', type: 'J-Drama', img: 'https://image.tmdb.org/t/p/w500/bMX5N8e68V0gaflc2kR5b7v8LpP.jpg', link: 'lovelastsforever.html' },
+        { title: 'Lovely Runner', type: 'K-Drama', img: 'https://image.tmdb.org/t/p/w500/roYy5z2aTqMDBt2bY2gV2LpCj2.jpg', link: 'lovelyrunner.html' },
+        { title: 'My Beautiful Man', type: 'J-Drama', img: 'https://image.tmdb.org/t/p/w500/c7aNVHx6pYNnC5OtxJdQmS32T70.jpg', link: 'mybeautifulman.html' },
+        { title: 'My Demon', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNTg5YmU0OTYtNzIzNy00MzM1LWI0OWEtYzc5ZmRlNmJlODk5XkEyXkFqcGc@._V1_.jpg', link: 'mydemon.html' },
+        { title: 'My Love from the Star', type: 'K-Drama', img: 'https://image.tmdb.org/t/p/w500/5CE1PZGSqr86m6J2yK25x9s65Ay.jpg', link: 'mylovefromstars.html' },
+        { title: 'My Love Mix-Up!', type: 'J-Drama', img: 'https://image.tmdb.org/t/p/w500/iP7S1y9jS2fL2aBf2dF4RF3dYyR.jpg', link: 'mylovemixup.html' },
+        { title: 'My Mister', type: 'K-Drama', img: 'https://image.tmdb.org/t/p/w500/yOdjula2rD03aKei2ikV5m2pT02.jpg', link: 'mymister.html' },
+        { title: 'My Roommate Is a Gumiho', type: 'K-Drama', img: 'https://image.tmdb.org/t/p/w500/3Iu6h1LAO0WLg2v6f27cFYPE24.jpg', link: 'myroommateisgumhino.html' },
+        { title: '1 Litre of Tears', type: 'J-Drama', img: 'https://image.tmdb.org/t/p/w500/525s3RdYIMyKo2EaTq2uOD6A7Cr.jpg', link: 'onelitretears.html' },
+        { title: 'Our Beloved Summer', type: 'K-Drama', img: 'https://upload.wikimedia.org/wikipedia/en/2/29/Our_Beloved_Summer.jpg', link: 'ourbelovedsummer.html' },
+        { title: 'Queen of Tears', type: 'K-Drama', img: 'https://i.pinimg.com/736x/0b/2e/9f/0b2e9f2a20b251450178800397c419b2.jpg', link: 'queensoftears.html' },
+        { title: 'Rich Man, Poor Woman', type: 'J-Drama', img: 'https://image.tmdb.org/t/p/w500/5O18u0a8k3KjL5gsT7dGskQz3s2.jpg', link: 'richmanpoorwoman.html' },
+        { title: 'Silent', type: 'J-Drama', img: 'https://image.tmdb.org/t/p/w500/zWPPqt2Bzv9vAZf3mFpCFBvoQu.jpg', link: 'silent.html' },
+        { title: 'Tale of the Nine Tailed', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNWYxNDM2NDYtM2EwOS00NTMxLThmNGQtMTJiZWEzMDJiMDQ1XkEyXkFqcGc@._V1_.jpg', link: 'taleofninetailed.html' },
+        { title: 'The King: Eternal Monarch', type: 'K-Drama', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTriCWaftmuFdXvCdxP_IDRpy1IsGkc3GaOQQ&s', link: 'thekingeternalmonarch.html' },
+        { title: 'The Untamed', type: 'C-Drama', img: 'https://upload.wikimedia.org/wikipedia/en/3/31/Theuntamed.jpg', link: 'theuntamed.html' },
+        { title: 'Twenty-Five Twenty-One', type: 'K-Drama', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZ5X5pEHtBzkpH6n8i1-iRU9Imf8FtBYZIYQ&s', link: '25-21.html' },
+        { title: 'Vincenzo', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNjA1YmJiNTMtMDc4OC00ZjlkLTgyMjctYzRmMWJhMmZhMjkyXkEyXkFqcGc@._V1_.jpg', link: 'vincenzo.html' },
+        { title: 'W: Two Worlds', type: 'K-Drama', img: 'https://image.tmdb.org/t/p/w500/8pJPbQ639CjRbKfanHMFtVNCw4A.jpg', link: 'wtwoworlds.html' },
+        { title: "What's Wrong with Secretary Kim", type: 'K-Drama', img: 'https://image.tmdb.org/t/p/w500/gXB5y3ieICx9i3a5uOLc82p2e7v.jpg', link: 'whatswrongwithsecratorykim.html' }
+      ];
+
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase().trim();
+        searchResultsContainer.innerHTML = '';
+
+        if (!query) {
+          searchResultsContainer.style.display = 'none';
+          return;
+        }
+        
+        const matchedDramas = dramas.filter(d => d.title.toLowerCase().includes(query));
+
+        if (matchedDramas.length === 0) {
+          searchResultsContainer.innerHTML = '<div class="no-result">No results found</div>';
+        } else {
+          matchedDramas.forEach(drama => {
+            const resultItem = document.createElement('a');
+            resultItem.href = drama.link;
+            resultItem.className = 'search-result-item';
+            resultItem.innerHTML = `
+              <img src="${drama.img}" alt="${drama.title}">
+              <div>
+                <div>${drama.title}</div>
+                <small>${drama.type}</small>
+              </div>`;
+            searchResultsContainer.appendChild(resultItem);
+          });
+        }
+        searchResultsContainer.style.display = 'block';
+      });
+
+      // Hide search results when clicking outside the search bar
+      document.addEventListener('click', (event) => {
+        if (!event.target.closest('.search-bar')) {
+          searchResultsContainer.style.display = 'none';
+        }
+      });
+
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - DramaKan</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* === GLOBAL STYLES === */
+        :root {
+            --primary-color: #8A2BE2;
+            --secondary-color: #E50914;
+            --background-color: #0B0C10;
+            --surface-color: #1A1A1D;
+            --text-color: #F5F5F5;
+            --text-muted-color: #a0a0a0;
+            --border-color: #2c2c34;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* Header & Footer (Consistent) */
+        .main-header { background-color: rgba(11, 12, 16, 0.8); backdrop-filter: blur(10px); padding: 15px 0; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
+        .main-header .container, .footer-content { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+        .logo { font-size: 1.8rem; font-weight: 700; }
+        .logo span { color: var(--primary-color); }
+        .main-footer { background-color: var(--surface-color); padding: 40px 0 20px; margin-top: 40px; border-top: 1px solid var(--border-color); }
+        .footer-socials a { font-size: 1.5rem; margin: 0 10px; color: var(--text-muted-color); transition: color 0.3s; }
+        .footer-socials a:hover { color: var(--primary-color); }
+        .footer-bottom { text-align: center; font-size: 0.9rem; color: var(--text-muted-color); border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 20px; }
+        
+        /* === STYLES FOR PROFILE PAGE === */
+        .profile-page { padding: 40px 0; }
+        
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .profile-title { font-size: 2.5rem; font-weight: 700; }
+        .profile-title span { color: var(--primary-color); }
+
+        .btn { padding: 8px 15px; border-radius: 5px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; display: inline-block; border: 1px solid var(--secondary-color); background-color: var(--secondary-color); color: white; }
+        .btn:hover { background-color: transparent; color: var(--secondary-color); }
+
+        .profile-details {
+            background-color: var(--surface-color);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+        }
+        .profile-details p { font-size: 1.1rem; margin-bottom: 10px; color: var(--text-muted-color); }
+        .profile-details span { font-weight: 600; color: var(--text-color); }
+
+        .history-section h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .history-list {
+            list-style: none;
+            background-color: var(--surface-color);
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .history-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-muted-color);
+        }
+        
+        .history-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .history-list a {
+            color: var(--primary-color);
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+        
+        .history-list a:hover {
+            color: white;
+        }
+        
+        .empty-history {
+            color: var(--text-muted-color);
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <a href="index.html" class="logo">Drama<span>Kan</span></a>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="profile-page">
+                <div class="profile-header">
+                    <h1 class="profile-title">My <span>Profile</span></h1>
+                    <button id="logout-btn" class="btn">Logout</button>
+                </div>
+
+                <div class="profile-details">
+                    <p>Username: <span id="profile-username"></span></p>
+                    <p>Email: <span id="profile-email"></span></p>
+                </div>
+                
+                <div class="history-section">
+                    <h2>Recently Visited</h2>
+                    <ul id="visited-history-list" class="history-list">
+                        </ul>
+
+                    <h2>Search History</h2>
+                    <ul id="search-history-list" class="history-list">
+                        </ul>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <footer class="main-footer">
+        <div class="container">
+            </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('dramaKanUser'));
+
+            // 1. Protect the page: If no user is logged in, redirect to login page
+            if (!user || !user.isLoggedIn) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // 2. Populate User Details
+            document.getElementById('profile-username').textContent = user.username;
+            document.getElementById('profile-email').textContent = user.email;
+
+            // 3. Populate Visited History
+            const visitedList = document.getElementById('visited-history-list');
+            if (user.visitedHistory && user.visitedHistory.length > 0) {
+                user.visitedHistory.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="${item.url}">${item.title}</a>`;
+                    visitedList.appendChild(li);
+                });
+            } else {
+                visitedList.innerHTML = '<li class="empty-history">Your visited drama pages will appear here.</li>';
+            }
+
+            // 4. Populate Search History
+            const searchList = document.getElementById('search-history-list');
+            if (user.searchHistory && user.searchHistory.length > 0) {
+                user.searchHistory.forEach(term => {
+                    const li = document.createElement('li');
+                    li.textContent = term;
+                    searchList.appendChild(li);
+                });
+            } else {
+                searchList.innerHTML = '<li class="empty-history">Your search terms will appear here.</li>';
+            }
+
+            // 5. Logout Button Logic
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                localStorage.removeItem('dramaKanUser');
+                alert('You have been logged out.');
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>

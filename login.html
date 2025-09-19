@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - DramaKan</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* All CSS is the same as your previous login page... */
+        :root {
+            --primary-color: #8A2BE2;
+            --background-color: #0B0C10;
+            --surface-color: #1A1A1D;
+            --text-color: #F5F5F5;
+            --text-muted-color: #a0a0a0;
+            --border-color: #2c2c34;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .main-header { background-color: rgba(11, 12, 16, 0.8); backdrop-filter: blur(10px); padding: 15px 0; border-bottom: 1px solid var(--border-color); }
+        .main-header .container { display: flex; align-items: center; justify-content: space-between; }
+        .logo { font-size: 1.8rem; font-weight: 700; }
+        .logo span { color: var(--primary-color); }
+        .login-page-main { display: flex; align-items: center; justify-content: center; padding: 50px 0; min-height: calc(100vh - 150px); }
+        .login-container { background-color: var(--surface-color); padding: 40px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 400px; text-align: center; }
+        .login-container h2 { margin-bottom: 25px; font-size: 2rem; font-weight: 600; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted-color); }
+        .form-group input { width: 100%; padding: 12px 15px; border-radius: 5px; border: 1px solid var(--border-color); background-color: var(--background-color); color: var(--text-color); font-size: 1rem; }
+        .form-group input:focus { outline: none; border-color: var(--primary-color); }
+        .btn { padding: 12px; border-radius: 5px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; width: 100%; font-size: 1.1rem; margin-top: 10px; }
+        .btn-primary { background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); }
+        .btn-primary:hover { background-color: transparent; }
+        .extra-links { margin-top: 20px; display: flex; justify-content: space-between; font-size: 0.9rem; }
+        .extra-links a { color: var(--text-muted-color); }
+        .extra-links a:hover { color: var(--primary-color); text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <a href="index.html" class="logo">Drama<span>Kan</span></a>
+        </div>
+    </header>
+
+    <main class="login-page-main">
+        <div class="login-container">
+            <h2>Login to DramaKan</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <div class="extra-links">
+                <a href="#">Forgot Password?</a>
+                <a href="register.html">Don't have an account? Sign Up</a>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // If user is already logged in, redirect them to their profile
+            const existingUser = localStorage.getItem('dramaKanUser');
+            if (existingUser && JSON.parse(existingUser).isLoggedIn) {
+                window.location.href = 'profile.html';
+            }
+
+            const loginForm = document.getElementById('login-form');
+            loginForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const email = document.getElementById('email').value;
+                // Create a generic username from the email for display purposes
+                const username = email.split('@')[0];
+
+                // Create a user object to store in localStorage
+                const userObject = {
+                    isLoggedIn: true,
+                    username: username,
+                    email: email,
+                    searchHistory: [],
+                    visitedHistory: []
+                };
+                
+                // Store the user object as a JSON string
+                localStorage.setItem('dramaKanUser', JSON.stringify(userObject));
+
+                alert('Login successful! Redirecting to your profile...');
+                
+                // Redirect to the profile page
+                window.location.href = 'profile.html';
+            });
+        });
+    </script>
+</body>
+</html>

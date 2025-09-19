@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - DramaKan</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* === GLOBAL STYLES === */
+        :root {
+            --primary-color: #8A2BE2;
+            --secondary-color: #E50914;
+            --background-color: #0B0C10;
+            --surface-color: #1A1A1D;
+            --text-color: #F5F5F5;
+            --text-muted-color: #a0a0a0;
+            --border-color: #2c2c34;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* Header & Footer (Consistent) */
+        .main-header { background-color: rgba(11, 12, 16, 0.8); backdrop-filter: blur(10px); padding: 15px 0; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
+        .main-header .container, .footer-content { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+        .logo { font-size: 1.8rem; font-weight: 700; }
+        .logo span { color: var(--primary-color); }
+        .main-footer { background-color: var(--surface-color); padding: 40px 0 20px; border-top: 1px solid var(--border-color); }
+        .footer-socials a { font-size: 1.5rem; margin: 0 10px; color: var(--text-muted-color); transition: color 0.3s; }
+        .footer-socials a:hover { color: var(--primary-color); }
+        .footer-bottom { text-align: center; font-size: 0.9rem; color: var(--text-muted-color); border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 20px; }
+
+        /* === STYLES FOR REGISTER PAGE === */
+        .register-page-main {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 0;
+            min-height: calc(100vh - 210px); /* Adjust based on your header/footer height */
+        }
+
+        .register-container {
+            background-color: var(--surface-color);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .register-container h2 {
+            margin-bottom: 25px;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        /* Message container for JS feedback */
+        #message-container {
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            color: white;
+        }
+        .message.success {
+            background-color: var(--success-color);
+        }
+        .message.error {
+            background-color: var(--error-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-muted-color);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 12px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: transparent;
+        }
+
+        .extra-links {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: var(--text-muted-color);
+        }
+        
+        .extra-links a {
+            color: var(--primary-color);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .extra-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <a href="index.html" class="logo">Drama<span>Kan</span></a>
+        </div>
+    </header>
+
+    <main class="register-page-main">
+        <div class="register-container">
+            <h2>Create an Account</h2>
+            
+            <div id="message-container"></div>
+
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="e.g., dramafan123" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Minimum 8 characters" minlength="8" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" placeholder="Re-enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+            </form>
+            <div class="extra-links">
+                <p>Already have an account? <a href="login.html">Log In</a></p>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                 <a href="index.html" class="logo">Drama<span>Kan</span></a>
+                 <div class="footer-socials">
+                     <a href="#"><i class="fab fa-twitter"></i></a>
+                     <a href="#"><i class="fab fa-discord"></i></a>
+                     <a href="#"><i class="fab fa-telegram"></i></a>
+                     <a href="#"><i class="fab fa-reddit"></i></a>
+                 </div>
+            </div>
+            <div class="footer-bottom">
+                 <p>&copy; 2025 DramaKan. All rights reserved. This site does not store any files on its server. All contents are provided by non-affiliated third parties.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerForm = document.getElementById('register-form');
+            const messageContainer = document.getElementById('message-container');
+
+            registerForm.addEventListener('submit', function(event) {
+                // Prevent the form from actually submitting to a server
+                event.preventDefault();
+
+                // Clear any previous messages
+                messageContainer.innerHTML = '';
+
+                // Get form values
+                const username = document.getElementById('username').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                
+                // --- Simple Client-Side Validation ---
+
+                // 1. Check if passwords match
+                if (password !== confirmPassword) {
+                    displayMessage('Passwords do not match. Please try again.', 'error');
+                    return; // Stop the function
+                }
+
+                // 2. Check for password length (already handled by minlength but good to double-check)
+                if (password.length < 8) {
+                    displayMessage('Password must be at least 8 characters long.', 'error');
+                    return;
+                }
+                
+                // If all checks pass, show a success message
+                displayMessage('Registration successful! You can now proceed to log in.', 'success');
+                
+                // Clear the form fields after successful "registration"
+                registerForm.reset();
+            });
+
+            function displayMessage(message, type) {
+                // Create a div for the message
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type}`; // 'message success' or 'message error'
+                messageDiv.textContent = message;
+
+                // Add the message to the container
+                messageContainer.appendChild(messageDiv);
+            }
+        });
+    </script>
+<script>
+    // --- History Tracking Snippet ---
+    document.addEventListener('DOMContentLoaded', function() {
+        // Function to update user history in localStorage
+        function updateUserHistory(action, data) {
+            const userString = localStorage.getItem('dramaKanUser');
+            if (userString) {
+                let user = JSON.parse(userString);
+                if (user.isLoggedIn) {
+                    if (action === 'visit') {
+                        // Avoid duplicate visits in a row
+                        if (!user.visitedHistory.some(item => item.url === data.url)) {
+                             user.visitedHistory.unshift(data); // Add to the beginning of the array
+                        }
+                        // Limit history to 10 items
+                        if (user.visitedHistory.length > 10) {
+                            user.visitedHistory.pop();
+                        }
+                    } else if (action === 'search') {
+                        // Avoid duplicate searches in a row
+                        if (user.searchHistory[0] !== data.term) {
+                           user.searchHistory.unshift(data);
+                        }
+                        if (user.searchHistory.length > 10) {
+                           user.searchHistory.pop();
+                        }
+                    }
+                    localStorage.setItem('dramaKanUser', JSON.stringify(user));
+                }
+            }
+        }
+
+        // --- TRACKING LOGIC ---
+        
+        // 1. For Drama Detail Pages: Track the visit
+        // Check if this is a drama detail page by looking for a specific element
+        const dramaTitleElement = document.querySelector('.drama-title');
+        if (dramaTitleElement) {
+            const dramaData = {
+                title: dramaTitleElement.textContent,
+                url: window.location.pathname.split('/').pop() // Gets just the 'drama-name.html'
+            };
+            updateUserHistory('visit', dramaData);
+        }
+
+        // 2. For the Homepage: Track searches
+        // Give your search form and input these IDs on index.html: id="search-form" and id="search-input"
+        const searchForm = document.getElementById('search-form');
+        if (searchForm) {
+            searchForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Stop page from reloading
+                const searchInput = document.getElementById('search-input');
+                const searchTerm = searchInput.value.trim();
+                if (searchTerm) {
+                    updateUserHistory('search', searchTerm);
+                    alert(`(For Demo) Search for "${searchTerm}" was recorded to your profile.`);
+                    searchInput.value = ''; // Clear search bar
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>
