@@ -12,9 +12,7 @@
     /* CSS Reset and Global Styles */
     :root {
       --primary-color: #8A2BE2;
-      /* A vibrant purple, similar to the inspiration site */
       --secondary-color: #E50914;
-      /* A pop of red for contrast */
       --background-color: #0B0C10;
       --surface-color: #1A1A1D;
       --text-color: #F5F5F5;
@@ -34,7 +32,6 @@
       color: var(--text-color);
       line-height: 1.6;
       overflow-x: hidden;
-      /* Prevent horizontal scroll */
     }
 
     a {
@@ -65,15 +62,37 @@
       color: var(--text-color);
     }
 
-    /* Disclaimer Bar */
+    /* --- MODIFIED: Disclaimer Bar with Marquee Effect --- */
     .disclaimer-bar {
       background-color: var(--secondary-color);
       color: white;
-      text-align: center;
-      padding: 8px;
+      padding: 8px 0;
       font-size: 0.9rem;
       font-weight: 500;
+      overflow: hidden; /* Hides the text that goes off-screen */
+      white-space: nowrap; /* Prevents the text from wrapping to a new line */
     }
+
+    .marquee-content {
+      display: inline-block;
+      padding-left: 100%; /* Starts the animation off-screen to the right */
+      animation: marquee 25s linear infinite;
+    }
+
+    .marquee-content span {
+        padding: 0 2rem; /* Adds spacing between the repeated text */
+    }
+
+    @keyframes marquee {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-100%); /* Moves the text across the screen */
+      }
+    }
+    /* --- End of Disclaimer Bar Modification --- */
+
 
     /* Header / Navbar */
     .main-header {
@@ -151,7 +170,6 @@
       display: flex;
       align-items: center;
       gap: 25px;
-      /* Adjust gap as needed */
     }
 
     .btn {
@@ -186,7 +204,7 @@
       cursor: pointer;
     }
 
-    /* === HERO SLIDER - REVISED === */
+    /* Hero Slider */
     .hero-slider {
       position: relative;
       width: 100%;
@@ -226,7 +244,6 @@
       left: 0;
       width: 100%;
       height: 100%;
-      /* REVISED GRADIENT for better separation */
       background: linear-gradient(90deg, rgba(11, 12, 16, 1) 0%, rgba(11, 12, 16, 0.95) 35%, rgba(11, 12, 16, 0.7) 50%, rgba(11, 12, 16, 0) 70%);
       z-index: 2;
     }
@@ -240,10 +257,8 @@
       justify-content: center;
       align-items: flex-start;
       text-align: left;
-      /* REVISED width and padding for strict left alignment */
       max-width: 45%;
       padding-left: 5vw;
-      /* Use viewport width for responsive padding */
       padding-right: 20px;
     }
 
@@ -513,24 +528,19 @@
 
     /* Responsive Design */
     @media (max-width: 992px) {
-
       .nav-links,
       .header-actions .btn-primary {
         display: none;
       }
-
       .mobile-menu-toggle {
         display: block;
       }
-
       .search-bar {
         margin: 0 15px;
       }
-
       .slide-content {
         max-width: 55%;
       }
-
       .slide-title {
         font-size: 2.2rem;
       }
@@ -541,11 +551,9 @@
         max-width: 65%;
         padding-left: 20px;
       }
-
       .slide-title {
         font-size: 2rem;
       }
-
       .drama-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       }
@@ -555,52 +563,39 @@
       .main-header .container {
         flex-wrap: wrap;
       }
-
       .search-bar {
         order: 3;
         width: 100%;
         margin: 15px 0 0 0;
       }
-
       .hero-slider {
         height: 450px;
       }
-
       .slide-content {
         max-width: 100%;
-        /* On very small screens, let it take more space */
         padding: 20px;
         background: linear-gradient(90deg, rgba(11, 12, 16, 0.95), rgba(11, 12, 16, 0.8));
-        /* Add background for readability */
       }
-
       .slide::after {
-        /* Make the fade much quicker on mobile */
         background: linear-gradient(90deg, rgba(11, 12, 16, 1) 10%, rgba(11, 12, 16, 0.7) 40%, rgba(11, 12, 16, 0) 60%);
       }
-
       .slide-title {
         font-size: 1.8rem;
       }
-
       .slide-desc {
         font-size: 0.9rem;
       }
-
       .drama-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 15px;
       }
-
       .section-title {
         font-size: 1.5rem;
       }
-
       .footer-content {
         flex-direction: column;
         text-align: center;
       }
-
       .slider-nav {
         left: auto;
         right: 15px;
@@ -613,7 +608,10 @@
 <body>
 
   <div class="disclaimer-bar">
-    This site is for only information of drama does not support any type of piracy and all copyright reserved by their owner.
+    <div class="marquee-content">
+      <span>This site is for only information of drama does not support any type of piracy and all copyright reserved by their owner.</span>
+      <span>This site is for only information of drama does not support any type of piracy and all copyright reserved by their owner.</span>
+    </div>
   </div>
 
   <header class="main-header">
@@ -633,7 +631,6 @@
             <li><a href="chinese.html">C-Drama</a></li>
           </ul>
         </nav>
-
         <div class="header-actions">
           <a href="login.html" id="login-button" class="btn btn-primary">Login</a>
           <a href="profile.html" id="profile-button" class="btn-icon" style="display: none;"><i class="fas fa-user"></i></a>
@@ -645,7 +642,7 @@
   <section class="hero-slider">
     <div class="slider-wrapper">
       <div class="slide">
-        <img class="slide-bg-image" src="https://i0.wp.com/www.korseries.com/wp-content/uploads/2019/12/crash-landing-on-you.jpg" alt="Crash Landing on You">
+        <img class="slide-bg-image" src="https://data.ibtimes.sg/en/full/30687/crash-landing-you.jpg" alt="Crash Landing on You">
         <div class="slide-content">
           <h1 class="slide-title">Crash Landing on You</h1>
           <div class="slide-meta"><span>⭐ 8.7</span><span>K-Drama</span><span>Romance</span></div>
@@ -683,7 +680,7 @@
       <div class="container">
         <h2 class="section-title">Latest Episodes</h2>
         <div class="drama-grid">
-          <a class="drama-card">
+          <a href="queenoftears.html" class="drama-card">
             <div class="drama-card-img">
               <img src="https://i.pinimg.com/736x/0b/2e/9f/0b2e9f2a20b251450178800397c419b2.jpg" alt="Queen of Tears">
               <span class="episode-badge">Ep 16</span>
@@ -693,7 +690,7 @@
               <p class="drama-card-meta">K-Drama</p>
             </div>
           </a>
-          <a class="drama-card">
+          <a href="mydemon.html" class="drama-card">
             <div class="drama-card-img">
               <img src="https://m.media-amazon.com/images/M/MV5BNTg5YmU0OTYtNzIzNy00MzM1LWI0OWEtYzc5ZmRlNmJlODk5XkEyXkFqcGc@._V1_.jpg" alt="My Demon">
               <span class="episode-badge">Ep 12</span>
@@ -703,7 +700,7 @@
               <p class="drama-card-meta">K-Drama</p>
             </div>
           </a>
-          <a class="drama-card">
+          <a href="theuntamed.html" class="drama-card">
             <div class="drama-card-img">
               <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJSgjiAM44dY9usKbwO1Uglb9U-NY2MGmYnQ&s" alt="The Untamed">
               <span class="episode-badge">Ep 50</span>
@@ -713,7 +710,7 @@
               <p class="drama-card-meta">C-Drama</p>
             </div>
           </a>
-          <a class="drama-card">
+          <a href="firstlovehatsukoi.html" class="drama-card">
             <div class="drama-card-img">
               <img src="https://m.media-amazon.com/images/M/MV5BYzlkNjU0NzUtMmNkNi00OTBiLWEyN2YtNjkxNzc0ODhkYjExXkEyXkFqcGc@._V1_.jpg" alt="First Love">
               <span class="episode-badge">Ep 9</span>
@@ -723,7 +720,7 @@
               <p class="drama-card-meta">J-Drama</p>
             </div>
           </a>
-          <a class="drama-card">
+          <a href="goblin.html" class="drama-card">
             <div class="drama-card-img">
               <img src="https://m.media-amazon.com/images/M/MV5BNWIyNTA3MmItNzY5ZS00NmZhLThjMWYtZjIxYzllZWU5YWIzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Goblin">
               <span class="episode-badge">Ep 16</span>
@@ -733,7 +730,7 @@
               <p class="drama-card-meta">K-Drama</p>
             </div>
           </a>
-          <a class="drama-card">
+          <a href="lovelyrunner.html" class="drama-card">
             <div class="drama-card-img">
               <img src="https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png" alt="Lovely Runner">
               <span class="episode-badge">Ep 8</span>
@@ -743,7 +740,7 @@
               <p class="drama-card-meta">K-Drama</p>
             </div>
           </a>
-          <a class="drama-card">
+          <a href="decendantsantsofthesun.html" class="drama-card">
             <div class="drama-card-img">
               <img src="https://m.media-amazon.com/images/M/MV5BYTQ3MWI2MjEtM2Q3NS00YjU4LWFkZGItNDA0OTc2NjcwZWY3XkEyXkFqcGc@._V1_.jpg" alt="Descendants Of The Sun">
               <span class="episode-badge">Ep 16</span>
@@ -753,7 +750,7 @@
               <p class="drama-card-meta">K-Drama</p>
             </div>
           </a>
-          <a class="drama-card">
+          <a href="hoteldelluna.html" class="drama-card">
             <div class="drama-card-img">
               <img src="https://m.media-amazon.com/images/M/MV5BZmFmYTU0YTItZTk4ZS00ZWMzLThmOTgtOGIyOTBkY2QwZjc0XkEyXkFqcGc@._V1_.jpg" alt="Hotel Del Luna">
               <span class="episode-badge">Ep 16</span>
@@ -763,7 +760,7 @@
               <p class="drama-card-meta">K-Drama</p>
             </div>
           </a>
-          <a class="drama-card">
+          <a href="theking.html" class="drama-card">
             <div class="drama-card-img">
               <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTriCWaftmuFdXvCdxP_IDRpy1IsGkc3GaOQQ&s" alt="The King: Eternal Monarch">
               <span class="episode-badge">Ep 16</span>
@@ -773,7 +770,7 @@
               <p class="drama-card-meta">K-Drama</p>
             </div>
           </a>
-          <a class="drama-card">
+          <a href="taleofninetailed.html" class="drama-card">
             <div class="drama-card-img">
               <img src="https://m.media-amazon.com/images/M/MV5BNWYxNDM2NDYtM2EwOS00NTMxLThmNGQtMTJiZWEzMDJiMDQ1XkEyXkFqcGc@._V1_.jpg" alt="Tale of the Nine Tailed">
               <span class="episode-badge">Ep 16</span>
@@ -783,7 +780,7 @@
               <p class="drama-card-meta">K-Drama</p>
             </div>
           </a>
-          <a class="drama-card">
+          <a href="ourbelovedsummer.html" class="drama-card">
             <div class="drama-card-img">
               <img src="https://upload.wikimedia.org/wikipedia/en/2/29/Our_Beloved_Summer.jpg" alt="Our Beloved Summer">
               <span class="episode-badge">Ep 16</span>
@@ -793,7 +790,7 @@
               <p class="drama-card-meta">K-Drama</p>
             </div>
           </a>
-          <a class="drama-card">
+          <a href="mymister.html" class="drama-card">
             <div class="drama-card-img">
               <img src="https://m.media-amazon.com/images/M/MV5BMjFkYzIwMTctYzljYS00M2RiLTlhNmItZDM3MjFiOTFiOTY5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="My Mister">
               <span class="episode-badge">Ep 16</span>
@@ -918,7 +915,6 @@
             </a>
           </div>
         </div>
-
       </div>
     </section>
   </main>
@@ -928,10 +924,8 @@
       <div class="footer-content">
         <a href="#" class="logo">Drama<span>Kan</span></a>
         <div class="footer-socials">
-          <a href="#"><i class="fab fa-twitter"></i></a>
-          <a href="#"><i class="fab fa-discord"></i></a>
           <a href="#"><i class="fab fa-telegram"></i></a>
-          <a href="privacy.html"><i class="fab fa-reddit"></i></a>
+          <a href="privacy.html"><i class="fas fa-shield-alt"></i></a>
         </div>
       </div>
       <div class="footer-bottom">&copy; 2025 Dramakan. All rights reserved.</div>
@@ -942,7 +936,6 @@
     document.addEventListener('DOMContentLoaded', function() {
 
       // --- LOGIN & PROFILE BUTTON VISIBILITY ---
-      // This script checks the user's login status from localStorage and updates the header buttons accordingly.
       const userString = localStorage.getItem('dramaKanUser');
       const loginButton = document.getElementById('login-button');
       const profileButton = document.getElementById('profile-button');
@@ -959,11 +952,9 @@
         }
 
         if (isLoggedIn) {
-          // User is logged in: show profile, hide login
           loginButton.style.display = 'none';
           profileButton.style.display = 'inline-block';
         } else {
-          // User is not logged in or no data found: show login, hide profile
           loginButton.style.display = 'inline-block';
           profileButton.style.display = 'none';
         }
@@ -981,22 +972,18 @@
         function updateSlider() {
           sliderWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
         }
-
         function nextSlide() {
           currentIndex = (currentIndex + 1) % slides.length;
           updateSlider();
         }
-
         function prevSlide() {
           currentIndex = (currentIndex - 1 + slides.length) % slides.length;
           updateSlider();
         }
-        
         function resetInterval() {
             clearInterval(slideInterval);
             slideInterval = setInterval(nextSlide, 5000);
         }
-
         nextBtn.addEventListener('click', () => {
           nextSlide();
           resetInterval();
@@ -1014,10 +1001,8 @@
       function setActiveTab(day) {
         tabButtons.forEach(btn => btn.classList.remove('active'));
         scheduleContents.forEach(content => content.classList.remove('active'));
-
         const activeBtn = document.querySelector(`.tab-btn[data-day="${day}"]`);
         const activeContent = document.getElementById(day);
-
         if (activeBtn) activeBtn.classList.add('active');
         if (activeContent) activeContent.classList.add('active');
       }
@@ -1026,7 +1011,6 @@
       const today = new Date().toLocaleString('en-US', { weekday: 'short' }).toLowerCase();
       setActiveTab(today);
 
-      // Add click listeners for manual tab switching
       tabButtons.forEach(button => {
         button.addEventListener('click', () => {
           const dayToActivate = button.getAttribute('data-day');
@@ -1037,7 +1021,6 @@
       // === SEARCH FUNCTIONALITY ===
       const searchInput = document.getElementById('searchInput');
       const searchResultsContainer = document.getElementById('searchResults');
-      // The drama database is now a clean JavaScript array.
       const dramas = [
         { title: 'Alchemy of Souls', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BOGFhNGQzMWUtZWJhNi00NGZiLTg1MjEtMTQzZmU4Njg2MWRhXkEyXkFqcGc@._V1_.jpg', link: 'alchemy.html' },
         { title: 'Bulgasal: Immortal Souls', type: 'K-Drama', img: 'https://upload.wikimedia.org/wikipedia/en/c/c1/Bulgasal_Immortal_Souls.jpg', link: 'bulgals.html' },
@@ -1080,14 +1063,11 @@
       searchInput.addEventListener('input', () => {
         const query = searchInput.value.toLowerCase().trim();
         searchResultsContainer.innerHTML = '';
-
         if (!query) {
           searchResultsContainer.style.display = 'none';
           return;
         }
-        
         const matchedDramas = dramas.filter(d => d.title.toLowerCase().includes(query));
-
         if (matchedDramas.length === 0) {
           searchResultsContainer.innerHTML = '<div class="no-result">No results found</div>';
         } else {
@@ -1107,13 +1087,11 @@
         searchResultsContainer.style.display = 'block';
       });
 
-      // Hide search results when clicking outside the search bar
       document.addEventListener('click', (event) => {
         if (!event.target.closest('.search-bar')) {
           searchResultsContainer.style.display = 'none';
         }
       });
-
     });
   </script>
 
