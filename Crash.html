@@ -423,7 +423,15 @@
         const nextBtn = document.getElementById('next-ep-btn');
         const videoPlayer = document.getElementById('video-player-iframe');
 
-       if (episode && episode.downloadLinks) {
+      function updateUI(episodeNumber) {
+            currentEpisode = parseInt(episodeNumber, 10);
+            const episode = episodeData.find(ep => ep.number === currentEpisode);
+            if (episode && episode.videoUrl) { videoPlayer.src = episode.videoUrl; }
+            currentEpisodeTitle.textContent = `You are watching Episode ${currentEpisode}`;
+            document.querySelectorAll('.episode-item').forEach(item => { item.classList.toggle('current', parseInt(item.dataset.episode, 10) === currentEpisode); });
+            document.querySelector(`.episode-item[data-episode='${currentEpisode}']`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            downloadLinksTbody.innerHTML = '';
+            if (episode && episode.downloadLinks) {
                 episode.downloadLinks.forEach(link => {
                     downloadLinksTbody.innerHTML += `
                         <tr>
@@ -433,9 +441,10 @@
                             <td data-label="Subtitles"><a href="${episode.subtitleUrl}" class="download-btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-closed-captioning"></i> Download</a></td>
                         </tr>`;
                 });
+            }
             prevBtn.disabled = currentEpisode === 1;
             nextBtn.disabled = currentEpisode === totalEpisodes;
-        }}
+        }
 
         function generateEpisodeList() {
             for (let i = 1; i <= totalEpisodes; i++) {
@@ -484,6 +493,5 @@
         });
     });
 </script>
-
 </body>
 </html>
