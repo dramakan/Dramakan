@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - DramaKan</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
     <style>
-        /* All CSS is the same as your previous login page... */
+        /* Shared Styles */
         :root {
             --primary-color: #8A2BE2;
             --background-color: #0B0C10;
@@ -18,91 +17,159 @@
             --text-color: #F5F5F5;
             --text-muted-color: #a0a0a0;
             --border-color: #2c2c34;
+            --error-color: #dc3545;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); line-height: 1.6; }
         a { text-decoration: none; color: inherit; }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Header & Footer Styles (for consistency) */
         .main-header { background-color: rgba(11, 12, 16, 0.8); backdrop-filter: blur(10px); padding: 15px 0; border-bottom: 1px solid var(--border-color); }
         .main-header .container { display: flex; align-items: center; justify-content: space-between; }
         .logo { font-size: 1.8rem; font-weight: 700; }
         .logo span { color: var(--primary-color); }
-        .login-page-main { display: flex; align-items: center; justify-content: center; padding: 50px 0; min-height: calc(100vh - 150px); }
-        .login-container { background-color: var(--surface-color); padding: 40px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 400px; text-align: center; }
-        .login-container h2 { margin-bottom: 25px; font-size: 2rem; font-weight: 600; }
-        .form-group { margin-bottom: 20px; text-align: left; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted-color); }
-        .form-group input { width: 100%; padding: 12px 15px; border-radius: 5px; border: 1px solid var(--border-color); background-color: var(--background-color); color: var(--text-color); font-size: 1rem; }
-        .form-group input:focus { outline: none; border-color: var(--primary-color); }
-        .btn { padding: 12px; border-radius: 5px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; width: 100%; font-size: 1.1rem; margin-top: 10px; }
+        .header-actions { display: flex; align-items: center; gap: 15px; }
+        .btn { padding: 8px 15px; border-radius: 5px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
         .btn-primary { background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); }
-        .btn-primary:hover { background-color: transparent; }
+        .btn-icon { background: none; border: none; color: var(--text-color); font-size: 1.2rem; padding: 8px 12px; }
+        .main-footer { background-color: var(--surface-color); padding: 40px 0 20px; border-top: 1px solid var(--border-color); }
+        .footer-bottom { text-align: center; font-size: 0.9rem; color: var(--text-muted-color); }
+        
+        /* Login Page Specific Styles */
+        .auth-background { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; z-index: -1; filter: blur(8px) brightness(0.4); transform: scale(1.1); }
+        .auth-background img { width: 100%; height: 100%; object-fit: cover; }
+        .auth-container { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 150px); padding: 20px; }
+        .auth-form-box { background: rgba(26, 26, 29, 0.75); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 420px; text-align: center; }
+        .auth-form-box h1 { font-size: 1.8rem; margin-bottom: 10px; }
+        .auth-form-box p { color: var(--text-muted-color); margin-bottom: 30px; }
+        .form-group { position: relative; margin-bottom: 20px; }
+        .form-group .icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted-color); }
+        .form-group input { width: 100%; padding: 12px 15px 12px 45px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--background-color); color: var(--text-color); font-size: 1rem; }
+        .message { font-size: 0.9rem; text-align: center; margin-bottom: 15px; padding: 10px; border-radius: 5px; color: white; background-color: var(--error-color); }
+        .auth-form-box .btn { width: 100%; }
+        .bottom-link { margin-top: 25px; font-size: 0.9rem; color: var(--text-muted-color); }
+        .bottom-link a { color: var(--primary-color); }
         .extra-links { margin-top: 20px; display: flex; justify-content: space-between; font-size: 0.9rem; }
         .extra-links a { color: var(--text-muted-color); }
         .extra-links a:hover { color: var(--primary-color); text-decoration: underline; }
     </style>
 </head>
 <body>
+
+    <div class="auth-background">
+        <img src="https://image.tmdb.org/t/p/w500/roYy5z2aTqMDBt2bY2gV2LpCj2.jpg" alt="bg">
+        <img src="https://image.tmdb.org/t/p/w500/yOdjula2rD03aKei2ikV5m2pT02.jpg" alt="bg">
+        <img src="https://image.tmdb.org/t/p/w500/314mS2WfDgbW5s3TzRifvS0xJET.jpg" alt="bg">
+        <img src="https://image.tmdb.org/t/p/w500/tS3iAeD2dfV8iX22rztq2pT1SdA.jpg" alt="bg">
+    </div>
+
     <header class="main-header">
         <div class="container">
             <a href="index.html" class="logo">Drama<span>Kan</span></a>
+            <div class="header-actions">
+                <a href="login.html" id="login-button" class="btn btn-primary">Login</a>
+                <a href="profile.html" id="profile-button" class="btn-icon" style="display: none;"><i class="fas fa-user"></i></a>
+            </div>
         </div>
     </header>
 
-    <main class="login-page-main">
-        <div class="login-container">
-            <h2>Login to DramaKan</h2>
+    <main class="auth-container">
+        <div class="auth-form-box">
+            <h1>Welcome Back!</h1>
+            <p>Log in to access your profile and history.</p>
+
+            <div id="message-container"></div>
             <form id="login-form">
                 <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                    <i class="fas fa-envelope icon"></i>
+                    <input type="email" id="email" placeholder="Email Address" required>
                 </div>
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                    <i class="fas fa-lock icon"></i>
+                    <input type="password" id="password" placeholder="Password" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Login</button>
+                <button type="submit" id="submit-button" class="btn btn-primary">Login</button>
             </form>
+            
             <div class="extra-links">
                 <a href="#">Forgot Password?</a>
-                <a href="resister.html">Don't have an account? Sign Up</a>
+                <a href="register.html">Sign Up</a>
             </div>
         </div>
     </main>
-    
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                 <p>&copy; 2025 DramaKan. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // If user is already logged in, redirect them to their profile
-            const existingUser = localStorage.getItem('dramaKanUser');
-            if (existingUser && JSON.parse(existingUser).isLoggedIn) {
+            // Check if user is already logged in and redirect
+            const userString = localStorage.getItem('dramaKanUser');
+            if (userString && JSON.parse(userString).isLoggedIn) {
                 window.location.href = 'profile.html';
+                return;
             }
-
+            
             const loginForm = document.getElementById('login-form');
+            const messageContainer = document.getElementById('message-container');
+            const submitButton = document.getElementById('submit-button');
+
             loginForm.addEventListener('submit', function(event) {
                 event.preventDefault();
+                messageContainer.innerHTML = '';
+                submitButton.disabled = true;
+                submitButton.textContent = 'Logging in...';
 
                 const email = document.getElementById('email').value;
-                // Create a generic username from the email for display purposes
-                const username = email.split('@')[0];
+                const password = document.getElementById('password').value;
 
-                // Create a user object to store in localStorage
-                const userObject = {
-                    isLoggedIn: true,
-                    username: username,
-                    email: email,
-                    searchHistory: [],
-                    visitedHistory: []
-                };
-                
-                // Store the user object as a JSON string
-                localStorage.setItem('dramaKanUser', JSON.stringify(userObject));
-
-                alert('Login successful! Redirecting to your profile...');
-                
-                // Redirect to the profile page
-                window.location.href = 'profile.html';
+                // This sends the data to your Node.js server
+                fetch('http://localhost:3000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, password: password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Server confirmed login is successful. Save the NEW session object with the TOKEN.
+                        const userSession = {
+                            isLoggedIn: true,
+                            username: data.user.username,
+                            email: data.user.email,
+                            token: data.token // <-- This is the crucial security token
+                        };
+                        localStorage.setItem('dramaKanUser', JSON.stringify(userSession));
+                        
+                        alert('Login successful!');
+                        window.location.href = 'profile.html';
+                    } else {
+                        // Server said login failed
+                        displayMessage(data.message || 'Invalid email or password.');
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Login';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    displayMessage('Cannot connect to the server. Please make sure it is running.');
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Login';
+                });
             });
+
+            function displayMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message';
+                messageDiv.textContent = message;
+                messageContainer.appendChild(messageDiv);
+            }
         });
     </script>
 </body>

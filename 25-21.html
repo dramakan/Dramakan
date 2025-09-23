@@ -432,6 +432,8 @@
             <div class="drama-poster">
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZ5X5pEHtBzkpH6n8i1-iRU9Imf8FtBYZIYQ&s" alt="Twenty-Five Twenty-One Poster">
                 <a href="#" class="btn btn-primary"><i class="fas fa-play"></i> Watch Now</a>
+                <button id="like-button" class="btn"><i class="far fa-heart"></i> Like</button>
+<button id="watchlist-button" class="btn"><i class="fas fa-plus"></i> Add to Watchlist</button>
             </div>
             <div class="drama-details">
                 <h1 class="drama-title">Twenty-Five Twenty-One</h1>
@@ -623,6 +625,64 @@
                 }
             });
         }
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const userSession = JSON.parse(localStorage.getItem('dramaKanUser'));
+        const API_BASE_URL = 'http://localhost:3000';
+
+        const dramaTitle = document.querySelector('.drama-title').textContent;
+        const dramaPoster = document.querySelector('.drama-poster img').src;
+        const dramaUrl = window.location.pathname.split('/').pop();
+        const dramaData = { title: dramaTitle, poster: dramaPoster, url: dramaUrl };
+
+        const likeButton = document.getElementById('like-button');
+        const watchlistButton = document.getElementById('watchlist-button');
+
+        async function postToServer(endpoint, data) {
+            if (!userSession?.isLoggedIn) {
+                alert('Please log in to use this feature!');
+                return null;
+            }
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${userSession.token}` },
+                body: JSON.stringify(data)
+            });
+            if(!response.ok) throw new Error("Request failed");
+            return response.json();
+        }
+
+        function updateLikeButton(isLiked) {
+            likeButton.innerHTML = isLiked ? '<i class="fas fa-heart"></i> Liked' : '<i class="far fa-heart"></i> Like';
+        }
+        function updateWatchlistButton(inWatchlist) {
+            watchlistButton.innerHTML = inWatchlist ? '<i class="fas fa-check"></i> In Watchlist' : '<i class="fas fa-plus"></i> Add to Watchlist';
+        }
+
+        async function checkInitialStatus() {
+            if (!userSession?.isLoggedIn) return;
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/profile`, { headers: {'Authorization': `Bearer ${userSession.token}`}});
+                const data = await response.json();
+                if (data.success) {
+                    updateLikeButton(data.profile.likedDramas.some(d => d.url === dramaUrl));
+                    updateWatchlistButton(data.profile.watchlist.some(d => d.url === dramaUrl));
+                }
+            } catch(e) {}
+        }
+
+        likeButton.addEventListener('click', async () => {
+            const result = await postToServer('/api/profile/like', { drama: dramaData });
+            if (result) updateLikeButton(result.isLiked);
+        });
+        watchlistButton.addEventListener('click', async () => {
+            const result = await postToServer('/api/profile/watchlist', { drama: dramaData });
+            if (result) updateWatchlistButton(result.inWatchlist);
+        });
+
+        checkInitialStatus();
     });
 </script>
 </body>

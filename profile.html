@@ -5,15 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile - DramaKan</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
     <style>
-        /* === GLOBAL STYLES === */
         :root {
             --primary-color: #8A2BE2;
             --secondary-color: #E50914;
@@ -24,85 +18,70 @@
             --border-color: #2c2c34;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); line-height: 1.6; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); }
         a { text-decoration: none; color: inherit; }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
-        /* Header & Footer (Consistent) */
-        .main-header { background-color: rgba(11, 12, 16, 0.8); backdrop-filter: blur(10px); padding: 15px 0; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
-        .main-header .container, .footer-content { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+        .main-header { background-color: rgba(11, 12, 16, 0.8); backdrop-filter: blur(10px); padding: 15px 0; border-bottom: 1px solid var(--border-color); }
+        .main-header .container { display: flex; align-items: center; justify-content: space-between; }
         .logo { font-size: 1.8rem; font-weight: 700; }
         .logo span { color: var(--primary-color); }
-        .main-footer { background-color: var(--surface-color); padding: 40px 0 20px; margin-top: 40px; border-top: 1px solid var(--border-color); }
-        .footer-socials a { font-size: 1.5rem; margin: 0 10px; color: var(--text-muted-color); transition: color 0.3s; }
-        .footer-socials a:hover { color: var(--primary-color); }
-        .footer-bottom { text-align: center; font-size: 0.9rem; color: var(--text-muted-color); border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 20px; }
+        .main-footer { background-color: var(--surface-color); padding: 40px 0 20px; margin-top: 40px; border-top: 1px solid var(--border-color); text-align: center; }
         
-        /* === STYLES FOR PROFILE PAGE === */
-        .profile-page { padding: 40px 0; }
+        .profile-banner { height: 300px; background-color: var(--surface-color); background-size: cover; background-position: center; position: relative; }
+        .profile-banner .overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(11, 12, 16, 0.9), transparent); }
+        .profile-banner-edit { position: absolute; bottom: 15px; right: 20px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: white; padding: 8px 12px; border-radius: 5px; cursor: pointer; opacity: 0; transition: opacity 0.3s; }
+        .profile-banner:hover .profile-banner-edit { opacity: 1; }
         
-        .profile-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
+        .profile-header { position: relative; display: flex; align-items: flex-end; gap: 20px; padding: 0 40px; margin-top: -80px; flex-wrap: wrap; }
+        .profile-picture { width: 160px; height: 160px; border-radius: 50%; border: 4px solid var(--background-color); background-color: var(--surface-color); background-size: cover; background-position: center; flex-shrink: 0; position: relative; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .profile-picture .overlay { position: absolute; inset: 0; background-color: rgba(0,0,0,0.6); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 50%; opacity: 0; transition: opacity 0.3s; font-size: 0.9rem; }
+        .profile-picture:hover .overlay { opacity: 1; }
         
-        .profile-title { font-size: 2.5rem; font-weight: 700; }
-        .profile-title span { color: var(--primary-color); }
+        .profile-info { padding-bottom: 20px; }
+        .profile-username { font-size: 2.2rem; font-weight: 700; }
+        .profile-bio { color: var(--text-muted-color); font-style: italic; max-width: 500px; margin-top: 5px; }
+        .profile-actions { margin-left: auto; padding-bottom: 20px; display: flex; gap: 10px; }
+        .btn { padding: 8px 15px; border-radius: 5px; font-weight: 500; cursor: pointer; border: 1px solid var(--primary-color); background: transparent; color: var(--primary-color); transition: 0.2s; }
+        .btn:hover { background: var(--primary-color); color: white; }
+        #logout-btn { border-color: var(--secondary-color); color: var(--secondary-color); }
+        #logout-btn:hover { background: var(--secondary-color); color: white; }
+        
+        .profile-content { padding: 40px 0; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .btn { padding: 8px 15px; border-radius: 5px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; display: inline-block; border: 1px solid var(--secondary-color); background-color: var(--secondary-color); color: white; }
-        .btn:hover { background-color: transparent; color: var(--secondary-color); }
+        .profile-nav { display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 30px; }
+        .profile-nav a { padding: 10px 20px; font-weight: 500; color: var(--text-muted-color); border-bottom: 3px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .profile-nav a.active { color: var(--text-color); border-bottom-color: var(--primary-color); }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .history-section h2 { font-size: 1.8rem; font-weight: 600; margin-bottom: 20px; }
+        .empty-history { color: var(--text-muted-color); text-align: center; padding: 40px; background-color: var(--surface-color); border-radius: 8px; }
+        .drama-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .drama-card { background-color: var(--surface-color); border-radius: 8px; overflow: hidden; transition: 0.2s; }
+        .drama-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+        .drama-card-info { padding: 10px; }
+        .drama-card-title { font-size: 1rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .settings-grid { display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 600px; }
+        .setting-card { background-color: var(--surface-color); padding: 25px; border-radius: 8px; }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: var(--surface-color); padding: 30px; border-radius: 8px; width: 90%; max-width: 450px; }
+        .modal-box h2 { margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 5px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid var(--border-color); background: var(--background-color); color: var(--text-color); font-size: 1rem; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
 
-        .profile-details {
-            background-color: var(--surface-color);
-            padding: 25px;
-            border-radius: 8px;
-            margin-bottom: 40px;
-        }
-        .profile-details p { font-size: 1.1rem; margin-bottom: 10px; color: var(--text-muted-color); }
-        .profile-details span { font-weight: 600; color: var(--text-color); }
-
-        .history-section h2 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        .history-list {
-            list-style: none;
-            background-color: var(--surface-color);
-            padding: 15px 25px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-        
-        .history-list li {
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-muted-color);
-        }
-        
-        .history-list li:last-child {
-            border-bottom: none;
-        }
-        
-        .history-list a {
-            color: var(--primary-color);
-            transition: color 0.3s;
-            font-weight: 500;
-        }
-        
-        .history-list a:hover {
-            color: white;
-        }
-        
-        .empty-history {
-            color: var(--text-muted-color);
-            text-align: center;
-            padding: 20px;
+        @media (max-width: 768px) {
+            .profile-header { flex-direction: column; align-items: center; text-align: center; margin-top: -80px; }
+            .profile-actions { margin-left: 0; }
+            .profile-nav { justify-content: flex-start; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; }
+            .profile-nav::-webkit-scrollbar { display: none; }
         }
     </style>
 </head>
@@ -114,80 +93,231 @@
     </header>
 
     <main>
+        <section class="profile-banner" id="profile-banner" title="Click to change banner image">
+            <div class="overlay"></div>
+            <button class="profile-banner-edit btn" id="banner-edit-btn"><i class="fas fa-edit"></i> Edit Banner</button>
+        </section>
+
         <div class="container">
-            <section class="profile-page">
-                <div class="profile-header">
-                    <h1 class="profile-title">My <span>Profile</span></h1>
-                    <button id="logout-btn" class="btn">Logout</button>
+            <div class="profile-header">
+                <div class="profile-picture" id="profile-picture-container" title="Click to change profile picture">
+                    <div class="overlay"><i class="fas fa-camera"></i><br>Change</div>
                 </div>
+                <div class="profile-info">
+                    <h1 class="profile-username" id="profile-username">Loading...</h1>
+                    <p class="profile-bio" id="profile-bio"></p>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn" id="logout-btn">Logout</button>
+                </div>
+                <input type="file" id="pfp-upload" accept="image/*" style="display: none;">
+                <input type="file" id="banner-upload" accept="image/*" style="display: none;">
+            </div>
 
-                <div class="profile-details">
-                    <p>Username: <span id="profile-username"></span></p>
-                    <p>Email: <span id="profile-email"></span></p>
-                </div>
-                
-                <div class="history-section">
-                    <h2>Recently Visited</h2>
-                    <ul id="visited-history-list" class="history-list">
-                        </ul>
+            <div class="profile-content">
+                <nav class="profile-nav">
+                    <a data-tab="watchlist" class="tab-link active"><i class="fas fa-list-alt"></i> Watchlist</a>
+                    <a data-tab="liked" class="tab-link"><i class="fas fa-heart"></i> Liked Dramas</a>
+                    <a data-tab="settings" class="tab-link"><i class="fas fa-cog"></i> Settings</a>
+                </nav>
 
-                    <h2>Search History</h2>
-                    <ul id="search-history-list" class="history-list">
-                        </ul>
+                <div id="watchlist" class="tab-content active">
+                    <div class="history-section"><h2>My Watchlist</h2><div id="watchlist-grid" class="drama-grid"></div></div>
                 </div>
-            </section>
+                <div id="liked" class="tab-content">
+                    <div class="history-section"><h2>Liked Dramas</h2><div id="liked-dramas-grid" class="drama-grid"></div></div>
+                </div>
+                <div id="settings" class="tab-content">
+                     <div class="history-section"><h2>Account Settings</h2>
+                        <div class="settings-grid">
+                            <div class="setting-card">
+                                <h3>Edit Profile Info</h3>
+                                <p>Update your username, bio, and profile pictures.</p>
+                                <button class="btn" id="edit-profile-btn">Edit Profile</button>
+                            </div>
+                            <div class="setting-card">
+                                <h3>Change Password</h3>
+                                <p>For better security, update your password regularly.</p>
+                                <button class="btn" id="change-password-btn">Change Password</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
+
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal-box">
+            <h2>Edit Profile</h2>
+            <form id="edit-form">
+                <div class="form-group">
+                    <label for="edit-username">Username</label>
+                    <input type="text" id="edit-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-bio">Bio</label>
+                    <textarea id="edit-bio" rows="3" placeholder="Tell us a little about yourself..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" id="cancel-edit-btn">Cancel</button>
+                    <button type="submit" class="btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="password-modal">
+        <div class="modal-box">
+            <h2>Change Password</h2>
+            <form id="password-form">
+                <div class="form-group"><label for="old-password">Old Password</label><input type="password" id="old-password" required></div>
+                <div class="form-group"><label for="new-password">New Password</label><input type="password" id="new-password" required minlength="8"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" id="cancel-password-btn">Cancel</button>
+                    <button type="submit" class="btn">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
     
     <footer class="main-footer">
         <div class="container">
-            </div>
+             <p>&copy; 2025 DramaKan. All rights reserved.</p>
+        </div>
     </footer>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const user = JSON.parse(localStorage.getItem('dramaKanUser'));
-
-            // 1. Protect the page: If no user is logged in, redirect to login page
-            if (!user || !user.isLoggedIn) {
+            const userSession = JSON.parse(localStorage.getItem('dramaKanUser'));
+            if (!userSession?.isLoggedIn) {
                 window.location.href = 'login.html';
                 return;
             }
+            const token = userSession.token;
+            const API_BASE_URL = 'http://localhost:3000';
 
-            // 2. Populate User Details
-            document.getElementById('profile-username').textContent = user.username;
-            document.getElementById('profile-email').textContent = user.email;
-
-            // 3. Populate Visited History
-            const visitedList = document.getElementById('visited-history-list');
-            if (user.visitedHistory && user.visitedHistory.length > 0) {
-                user.visitedHistory.forEach(item => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<a href="${item.url}">${item.title}</a>`;
-                    visitedList.appendChild(li);
-                });
-            } else {
-                visitedList.innerHTML = '<li class="empty-history">Your visited drama pages will appear here.</li>';
+            async function fetchWithAuth(endpoint, options = {}) {
+                options.headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, ...options.headers };
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+                if (response.status === 401 || response.status === 403) {
+                    logout();
+                    throw new Error('Session expired');
+                }
+                return response.json();
             }
 
-            // 4. Populate Search History
-            const searchList = document.getElementById('search-history-list');
-            if (user.searchHistory && user.searchHistory.length > 0) {
-                user.searchHistory.forEach(term => {
-                    const li = document.createElement('li');
-                    li.textContent = term;
-                    searchList.appendChild(li);
-                });
-            } else {
-                searchList.innerHTML = '<li class="empty-history">Your search terms will appear here.</li>';
+            async function loadProfileData() {
+                try {
+                    const data = await fetchWithAuth('/api/profile');
+                    if (data.success) renderProfile(data.profile);
+                } catch (error) { console.error('Failed to load profile:', error); }
             }
 
-            // 5. Logout Button Logic
-            document.getElementById('logout-btn').addEventListener('click', function() {
-                localStorage.removeItem('dramaKanUser');
-                alert('You have been logged out.');
-                window.location.href = 'index.html';
+            function renderProfile(profile) {
+                document.getElementById('profile-username').textContent = profile.username;
+                document.getElementById('profile-bio').textContent = profile.bio || 'No bio yet. Click "Edit Profile" to add one!';
+                document.getElementById('profile-picture-container').style.backgroundImage = `url(${profile.profilePicture})`;
+                document.getElementById('profile-banner').style.backgroundImage = `url(${profile.profileBanner})`;
+                renderGrid(document.getElementById('watchlist-grid'), profile.watchlist, "Your watchlist is empty. Add dramas to see them here!");
+                renderGrid(document.getElementById('liked-dramas-grid'), profile.likedDramas, "You haven't liked any dramas yet.");
+            }
+
+            function renderGrid(gridEl, data, emptyMsg) {
+                if (data?.length) {
+                    gridEl.innerHTML = data.map(d => `
+                        <a href="${d.url}" class="drama-card">
+                            <div class="drama-card-img"><img src="${d.poster}" alt="${d.title}"></div>
+                            <div class="drama-card-info"><h3 class="drama-card-title">${d.title}</h3></div>
+                        </a>`).join('');
+                } else {
+                    gridEl.innerHTML = `<p class="empty-history">${emptyMsg}</p>`;
+                }
+            }
+
+            const tabLinks = document.querySelectorAll('.tab-link');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    tabLinks.forEach(l => l.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    link.classList.add('active');
+                    document.getElementById(link.dataset.tab).classList.add('active');
+                });
             });
+
+            function logout() {
+                localStorage.removeItem('dramaKanUser');
+                window.location.href = 'index.html';
+            }
+            document.getElementById('logout-btn').addEventListener('click', logout);
+
+            const editModal = document.getElementById('edit-modal');
+            const passwordModal = document.getElementById('password-modal');
+            document.getElementById('edit-profile-btn').addEventListener('click', () => {
+                document.getElementById('edit-username').value = document.getElementById('profile-username').textContent;
+                document.getElementById('edit-bio').value = document.getElementById('profile-bio').textContent === 'No bio yet. Click "Edit Profile" to add one!' ? '' : document.getElementById('profile-bio').textContent;
+                editModal.classList.add('active');
+            });
+            document.getElementById('cancel-edit-btn').addEventListener('click', () => editModal.classList.remove('active'));
+            document.getElementById('change-password-btn').addEventListener('click', () => passwordModal.classList.add('active'));
+            document.getElementById('cancel-password-btn').addEventListener('click', () => passwordModal.classList.remove('active'));
+
+            document.getElementById('edit-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const newUsername = document.getElementById('edit-username').value;
+                const bio = document.getElementById('edit-bio').value;
+                const data = await fetchWithAuth('/api/profile', {
+                    method: 'PUT',
+                    body: JSON.stringify({ username: newUsername, bio: bio })
+                });
+                if (data.success) {
+                    const updatedSession = { ...userSession, username: data.user.username, token: data.token };
+                    localStorage.setItem('dramaKanUser', JSON.stringify(updatedSession));
+                    loadProfileData();
+                    editModal.classList.remove('active');
+                } else { alert('Failed to update profile.'); }
+            });
+
+            document.getElementById('password-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const oldPassword = document.getElementById('old-password').value;
+                const newPassword = document.getElementById('new-password').value;
+                const data = await fetchWithAuth('/api/profile/change-password', {
+                    method: 'PUT',
+                    body: JSON.stringify({ oldPassword, newPassword })
+                });
+                alert(data.message);
+                if (data.success) passwordModal.classList.remove('active');
+            });
+            
+            function handleImageUpload(event, storageKey) {
+                const file = event.target.files[0];
+                if (!file || file.size > 2 * 1024 * 1024) {
+                    alert('File is too large! Please choose an image smaller than 2MB.');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onloadend = async () => {
+                    const body = {};
+                    body[storageKey] = reader.result;
+                    await fetchWithAuth('/api/profile', {
+                        method: 'PUT',
+                        body: JSON.stringify(body)
+                    });
+                    loadProfileData();
+                };
+                reader.readAsDataURL(file);
+            }
+            const pfpUpload = document.getElementById('pfp-upload');
+            const bannerUpload = document.getElementById('banner-upload');
+            document.getElementById('profile-picture-container').addEventListener('click', () => pfpUpload.click());
+            document.getElementById('banner-edit-btn').addEventListener('click', () => bannerUpload.click());
+            pfpUpload.addEventListener('change', (e) => handleImageUpload(e, 'profilePicture'));
+            bannerUpload.addEventListener('change', (e) => handleImageUpload(e, 'profileBanner'));
+
+            loadProfileData();
         });
     </script>
 </body>

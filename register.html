@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - DramaKan</title>
+    <style>
+        /* All previous styles are the same */
+        :root {
+            --primary-color: #8A2BE2;
+            --background-color: #0B0C10;
+            --surface-color: #1A1A1D;
+            --text-color: #F5F5F5;
+            --text-muted-color: #a0a0a0;
+            --border-color: #2c2c34;
+            --error-color: #dc3545;
+            --success-color: #28a745;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); }
+        a { text-decoration: none; color: var(--primary-color); }
+        .auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .auth-form-box { background: rgba(26, 26, 29, 0.75); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 12px; width: 100%; max-width: 420px; text-align: center; }
+        .auth-form-box h1 { margin-bottom: 30px; }
+        .form-group { position: relative; margin-bottom: 20px; }
+        .form-group input { width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--background-color); color: var(--text-color); font-size: 1rem; }
+        .message { font-size: 0.9rem; text-align: center; margin-bottom: 15px; font-weight: 500; }
+        .message.error { color: var(--error-color); }
+        .message.success { color: var(--success-color); }
+        .btn { width: 100%; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 1.1rem; cursor: pointer; border: 1px solid var(--primary-color); background-color: var(--primary-color); color: white; }
+        .btn:disabled { background-color: #555; border-color: #555; cursor: not-allowed; }
+        .bottom-link { margin-top: 25px; font-size: 0.9rem; color: var(--text-muted-color); }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-form-box">
+            <h1>Create an Account</h1>
+            <div id="message-container"></div>
+            
+            <form id="details-form">
+                <div class="form-group"><input type="text" id="username" placeholder="Username" required></div>
+                <div class="form-group"><input type="email" id="email" placeholder="Email Address" required></div>
+                <div class="form-group"><input type="password" id="password" placeholder="Password (min. 8 characters)" minlength="8" required></div>
+                <button type="submit" id="send-otp-btn" class="btn">Send Verification Code</button>
+            </form>
+
+            <form id="otp-form" style="display: none;">
+                <p style="color: var(--text-muted-color);">Enter the 6-digit code sent to your email.</p>
+                <div class="form-group"><input type="text" id="otp" placeholder="Verification Code" required maxlength="6"></div>
+                <button type="submit" id="verify-otp-btn" class="btn">Verify and Sign Up</button>
+            </form>
+
+            <p class="bottom-link">Already have an account? <a href="login.html">Log In</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const detailsForm = document.getElementById('details-form');
+            const otpForm = document.getElementById('otp-form');
+            const messageContainer = document.getElementById('message-container');
+            const sendOtpBtn = document.getElementById('send-otp-btn');
+            const verifyOtpBtn = document.getElementById('verify-otp-btn');
+            const emailInput = document.getElementById('email');
+
+            // --- Step 1: Send OTP ---
+            detailsForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                sendOtpBtn.disabled = true;
+                sendOtpBtn.textContent = 'Sending...';
+                
+                const data = {
+                    username: document.getElementById('username').value,
+                    email: emailInput.value,
+                    password: document.getElementById('password').value
+                };
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/send-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+                    displayMessage(result.message, result.success ? 'success' : 'error');
+                    
+                    if (result.success) {
+                        detailsForm.style.display = 'none';
+                        otpForm.style.display = 'block';
+                    } else {
+                        sendOtpBtn.disabled = false;
+                        sendOtpBtn.textContent = 'Send Verification Code';
+                    }
+                } catch (error) {
+                    displayMessage('Error connecting to server.', 'error');
+                    sendOtpBtn.disabled = false;
+                    sendOtpBtn.textContent = 'Send Verification Code';
+                }
+            });
+
+            // --- Step 2: Verify OTP ---
+            otpForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                verifyOtpBtn.disabled = true;
+                verifyOtpBtn.textContent = 'Verifying...';
+
+                const data = {
+                    email: emailInput.value, // Get email from the (now hidden) input
+                    otp: document.getElementById('otp').value
+                };
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/verify-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+                    displayMessage(result.message, result.success ? 'success' : 'error');
+                    
+                    if(result.success) {
+                        otpForm.style.display = 'none';
+                        // Optionally redirect to login after a short delay
+                        setTimeout(() => window.location.href = 'login.html', 2000);
+                    }
+                } catch (error) {
+                    displayMessage('Error connecting to server.', 'error');
+                } finally {
+                    verifyOtpBtn.disabled = false;
+                    verifyOtpBtn.textContent = 'Verify and Sign Up';
+                }
+            });
+
+            function displayMessage(message, type) {
+                messageContainer.innerHTML = '';
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type}`;
+                messageDiv.textContent = message;
+                messageContainer.appendChild(messageDiv);
+            }
+        });
+    </script>
+</body>
+</html>
