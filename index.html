@@ -62,16 +62,6 @@
       color: var(--text-color);
     }
 
-    /* --- MODIFIED: Disclaimer Bar with Marquee Effect --- */
-    .disclaimer-bar {
-      background-color: var(--secondary-color);
-      color: white;
-      padding: 8px 0;
-      font-size: 0.9rem;
-      font-weight: 500;
-      overflow: hidden; /* Hides the text that goes off-screen */
-      white-space: nowrap; /* Prevents the text from wrapping to a new line */
-    }
 
     .marquee-content {
       display: inline-block;
@@ -603,17 +593,109 @@
         bottom: 15px;
       }
     }
+  /* --- NEW POPUP: Central Fade-in styles (The Modal) --- */
+    #drama-request-overlay-center {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85); 
+      z-index: 9998;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease-in-out, visibility 0.4s;
+    }
+
+    #drama-request-overlay-center.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    #drama-request-content-center {
+      background-color: var(--surface-color);
+      padding: 35px;
+      border-radius: 12px;
+      max-width: 480px; /* Slightly wider for the promise text */
+      text-align: center;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8);
+      position: relative;
+      /* Animation start: Zoom out and slightly lift */
+      transform: scale(0.9) translateY(20px); 
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.5, 1);
+    }
+
+    #drama-request-overlay-center.active #drama-request-content-center {
+      /* Animation end: Zoom to full size and center */
+      transform: scale(1) translateY(0);
+    }
+    
+    .popup-title-center {
+      color: var(--primary-color);
+      font-weight: 700;
+      font-size: 1.8rem; /* Made larger */
+      margin-bottom: 10px;
+      text-shadow: 0 0 8px rgba(138, 43, 226, 0.8); /* Stronger shadow */
+    }
+    
+    .popup-promise { /* New style for the core message */
+        color: var(--text-color);
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-top: 15px;
+        margin-bottom: 25px;
+        padding: 10px;
+        background-color: #2b2b34; /* Darker background for emphasis */
+        border-left: 5px solid var(--secondary-color);
+    }
+    
+    .popup-close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: var(--text-muted-color);
+      font-size: 1.8rem;
+      cursor: pointer;
+      transition: color 0.3s, transform 0.3s;
+    }
+
+    .popup-close-btn:hover {
+      color: var(--secondary-color);
+      transform: rotate(90deg);
+    }
+
+    /* --- Bottom-Right Clickable Button (Component 2) --- */
+    #drama-request-toggle-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: var(--secondary-color); /* Use secondary color for high contrast/action */
+        color: white;
+        padding: 12px 20px; /* Slightly larger clickable area */
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        cursor: pointer; /* Indicate it's clickable */
+        z-index: 9999;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    #drama-request-toggle-button:hover {
+        background-color: #C00811; /* Darker hover effect */
+        transform: translateY(-2px);
+    }
   </style>
+  
 </head>
 
 <body>
-
-  <div class="disclaimer-bar">
-    <div class="marquee-content">
-      <span>This site is for only information of drama does not support any type of piracy and all copyright reserved by their owner.</span>
-      <span>This site is for only information of drama does not support any type of piracy and all copyright reserved by their owner.</span>
-    </div>
-  </div>
 
   <header class="main-header">
     <div class="container">
@@ -926,7 +1008,9 @@
         <a href="#" class="logo">Drama<span>Kan</span></a>
         <div class="footer-socials">
           <a href="https://t.me/+lqMKFXUFkVBlODU1"><i class="fab fa-telegram"></i></a>
-          <a href="privacy.html"><i class="fas fa-shield-alt"></i></a>
+           <a href="https://www.instagram.com/dramakanofficial?igsh=b3l0cHdzd2Izbncw"><i class="fab fa-instagram"></i></a>
+            <a href="privacy.html"><i class="fas fa-file-alt"></i></a>
+          <a href="disclaimer.html"><i class="fas fa-shield-alt"></i></a>
         </div>
       </div>
       <div class="footer-bottom">&copy; 2025 Dramakan. All rights reserved.</div>
@@ -1105,7 +1189,74 @@
         }
       });
     });
-  </script>
+ /* --- Drama Request Popup Logic (Clickable Toggle) --- */
+    
+    const TELEGRAM_LINK = "https://t.me/+lqMKFXUFkVBlODU1";
 
+    function setupDramaRequestPopup() {
+        
+        // 1. Create the persistent button
+        const toggleButton = document.createElement('a');
+        toggleButton.id = 'drama-request-toggle-button';
+        toggleButton.innerHTML = '<i class="fas fa-question-circle"></i> Didn\'t Find Your Drama?';
+        document.body.appendChild(toggleButton);
+
+        // 2. Define Pop-up HTML (The content that appears on click)
+        const POPUP_HTML = `
+            <h3 class="popup-title-center">Request A New Drama!</h3>
+            <p class="popup-message-center">If you couldn't find your favourite drama, don't worry!</p>
+            <p class="popup-promise">
+                DM us the drama name on Telegram, and it will be available on our site on sameday or within 2 days!
+            </p>
+            <a href="${TELEGRAM_LINK}" target="_blank" class="btn btn-primary" style="width: 100%; display: block; background-color: #0088CC; border-color: #0088CC; font-weight: 600;">
+                <i class="fab fa-telegram-plane"></i> DM Drama Name Now
+            </a>
+            <button class="popup-close-btn" data-action="close">&times;</button>
+        `;
+
+        const overlay = document.createElement('div');
+        overlay.id = 'drama-request-overlay-center';
+        
+        const content = document.createElement('div');
+        content.id = 'drama-request-content-center';
+        content.innerHTML = POPUP_HTML;
+        
+        overlay.appendChild(content);
+        document.body.appendChild(overlay);
+
+
+        // 3. Function to dismiss the popup
+        const dismissPopup = () => {
+            overlay.classList.remove('active');
+            // Remove focus/hover effect from button
+            toggleButton.blur(); 
+        };
+
+        // 4. Function to show the popup
+        const showPopup = () => {
+            overlay.classList.add('active');
+        };
+
+        // 5. Attach Event Listeners
+        toggleButton.addEventListener('click', showPopup);
+
+        content.addEventListener('click', (e) => {
+            // Close on click of the 'x' button or the Telegram link
+            if (e.target.dataset.action === 'close' || e.target.closest('a')) {
+                dismissPopup();
+            }
+        });
+        
+        overlay.addEventListener('click', (e) => {
+            // Close on click of the dark overlay itself
+            if (e.target === overlay) {
+                dismissPopup();
+            }
+        });
+    }
+
+    // Initialize the new click-based pop-up system
+    document.addEventListener('DOMContentLoaded', setupDramaRequestPopup);
+  </script>
 </body>
 </html>
