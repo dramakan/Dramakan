@@ -18,6 +18,8 @@
       --text-color: #F5F5F5;
       --text-muted-color: #a0a0a0;
       --border-color: #2c2c34;
+      /* New for Mobile Nav */
+      --nav-height: 60px;
     }
 
     * {
@@ -32,6 +34,7 @@
       color: var(--text-color);
       line-height: 1.6;
       overflow-x: hidden;
+      padding-bottom: 0; /* Will be set dynamically for mobile */
     }
 
     a {
@@ -84,7 +87,7 @@
     /* --- End of Disclaimer Bar Modification --- */
 
 
-    /* Header / Navbar */
+    /* Header / Navbar (PC VIEW - Mostly Unchanged) */
     .main-header {
       background-color: rgba(11, 12, 16, 0.8);
       backdrop-filter: blur(10px);
@@ -130,7 +133,7 @@
       position: absolute;
       top: 50%;
       left: 15px;
-      transform: translateY(-50%);
+      transform: translateY(-60%);
       color: var(--text-muted-color);
     }
 
@@ -192,8 +195,9 @@
       display: none;
       font-size: 1.5rem;
       cursor: pointer;
+      
     }
-
+  
     /* Hero Slider */
     .hero-slider {
       position: relative;
@@ -439,7 +443,7 @@
       font-size: 0.9rem;
     }
 
-    /* Footer */
+    /* Footer (PC VIEW - Mostly Unchanged) */
     .main-footer {
       background-color: var(--surface-color);
       padding: 40px 0 20px;
@@ -516,84 +520,135 @@
     }
 
 
-    /* Responsive Design */
+    /* --- NEW MOBILE APP VIEW STYLES --- */
+    
+    /* 1. Bottom Navigation Bar */
+    .mobile-footer-nav {
+        display: none; /* Hide on PC */
+    }
+
+    /* 2. Responsive Design (MOBILE VIEW) */
     @media (max-width: 992px) {
-      .nav-links,
-      .header-actions .btn-primary {
+      
+      /* Hide PC Nav and show Mobile Toggle (as a main button) */
+      .nav-links {
         display: none;
       }
       .mobile-menu-toggle {
-        display: block;
+        display: block; /* Show hamburger icon */
+        order: 1; /* Move to the left for a compact look */
       }
-      .search-bar {
-        margin: 0 15px;
-      }
-      .slide-content {
-        max-width: 55%;
-      }
-      .slide-title {
-        font-size: 2.2rem;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .slide-content {
-        max-width: 65%;
-        padding-left: 20px;
-      }
-      .slide-title {
-        font-size: 2rem;
-      }
-      .drama-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      }
-    }
-
-    @media (max-width: 576px) {
+      
+      /* Adjust Header for Mobile */
       .main-header .container {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        padding: 0 15px;
       }
-      .search-bar {
-        order: 3;
-        width: 100%;
-        margin: 15px 0 0 0;
+    
+      /* Adjust Body padding for fixed bottom nav */
+      body {
+          padding-bottom: var(--nav-height); 
       }
+
       .hero-slider {
         height: 450px;
       }
+      
       .slide-content {
         max-width: 100%;
         padding: 20px;
         background: linear-gradient(90deg, rgba(11, 12, 16, 0.95), rgba(11, 12, 16, 0.8));
       }
+      
       .slide::after {
         background: linear-gradient(90deg, rgba(11, 12, 16, 1) 10%, rgba(11, 12, 16, 0.7) 40%, rgba(11, 12, 16, 0) 60%);
       }
+      
       .slide-title {
         font-size: 1.8rem;
       }
+      
       .slide-desc {
         font-size: 0.9rem;
       }
+      
       .drama-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 15px;
       }
+      
       .section-title {
         font-size: 1.5rem;
       }
+      
       .footer-content {
         flex-direction: column;
         text-align: center;
       }
+      
       .slider-nav {
         left: auto;
         right: 15px;
         transform: none;
         bottom: 15px;
       }
+
+      /* Hide PC Footer */
+      .main-footer {
+          display: none;
+      }
+      
+      /* Show Mobile Footer Nav */
+      .mobile-footer-nav {
+          display: block;
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: var(--nav-height);
+          background-color: var(--surface-color);
+          border-top: 1px solid var(--border-color);
+          z-index: 2000;
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+      }
+      
+      .mobile-nav-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          color: var(--text-muted-color);
+          font-size: 0.75rem;
+          padding: 5px;
+          transition: color 0.3s;
+          flex: 1; /* Distribute space evenly */
+      }
+      
+      .mobile-nav-item i {
+          font-size: 1.4rem;
+          margin-bottom: 3px;
+      }
+      
+      .mobile-nav-item.active,
+      .mobile-nav-item:hover {
+          color: var(--primary-color);
+      }
+      
+      .header-right {
+          gap: 15px;
+      }
+      
+      .logo {
+          font-size: 1.6rem;
+      }
+      
+      .header-actions .btn-primary {
+          display: none; /* Login button is in the mobile nav for simplicity */
+      }
     }
-  /* --- NEW POPUP: Central Fade-in styles (The Modal) --- */
+    
+  /* --- Pop-up Styles (Preserved) --- */
     #drama-request-overlay-center {
       position: fixed;
       top: 0;
@@ -619,36 +674,34 @@
       background-color: var(--surface-color);
       padding: 35px;
       border-radius: 12px;
-      max-width: 480px; /* Slightly wider for the promise text */
+      max-width: 480px; 
       text-align: center;
       box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8);
       position: relative;
-      /* Animation start: Zoom out and slightly lift */
       transform: scale(0.9) translateY(20px); 
       transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.5, 1);
     }
 
     #drama-request-overlay-center.active #drama-request-content-center {
-      /* Animation end: Zoom to full size and center */
       transform: scale(1) translateY(0);
     }
     
     .popup-title-center {
       color: var(--primary-color);
       font-weight: 700;
-      font-size: 1.8rem; /* Made larger */
+      font-size: 1.8rem; 
       margin-bottom: 10px;
-      text-shadow: 0 0 8px rgba(138, 43, 226, 0.8); /* Stronger shadow */
+      text-shadow: 0 0 8px rgba(138, 43, 226, 0.8); 
     }
     
-    .popup-promise { /* New style for the core message */
+    .popup-promise { 
         color: var(--text-color);
         font-size: 1.1rem;
         font-weight: 500;
         margin-top: 15px;
         margin-bottom: 25px;
         padding: 10px;
-        background-color: #2b2b34; /* Darker background for emphasis */
+        background-color: #2b2b34; 
         border-left: 5px solid var(--secondary-color);
     }
     
@@ -669,26 +722,26 @@
       transform: rotate(90deg);
     }
 
-    /* --- Bottom-Right Clickable Button (Component 2) --- */
+    /* --- Bottom-Right Clickable Button (Preserved) --- */
     #drama-request-toggle-button {
         position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background-color: var(--secondary-color); /* Use secondary color for high contrast/action */
+        bottom: 65px;
+        right: 10px;
+        background-color: var(--secondary-color); 
         color: white;
-        padding: 12px 20px; /* Slightly larger clickable area */
+        padding: 12px 20px; 
         border-radius: 8px;
-        font-size: 1rem;
+        font-size: 0.7rem;
         font-weight: 600;
         text-decoration: none;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-        cursor: pointer; /* Indicate it's clickable */
+        cursor: pointer; 
         z-index: 9999;
         transition: background-color 0.3s ease, transform 0.3s ease;
     }
 
     #drama-request-toggle-button:hover {
-        background-color: #C00811; /* Darker hover effect */
+        background-color: #C00811; 
         transform: translateY(-2px);
     }
   </style>
@@ -699,7 +752,6 @@
 
   <header class="main-header">
     <div class="container">
-      <a href="index.html" class="logo">Drama<span>Kan</span></a>
       <div class="search-bar">
         <i class="fas fa-search"></i>
         <input id="searchInput" type="text" placeholder="Search drama...">
@@ -716,12 +768,12 @@
           </ul>
         </nav>
         <div class="header-actions">
-          <a href="login.html" id="login-button" class="btn btn-primary">Login</a>
-          <a href="profile.html" id="profile-button" class="btn-icon" style="display: none;"><i class="fas fa-user"></i></a>
         </div>
       </div>
     </div>
   </header>
+  
+     
 
   <section class="hero-slider">
     <div class="slider-wrapper">
@@ -959,7 +1011,7 @@
             </a>
           </div>
         </div>
-        <div id="thu" class="schedule-content">
+        <div id="thu" class class="schedule-content">
           <div class="schedule-list">
             <a href="lovelyrunner.html" class="schedule-item">
               <img src="https://i.mydramalist.com/x4K4VE_4f.jpg" alt="Lovely Runner">
@@ -1017,26 +1069,46 @@
       <div class="footer-bottom">&copy; 2025 Dramakan. All rights reserved.</div>
     </div>
   </footer>
+  
+  <nav class="mobile-footer-nav">
+      <a href="index.html" class="mobile-nav-item active" data-page="home">
+          <i class="fas fa-home"></i>
+          <span>Dramakan</span>
+      </a>
+      <a href="#" class="mobile-nav-item" data-page="k-drama">
+          <i class="fas fa-flag"></i>
+          <span>K-Drama</span>
+      </a>
+      </a>
+      <a href="#" class="mobile-nav-item" data-page="request" id="mobile-nav-request-toggle">
+          <i class="fas fa-question-circle"></i>
+          <span>Request</span>
+      </a>
+      <a href="https://anikan.netlify.app/home" class="mobile-nav-item" data-page="home">
+          <i class="fas fa-home"></i>
+          <span>Anikan</span>
+  </nav>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-      // --- LOGIN & PROFILE BUTTON VISIBILITY ---
+      // --- LOGIN & PROFILE BUTTON VISIBILITY (PC/Mobile) ---
       const userString = localStorage.getItem('dramaKanUser');
       const loginButton = document.getElementById('login-button');
       const profileButton = document.getElementById('profile-button');
+      const mobileProfileText = document.getElementById('mobile-nav-profile-text');
+      
+      let isLoggedIn = false;
+      if (userString) {
+        try {
+          const user = JSON.parse(userString);
+          isLoggedIn = user.isLoggedIn;
+        } catch (e) {
+          console.error("Error parsing user data from localStorage", e);
+        }
+      }
 
       if (loginButton && profileButton) {
-        let isLoggedIn = false;
-        if (userString) {
-          try {
-            const user = JSON.parse(userString);
-            isLoggedIn = user.isLoggedIn;
-          } catch (e) {
-            console.error("Error parsing user data from localStorage", e);
-          }
-        }
-
         if (isLoggedIn) {
           loginButton.style.display = 'none';
           profileButton.style.display = 'inline-block';
@@ -1045,8 +1117,18 @@
           profileButton.style.display = 'none';
         }
       }
+      
+      if (mobileProfileText) {
+          mobileProfileText.textContent = isLoggedIn ? 'Profile' : 'Login';
+          // Ensure the mobile nav link href is correct based on state
+          const profileNavItem = document.querySelector('.mobile-footer-nav a[data-page="profile"]');
+          if (profileNavItem) {
+              profileNavItem.href = isLoggedIn ? 'profile.html' : 'login.html';
+          }
+      }
 
-      // === HERO SLIDER ===
+
+      // === HERO SLIDER === (Logic preserved)
       const sliderWrapper = document.querySelector('.slider-wrapper');
       if (sliderWrapper) {
         const slides = document.querySelectorAll('.slide');
@@ -1080,7 +1162,7 @@
         });
       }
 
-      // === AIRING SCHEDULE TABS ===
+      // === AIRING SCHEDULE TABS === (Logic preserved)
       const tabButtons = document.querySelectorAll('.schedule-tabs .tab-btn');
       const scheduleContents = document.querySelectorAll('.schedule-content');
 
@@ -1103,6 +1185,7 @@
           setActiveTab(dayToActivate);
         });
       });
+      
 
       // === SEARCH FUNCTIONALITY ===
       const searchInput = document.getElementById('searchInput');
