@@ -13,588 +13,470 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
-        /* === GLOBAL STYLES === */
+        /* === GLOBAL STYLES & ENHANCED THEME === */
         :root {
             --primary-color: #8A2BE2;
-            --secondary-color: #E50914;
+            --primary-color-rgb: 138, 43, 226;
             --background-color: #0B0C10;
-            --surface-color: #1A1A1D;
+            --surface-color-darker: #1A1A1D;
+            --surface-color-lighter: #2a2a2d;
             --text-color: #F5F5F5;
             --text-muted-color: #a0a0a0;
-            --border-color: #2c2c34;
+            --border-color: #3a3a40;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); line-height: 1.6; font-size: 16px; }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; height: auto; display: block; }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .btn {
-            padding: 8px 15px;
-            border-radius: 5px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-            border: 1px solid var(--primary-color);
-        }
-        .btn-primary:hover {
-            background-color: transparent;
-            color: var(--primary-color);
-        }
-        
-        .section-header {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        /* Header / Navbar */
-        .main-header {
-            background-color: rgba(11, 12, 16, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .main-header .container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-
-        .logo span {
-            color: var(--primary-color);
-        }
-
-        /* Footer */
-        .main-footer {
-            background-color: var(--surface-color);
-            padding: 40px 0 20px;
-            margin-top: 40px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .footer-socials a {
-            font-size: 1.5rem;
-            margin: 0 10px;
-            color: var(--text-muted-color);
-            transition: color 0.3s;
-        }
-        
-        .footer-socials a:hover {
-            color: var(--primary-color);
-        }
-
-        .footer-bottom {
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--text-muted-color);
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
-        }
-        
-        /* Drama Card Grid (for related section) */
-        .drama-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-        }
-        
-        .drama-card {
-            background-color: var(--surface-color);
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .drama-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-        }
-
-        .drama-card-img img {
-            width: 100%;
-            aspect-ratio: 2/3;
-            object-fit: cover;
-        }
-
-        .drama-card-info {
-            padding: 10px;
-        }
-
-        .drama-card-title {
-            font-size: 1rem;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        /* === STYLES FOR DETAIL PAGE === */
-
-        /* Top Banner Section */
-        .drama-hero {
-            position: relative;
-            height: 400px;
-            margin-bottom: -150px;
-        }
-        
-        .hero-bg {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        
-        .hero-bg img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .hero-bg::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to top, var(--background-color) 0%, rgba(11,12,16,0.5) 100%);
-        }
-        
-        /* Main Drama Info Section */
-        .drama-main-content {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            align-items: flex-start;
-            gap: 30px;
-        }
-        
-        .drama-poster {
-            flex-shrink: 0;
-            width: 250px;
-        }
-        
-        .drama-poster img {
-            width: 100%;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-        }
-        
-        .drama-poster .btn {
-            width: 100%;
-            text-align: center;
-            margin-top: 15px;
-            font-size: 1.2rem;
-            padding: 12px;
-        }
-
-        .drama-details {
-            padding-top: 50px;
-        }
-        
-        .drama-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-        
-        .synopsis {
-            color: var(--text-muted-color);
-            margin-bottom: 20px;
-        }
-        
-        .info-block {
-            background-color: var(--surface-color);
-            padding: 20px;
-            border-radius: 8px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .info-block p {
-            font-size: 0.9rem;
-        }
-        
-        .info-block span {
-            font-weight: 600;
-            color: var(--text-color);
-            margin-right: 8px;
-        }
-        
-        .genre-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .genre-tags a {
-            background-color: var(--surface-color);
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .widget {
+            background: linear-gradient(180deg, var(--surface-color-lighter), var(--surface-color-darker));
             border: 1px solid var(--border-color);
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            transition: background-color 0.3s, color 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border-radius: 8px; margin-bottom: 20px; padding: 20px;
+        }
+        .widget-title {
+            font-size: 1.2rem; font-weight: 600; margin-bottom: 15px;
+            padding-bottom: 10px; border-bottom: 1px solid var(--border-color);
         }
 
-        .genre-tags a:hover {
-            background-color: var(--primary-color);
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--surface-color-darker); }
+        ::-webkit-scrollbar-thumb { background: #4f4f5a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+
+        /* === HEADER === */
+        .main-header {
+            background-color: rgba(11, 12, 16, 0.8); backdrop-filter: blur(10px); padding: 15px 20px;
+            position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color);
+        }
+        .logo { font-size: 1.8rem; font-weight: 700; }
+        .logo span { color: var(--primary-color); }
+
+        /* === WATCH PAGE LAYOUT === */
+        .watch-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+
+        /* === MAIN CONTENT (LEFT COLUMN) */
+        .main-content-col {
+            min-width: 0;
+        }
+        .video-player-container {
+            position: relative;
+            width: 100%;
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+            border: 2px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        #video-player-iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .episode-meta { padding: 0 0 15px 0; }
+        .episode-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 15px; }
+        .episode-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+
+        /* -- PREMIUM BUTTON STYLES -- */
+        .action-btn, .download-btn, .comment-form button {
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-weight: 500;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .action-btn:hover:not(:disabled), .download-btn:hover, .comment-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        .action-btn:disabled {
+            background-color: #222;
+            color: #555;
+            cursor: not-allowed;
+        }
+
+        .action-btn {
+            background: linear-gradient(180deg, #4a4a52, #313136);
+            color: var(--text-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .action-btn:hover:not(:disabled) {
+            background: linear-gradient(180deg, #5a5a62, #414146);
+        }
+
+        #next-ep-btn {
+            background: linear-gradient(180deg, #ffffff, #e0e0e0);
+            color: #0B0C10;
+            box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+        }
+        #next-ep-btn:hover:not(:disabled) {
+            background: linear-gradient(180deg, #f0f0f0, #d0d0d0);
+        }
+
+        .download-btn {
+            background: linear-gradient(180deg, hsl(262, 77%, 60%), hsl(262, 77%, 50%));
             color: white;
-            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.25);
+            padding: 8px 15px;
+            font-size: 0.9rem;
         }
-
-        /* Cast Section */
-        .cast-section {
-            margin-top: 40px;
-        }
-        
-        .cast-list-wrapper {
-            overflow-x: auto;
-            padding-bottom: 15px; /* space for scrollbar */
+        .download-btn:hover {
+             background: linear-gradient(180deg, hsl(262, 77%, 65%), hsl(262, 77%, 55%));
         }
         
-        .cast-list-wrapper::-webkit-scrollbar { height: 8px; }
-        .cast-list-wrapper::-webkit-scrollbar-track { background: var(--surface-color); border-radius: 4px; }
-        .cast-list-wrapper::-webkit-scrollbar-thumb { background: #4f4f5a; border-radius: 4px; }
-        .cast-list-wrapper::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
-
-        .cast-list {
-            display: flex;
-            gap: 15px;
-        }
+        .episodes-list-widget .episodes-list { max-height: 400px; overflow-y: auto; padding-right: 10px; }
+        .episode-item { display: flex; align-items: center; gap: 15px; padding: 10px; border-radius: 5px; margin-bottom: 5px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s ease; }
+        .episode-item:hover { background-color: var(--surface-color-lighter); border-color: var(--border-color); }
+        .episode-item.current { background: rgba(var(--primary-color-rgb), 0.1); border-color: var(--primary-color); }
+        .episode-item .ep-number { font-weight: 600; font-size: 1.1rem; }
         
+        /* -- START: REDESIGNED CAST SECTION -- */
+        .cast-list-wrapper { overflow-x: auto; padding-bottom: 15px; }
+        .cast-list { display: flex; gap: 15px; }
         .cast-card {
             flex: 0 0 140px;
             width: 140px;
-            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative; /* Needed for the overlay */
         }
-        
+        .cast-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
         .cast-card img {
             width: 100%;
+            height: 100%;
             aspect-ratio: 2/3;
             object-fit: cover;
             object-position: center top;
+            /* Placeholder styling */
+            background-color: #333; 
         }
-        
-        .cast-info { padding: 10px; }
-        
+        .cast-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 10px 10px 10px;
+            background: linear-gradient(to top, rgba(11, 12, 16, 1) 20%, rgba(11, 12, 16, 0));
+        }
         .actor-name {
             font-size: 0.9rem;
             font-weight: 600;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: var(--text-color);
         }
-        
         .character-name {
             font-size: 0.8rem;
-            color: var(--text-muted-color);
+            color: #ccc;
         }
+        /* -- END: REDESIGNED CAST SECTION -- */
 
-        /* Episodes Section */
-        .episodes-section { margin-top: 40px; }
+        .download-list table { width: 100%; border-collapse: collapse; }
+        .download-list th, .download-list td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .download-list th { color: var(--text-muted-color); font-weight: 500; }
+
+        /* -- IMPROVED COMMENT SECTION STYLES -- */
+        .comment-form { display: flex; gap: 15px; margin-top: 15px; margin-bottom: 25px; align-items: flex-start; }
+        .comment-form .user-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;}
+        .comment-form textarea { flex-grow: 1; background-color: var(--background-color); border: 1px solid var(--border-color); border-radius: 5px; padding: 10px; color: var(--text-color); font-family: 'Poppins', sans-serif; resize: vertical; min-height: 50px; transition: all 0.2s; }
+        .comment-form textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 0 4px rgba(var(--primary-color-rgb), 0.25); outline: none; }
+        .comment-form button { background: var(--primary-color); color: white; padding: 0; height: 50px; width: 50px; flex-shrink: 0; }
+        .comment-form button:hover { filter: brightness(1.2); }
+        .comment { display: flex; gap: 15px; margin-bottom: 25px; }
+        .comment .user-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
+        .comment-content { flex-grow: 1; background-color: var(--background-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 15px; }
+        .comment-author { font-weight: 600; margin-bottom: 4px; }
+        .comment-author span { font-weight: 400; color: var(--text-muted-color); font-size: 0.8rem; margin-left: 10px; }
+        .comment-text { color: var(--text-muted-color); line-height: 1.7; }
+        .comment-actions { display: flex; gap: 15px; margin-top: 10px; font-size: 0.9rem; color: var(--text-muted-color); }
+        .comment-actions a { cursor: pointer; transition: color 0.2s; }
+        .comment-actions a:hover { color: var(--primary-color); }
         
-        .episode-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-        }
+        .drama-info-widget .info-poster img { border-radius: 8px; margin-bottom: 15px; background-color: #333; /* Placeholder styling */ }
+        .drama-info-widget .info-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 10px; }
+        .info-synopsis.truncated { max-height: 70px; -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%); mask-image: linear-gradient(to bottom, black 50%, transparent 100%); }
+        .read-more-btn { color: var(--primary-color); cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+        .drama-info-widget .info-details { margin-top: 15px; }
+        .drama-info-widget .info-details p { font-size: 0.9rem; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
+        .drama-info-widget .info-details p:last-child { border-bottom: none; }
+        .drama-info-widget .info-details span { color: var(--text-muted-color); display: inline-block; width: 110px; }
         
-        .episode-btn {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-muted-color);
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .episode-btn:hover {
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
+        .recommendations-list .rec-card { display: flex; gap: 15px; margin-bottom: 15px; padding: 10px; border-radius: 8px; transition: all 0.2s ease-in-out; }
+        .recommendations-list .rec-card:hover { background-color: var(--surface-color-lighter); transform: translateX(5px); }
+        .recommendations-list .rec-card img { width: 70px; height: 100px; object-fit: cover; border-radius: 4px; flex-shrink: 0; background-color: #333; /* Placeholder styling */ }
+        .recommendations-list .rec-card .rec-title { font-weight: 500; margin-bottom: 5px; }
+        .recommendations-list .rec-card .rec-meta { font-size: 0.8rem; color: var(--text-muted-color); }
         
-        /* Related Dramas Section */
-        .related-dramas { margin-top: 50px; }
+        .main-footer { background-color: var(--surface-color-darker); border-top: 1px solid var(--border-color); padding: 20px; margin-top: 20px; text-align: center; }
         
-        /* Bottom Disclaimer */
-        .bottom-disclaimer {
-            text-align: center;
-            margin-top: 50px;
-            padding: 20px;
-            color: var(--text-muted-color);
-            font-style: italic;
-            font-size: 0.9rem;
-            border-top: 1px solid var(--border-color);
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .drama-hero {
-                height: 300px;
-                margin-bottom: 0;
-            }
-
-            .drama-main-content {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                margin-top: -120px;
-            }
-
-            .drama-poster { width: 200px; }
-            .drama-details { padding-top: 20px; }
-
-            .info-block {
-                grid-template-columns: 1fr;
-                text-align: left;
-            }
-            
-            .genre-tags { justify-content: center; }
-        }
+        /* === RESPONSIVE STYLES DONE === */
+        @media (min-width: 1600px) { body { font-size: 18px; } .container { max-width: 1500px; } }
+        @media (max-width: 992px) { .watch-layout { grid-template-columns: 1fr; } .episode-title, .info-title { font-size: 1.4rem; } .container { padding: 15px; } }
+        @media (max-width: 768px) { .episode-title, .info-title { font-size: 1.3rem; } .widget { padding: 15px; } .cast-card { flex: 0 0 120px; width: 120px; } }
+        @media (max-width: 576px) { body { font-size: 14px; } .container { padding: 10px; } .logo { font-size: 1.6rem; } .episode-title, .info-title { font-size: 1.2rem; } .widget-title { font-size: 1.1rem; } .ep-info .ep-desc { display: none; } .download-list thead { display: none; } .download-list tr { display: block; border-bottom: 2px solid var(--primary-color); margin-bottom: 15px; padding-bottom: 15px; } .download-list tr:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; } .download-list td { display: block; text-align: right; font-size: 0.9rem; border-bottom: none; padding: 5px 8px; position: relative; } .download-list td::before { content: attr(data-label); position: absolute; left: 8px; font-weight: bold; color: var(--text-muted-color); text-align: left; } .action-btn { padding: 6px 12px; font-size: 0.9rem; } .comment-actions { font-size: 0.8rem; } .comment.reply { margin-left: 40px; } }
     </style>
 </head>
 <body>
 
     <header class="main-header">
-        <div class="container">
-            <a href="index.html" class="logo">Drama<span>Kan</span></a>
-        </div>
+        <a href="index.html" class="logo">Drama<span>Kan</span></a>
     </header>
 
-    <main>
-        <section class="drama-hero">
-            <div class="hero-bg">
-                <img src="https://image.tmdb.org/t/p/original/m9mS2eIQLCaeNBpG0prpEfDx8gS.jpg" alt="Kill Me, Heal Me Banner">
-            </div>
-        </section>
-
-        <section class="drama-main-content container">
-            <div class="drama-poster">
-                <img src="https://image.tmdb.org/t/p/w500/gW5AFdE4q2eY2T5zG2wzC5a5dG.jpg" alt="Kill Me, Heal Me Poster">
-                <a href="#" class="btn btn-primary"><i class="fas fa-play"></i> Watch Now</a>
-            </div>
-            <div class="drama-details">
-                <h1 class="drama-title">Kill Me, Heal Me</h1>
-                <p class="synopsis">
-                    Cha Do-hyun, a third-generation business heir, develops dissociative identity disorder (DID) after several life-threatening traumatic events. He tries to regain control over his life with the help of Oh Ri-jin, a beautiful first-year psychiatric resident who becomes his secret doctor. As they begin to heal together, they uncover dark secrets from their past that reveal their fates were intertwined long ago.
-                </p>
-                <div class="info-block">
-                    <p><span>Type:</span> K-Drama</p>
-                    <p><span>Status:</span> Finished Airing</p>
-                    <p><span>Aired:</span> Jan 7, 2015 to Mar 12, 2015</p>
-                    <p><span>Episodes:</span> 20</p>
-                    <p><span>Network:</span> MBC</p>
-                    <p><span>Duration:</span> 1 hr.</p>
-                    <p><span>Country:</span> South Korea</p>
-                    <p><span>Score:</span> 8.7/10</p>
-                    <p><span>Director:</span> Kim Jin-man</p>
-                    <p><span>Screenwriter:</span> Jin Soo-wan</p>
+    <main class="container">
+        <div class="watch-layout" data-total-episodes="20">
+            <div class="main-content-col">
+                <div class="video-player-container">
+                    <iframe 
+                        id="video-player-iframe"
+                        src="" 
+                        title="Video Player" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                    </iframe>
                 </div>
-                <div class="genre-tags">
-                    <a href="#">Comedy</a>
-                    <a href="#">Romance</a>
-                    <a href="#">Psychological</a>
-                    <a href="#">Drama</a>
-                </div>
-            </div>
-        </section>
 
-        <section class="cast-section container">
-            <h2 class="section-header">Cast</h2>
-            <div class="cast-list-wrapper">
-                <div class="cast-list">
-                    <div class="cast-card">
-                        <img src="https://image.tmdb.org/t/p/w300/e9QW5ydf71822V4Y18Jj1QLt7Jq.jpg" alt="Ji Sung">
-                        <div class="cast-info">
-                            <h4 class="actor-name">Ji Sung</h4>
-                            <p class="character-name">Cha Do-hyun</p>
-                        </div>
+                <div class="episode-meta">
+                    <h1 class="episode-title" id="current-episode-title">You are watching Episode 1</h1>
+                    <div class="episode-actions">
+                        <button class="action-btn" id="prev-ep-btn"><i class="fas fa-arrow-left"></i>Prev</button>
+                        <button class="action-btn" id="next-ep-btn">Next<i class="fas fa-arrow-right"></i></button>
                     </div>
-                    <div class="cast-card">
-                        <img src="https://image.tmdb.org/t/p/w300/oFfxCSbv4RYZprL6oy2CqrGg4N2.jpg" alt="Hwang Jung-eum">
-                        <div class="cast-info">
-                            <h4 class="actor-name">Hwang Jung-eum</h4>
-                            <p class="character-name">Oh Ri-jin</p>
+                </div>
+
+                <div class="widget episodes-list-widget">
+                    <h2 class="widget-title">Episodes</h2>
+                    <div class="episodes-list" id="episodes-list-container">
                         </div>
+                </div>
+                
+                <div class="widget download-widget">
+                    <h2 class="widget-title">Downloads</h2>
+                    <div class="download-list">
+                        <table>
+                            <thead>
+                                <tr><th>Episode</th><th>Quality</th><th>Video</th><th>Subtitles</th></tr>
+                            </thead>
+                            <tbody id="download-links-tbody">
+                                </tbody>
+                        </table>
                     </div>
-                    <div class="cast-card">
-                        <img src="https://image.tmdb.org/t/p/w300/s9YVqO2qG1G59P72y52Y1O8n9h9.jpg" alt="Park Seo-joon">
-                        <div class="cast-info">
-                            <h4 class="actor-name">Park Seo-joon</h4>
-                            <p class="character-name">Oh Ri-on</p>
-                        </div>
-                    </div>
-                    <div class="cast-card">
-                        <img src="https://image.tmdb.org/t/p/w300/3UckYyryoQ2bBsJUoiSt0LppLq.jpg" alt="Oh Min-suk">
-                        <div class="cast-info">
-                            <h4 class="actor-name">Oh Min-suk</h4>
-                            <p class="character-name">Cha Ki-joon</p>
-                        </div>
-                    </div>
-                    <div class="cast-card">
-                        <img src="https://image.tmdb.org/t/p/w300/815aN2V22X8t3T5c2iX1lYCVvjI.jpg" alt="Kim Yoo-ri">
-                        <div class="cast-info">
-                            <h4 class="actor-name">Kim Yoo-ri</h4>
-                            <p class="character-name">Han Chae-yeon</p>
-                        </div>
-                    </div>
-                    <div class="cast-card">
-                        <img src="https://image.tmdb.org/t/p/w300/z0G7a3iGIo3Tj6qf0sW0KSa441P.jpg" alt="Choi Won-young">
-                        <div class="cast-info">
-                            <h4 class="actor-name">Choi Won-young</h4>
-                            <p class="character-name">Ahn Gook</p>
+                </div>
+
+                <div class="widget cast-section">
+                    <h2 class="widget-title">Cast</h2>
+                    <div class="cast-list-wrapper">
+                        <div class="cast-list">
+                            <div class="cast-card">
+                                <img src="placeholder_image_ji_sung" alt="Ji Sung">
+                                <div class="cast-info"><h4 class="actor-name">Ji Sung</h4><p class="character-name">Cha Do-hyun / Shin Se-gi, etc.</p></div>
+                            </div>
+                            <div class="cast-card">
+                                <img src="placeholder_image_hwang_jung_eum" alt="Hwang Jung-eum">
+                                <div class="cast-info"><h4 class="actor-name">Hwang Jung-eum</h4><p class="character-name">Oh Ri-jin</p></div>
+                            </div>
+                            <div class="cast-card">
+                                <img src="placeholder_image_park_seo_joon" alt="Park Seo-joon">
+                                <div class="cast-info"><h4 class="actor-name">Park Seo-joon</h4><p class="character-name">Oh Ri-on</p></div>
+                            </div>
+                            <div class="cast-card">
+                                <img src="placeholder_image_kim_yoo_ri" alt="Kim Yoo-ri">
+                                <div class="cast-info"><h4 class="actor-name">Kim Yoo-ri</h4><p class="character-name">Han Chae-yeon</p></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-        
-        <section class="episodes-section container">
-            <h2 class="section-header">Episodes</h2>
-            <div class="episode-list">
-                <a href="#" class="episode-btn">Ep 1</a><a href="#" class="episode-btn">Ep 2</a><a href="#" class="episode-btn">Ep 3</a><a href="#" class="episode-btn">Ep 4</a><a href="#" class="episode-btn">Ep 5</a><a href="#" class="episode-btn">Ep 6</a><a href="#" class="episode-btn">Ep 7</a><a href="#" class="episode-btn">Ep 8</a><a href="#" class="episode-btn">Ep 9</a><a href="#" class="episode-btn">Ep 10</a><a href="#" class="episode-btn">Ep 11</a><a href="#" class="episode-btn">Ep 12</a><a href="#" class="episode-btn">Ep 13</a><a href="#" class="episode-btn">Ep 14</a><a href="#" class="episode-btn">Ep 15</a><a href="#" class="episode-btn">Ep 16</a><a href="#" class="episode-btn">Ep 17</a><a href="#" class="episode-btn">Ep 18</a><a href="#" class="episode-btn">Ep 19</a><a href="#" class="episode-btn">Ep 20</a>
-            </div>
-        </section>
-        
-        <section class="related-dramas container">
-            <h2 class="section-header">You Might Also Like</h2>
-            <div class="drama-grid">
-                <a href="#" class="drama-card">
-                    <div class="drama-card-img"><img src="https://image.tmdb.org/t/p/w500/3ZpGIb9VPz7e6xM6yZzY2u4vJ51.jpg" alt="It's Okay to Not Be Okay"></div>
-                    <div class="drama-card-info"><h3 class="drama-card-title">It's Okay to Not Be Okay</h3></div>
-                </a>
-                <a href="#" class="drama-card">
-                    <div class="drama-card-img"><img src="https://image.tmdb.org/t/p/w500/yOdjula2rD03aKei2ikV5m2pT02.jpg" alt="Hyde, Jekyll, Me"></div>
-                    <div class="drama-card-info"><h3 class="drama-card-title">Hyde, Jekyll, Me</h3></div>
-                </a>
-                <a href="#" class="drama-card">
-                    <div class="drama-card-img"><img src="https://image.tmdb.org/t/p/w500/314mS2WfDgbW5s3TzRifvS0xJET.jpg" alt="Flower of Evil"></div>
-                    <div class="drama-card-info"><h3 class="drama-card-title">Flower of Evil</h3></div>
-                </a>
-                <a href="#" class="drama-card">
-                    <div class="drama-card-img"><img src="https://image.tmdb.org/t/p/w500/bMX5N8e68V0gaflc2kR5b7v8LpP.jpg" alt="She Was Pretty"></div>
-                    <div class="drama-card-info"><h3 class="drama-card-title">She Was Pretty</h3></div>
-                </a>
-                 <a href="#" class="drama-card">
-                    <div class="drama-card-img"><img src="https://image.tmdb.org/t/p/w500/5CE1PZGSqr86m6J2yK25x9s65Ay.jpg" alt="The Devil Judge"></div>
-                    <div class="drama-card-info"><h3 class="drama-card-title">The Devil Judge</h3></div>
-                </a>
-            </div>
-        </section>
 
-        <div class="bottom-disclaimer container">
-            <p>Please note: All links provided for each episode on this page are for demonstrative purposes only. They are placeholders and do not lead to any video content, as this website is purely for informational and design showcase purposes to increase interaction.</p>
+                <div class="widget comments-widget">
+                     <div class="comments-header">
+                        <h2 class="widget-title">Comments (<span id="comment-count">1</span>)</h2>
+                     </div>
+                     <form class="comment-form" id="comment-form">
+                        <img class="user-avatar" src="https://t4.ftcdn.net/jpg/05/73/91/75/360_F_573917520_L2SpWdbAUFwKh9uJa6mtmplfJQR6myjY.jpg" alt="Guest Avatar">
+                        <textarea placeholder="Join the discussion..." required></textarea>
+                        <button type="submit" aria-label="Post Comment"><i class="fas fa-paper-plane"></i></button>
+                     </form>
+                     <div class="comments-list" id="comments-list-container">
+                        <div class="comment">
+                            <img class="user-avatar" src="data:image/jpeg;base64,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 खुलSulnoLViwqecJImVACxEEbwOhO564jzvH3blplSSYswm5+xjrhQ45lcxUY0abOQ5+ANCkkjpMbkYZchwdaSIjNqqIoBYiDO4H9B1tijYFJ9oInjppIQKeuoo5is6dpJJPTfvi34apUqlIkmWaGmebYXveJMdcDVqIp/daRDmoSWEgBUgaiSBIG5gYI5fL5dVdl+E8q2/M0mI9QfnhydyZc3R5z+Rz3xKk1S71W0s9VwCxJ0/mO4sNjHpjBw349r5emq0wFkk6k5gp2sCDO/XvjMc/nE3h+XNq3O/wAQn4TzG8e0xuwxdS8NZrJ6lWlV0q35SBB9CNxtjMd14T+z/L5d2dKdR9RLEq02UbmYIGmY9YOMxmMQk2X//2Q==" alt="User Avatar">
+                            <div class="comment-content">
+                                <p class="comment-author">DramaFan21 <span>- 2 days ago</span></p>
+                                <p class="comment-text">This drama is an absolute masterpiece! The acting is incredible.</p>
+                                <div class="comment-actions">
+                                    <a href="#"><i class="fas fa-thumbs-up"></i> 0</a>
+                                    <a href="#"><i class="fas fa-reply"></i> Reply</a>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+
+            <div class="sidebar-col">
+                <div class="widget drama-info-widget">
+                    <div class="info-poster"><img src="placeholder_image_kill_me_heal_me_poster" alt="Kill Me, Heal Me Poster"></div>
+                    <h2 class="info-title">Kill Me, Heal Me</h2>
+                    <p class="info-synopsis truncated" id="synopsis-text">Cha Do-hyun is a third-generation chaebol suffering from Dissociative Identity Disorder (DID), brought on by a traumatic past event, leading to seven distinct personalities. He struggles to keep his condition a secret until he meets Oh Ri-jin, a first-year psychiatric resident who secretly agrees to treat him. As she helps him manage his various alters—including the rebellious Shin Se-gi and the suicidal Ahn Yo-sub—they slowly uncover a deeply buried secret that ties their pasts together, leading to a path of healing and unexpected love.</p>
+                    <a id="read-more-btn" class="read-more-btn">Read More</a>
+                    <div class="info-details">
+                        <p><span>Type:</span> K-Drama</p><p><span>Studio:</span> Pan Entertainment</p><p><span>Aired:</span> Jan 7, 2015</p><p><span>Status:</span> Finished</p><p><span>Score:</span> 8.7/10</p><p><span>Duration:</span> 1h</p><p><span>Genres:</span> Mystery, Romance, Comedy, Psychological</p>
+                    </div>
+                </div>
+                <div class="widget recommendations-widget">
+                    <h2 class="widget-title">You Might Also Like</h2>
+                    <div class="recommendations-list">
+                        <a href="hyde-jekyll-me.html" class="rec-card">
+                            <img src="placeholder_image_hyde_jekyll_me" alt="Hyde Jekyll, Me">
+                            <div class="rec-card-info"><p class="rec-title">Hyde Jekyll, Me</p><p class="rec-meta">K-Drama • Finished</p></div>
+                        </a>
+                        <a href="its-okay-thats-love.html" class="rec-card">
+                            <img src="placeholder_image_its_okay_thats_love" alt="It's Okay, That's Love">
+                            <div class="rec-card-info"><p class="rec-title">It's Okay, That's Love</p><p class="rec-meta">K-Drama • Finished</p></div>
+                        </a>
+                        <a href="master-sun.html" class="rec-card">
+                            <img src="placeholder_image_master_sun" alt="Master's Sun">
+                            <div class="rec-card-info"><p class="rec-title">Master's Sun</p><p class="rec-meta">K-Drama • Finished</p></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
     <footer class="main-footer">
-        <div class="container">
-            <div class="footer-content">
-                 <a href="index.html" class="logo">Drama<span>Kan</span></a>
-                 <div class="footer-socials">
-                     <a href="#"><i class="fab fa-twitter"></i></a>
-                     <a href="#"><i class="fab fa-discord"></i></a>
-                     <a href="#"><i class="fab fa-telegram"></i></a>
-                     <a href="#"><i class="fab fa-reddit"></i></a>
-                 </div>
-            </div>
-            <div class="footer-bottom">
-                 <p>&copy; 2025 DramaKan. All rights reserved. This site does not store any files on its server. All contents are provided by non-affiliated third parties.</p>
-            </div>
-        </div>
+        <p>&copy; 2025 DramaKan. All rights reserved.</p>
     </footer>
-    
-    <script>
-        // --- History Tracking Snippet ---
-        document.addEventListener('DOMContentLoaded', function() {
-            function updateUserHistory(action, data) {
-                const userString = localStorage.getItem('dramaKanUser');
-                if (userString) {
-                    let user = JSON.parse(userString);
-                    if (user.isLoggedIn) {
-                        if (action === 'visit') {
-                            if (!user.visitedHistory.some(item => item.url === data.url)) {
-                                 user.visitedHistory.unshift(data);
-                            }
-                            if (user.visitedHistory.length > 10) {
-                                user.visitedHistory.pop();
-                            }
-                        }
-                        localStorage.setItem('dramaKanUser', JSON.stringify(user));
-                    }
-                }
-            }
 
-            const dramaTitleElement = document.querySelector('.drama-title');
-            if (dramaTitleElement) {
-                const dramaData = {
-                    title: dramaTitleElement.textContent,
-                    url: window.location.pathname.split('/').pop()
-                };
-                updateUserHistory('visit', dramaData);
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // Updated episode data for "Kill Me, Heal Me" - 20 episodes
+        const episodeData = [
+            { number: 1, title: 'Seven Personalities', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=1', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 2, title: 'The First Encounter', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=2', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 3, title: 'Episode 3', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=3', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 4, title: 'Episode 4', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=4', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 5, title: 'Episode 5', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=5', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 6, title: 'Episode 6', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=6', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 7, title: 'Episode 7', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=7', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 8, title: 'Episode 8', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=8', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 9, title: 'Episode 9', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=9', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 10, title: 'Episode 10', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=10', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 11, title: 'Episode 11', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=11', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 12, title: 'Episode 12', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=12', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 13, title: 'Episode 13', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=13', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 14, title: 'Episode 14', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=14', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 15, title: 'Episode 15', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=15', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 16, title: 'Episode 16', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=16', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 17, title: 'Episode 17', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=17', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 18, title: 'Episode 18', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=18', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 19, title: 'Episode 19', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=19', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 20, title: 'The Ultimate Healing (Finale)', videoUrl: 'https://multiembed.mov/?video_id=tt4277434&s=1&e=20', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] }
+        ];
+        
+        let currentEpisode = 1;
+        const totalEpisodes = 20;
+
+        const episodeListContainer = document.getElementById('episodes-list-container');
+        const currentEpisodeTitle = document.getElementById('current-episode-title');
+        const downloadLinksTbody = document.getElementById('download-links-tbody');
+        const prevBtn = document.getElementById('prev-ep-btn');
+        const nextBtn = document.getElementById('next-ep-btn');
+        const videoPlayer = document.getElementById('video-player-iframe');
+
+        function updateUI(episodeNumber) {
+            currentEpisode = parseInt(episodeNumber, 10);
+            const episode = episodeData.find(ep => ep.number === currentEpisode);
+            if (episode && episode.videoUrl) { videoPlayer.src = episode.videoUrl; }
+            currentEpisodeTitle.textContent = `You are watching Episode ${currentEpisode}`;
+            document.querySelectorAll('.episode-item').forEach(item => { item.classList.toggle('current', parseInt(item.dataset.episode, 10) === currentEpisode); });
+            document.querySelector(`.episode-item[data-episode='${currentEpisode}']`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            downloadLinksTbody.innerHTML = '';
+            if (episode && episode.downloadLinks) {
+                episode.downloadLinks.forEach(link => {
+                    downloadLinksTbody.innerHTML += `
+                        <tr>
+                            <td data-label="Episode">Episode ${currentEpisode}</td>
+                            <td data-label="Quality">${link.quality}</td>
+                            <td data-label="Video"><a href="${link.url}" class="download-btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-download"></i> Download</a></td>
+                            <td data-label="Subtitles"><a href="${episode.subtitleUrl}" class="download-btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-closed-captioning"></i> Download</a></td>
+                        </tr>`;
+                });
             }
+            prevBtn.disabled = currentEpisode === 1;
+            nextBtn.disabled = currentEpisode === totalEpisodes;
+        }
+
+        function generateEpisodeList() {
+            for (let i = 1; i <= totalEpisodes; i++) {
+                const episode = episodeData.find(ep => ep.number === i) || { number: i, title: `Episode ${i}` };
+                episodeListContainer.innerHTML += `<a class="episode-item" data-episode="${episode.number}"><div class="ep-info"><p class="ep-number">Episode ${episode.number}</p><p class="ep-desc">${episode.title}</p></div></a>`;
+            }
+        }
+        
+        episodeListContainer.addEventListener('click', (e) => { const item = e.target.closest('.episode-item'); if (item) updateUI(item.dataset.episode); });
+        prevBtn.addEventListener('click', () => { if (currentEpisode > 1) updateUI(currentEpisode - 1); });
+        nextBtn.addEventListener('click', () => { if (currentEpisode < totalEpisodes) updateUI(currentEpisode + 1); });
+        generateEpisodeList();
+        updateUI(1);
+
+        const synopsisText = document.getElementById('synopsis-text');
+        const readMoreBtn = document.getElementById('read-more-btn');
+        if (synopsisText && readMoreBtn) { readMoreBtn.addEventListener('click', (e) => { e.preventDefault(); synopsisText.classList.toggle('truncated'); readMoreBtn.textContent = synopsisText.classList.contains('truncated') ? 'Read More' : 'Read Less'; }); }
+
+        const commentForm = document.getElementById('comment-form');
+        const commentTextarea = commentForm.querySelector('textarea');
+        const commentsListContainer = document.getElementById('comments-list-container');
+        const commentCountSpan = document.getElementById('comment-count');
+        const customAvatars = [ 'https://i.pravatar.cc/40?u=userA', 'https://i.pravatar.cc/40?u=userB', 'https://i.pravatar.cc/40?u=userC', 'https://i.pravatar.cc/40?u=userD', 'https://i.pravatar.cc/40?u=userE' ];
+
+        commentForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const commentText = commentTextarea.value.trim();
+            if (commentText === '') { return; }
+            const randomAvatar = customAvatars[Math.floor(Math.random() * customAvatars.length)];
+            const sanitizedText = commentText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const newCommentHTML = `
+                <div class="comment">
+                    <img class="user-avatar" src="${randomAvatar}" alt="User Avatar">
+                    <div class="comment-content">
+                        <p class="comment-author">Guest <span>- just now</span></p>
+                        <p class="comment-text">${sanitizedText}</p>
+                        <div class="comment-actions">
+                            <a href="#"><i class="fas fa-thumbs-up"></i> 0</a>
+                            <a href="#"><i class="fas fa-reply"></i> Reply</a>
+                        </div>
+                    </div>
+                </div>`;
+            commentsListContainer.insertAdjacentHTML('beforeend', newCommentHTML);
+            commentTextarea.value = '';
+            commentCountSpan.textContent = parseInt(commentCountSpan.textContent) + 1;
         });
-    </script>
+    });
+</script>
 
 </body>
 </html>
