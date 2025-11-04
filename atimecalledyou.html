@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch A Time Called You - DramaKan</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* === GLOBAL STYLES & ENHANCED THEME === */
+        :root {
+            --primary-color: #8A2BE2;
+            --primary-color-rgb: 138, 43, 226;
+            --background-color: #0B0C10;
+            --surface-color-darker: #1A1A1D;
+            --surface-color-lighter: #2a2a2d;
+            --text-color: #F5F5F5;
+            --text-muted-color: #a0a0a0;
+            --border-color: #3a3a40;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); line-height: 1.6; font-size: 16px; }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; height: auto; display: block; }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .widget {
+            background: linear-gradient(180deg, var(--surface-color-lighter), var(--surface-color-darker));
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border-radius: 8px; margin-bottom: 20px; padding: 20px;
+        }
+        .widget-title {
+            font-size: 1.2rem; font-weight: 600; margin-bottom: 15px;
+            padding-bottom: 10px; border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--surface-color-darker); }
+        ::-webkit-scrollbar-thumb { background: #4f4f5a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+
+        /* === HEADER === */
+        .main-header {
+            background-color: rgba(11, 12, 16, 0.8); backdrop-filter: blur(10px); padding: 15px 20px;
+            position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color);
+        }
+        .logo { font-size: 1.8rem; font-weight: 700; }
+        .logo span { color: var(--primary-color); }
+
+        /* === WATCH PAGE LAYOUT === */
+        .watch-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+
+        /* === MAIN CONTENT (LEFT COLUMN) */
+        .main-content-col {
+            min-width: 0;
+        }
+        .video-player-container {
+            position: relative;
+            width: 100%;
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+            border: 2px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        #video-player-iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .episode-meta { padding: 0 0 15px 0; }
+        .episode-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 15px; }
+        .episode-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+
+        /* -- PREMIUM BUTTON STYLES -- */
+        .action-btn, .download-btn, .comment-form button {
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-weight: 500;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .action-btn:hover:not(:disabled), .download-btn:hover, .comment-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        .action-btn:disabled {
+            background-color: #222;
+            color: #555;
+            cursor: not-allowed;
+        }
+
+        .action-btn {
+            background: linear-gradient(180deg, #4a4a52, #313136);
+            color: var(--text-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .action-btn:hover:not(:disabled) {
+            background: linear-gradient(180deg, #5a5a62, #414146);
+        }
+
+        #next-ep-btn {
+            background: linear-gradient(180deg, #ffffff, #e0e0e0);
+            color: #0B0C10;
+            box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+        }
+        #next-ep-btn:hover:not(:disabled) {
+            background: linear-gradient(180deg, #f0f0f0, #d0d0d0);
+        }
+
+        .download-btn {
+            background: linear-gradient(180deg, hsl(262, 77%, 60%), hsl(262, 77%, 50%));
+            color: white;
+            box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.25);
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+        .download-btn:hover {
+             background: linear-gradient(180deg, hsl(262, 77%, 65%), hsl(262, 77%, 55%));
+        }
+        
+        .episodes-list-widget .episodes-list { max-height: 400px; overflow-y: auto; padding-right: 10px; }
+        .episode-item { display: flex; align-items: center; gap: 15px; padding: 10px; border-radius: 5px; margin-bottom: 5px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s ease; }
+        .episode-item:hover { background-color: var(--surface-color-lighter); border-color: var(--border-color); }
+        .episode-item.current { background: rgba(var(--primary-color-rgb), 0.1); border-color: var(--primary-color); }
+        .episode-item .ep-number { font-weight: 600; font-size: 1.1rem; }
+        
+        /* -- START: REDESIGNED CAST SECTION -- */
+        .cast-list-wrapper { overflow-x: auto; padding-bottom: 15px; }
+        .cast-list { display: flex; gap: 15px; }
+        .cast-card {
+            flex: 0 0 140px;
+            width: 140px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative; /* Needed for the overlay */
+        }
+        .cast-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
+        .cast-card img {
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            object-position: center top;
+            /* Placeholder styling */
+            background-color: #333; 
+        }
+        .cast-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 10px 10px 10px;
+            background: linear-gradient(to top, rgba(11, 12, 16, 1) 20%, rgba(11, 12, 16, 0));
+        }
+        .actor-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-color);
+        }
+        .character-name {
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+        /* -- END: REDESIGNED CAST SECTION -- */
+
+        .download-list table { width: 100%; border-collapse: collapse; }
+        .download-list th, .download-list td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .download-list th { color: var(--text-muted-color); font-weight: 500; }
+
+        /* -- IMPROVED COMMENT SECTION STYLES -- */
+        .comment-form { display: flex; gap: 15px; margin-top: 15px; margin-bottom: 25px; align-items: flex-start; }
+        .comment-form .user-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;}
+        .comment-form textarea { flex-grow: 1; background-color: var(--background-color); border: 1px solid var(--border-color); border-radius: 5px; padding: 10px; color: var(--text-color); font-family: 'Poppins', sans-serif; resize: vertical; min-height: 50px; transition: all 0.2s; }
+        .comment-form textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 0 4px rgba(var(--primary-color-rgb), 0.25); outline: none; }
+        .comment-form button { background: var(--primary-color); color: white; padding: 0; height: 50px; width: 50px; flex-shrink: 0; }
+        .comment-form button:hover { filter: brightness(1.2); }
+        .comment { display: flex; gap: 15px; margin-bottom: 25px; }
+        .comment .user-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
+        .comment-content { flex-grow: 1; background-color: var(--background-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 15px; }
+        .comment-author { font-weight: 600; margin-bottom: 4px; }
+        .comment-author span { font-weight: 400; color: var(--text-muted-color); font-size: 0.8rem; margin-left: 10px; }
+        .comment-text { color: var(--text-muted-color); line-height: 1.7; }
+        .comment-actions { display: flex; gap: 15px; margin-top: 10px; font-size: 0.9rem; color: var(--text-muted-color); }
+        .comment-actions a { cursor: pointer; transition: color 0.2s; }
+        .comment-actions a:hover { color: var(--primary-color); }
+        
+        .drama-info-widget .info-poster img { border-radius: 8px; margin-bottom: 15px; background-color: #333; /* Placeholder styling */ }
+        .drama-info-widget .info-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 10px; }
+        .info-synopsis.truncated { max-height: 70px; -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%); mask-image: linear-gradient(to bottom, black 50%, transparent 100%); }
+        .read-more-btn { color: var(--primary-color); cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+        .drama-info-widget .info-details { margin-top: 15px; }
+        .drama-info-widget .info-details p { font-size: 0.9rem; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
+        .drama-info-widget .info-details p:last-child { border-bottom: none; }
+        .drama-info-widget .info-details span { color: var(--text-muted-color); display: inline-block; width: 110px; }
+        
+        .recommendations-list .rec-card { display: flex; gap: 15px; margin-bottom: 15px; padding: 10px; border-radius: 8px; transition: all 0.2s ease-in-out; }
+        .recommendations-list .rec-card:hover { background-color: var(--surface-color-lighter); transform: translateX(5px); }
+        .recommendations-list .rec-card img { width: 70px; height: 100px; object-fit: cover; border-radius: 4px; flex-shrink: 0; background-color: #333; /* Placeholder styling */ }
+        .recommendations-list .rec-card .rec-title { font-weight: 500; margin-bottom: 5px; }
+        .recommendations-list .rec-card .rec-meta { font-size: 0.8rem; color: var(--text-muted-color); }
+        
+        .main-footer { background-color: var(--surface-color-darker); border-top: 1px solid var(--border-color); padding: 20px; margin-top: 20px; text-align: center; }
+        
+        /* === RESPONSIVE STYLES DONE === */
+        @media (min-width: 1600px) { body { font-size: 18px; } .container { max-width: 1500px; } }
+        @media (max-width: 992px) { .watch-layout { grid-template-columns: 1fr; } .episode-title, .info-title { font-size: 1.4rem; } .container { padding: 15px; } }
+        @media (max-width: 768px) { .episode-title, .info-title { font-size: 1.3rem; } .widget { padding: 15px; } .cast-card { flex: 0 0 120px; width: 120px; } }
+        @media (max-width: 576px) { body { font-size: 14px; } .container { padding: 10px; } .logo { font-size: 1.6rem; } .episode-title, .info-title { font-size: 1.2rem; } .widget-title { font-size: 1.1rem; } .ep-info .ep-desc { display: none; } .download-list thead { display: none; } .download-list tr { display: block; border-bottom: 2px solid var(--primary-color); margin-bottom: 15px; padding-bottom: 15px; } .download-list tr:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; } .download-list td { display: block; text-align: right; font-size: 0.9rem; border-bottom: none; padding: 5px 8px; position: relative; } .download-list td::before { content: attr(data-label); position: absolute; left: 8px; font-weight: bold; color: var(--text-muted-color); text-align: left; } .action-btn { padding: 6px 12px; font-size: 0.9rem; } .comment-actions { font-size: 0.8rem; } .comment.reply { margin-left: 40px; } }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <a href="index.html" class="logo">Drama<span>Kan</span></a>
+    </header>
+
+    <main class="container">
+        <div class="watch-layout" data-total-episodes="12">
+            <div class="main-content-col">
+                <div class="video-player-container">
+                    <iframe 
+                        id="video-player-iframe"
+                        src="" 
+                        title="Video Player" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+
+                <div class="episode-meta">
+                    <h1 class="episode-title" id="current-episode-title">You are watching Episode 1</h1>
+                    <div class="episode-actions">
+                        <button class="action-btn" id="prev-ep-btn"><i class="fas fa-arrow-left"></i>Prev</button>
+                        <button class="action-btn" id="next-ep-btn">Next<i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="widget episodes-list-widget">
+                    <h2 class="widget-title">Episodes</h2>
+                    <div class="episodes-list" id="episodes-list-container">
+                        </div>
+                </div>
+                
+                <div class="widget download-widget">
+                    <h2 class="widget-title">Downloads</h2>
+                    <div class="download-list">
+                        <table>
+                            <thead>
+                                <tr><th>Episode</th><th>Quality</th><th>Video</th><th>Subtitles</th></tr>
+                            </thead>
+                            <tbody id="download-links-tbody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="widget cast-section">
+                    <h2 class="widget-title">Cast</h2>
+                    <div class="cast-list-wrapper">
+                        <div class="cast-list">
+                            <div class="cast-card">
+                                <img src="data:image/jpeg;base64,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" alt="Ahn Hyo-seop">
+                                <div class="cast-info"><h4 class="actor-name">Ahn Hyo-seop</h4><p class="character-name">Suh Won / Koo Yeon-jun / Nam Si-heon</p></div>
+                            </div>
+                            <div class="cast-card">
+                                <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4QEeRXhpZgAASUkqAAgAAAADAA4BAgDTAAAAMgAAAJiCAgARAAAABQEAABIBAwABAAAAAQAAAAAAAABJTkNIRU9OLCBTT1VUSCBLT1JFQSAtIE1BWSAyMDogU291dGggS29yZWFuIGFjdHJlc3MgSmVvbiBZZW8tQmVlbiBha2EgSmVvbiBZZW8tQmluIGlzIHNlZW4gb24gZGVwYXJ0dXJlIGF0IEluY2hlb24gSW50ZXJuYXRpb25hbCBBaXJwb3J0IG9uIE1heSAyMCwgMjAyMyBpbiBJbmNoZW9uLCBTb3V0aCBLb3JlYS4gKFBob3RvIGJ5IEhhbiBNeXVuZy1HdS9XaXJlSW1hZ2UpMjAyMyBIYW4gTXl1bmctR3X/7QEqUGhvdG9zaG9wIDMuMAA4QklNBAQAAAAAAQ0cAlAADEhhbiBNeXVuZy1HdRwCeADTSU5DSEVPTiwgU09VVEggS09SRUEgLSBNQVkgMjA6IFNvdXRoIEtvcmVhbiBhY3RyZXNzIEplb24gWWVvLUJlZW4gYWthIEplb24gWWVvLUJpbiBpcyBzZWVuIG9uIGRlcGFydHVyZSBhdCBJbmNoZW9uIEludGVybmF0aW9uYWwgQWlycG9ydCBvbiBNYXkgMjAsIDIwMjMgaW4gSW5jaGVvbiwgU291dGggS29yZWEuIChQaG90byBieSBIYW4gTXl1bmctR3UvV2lyZUltYWdlKRwCdAARMjAyMyBIYW4gTXl1bmctR3UcAm4ACVdpcmVJbWFnZQD/4QXpaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/Pgo8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIj4KCTxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CgkJPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczpJcHRjNHhtcENvcmU9Imh0dHA6Ly9pcHRjLm9yZy9zdGQvSXB0YzR4bXBDb3JlLzEuMC94bWxucy8iICAgeG1sbnM6R2V0dHlJbWFnZXNHSUZUPSJodHRwOi8veG1wLmdldHR5aW1hZ2VzLmNvbS9naWZ0LzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGx1cz0iaHR0cDovL25zLnVzZXBsdXMub3JnL2xkZi94bXAvMS4wLyIgIHhtbG5zOmlwdGNFeHQ9Imh0dHA6Ly9pcHRjLm9yZy9zdGQvSXB0YzR4bXBFeHQvMjAwOC0wMi0yOS8iIHhtbG5zOnhtcFJpZ2h0cz0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3JpZ2h0cy8iIGRjOlJpZ2h0cz0iMjAyMyBIYW4gTXl1bmctR3UiIHBob3Rvc2hvcDpDcmVkaXQ9IldpcmVJbWFnZSIgR2V0dHlJbWFnZXNHSUZUOkFzc2V0SUQ9IjE0OTE2OTk0OTYiIHhtcFJpZ2h0czpXZWJTdGF0ZW1lbnQ9Imh0dHBzOi8vd3d3LmdldHR5aW1hZ2VzLmNvbS9ldWxhP3V0bV9tZWRpdW09b3JnYW5pYyZhbXA7dXRtX3NvdXJjZT1nb29nbGUmYW1wO3V0bV9jYW1wYWlnbj1pcHRjdXJsIiA+CjxkYzpjcmVhdG9yPjxyZGY6U2VxPjxyZGY6bGk+SGFuIE15dW5nLUd1PC9yZGY6bGk+PC9yZGY6U2VxPjwvZGM6Y3JlYXRvcj48ZGM6ZGVzY3JpcHRpb24+PHJkZjpBbHQ+PHJkZjpsaSB4bWw6bGFuZz0ieC1kZWZhdWx0Ij5JTkNIRU9OLCBTT1VUSCBLT1JFQSAtIE1BWSAyMDogU291dGggS29yZWFuIGFjdHJlc3MgSmVvbiBZZW8tQmVlbiBha2EgSmVvbiBZZW8tQmluIGlzIHNlZW4gb24gZGVwYXJ0dXJlIGF0IEluY2hlb24gSW50ZXJuYXRpb25hbCBBaXJwb3J0IG9uIE1heSAyMCwgMjAyMyBpbiBJbmNoZW9uLCBTb3V0aCBLb3JlYS4gKFBob3RvIGJ5IEhhbiBNeXVuZy1HdS9XaXJlSW1hZ2UpPC9yZGY6bGk+PC9yZGY6QWx0Pjwv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" alt="Jeon Yeo-been">
+                                <div class="cast-info"><h4 class="actor-name">Jeon Yeo-been</h4><p class="character-name">Han Jun-hee / Kwon Min-ju</p></div>
+                            </div>
+                            <div class="cast-card">
+                                <img src="data:image/jpeg;base64,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" alt="Kang Hoon">
+                                <div class="cast-info"><h4 class="actor-name">Kang Hoon</h4><p class="character-name">Jung In-gyu</p></div>
+                            </div>
+                            <div class="cast-card">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTH0SJBKqSbQfeJ0hv9_PAv2mD5CbCX-mtH5mg6WutP5wXjzx1A_bBGVCn&s=10" alt="Lee Min-goo">
+                                <div class="cast-info"><h4 class="actor-name">Lee Min-goo</h4><p class="character-name">Tak Kuk-chan</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget comments-widget">
+                     <div class="comments-header">
+                        <h2 class="widget-title">Comments (<span id="comment-count">1</span>)</h2>
+                     </div>
+                     <form class="comment-form" id="comment-form">
+                        <img class="user-avatar" src="https://t4.ftcdn.net/jpg/05/73/91/75/360_F_573917520_L2SpWdbAUFwKh9uJa6mtmplfJQR6myjY.jpg" alt="Guest Avatar">
+                        <textarea placeholder="Join the discussion..." required></textarea>
+                        <button type="submit" aria-label="Post Comment"><i class="fas fa-paper-plane"></i></button>
+                     </form>
+                     <div class="comments-list" id="comments-list-container">
+                        <div class="comment">
+                            <img class="user-avatar" src="https://imageio.forbes.com/specials-images/imageserve/621cf491cee06b0d26d5d84c/A-man-in-a-suit-stops-a-woman-by-placing-his-hand-on-her-shoulder-/960x0.png?format=png&width=960" alt="User Avatar">
+                            <div class="comment-content">
+                                <p class="comment-author">DramaFan21 <span>- 2 days ago</span></p>
+                                <p class="comment-text">This drama is an absolute masterpiece! The acting is incredible.</p>
+                                <div class="comment-actions">
+                                    <a href="#"><i class="fas fa-thumbs-up"></i> 0</a>
+                                    <a href="#"><i class="fas fa-reply"></i> Reply</a>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+
+            <div class="sidebar-col">
+                <div class="widget drama-info-widget">
+                    <div class="info-poster"><img src="https://m.media-amazon.com/images/M/MV5BZGZkYjQyYjYtMjRhYy00Mjc0LTk2NDMtZmUyYWM0YzA2OTc2XkEyXkFqcGc@._V1_.jpg" alt="A Time Called You Poster"></div>
+                    <h2 class="info-title">A Time Called You (Neoui Sigan Sogeuro)</h2>
+                    <p class="info-synopsis truncated" id="synopsis-text">Han Jun-hee is still grieving the death of her boyfriend, Koo Yeon-jun, one year after he passed away. By chance, she finds herself traveling back in time to 1998, where she wakes up in the body of a high school student named Kwon Min-ju. There, she meets Nam Si-heon, a student who bears a striking resemblance to her late boyfriend. As Jun-hee tries to navigate life in the past and figure out the connection between Min-ju, Si-heon, and her own time, a complicated love triangle and mystery spanning two decades unfold.</p>
+                    <a id="read-more-btn" class="read-more-btn">Read More</a>
+                    <div class="info-details">
+                        <p><span>Type:</span> K-Drama</p><p><span>Studio:</span> Npio Entertainment</p><p><span>Aired:</span> Sep 8, 2023</p><p><span>Status:</span> Finished</p><p><span>Score:</span> 8.2/10</p><p><span>Duration:</span> 45m</p><p><span>Genres:</span> Romance, Fantasy, Mystery, Time-Travel</p>
+                    </div>
+                </div>
+                <div class="widget recommendations-widget">
+                    <h2 class="widget-title">You Might Also Like</h2>
+                    <div class="recommendations-list">
+                        <a href="businessproposal.html" class="rec-card">
+                            <img src="https://m.media-amazon.com/images/M/MV5BYWM2NTM4MTktNDFiNi00NTI3LThiZTgtZmJiZTQ2NzdhNDE3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Business Proposal">
+                            <div class="rec-card-info"><p class="rec-title">Business Proposal</p><p class="rec-meta">K-Drama • Finished</p></div>
+                        </a>
+                        <a href="25-21.html" class="rec-card">
+                            <img src="https://m.media-amazon.com/images/M/MV5BYTdjZWExZmMtZTY0Yy00N2U3LTkyYmYtMGNjZjUyZTM0Njg0XkEyXkFqcGc@._V1_.jpg" alt="Twenty Five, Twenty One">
+                            <div class="rec-card-info"><p class="rec-title">Twenty Five, Twenty One</p><p class="rec-meta">K-Drama • Finished</p></div>
+                        </a>
+                        <a href="signal.html" class="rec-card">
+                            <img src="https://m.media-amazon.com/images/M/MV5BNzM5Njc3YTctMmIzNi00Mjk2LWFhYjUtNTk5ODFkOTU3YzhiXkEyXkFqcGc@._V1_.jpg" alt="Signal">
+                            <div class="rec-card-info"><p class="rec-title">Signal</p><p class="rec-meta">K-Drama • Finished</p></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2025 DramaKan. All rights reserved.</p>
+    </footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // Updated episode data for "A Time Called You" - 12 episodes
+        const episodeData = [
+            { number: 1, title: 'Reunion', videoUrl: 'https://multiembed.mov/?video_id=tt21627438&s=1&e=1', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 2, title: 'The World of 1998', videoUrl: 'https://multiembed.mov/?video_id=tt21627438&s=1&e=2', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 3, title: 'Episode 3', videoUrl: 'https://multiembed.mov/?video_id=tt21627438&s=1&e=3', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 4, title: 'Episode 4', videoUrl: 'https://multiembed.mov/?video_id=tt21627438&s=1&e=4', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 5, title: 'Episode 5', videoUrl: 'https://multiembed.mov/?video_id=tt21627438&s=1&e=5', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 6, title: 'Episode 6', videoUrl: 'https://multiembed.mov/?video_id=tt21627438&s=1&e=6', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 7, title: 'Episode 7', videoUrl: 'https://multiembed.mov/?video_id=tt21627438&s=1&e=7', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 8, title: 'Episode 8', videoUrl: 'https://multiembed.mov/?video_id=tt21627438&s=1&e=8', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 9, title: 'Episode 9', videoUrl: 'https://multiembed.mov/?video_id=tt21627438&s=1&e=9', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 10, title: 'Episode 10', videoUrl: 'https://multiembed.mov/?video_id=tt21627438&s=1&e=10', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 11, title: 'Episode 11', videoUrl: 'https://multiembed.mov/?video_id=tt21627438&s=1&e=11', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] },
+            { number: 12, title: 'My Time With You (Finale)', videoUrl: 'https://multiembed.mov/?video_id=tt21627438&s=1&e=12', subtitleUrl: '#', downloadLinks: [{ quality: '1080p', url: '#' }] }
+        ];
+        
+        let currentEpisode = 1;
+        const totalEpisodes = 12;
+
+        const episodeListContainer = document.getElementById('episodes-list-container');
+        const currentEpisodeTitle = document.getElementById('current-episode-title');
+        const downloadLinksTbody = document.getElementById('download-links-tbody');
+        const prevBtn = document.getElementById('prev-ep-btn');
+        const nextBtn = document.getElementById('next-ep-btn');
+        const videoPlayer = document.getElementById('video-player-iframe');
+
+        function updateUI(episodeNumber) {
+            currentEpisode = parseInt(episodeNumber, 10);
+            const episode = episodeData.find(ep => ep.number === currentEpisode);
+            if (episode && episode.videoUrl) { videoPlayer.src = episode.videoUrl; }
+            currentEpisodeTitle.textContent = `You are watching Episode ${currentEpisode}`;
+            document.querySelectorAll('.episode-item').forEach(item => { item.classList.toggle('current', parseInt(item.dataset.episode, 10) === currentEpisode); });
+            document.querySelector(`.episode-item[data-episode='${currentEpisode}']`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            downloadLinksTbody.innerHTML = '';
+            if (episode && episode.downloadLinks) {
+                episode.downloadLinks.forEach(link => {
+                    downloadLinksTbody.innerHTML += `
+                        <tr>
+                            <td data-label="Episode">Episode ${currentEpisode}</td>
+                            <td data-label="Quality">${link.quality}</td>
+                            <td data-label="Video"><a href="${link.url}" class="download-btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-download"></i> Download</a></td>
+                            <td data-label="Subtitles"><a href="${episode.subtitleUrl}" class="download-btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-closed-captioning"></i> Download</a></td>
+                        </tr>`;
+                });
+            }
+            prevBtn.disabled = currentEpisode === 1;
+            nextBtn.disabled = currentEpisode === totalEpisodes;
+        }
+
+        function generateEpisodeList() {
+            for (let i = 1; i <= totalEpisodes; i++) {
+                const episode = episodeData.find(ep => ep.number === i) || { number: i, title: `Episode ${i}` };
+                episodeListContainer.innerHTML += `<a class="episode-item" data-episode="${episode.number}"><div class="ep-info"><p class="ep-number">Episode ${episode.number}</p><p class="ep-desc">${episode.title}</p></div></a>`;
+            }
+        }
+        
+        episodeListContainer.addEventListener('click', (e) => { const item = e.target.closest('.episode-item'); if (item) updateUI(item.dataset.episode); });
+        prevBtn.addEventListener('click', () => { if (currentEpisode > 1) updateUI(currentEpisode - 1); });
+        nextBtn.addEventListener('click', () => { if (currentEpisode < totalEpisodes) updateUI(currentEpisode + 1); });
+        generateEpisodeList();
+        updateUI(1);
+
+        const synopsisText = document.getElementById('synopsis-text');
+        const readMoreBtn = document.getElementById('read-more-btn');
+        if (synopsisText && readMoreBtn) { readMoreBtn.addEventListener('click', (e) => { e.preventDefault(); synopsisText.classList.toggle('truncated'); readMoreBtn.textContent = synopsisText.classList.contains('truncated') ? 'Read More' : 'Read Less'; }); }
+
+        const commentForm = document.getElementById('comment-form');
+        const commentTextarea = commentForm.querySelector('textarea');
+        const commentsListContainer = document.getElementById('comments-list-container');
+        const commentCountSpan = document.getElementById('comment-count');
+        const customAvatars = [ 'https://i.pravatar.cc/40?u=userA', 'https://i.pravatar.cc/40?u=userB', 'https://i.pravatar.cc/40?u=userC', 'https://i.pravatar.cc/40?u=userD', 'https://i.pravatar.cc/40?u=userE' ];
+
+        commentForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const commentText = commentTextarea.value.trim();
+            if (commentText === '') { return; }
+            const randomAvatar = customAvatars[Math.floor(Math.random() * customAvatars.length)];
+            const sanitizedText = commentText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const newCommentHTML = `
+                <div class="comment">
+                    <img class="user-avatar" src="${randomAvatar}" alt="User Avatar">
+                    <div class="comment-content">
+                        <p class="comment-author">Guest <span>- just now</span></p>
+                        <p class="comment-text">${sanitizedText}</p>
+                        <div class="comment-actions">
+                            <a href="#"><i class="fas fa-thumbs-up"></i> 0</a>
+                            <a href="#"><i class="fas fa-reply"></i> Reply</a>
+                        </div>
+                    </div>
+                </div>`;
+            commentsListContainer.insertAdjacentHTML('beforeend', newCommentHTML);
+            commentTextarea.value = '';
+            commentCountSpan.textContent = parseInt(commentCountSpan.textContent) + 1;
+        });
+    });
+</script>
+
+</body>
+</html>
