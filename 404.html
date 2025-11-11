@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 | Wrong Redirect Error</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* Variables from Dramakan index.html */
+        :root {
+            --primary-color: #8A2BE2; /* Deep Purple */
+            --secondary-color: #E50914; /* Crimson Red */
+            --background-color: #0B0C10; /* Near Black */
+            --surface-color: #1A1A1D;
+            --text-color: #F5F5F5;
+            --text-muted-color: #a0a0a0;
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            width: 100%;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            overflow: hidden; /* Prevent scroll due to heavy animations */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px; /* For 3D transforms */
+        }
+
+        /* --- 404 Container & Layout --- */
+        .error-container {
+            text-align: center;
+            padding: 20px;
+            max-width: 90%;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- Heavy Animation: Text Glitch Effect --- */
+        .drama-404 {
+            font-size: clamp(6rem, 25vw, 15rem);
+            font-weight: 900;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+            position: relative;
+            user-select: none;
+            text-shadow: 0 0 5px rgba(229, 9, 20, 0.4), 0 0 10px rgba(138, 43, 226, 0.4);
+        }
+
+        /* Glitch effect pseudo-elements */
+        .drama-404::before,
+        .drama-404::after {
+            content: "404";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            clip-path: inset(0 0 0 0);
+            text-shadow: none;
+        }
+
+        .drama-404::before {
+            color: var(--primary-color);
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+        }
+
+        .drama-404::after {
+            color: white;
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+
+        /* Keyframes for the glitch animation */
+        @keyframes glitch-anim-1 {
+            0% {
+                transform: translate(5px, 0);
+                clip-path: inset(6% 0 70% 0);
+            }
+            33% {
+                transform: translate(-5px, 0);
+                clip-path: inset(25% 0 15% 0);
+            }
+            66% {
+                transform: translate(10px, 0);
+                clip-path: inset(50% 0 30% 0);
+            }
+            100% {
+                transform: translate(0, 5px);
+                clip-path: inset(5% 0 60% 0);
+            }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% {
+                transform: translate(-5px, 0);
+                clip-path: inset(15% 0 50% 0);
+            }
+            40% {
+                transform: translate(5px, 0);
+                clip-path: inset(30% 0 5% 0);
+            }
+            80% {
+                transform: translate(0, -5px);
+                clip-path: inset(60% 0 10% 0);
+            }
+            100% {
+                transform: translate(-10px, 0);
+                clip-path: inset(70% 0 20% 0);
+            }
+        }
+
+        /* --- Main Message --- */
+        .message-title {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .message-body {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--text-muted-color);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            font-style: italic;
+        }
+
+        .message-body strong {
+            color: var(--secondary-color);
+            font-weight: 700;
+        }
+
+        /* --- Go to Homepage Button --- */
+        .home-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 30px;
+            border-radius: 8px;
+            background-color: var(--secondary-color);
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 0 5px rgba(229, 9, 20, 0.2); /* Soft shadow pulse */
+            animation: pulse-border 2s infinite alternate ease-in-out;
+        }
+
+        .home-button:hover {
+            background-color: #B0070F; /* Darker red on hover */
+            transform: scale(1.05);
+        }
+
+        /* Animation: Persistent Floating/Wobble */
+        @keyframes pulse-border {
+            0% {
+                box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.7);
+            }
+            100% {
+                box-shadow: 0 0 0 15px rgba(229, 9, 20, 0);
+            }
+        }
+
+        /* Animation: Horizontal Shift (Data corruption lines) */
+        .data-corruption {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            overflow: hidden;
+        }
+
+        .line {
+            position: absolute;
+            background-color: rgba(138, 43, 226, 0.1); /* Subtle purple lines */
+            height: 1px;
+            width: 100%;
+            opacity: 0;
+            animation: shift-line 5s infinite;
+        }
+
+        .line:nth-child(2n) {
+            background-color: rgba(229, 9, 20, 0.1); /* Subtle red lines */
+            animation-duration: 4s;
+            animation-delay: 1s;
+        }
+
+        .line:nth-child(3n) {
+            animation-duration: 6s;
+            animation-delay: 2s;
+        }
+        .line:nth-child(5n) {
+            animation-duration: 3s;
+            animation-delay: 0.5s;
+        }
+
+
+        @keyframes shift-line {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            5% {
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(50vh) translateX(5vw);
+                opacity: 0.5;
+            }
+            95% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0) translateX(-10vw);
+                opacity: 0;
+            }
+        }
+
+        /* JavaScript-driven VHS static effect */
+        .static-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.1);
+            z-index: 9;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0, 0, 0, 0.2) 50%
+            );
+            background-size: 100% 4px; /* Thin scan lines */
+            animation: scanline-move 10s linear infinite;
+        }
+        
+        @keyframes scanline-move {
+            to {
+                background-position: 0 100%;
+            }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .error-container {
+                padding: 10px;
+            }
+            .drama-404 {
+                line-height: 1;
+                margin-top: 20px;
+            }
+            .home-button {
+                width: 80%;
+                justify-content: center;
+                margin-top: 10px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Animated Data Corruption Lines -->
+    <div id="dataCorruption" class="data-corruption"></div>
+
+    <!-- VHS Static Overlay -->
+    <div class="static-overlay">
+        <div class="scanline"></div>
+    </div>
+
+    <div class="error-container">
+        <div class="drama-404">404</div>
+        
+        <h1 class="message-title">Error: Drama Not Found</h1>
+        
+        <p class="message-body">
+            If you didn't find this drama, you must have been hit by a <strong>Wrong Redirect</strong>.
+            The link you followed is corrupted, much like a damaged VHS tape!
+            Please return to the homepage and search for the drama name to find the original link.
+        </p>
+        
+        <a href="index.html" class="home-button">
+            <i class="fas fa-home"></i> GO TO HOMEPAGE
+        </a>
+    </div>
+
+    <script>
+        // --- Dynamic Line Generator for Heavy Animation ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const corruptionContainer = document.getElementById('dataCorruption');
+            const numberOfLines = 30; // Control animation intensity (more lines = heavier animation)
+            
+            for (let i = 0; i < numberOfLines; i++) {
+                const line = document.createElement('div');
+                line.className = 'line';
+                
+                // Randomize start position and delay for a chaotic look
+                line.style.top = `${Math.random() * 100}vh`;
+                line.style.animationDelay = `${Math.random() * 5}s`;
+                line.style.animationDuration = `${3 + Math.random() * 4}s`; // Between 3s and 7s
+                line.style.opacity = `${0.05 + Math.random() * 0.15}`; // Very low opacity
+                line.style.transform = `scaleY(${Math.random() * 5})`; // Vary line thickness
+
+                corruptionContainer.appendChild(line);
+            }
+            
+             // --- Periodic Screen Flicker (CSS Filter based) ---
+            const body = document.body;
+            
+            function flicker() {
+                // Apply a very brief, random CSS filter change for a static effect
+                const duration = Math.random() * 100 + 50; // 50ms to 150ms
+                const contrast = 0.95 + Math.random() * 0.1; // 0.95 to 1.05
+                const brightness = 0.9 + Math.random() * 0.2; // 0.9 to 1.1
+
+                body.style.transition = `filter ${duration}ms linear`;
+                body.style.filter = `contrast(${contrast}) brightness(${brightness})`;
+
+                // Immediately revert the filter after the transition ends
+                setTimeout(() => {
+                    body.style.filter = 'none';
+                }, duration);
+
+                // Schedule the next flicker at a random interval
+                const nextFlickerDelay = Math.random() * 200 + 50; // 50ms to 250ms
+                setTimeout(flicker, nextFlickerDelay);
+            }
+
+            flicker();
+        });
+    </script>
+</body>
+</html>
