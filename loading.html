@@ -1,0 +1,109 @@
+<style>
+        /* This hides the main content scrollbar while loading */
+        body {
+            overflow: hidden;
+        }
+
+        /* 1. The Full-Screen Wrapper */
+        #loader-wrapper {
+            position: fixed;
+            inset: 0;
+            background-color: #000;
+            display: grid;
+            place-items: center;
+            z-index: 9999;
+            transition: opacity 0.75s ease;
+        }
+
+        /* 2. The Content Box (Text + Percentage) */
+        .loader-content {
+            position: relative;
+            text-align: center;
+        }
+
+        /* 3. The Text (Shared Styles) */
+        .loader-text-bg,
+        .loader-text-fg {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 900;
+            /* This is the new, mobile-friendly size */
+            font-size: clamp(4.5rem, 15vw, 8rem);
+            line-height: 1;
+            margin: 0;
+        }
+
+        /* 4. The Faint Background Text */
+        .loader-text-bg {
+            color: #ffffff;
+            opacity: 0.2;
+        }
+
+        /* 5. The "Filling" Foreground Text */
+        .loader-text-fg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: #ffffff;
+            clip-path: inset(100% 0 0 0);
+            transition: clip-path 0.05s linear;
+        }
+        
+        /* 6. The "loading..." Percentage Text */
+        #loader-percentage {
+            color: #ffffff;
+            opacity: 0.7;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1rem;
+            text-align: right;
+            padding-right: 10px;
+            margin-top: 10px;
+        }
+    </style>
+    <div id="loader-wrapper">
+        <div class="loader-content">
+            <h1 class="loader-text-bg">Dramakan</h1>
+            <h1 class="loader-text-fg">Dramakan</h1>
+            <div id="loader-percentage">Loading... 0%</div>
+        </div>
+    </div>
+    <script>
+        // This script is identical to the one you provided
+        document.addEventListener("DOMContentLoaded", () => {
+            const percentageText = document.getElementById("loader-percentage");
+            const textForeground = document.querySelector(".loader-text-fg");
+            const loaderWrapper = document.getElementById("loader-wrapper");
+            const pageContent = document.getElementById("page-content");
+
+            let currentPercent = 0;
+            const targetPercent = 100;
+            const simulationTime = 3000;
+            const updateInterval = 30;
+
+            const loadingInterval = setInterval(() => {
+                currentPercent++;
+                percentageText.textContent = `loading... ${currentPercent}%`;
+                textForeground.style.clipPath = `inset(${100 - currentPercent}% 0 0 0)`;
+
+                if (currentPercent >= targetPercent) {
+                    clearInterval(loadingInterval);
+                    
+                    setTimeout(() => {
+                        loaderWrapper.style.opacity = 0;
+
+                        setTimeout(() => {
+                            loaderWrapper.style.display = "none";
+                            
+                            // This line is why step 3 is so important
+                            if (pageContent) {
+                                pageContent.style.display = "block"; 
+                            }
+                            
+                            document.body.style.overflow = "auto";
+                        }, 750); 
+                    }, 500);
+                }
+            }, updateInterval);
+        });
+    </script>
