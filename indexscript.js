@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 threshold: 0.4
             });
 
-            populateGrid('trending-grid', data.filter(d = d.trend === "T")(0, 18)); 
+            populateGrid('trending-grid', data.slice(0, 18)); 
             populateGrid('kdrama-grid', data.filter(d => d.type === "K-Drama").slice(0, 18));
             populateGrid('cdrama-grid', data.filter(d => d.type === "C-Drama").slice(0, 18));
             populateGrid('jdrama-grid', data.filter(d => d.type === "J-Drama").slice(0, 18));
