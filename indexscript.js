@@ -46,11 +46,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 threshold: 0.4
             });
 
-            populateGrid('trending-grid', data.slice(0, 10)); 
-            populateGrid('kdrama-grid', data.filter(d => d.type === "K-Drama").slice(0, 10));
-            populateGrid('cdrama-grid', data.filter(d => d.type === "C-Drama").slice(0, 10));
-            populateGrid('jdrama-grid', data.filter(d => d.type === "J-Drama").slice(0, 10));
-            populateGrid('pdrama-grid', data.filter(d => d.type === "P-Drama").slice(0, 10));
+            populateGrid('trending-grid', data.slice(0, 18)); 
+            populateGrid('kdrama-grid', data.filter(d => d.type === "K-Drama").slice(0, 18));
+            populateGrid('cdrama-grid', data.filter(d => d.type === "C-Drama").slice(0, 18));
+            populateGrid('jdrama-grid', data.filter(d => d.type === "J-Drama").slice(0, 18));
+            populateGrid('pdrama-grid', data.filter(d => d.type === "P-Drama").slice(0, 18));
         } catch (err) {
             console.error("Data Load Error:", err);
         }
@@ -105,27 +105,4 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeDramaSite();
 });
 
-      // === AIRING SCHEDULE TABS === (Logic preserved)
-      const tabButtons = document.querySelectorAll('.schedule-tabs .tab-btn');
-      const scheduleContents = document.querySelectorAll('.schedule-content');
-
-      function setActiveTab(day) {
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        scheduleContents.forEach(content => content.classList.remove('active'));
-        const activeBtn = document.querySelector(`.tab-btn[data-day="${day}"]`);
-        const activeContent = document.getElementById(day);
-        if (activeBtn) activeBtn.classList.add('active');
-        if (activeContent) activeContent.classList.add('active');
-      }
-
-      // Automatically activate today's tab
-      const today = new Date().toLocaleString('en-US', { weekday: 'short' }).toLowerCase();
-      setActiveTab(today);
-
-      tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          const dayToActivate = button.getAttribute('data-day');
-          setActiveTab(dayToActivate);
-        });
-      });
-      
+     
