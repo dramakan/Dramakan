@@ -46,11 +46,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 threshold: 0.4
             });
 
-            populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 18)); 
-            populateGrid('kdrama-grid', data.filter(d => d.type === "K-Drama").slice(0, 18));
-            populateGrid('cdrama-grid', data.filter(d => d.type === "C-Drama").slice(0, 18));
-            populateGrid('jdrama-grid', data.filter(d => d.type === "J-Drama").slice(0, 18));
-            populateGrid('pdrama-grid', data.filter(d => d.type === "P-Drama").slice(0, 18));
+            populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 10)); 
+            populateGrid('kdrama-grid', data.filter(d => d.type === "K-Drama").slice(0, 10));
+            populateGrid('cdrama-grid', data.filter(d => d.type === "C-Drama").slice(0, 10));
+            populateGrid('jdrama-grid', data.filter(d => d.type === "J-Drama").slice(0, 10));
+            populateGrid('pdrama-grid', data.filter(d => d.type === "P-Drama").slice(0, 10));
         } catch (err) {
             console.error("Data Load Error:", err);
         }
