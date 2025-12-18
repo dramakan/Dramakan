@@ -46,11 +46,11 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             // Auto-populate Grids
-            populateGrid('trending-grid', data.slice(0, 15)); 
-            populateGrid('kdrama-grid', data.filter(d => d.type === "K-Drama").slice(0, 15));
-            populateGrid('cdrama-grid', data.filter(d => d.type === "C-Drama").slice(0, 15));
-            populateGrid('jdrama-grid', data.filter(d => d.type === "J-Drama").slice(0, 15));
-            populateGrid('pdrama-grid', data.filter(d => d.type === "P-Drama").slice(0, 15));
+            populateGrid('trending-grid', data.slice(0, 10)); 
+            populateGrid('kdrama-grid', data.filter(d => d.type === "K-Drama").slice(0, 10));
+            populateGrid('cdrama-grid', data.filter(d => d.type === "C-Drama").slice(0, 10));
+            populateGrid('jdrama-grid', data.filter(d => d.type === "J-Drama").slice(0, 10));
+            populateGrid('pdrama-grid', data.filter(d => d.type === "P-Drama").slice(0, 10));
 
             console.log("Drama database and grids loaded successfully.");
         } catch (err) {
