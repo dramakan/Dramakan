@@ -4,19 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Japanese Dramas - DramaKan</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
     <style>
-        /* === GLOBAL STYLES === */
         :root {
             --primary-color: #8A2BE2;
-            --secondary-color: #E50914;
             --background-color: #0B0C10;
             --surface-color: #1A1A1D;
             --text-color: #F5F5F5;
@@ -24,167 +15,73 @@
             --border-color: #2c2c34;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); line-height: 1.6; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); }
         a { text-decoration: none; color: inherit; }
-        img { max-width: 100%; height: auto; display: block; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-
-        /* Header & Footer (Consistent) */
-        .main-header { background-color: rgba(11, 12, 16, 0.8); backdrop-filter: blur(10px); padding: 15px 0; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
-        .main-header .container, .footer-content { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        
+        /* Simplified Header */
+        .main-header { 
+            background-color: rgba(11, 12, 16, 0.9); 
+            padding: 15px 0; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            border-bottom: 1px solid var(--border-color); 
+        }
+        .main-header .container { display: flex; align-items: center; justify-content: space-between; }
         .logo { font-size: 1.8rem; font-weight: 700; }
         .logo span { color: var(--primary-color); }
-        .main-footer { background-color: var(--surface-color); padding: 40px 0 20px; margin-top: 40px; border-top: 1px solid var(--border-color); }
-        .footer-socials a { font-size: 1.5rem; margin: 0 10px; color: var(--text-muted-color); transition: color 0.3s; }
-        .footer-socials a:hover { color: var(--primary-color); }
-        .footer-bottom { text-align: center; font-size: 0.9rem; color: var(--text-muted-color); border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 20px; }
+        .home-link { font-weight: 500; color: var(--primary-color); font-size: 0.9rem; }
 
-        /* Drama Card Grid */
-        .drama-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-        .drama-card { background-color: var(--surface-color); border-radius: 8px; overflow: hidden; position: relative; transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .drama-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .drama-card-img img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
-        .drama-card-info { padding: 10px; }
-        .drama-card-title { font-size: 1rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* === STYLES FOR CATEGORY PAGE === */
-        .category-page { padding: 40px 0; }
-        .category-header { margin-bottom: 40px; text-align: center; }
-        .category-title { font-size: 2.8rem; font-weight: 700; color: var(--text-color); }
+        .category-header { padding: 40px 0; text-align: center; }
+        .category-title { font-size: 2.5rem; font-weight: 700; }
         .category-title span { color: var(--primary-color); }
-        .category-subtitle { font-size: 1.1rem; color: var(--text-muted-color); max-width: 600px; margin: 10px auto 0; }
+
+        .drama-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; padding-bottom: 40px; }
+        .drama-card { background-color: var(--surface-color); border-radius: 8px; overflow: hidden; transition: 0.3s; }
+        .drama-card:hover { transform: translateY(-5px); }
+        .drama-card-img img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+        .drama-card-info { padding: 12px; }
+        .drama-card-title { font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        @media (max-width: 992px) {
+            .drama-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .category-title { font-size: 1.8rem; }
+        }
     </style>
 </head>
 <body>
+
     <header class="main-header">
         <div class="container">
             <a href="index.html" class="logo">Drama<span>Kan</span></a>
+            <a href="index.html" class="home-link"><i class="fas fa-home"></i> Go to Home</a>
         </div>
     </header>
 
-    <main>
-        <div class="container">
-            <section class="category-page">
-                <div class="category-header">
-                    <h1 class="category-title"><span>Japanese</span> Dramas</h1>
-                    <p class="category-subtitle">From emotional melodramas to hilarious comedies, browse our curated list of Japanese dramas.</p>
-                </div>
-                
-                <div class="drama-grid">
-                    <a href="firstlovehatsukoi.html" class="drama-card">
-                        <div class="drama-card-img"><img src="https://m.media-amazon.com/images/M/MV5BYzlkNjU0NzUtMmNkNi00OTBiLWEyN2YtNjkxNzc0ODhkYjExXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="First Love: Hatsukoi"></div>
-                        <div class="drama-card-info"><h3 class="drama-card-title">First Love: Hatsukoi</h3></div>
-                    </a>
-                    <a href="silent.html" class="drama-card">
-                        <div class="drama-card-img"><img src="https://m.media-amazon.com/images/M/MV5BMDZhOTZjYTgtMTg2Ny00ZmVjLWFiOGQtNzhlZDlmYTMwN2I5XkEyXkFqcGc@._V1_.jpg" alt="Silent"></div>
-                        <div class="drama-card-info"><h3 class="drama-card-title">Silent</h3></div>
-                    </a>
-                    <a href="mybeautifulman.html" class="drama-card">
-                        <div class="drama-card-img"><img src="https://m.media-amazon.com/images/M/MV5BZWQxYzdkOGYtMWUyYi00NGEyLWFjOGEtNjI3NzkwZDVjODIxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="My Beautiful Man"></div>
-                        <div class="drama-card-info"><h3 class="drama-card-title">My Beautiful Man</h3></div>
-                    </a>
-                    <a href="lovelastsforever.html" class="drama-card">
-                        <div class="drama-card-img"><img src="https://i.mydramalist.com/r7EV2_4f.jpg" alt="Love Lasts Forever"></div>
-                        <div class="drama-card-info"><h3 class="drama-card-title">Love Lasts Forever</h3></div>
-                    </a>
-                    <a href="onelitreoftears.html" class="drama-card">
-                        <div class="drama-card-img"><img src="https://m.media-amazon.com/images/M/MV5BMmQ3MmY3M2EtYjJkYy00OTBmLTgzOGQtZGU4MDMzOWZkYjJkXkEyXkFqcGc@._V1_.jpg" alt="1 Litre of Tears"></div>
-                        <div class="drama-card-info"><h3 class="drama-card-title">1 Litre of Tears</h3></div>
-                    </a>
-                    <a href="cherrymagic.html" class="drama-card">
-                        <div class="drama-card-img"><img src="https://m.media-amazon.com/images/M/MV5BNmE3NzhjYmMtMWY3MS00YjAxLWI2N2MtMmM0NDdhNTQ3NWM2XkEyXkFqcGc@._V1_QL75_UY281_CR18,0,190,281_.jpg" alt="Cherry Magic!"></div>
-                        <div class="drama-card-info"><h3 class="drama-card-title">Cherry Magic!</h3></div>
-                    </a>
-                    <a href="mylovemixup.html" class="drama-card">
-                        <div class="drama-card-img"><img src="https://m.media-amazon.com/images/M/MV5BOTBjZmIwNDAtMzNkYi00Mzc2LTk4MzMtNDkzM2Y1NzFiMzk5XkEyXkFqcGc@._V1_.jpg" alt="My Love Mix-Up!"></div>
-                        <div class="drama-card-info"><h3 class="drama-card-title">My Love Mix-Up!</h3></div>
-                    </a>
-                    <a href="richmanpoorwoman.html" class="drama-card">
-                        <div class="drama-card-img"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFDBoZtTkRymF-O695RreF0nXySAeATokzgg&s" alt="Rich Man, Poor Woman"></div>
-                        <div class="drama-card-info"><h3 class="drama-card-title">Rich Man, Poor Woman</h3></div>
-                    </a>
-                </div>
-            </section>
-        </div>
+    <main class="container">
+        <section class="category-header">
+            <h1 class="category-title"><span>Japanese</span> Dramas</h1>
+        </section>
+        <div id="drama-grid" class="drama-grid"></div>
     </main>
-    
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-content">
-                 <a href="index.html" class="logo">Drama<span>Kan</span></a>
-                 <div class="footer-socials">
-                     <a href="#"><i class="fab fa-twitter"></i></a>
-                     <a href="#"><i class="fab fa-discord"></i></a>
-                     <a href="#"><i class="fab fa-telegram"></i></a>
-                     <a href="#"><i class="fab fa-reddit"></i></a>
-                 </div>
-            </div>
-            <div class="footer-bottom">
-                 <p>&copy; 2025 DramaKan. All rights reserved. This site does not store any files on its server. All contents are provided by non-affiliated third parties.</p>
-            </div>
-        </div>
-    </footer>
+
     <script>
-    // --- History Tracking Snippet ---
-    document.addEventListener('DOMContentLoaded', function() {
-        // Function to update user history in localStorage
-        function updateUserHistory(action, data) {
-            const userString = localStorage.getItem('dramaKanUser');
-            if (userString) {
-                let user = JSON.parse(userString);
-                if (user.isLoggedIn) {
-                    if (action === 'visit') {
-                        // Avoid duplicate visits in a row
-                        if (!user.visitedHistory.some(item => item.url === data.url)) {
-                             user.visitedHistory.unshift(data); // Add to the beginning of the array
-                        }
-                        // Limit history to 10 items
-                        if (user.visitedHistory.length > 10) {
-                            user.visitedHistory.pop();
-                        }
-                    } else if (action === 'search') {
-                        // Avoid duplicate searches in a row
-                        if (user.searchHistory[0] !== data.term) {
-                           user.searchHistory.unshift(data);
-                        }
-                        if (user.searchHistory.length > 10) {
-                           user.searchHistory.pop();
-                        }
-                    }
-                    localStorage.setItem('dramaKanUser', JSON.stringify(user));
-                }
-            }
+        async function loadDramas() {
+            const grid = document.getElementById('drama-grid');
+            try {
+                const response = await fetch('dramas.json');
+                const allDramas = await response.json();
+                const filtered = allDramas.filter(d => d.type === "J-Drama");
+                grid.innerHTML = filtered.map(drama => `
+                    <a href="${drama.link}" class="drama-card">
+                        <div class="drama-card-img"><img loading="lazy" src="${drama.img}" alt="${drama.title}"></div>
+                        <div class="drama-card-info"><h3 class="drama-card-title">${drama.title}</h3></div>
+                    </a>
+                `).join('');
+            } catch (e) { grid.innerHTML = "<p>Failed to load dramas.</p>"; }
         }
-
-        // --- TRACKING LOGIC ---
-        
-        // 1. For Drama Detail Pages: Track the visit
-        // Check if this is a drama detail page by looking for a specific element
-        const dramaTitleElement = document.querySelector('.drama-title');
-        if (dramaTitleElement) {
-            const dramaData = {
-                title: dramaTitleElement.textContent,
-                url: window.location.pathname.split('/').pop() // Gets just the 'drama-name.html'
-            };
-            updateUserHistory('visit', dramaData);
-        }
-
-        // 2. For the Homepage: Track searches
-        // Give your search form and input these IDs on index.html: id="search-form" and id="search-input"
-        const searchForm = document.getElementById('search-form');
-        if (searchForm) {
-            searchForm.addEventListener('submit', function(event) {
-                event.preventDefault(); // Stop page from reloading
-                const searchInput = document.getElementById('search-input');
-                const searchTerm = searchInput.value.trim();
-                if (searchTerm) {
-                    updateUserHistory('search', searchTerm);
-                    alert(`(For Demo) Search for "${searchTerm}" was recorded to your profile.`);
-                    searchInput.value = ''; // Clear search bar
-                }
-            });
-        }
-    });
-</script>
+        window.onload = loadDramas;
+    </script>
 </body>
 </html>
