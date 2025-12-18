@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
           a.innerHTML = `
             <img loading="lazy" src="${item.img}" alt="${item.title}" width="45" height="65">
             <div>
-              <div style="font-weight:600; font-size:14px; color:#333;">${item.title}</div>
+              <div style="font-weight:600; font-size:14px; color:#fff;">${item.title}</div>
               <small style="color:#fff;">${item.type}</small>
             </div>
           `;
