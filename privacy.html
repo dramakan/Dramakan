@@ -161,7 +161,85 @@
         .policy-content strong {
             color: var(--text-color);
         }
+   /* --- CONTACT MODAL STYLES --- */
+        .contact-trigger {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 25px;
+            background: var(--primary-color);
+            color: white !important;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.3s;
+        }
 
+        #contactModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--surface-color);
+            padding: 30px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: var(--text-muted-color);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--background-color);
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 6px;
+            font-family: inherit;
+        }
+
+        .send-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .fallback-note {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #ccc;
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+        }
+        .fallback-note a { color: var(--primary-color); font-weight: 600; }
+    </style>
     </style>
 </head>
 <body>
@@ -217,87 +295,69 @@
 
                 <h2>Contact Us</h2>
                 <p><strong>If you have any questions or suggestions about our Privacy Policy, removal of any content just contact us at: <a href="mailto:anikanowner@gmail.com">privacy@drmakan.site</a>, and it will be removed within 48 hours.</strong></p>
-            </div>
+            <p style="text-align: center; margin-top: 20px;">
+            <button class="contact-trigger" onclick="toggleModal(true)">Contact for Removal / Requests</button>
+        </p>
+
+        <p style="margin-top: 30px; text-align: center;">
+            <a href="index.html" style="font-weight: 600;"><i class="fas fa-home"></i> Back to Home</a>
+        </p>
+    </div>
+
+    <div id="contactModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="toggleModal(false)">&times;</span>
+            <h2 style="border:none; margin-top:0; text-align:center;">Contact Support</h2>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" id="contactName" placeholder="Enter name">
+                </div>
+                <div class="form-group">
+                    <label>Your Gmail</label>
+                    <input type="email" id="contactEmail" placeholder="yourname@gmail.com">
+                </div>
+                <div class="form-group">
+                    <label>Reason</label>
+                    <select id="contactType">
+                        <option value="Content Removal Request">Content Removal Request</option>
+                        <option value="Drama Request">Drama Request</option>
+                        <option value="General Feedback">Suggestion / Feedback</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="contactMessage" rows="3" placeholder="Describe your request..."></textarea>
+                </div>
+                <button type="button" class="send-btn" onclick="sendGmail()">Send via Gmail</button>
+                
+                <div class="fallback-note">
+                    <strong>Note:</strong> If Gmail doesn't open automatically, please manually email: <br>
+                    <a href="mailto:anikanowner@gmail.com">anikanowner@gmail.com</a>
+                </div>
+            </form>
         </div>
-    </main>
+    </div>
 
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-content">
-                 <a href="index.html" class="logo">Drama<span>Kan</span></a>
-                 <div class="footer-socials">
-                     <a href="#"><i class="fab fa-twitter"></i></a>
-                     <a href="#"><i class="fab fa-discord"></i></a>
-                     <a href="#"><i class="fab fa-telegram"></i></a>
-                     <a href="#"><i class="fab fa-reddit"></i></a>
-                 </div>
-            </div>
-            <div class="footer-bottom">
-                 <p>&copy; 2025 DramaKan. All rights reserved. This site does not store any files on its server. All contents are provided by non-affiliated third parties.</p>
-            </div>
-        </div>
-    </footer>
-<script>
-    // --- History Tracking Snippet ---
-    document.addEventListener('DOMContentLoaded', function() {
-        // Function to update user history in localStorage
-        function updateUserHistory(action, data) {
-            const userString = localStorage.getItem('dramaKanUser');
-            if (userString) {
-                let user = JSON.parse(userString);
-                if (user.isLoggedIn) {
-                    if (action === 'visit') {
-                        // Avoid duplicate visits in a row
-                        if (!user.visitedHistory.some(item => item.url === data.url)) {
-                             user.visitedHistory.unshift(data); // Add to the beginning of the array
-                        }
-                        // Limit history to 10 items
-                        if (user.visitedHistory.length > 10) {
-                            user.visitedHistory.pop();
-                        }
-                    } else if (action === 'search') {
-                        // Avoid duplicate searches in a row
-                        if (user.searchHistory[0] !== data.term) {
-                           user.searchHistory.unshift(data);
-                        }
-                        if (user.searchHistory.length > 10) {
-                           user.searchHistory.pop();
-                        }
-                    }
-                    localStorage.setItem('dramaKanUser', JSON.stringify(user));
-                }
-            }
+    <script>
+        function toggleModal(show) {
+            document.getElementById('contactModal').style.display = show ? 'flex' : 'none';
         }
 
-        // --- TRACKING LOGIC ---
-        
-        // 1. For Drama Detail Pages: Track the visit
-        // Check if this is a drama detail page by looking for a specific element
-        const dramaTitleElement = document.querySelector('.drama-title');
-        if (dramaTitleElement) {
-            const dramaData = {
-                title: dramaTitleElement.textContent,
-                url: window.location.pathname.split('/').pop() // Gets just the 'drama-name.html'
-            };
-            updateUserHistory('visit', dramaData);
-        }
+        function sendGmail() {
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const type = document.getElementById('contactType').value;
+            const message = document.getElementById('contactMessage').value;
 
-        // 2. For the Homepage: Track searches
-        // Give your search form and input these IDs on index.html: id="search-form" and id="search-input"
-        const searchForm = document.getElementById('search-form');
-        if (searchForm) {
-            searchForm.addEventListener('submit', function(event) {
-                event.preventDefault(); // Stop page from reloading
-                const searchInput = document.getElementById('search-input');
-                const searchTerm = searchInput.value.trim();
-                if (searchTerm) {
-                    updateUserHistory('search', searchTerm);
-                    alert(`(For Demo) Search for "${searchTerm}" was recorded to your profile.`);
-                    searchInput.value = ''; // Clear search bar
-                }
-            });
+            const body = `Name: ${name}%0D%0AUser Email: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+            const subject = encodeURIComponent(type);
+            
+            // This URL forces the Gmail web interface to open in a new tab
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=anikanowner@gmail.com&su=${subject}&body=${body}`;
+            
+            window.open(gmailUrl, '_blank');
         }
-    });
-</script>
+    </script>
 </body>
 </html>

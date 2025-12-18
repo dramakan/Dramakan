@@ -11,23 +11,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <style>
-        /* Based on your index.html theme and the provided disclaimer structure */
         :root {
-            --primary-color: #8A2BE2; /* Primary color (Purple/Violet) */
-            --secondary-color: #E50914; /* Secondary color (Red) */
-            --background-color: #0B0C10; /* Dark background */
-            --surface-color: #1A1A1D; /* Card/Surface color */
-            --text-color: #F5F5F5; /* Main text color */
-            --text-muted-color: #a0a0a0; /* Muted text color */
+            --primary-color: #8A2BE2;
+            --secondary-color: #E50914;
+            --background-color: #0B0C10;
+            --surface-color: #1A1A1D;
+            --text-color: #F5F5F5;
+            --text-muted-color: #a0a0a0;
             --border-color: #2c2c34;
             --font-family: 'Poppins', sans-serif;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background-color: var(--background-color);
@@ -53,34 +48,91 @@
             margin-bottom: 1rem;
         }
         
-        h1 {
-            text-align: center;
-            font-size: 2.5rem;
-        }
-        
-        h2 {
-            font-size: 1.5rem;
-            margin-top: 2rem;
+        h1 { text-align: center; font-size: 2.5rem; }
+        h2 { font-size: 1.5rem; margin-top: 2rem; }
+        a { color: var(--primary-color); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        p, li { color: var(--text-muted-color); margin-bottom: 1rem; }
+        strong { color: var(--text-color); }
+
+        /* --- CONTACT MODAL STYLES --- */
+        .contact-trigger {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 25px;
+            background: var(--primary-color);
+            color: white !important;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.3s;
         }
 
-        a {
-            color: var(--primary-color);
-            text-decoration: none;
+        #contactModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+            padding: 20px;
         }
 
-        a:hover {
-            text-decoration: underline;
+        .modal-content {
+            background: var(--surface-color);
+            padding: 30px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            border: 1px solid var(--border-color);
         }
 
-        p, li {
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
             color: var(--text-muted-color);
-            margin-bottom: 1rem;
-        }
-        
-        strong {
-            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1.2rem;
         }
 
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--background-color);
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 6px;
+            font-family: inherit;
+        }
+
+        .send-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .fallback-note {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #ccc;
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+        }
+        .fallback-note a { color: var(--primary-color); font-weight: 600; }
     </style>
 </head>
 <body>
@@ -89,7 +141,7 @@
         <h1>Disclaimer - Dramakan</h1>
         <p>Last updated: December 18, 2025</p>
 
-        <p>The information provided by Dramakan ("we," "us," or "our") on this website is for general informational and entertainment purposes only. All content on the Site is provided in good faith, however, we make no representation or warranty of any kind, express or implied, regarding the accuracy, reliability, or completeness of any information on the Site.</p>
+       <p>The information provided by Dramakan ("we," "us," or "our") on this website is for general informational and entertainment purposes only. All content on the Site is provided in good faith, however, we make no representation or warranty of any kind, express or implied, regarding the accuracy, reliability, or completeness of any information on the Site.</p>
         
         <p>By using our services, you acknowledge and agree to this disclaimer in full.</p>
 
@@ -136,11 +188,69 @@
         </p>
                 <p><strong>If you are owner of any content and want removal of any content just contact us at: <a href="mailto:anikanowner@gmail.com">copyright@drmakan.site</a>, with proof and it will be removed within 48 hours.</strong></p>
 
+        <p style="text-align: center; margin-top: 20px;">
+            <button class="contact-trigger" onclick="toggleModal(true)">Contact for Removal / Requests</button>
+        </p>
+
         <p style="margin-top: 30px; text-align: center;">
             <a href="index.html" style="font-weight: 600;"><i class="fas fa-home"></i> Back to Home</a>
         </p>
-
     </div>
 
+    <div id="contactModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="toggleModal(false)">&times;</span>
+            <h2 style="border:none; margin-top:0; text-align:center;">Contact Support</h2>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" id="contactName" placeholder="Enter name">
+                </div>
+                <div class="form-group">
+                    <label>Your Gmail</label>
+                    <input type="email" id="contactEmail" placeholder="yourname@gmail.com">
+                </div>
+                <div class="form-group">
+                    <label>Reason</label>
+                    <select id="contactType">
+                        <option value="Content Removal Request">Content Removal Request</option>
+                        <option value="Drama Request">Drama Request</option>
+                        <option value="General Feedback">Suggestion / Feedback</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="contactMessage" rows="3" placeholder="Describe your request..."></textarea>
+                </div>
+                <button type="button" class="send-btn" onclick="sendGmail()">Send via Gmail</button>
+                
+                <div class="fallback-note">
+                    <strong>Note:</strong> If Gmail doesn't open automatically, please manually email: <br>
+                    <a href="mailto:anikanowner@gmail.com">anikanowner@gmail.com</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleModal(show) {
+            document.getElementById('contactModal').style.display = show ? 'flex' : 'none';
+        }
+
+        function sendGmail() {
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const type = document.getElementById('contactType').value;
+            const message = document.getElementById('contactMessage').value;
+
+            const body = `Name: ${name}%0D%0AUser Email: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+            const subject = encodeURIComponent(type);
+            
+            // This URL forces the Gmail web interface to open in a new tab
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=anikanowner@gmail.com&su=${subject}&body=${body}`;
+            
+            window.open(gmailUrl, '_blank');
+        }
+    </script>
 </body>
 </html>
