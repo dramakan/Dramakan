@@ -56,7 +56,75 @@
       color: var(--text-color);
     }
 
+/* Header Layout Fix */
+.main-header .container {
+  display: flex;
+  flex-direction: column; /* Stacks rows vertically */
+  gap: 15px;
+}
 
+.header-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Full Width Search Bar */
+.search-bar {
+  width: 100%;
+  margin: 0 !important;
+  position: relative;
+}
+
+.search-bar input {
+  width: 100% !important;
+  border-radius: 10px; /* More app-like feel */
+}
+
+/* Mobile Sidebar Styles */
+@media (max-width: 992px) {
+  .nav-links {
+    position: fixed;
+    top: 0;
+    left: -100%; /* Hidden by default */
+    width: 280px;
+    height: 100vh;
+    background: var(--surface-color);
+    z-index: 9999;
+    transition: 0.3s ease-in-out;
+    padding: 30px 20px;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+    display: block; /* Overrides previous display:none */
+  }
+
+  .nav-links.active {
+    left: 0; /* Slides in */
+  }
+
+  .nav-links ul {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .nav-links a {
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+}
+
+/* PC View: Keep horizontal nav */
+@media (min-width: 993px) {
+  .main-header .container {
+    flex-direction: row; /* Horizontal for PC */
+    justify-content: space-between;
+  }
+  .header-top-row { width: auto; }
+  .search-bar { width: 400px; }
+  .mobile-menu-toggle { display: none; }
+}
     .marquee-content {
       display: inline-block;
       padding-left: 100%; /* Starts the animation off-screen to the right */
@@ -135,8 +203,8 @@
     }
 
     .nav-links a {
-      font-weight: 600;
-      font-size: 130%;
+      font-weight: 500;
+      font-size: 120%;
       transition: color 0.3s;
     }
 

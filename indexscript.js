@@ -1,5 +1,24 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+  document.addEventListener('DOMContentLoaded', function() {
+  const menuToggle = document.getElementById('mobileMenuToggle');
+  const navLinks = document.getElementById('navLinks');
+  
+  if (menuToggle && navLinks) {
+    // Open/Close menu
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navLinks.classList.toggle('active');
+    });
+
+    // Close menu when clicking anywhere else
+    document.addEventListener('click', (e) => {
+      if (!navLinks.contains(e.target) && navLinks.classList.contains('active')) {
+        navLinks.classList.remove('active');
+      }
+    });
+  }
+});
   /* ================= 1. LOGIN & PROFILE LOGIC ================= */
   const userString = localStorage.getItem('dramaKanUser');
   const loginButton = document.getElementById('login-button');
