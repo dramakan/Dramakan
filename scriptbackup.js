@@ -1,0 +1,326 @@
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+      // --- LOGIN & PROFILE BUTTON VISIBILITY (PC/Mobile) ---
+      const userString = localStorage.getItem('dramaKanUser');
+      const loginButton = document.getElementById('login-button');
+      const profileButton = document.getElementById('profile-button');
+      const mobileProfileText = document.getElementById('mobile-nav-profile-text');
+      
+      let isLoggedIn = false;
+      if (userString) {
+        try {
+          const user = JSON.parse(userString);
+          isLoggedIn = user.isLoggedIn;
+        } catch (e) {
+          console.error("Error parsing user data from localStorage", e);
+        }
+      }
+
+      if (loginButton && profileButton) {
+        if (isLoggedIn) {
+          loginButton.style.display = 'none';
+          profileButton.style.display = 'inline-block';
+        } else {
+          loginButton.style.display = 'inline-block';
+          profileButton.style.display = 'none';
+        }
+      }
+      
+      if (mobileProfileText) {
+          mobileProfileText.textContent = isLoggedIn ? 'Profile' : 'Login';
+          // Ensure the mobile nav link href is correct based on state
+          const profileNavItem = document.querySelector('.mobile-footer-nav a[data-page="profile"]');
+          if (profileNavItem) {
+              profileNavItem.href = isLoggedIn ? 'profile.html' : 'login.html';
+          }
+      }
+
+
+      // === HERO SLIDER === (Logic preserved)
+      const sliderWrapper = document.querySelector('.slider-wrapper');
+      if (sliderWrapper) {
+        const slides = document.querySelectorAll('.slide');
+        const nextBtn = document.getElementById('nextSlide');
+        const prevBtn = document.getElementById('prevSlide');
+        let currentIndex = 0;
+        let slideInterval = setInterval(nextSlide, 5000);
+
+        function updateSlider() {
+          sliderWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+        }
+        function nextSlide() {
+          currentIndex = (currentIndex + 1) % slides.length;
+          updateSlider();
+        }
+        function prevSlide() {
+          currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+          updateSlider();
+        }
+        function resetInterval() {
+            clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+        nextBtn.addEventListener('click', () => {
+          nextSlide();
+          resetInterval();
+        });
+        prevBtn.addEventListener('click', () => {
+          prevSlide();
+          resetInterval();
+        });
+      }
+
+      // === AIRING SCHEDULE TABS === (Logic preserved)
+      const tabButtons = document.querySelectorAll('.schedule-tabs .tab-btn');
+      const scheduleContents = document.querySelectorAll('.schedule-content');
+
+      function setActiveTab(day) {
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        scheduleContents.forEach(content => content.classList.remove('active'));
+        const activeBtn = document.querySelector(`.tab-btn[data-day="${day}"]`);
+        const activeContent = document.getElementById(day);
+        if (activeBtn) activeBtn.classList.add('active');
+        if (activeContent) activeContent.classList.add('active');
+      }
+
+      // Automatically activate today's tab
+      const today = new Date().toLocaleString('en-US', { weekday: 'short' }).toLowerCase();
+      setActiveTab(today);
+
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const dayToActivate = button.getAttribute('data-day');
+          setActiveTab(dayToActivate);
+        });
+      });
+      
+
+      // === SEARCH FUNCTIONALITY ===
+      const searchInput = document.getElementById('searchInput');
+      const searchResultsContainer = document.getElementById('searchResults');
+      const dramas = [
+      { title: 'A Girl and Three Sweethearts', type: 'J-Drama', img: 'https://m.media-amazon.com/images/M/MV5BYzljZDAwZTUtOWY3Yi00NWNlLWI3ODQtZGU4ZDNiZjMzYThhXkEyXkFqcGc@._V1_.jpg', link: 'agirlandthreesweethearts.html' },   
+      { title: 'A Dream Within a Dream', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMjRjZGM0NjMtNjBlZS00MTA2LWI5ZGUtMzIyMzBiMzdjMWU5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'ADreamWithinaDream.html' },
+      { title: 'Alchemy of Souls', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BOGFhNGQzMWUtZWJhNi00NGZiLTg1MjEtMTQzZmU4Njg2MWRhXkEyXkFqcGc@._V1_.jpg', link: 'alchemy.html' },
+      { title: 'Ang Mutya ng Section E ', type: 'P-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMDRlNTdiMTgtNTcyOC00ZTU4LWI5NDAtMjhiZDc1OGUxYjQ0XkEyXkFqcGc@._V1_.jpg', link: 'AngMutyangSectionE.html' },
+      { title: 'A Very Special Love (Rain in España)', type: 'P-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMWMzZmY0ZWEtNzEwZi00MTZiLTg4YzUtMTQ2ZTAyNTcxMDE0XkEyXkFqcGc@._V1_.jpg', link: 'AVerySpecialLoveRaininEspaña.html' },  
+      { title: 'A Time Called You', type: 'K-Drama', img: 'https://x8r7c6g3.delivery.rocketcdn.me/wp-content/uploads/2023/09/A-Time-Called-You-001.jpg', link: 'atimecalledyou.html' },
+        { title: 'Always Home (树下有片红房子)', type: 'C-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNzU1ZGIwYWMtZWI1Yy00NjMyLWIxOWMtODRhNTEzYmEyNDE4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'alwayshome.html' },
+        { title: 'Be Passionately in Love (陷入我们的热恋)', type: 'C-Drama', img: 'https://m.media-amazon.com/images/M/MV5BYmU4YjkwMmEtNGIyMi00NDU1LTg2ZmUtNTFlZmJiMWI2NmNkXkEyXkFqcGc@._V1_.jpg', link: 'BePassionatelyinLove.html' }, 
+        { title: 'Business Proposal', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BYWM2NTM4MTktNDFiNi00NTI3LThiZTgtZmJiZTQ2NzdhNDE3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'BusinessProposal.html' },
+        { title: 'Because This Is My First Life', type: 'K-Drama', img: 'https://i.mydramalist.com/PdBoyf.jpg', link: 'BecauseThisIsMyFirstLife.html' },
+        { title: 'Beyond Evil', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMjY0NmE0YzktMzAwYy00OWJhLThkYjMtZTM1YjkzMDFkMjQ2XkEyXkFqcGc@._V1_.jpg', link: 'beyondevil.html' },
+        { title: 'Black Knight: The Man Who Guards Me', type: 'K-Drama', img: 'https://i.mydramalist.com/nvz0Ef.jpg', link: 'blackknight.html' },
+        { title: 'Bulgasal: Immortal Souls', type: 'K-Drama', img: 'https://upload.wikimedia.org/wikipedia/en/c/c1/Bulgasal_Immortal_Souls.jpg', link: 'bulgals.html' },
+        { title: 'Cherry Magic!', type: 'J-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNmE3NzhjYmMtMWY3MS00YjAxLWI2N2MtMmM0NDdhNTQ3NWM2XkEyXkFqcGc@._V1_QL75_UY281_CR18,0,190,281_.jpg', link: 'cherrymagic.html' },
+        { title: 'City Hunter', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNzI5ZWZjN2UtNjRiNS00MzViLTgzNjMtZWEyZTlmNWJhYjJkXkEyXkFqcGc@._V1_.jpg', link: 'CityHunter.html' },
+        { title: 'Crash Landing on You', type: 'K-Drama', img: 'https://rukminim2.flixcart.com/image/704/844/kri3xjk0/poster/a/l/u/large-crash-landing-on-you-korean-tv-series-poster-k-drama-original-imag5a4epdvtync4.jpeg?q=90&crop=false', link: 'Crash.html' },
+        { title: 'Descendants of the Sun', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BYTQ3MWI2MjEtM2Q3NS00YjU4LWFkZGItNDA0OTc2NjcwZWY3XkEyXkFqcGc@._V1_.jpg', link: 'decendantsofthesun.html' },
+        { title: 'Destined with You', type: 'K-Drama', img: 'https://resizing.flixster.com/DwdugXZG3nJe7yrhmNmGUEahCmQ=/ems.cHJkLWVtcy1hc3NldHMvdHZzZWFzb24vNTE1ZDkxOWUtMTU4Ny00OGU3LWI1MzQtNmNiN2M0Yjc3NjkzLmpwZw==', link: 'destinedwithyou.html' },
+        { title: 'Doom at Your Service', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMDhlN2U3YjUtNmI3Zi00Njk0LWJmMTctYjFhYTY2Y2RiN2NhXkEyXkFqcGc@._V1_.jpg', link: 'doomatyourservice.html' },
+        { title: 'Dear X', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZTRiOGQ2NGUtNzc3NC00OTY0LWJiZWMtNzBlOGVlNTY0ZThlXkEyXkFqcGc@._V1_.jpg', link: 'dearx.html' },
+        { title: 'Dynamite Kiss', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNjBmZjQ0NDUtN2E0Yy00OTg3LTgwZjMtZDk2ZjliNmRhY2Y5XkEyXkFqcGc@._V1_.jpg', link: 'DynamiteKiss.html' },
+        { title: 'Extraordinary You', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNzQwYzViZjYtOWEwNS00ZTcyLWE2MTYtM2FiYzkyZmIzMjI3XkEyXkFqcGc@._V1_.jpg', link: 'extraordinaryyou.html' },
+        { title: 'Fated Heart (一笑随歌)', type: 'C-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZmFkM2Q1ZjEtZTkzYy00OTVhLTg3MjEtZmE2ZTVlOTFiZDNjXkEyXkFqcGc@._V1_.jpg', link: 'FatedHeart.html' },
+        { title: 'Fell Upon Me (你的降临)', type: 'C-Drama', img: 'https://i.mydramalist.com/oQR2ZO_4f.jpg', link: 'FellUponMe.html' },
+        { title: 'From Five To Nine', type: 'J-Drama', img: 'https://images.plex.tv/photo?size=large-1280&url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fs2vr3nKlZcDT4oOJ6AxcvUaEV2F.jpg', link: 'fromfivetonine.html' }, 
+        { title: 'Fight for My Way', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BYmRiMzU4YTQtYTUyMi00YjJlLWJlYWUtYjI4MTg3ZWY5OTk4XkEyXkFqcGc@._V1_.jpg', link: 'fightformyway.html' },
+        { title: 'First Love: Hatsukoi', type: 'J-Drama', img: 'https://m.media-amazon.com/images/M/MV5BYzlkNjU0NzUtMmNkNi00OTBiLWEyN2YtNjkxNzc0ODhkYjExXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'firstlovehatsukoi.html' },
+        { title: 'Flower of Evil', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZDI2YTZmMmQtMGE5NS00YWU2LTk1MDktMDQxMDYzNGI5MDA5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'flowerofevil.html' },
+       { title: 'Falling Into You', type: 'C-Drama', img: 'https://m.media-amazon.com/images/M/MV5BN2M4NWM5NmYtZmU2Ny00N2MyLTk2OTYtM2QwY2ZkYzljMDllXkEyXkFqcGc@._V1_.jpg', link: 'FallingIntoYou.html' },
+        { title: 'Guardian: The Lonely and Great God', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNWIyNTA3MmItNzY5ZS00NmZhLThjMWYtZjIxYzllZWU5YWIzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'goblin.html' },
+        { title: 'Given', type: 'J-Drama', img: 'https://i.mydramalist.com/Xk2Rn_4f.jpg', link: 'given.html' },
+        { title: 'Her Private Life', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BYjNmMzJiZWUtYWVmNC00MzJhLWFjYzItMTkxNmI0YTQxNjA3XkEyXkFqcGc@._V1_.jpg', link: 'herprivatelife.html' },
+        { title: 'Hi Bye Mama', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZTQ2NTQ5ZWItZWRhZi00NGIwLTk1MjUtYmU1ZGM3OTFkY2FjXkEyXkFqcGc@._V1_.jpg', link: 'hibyemama.html' },
+        { title: 'Hyde, Jekyll, Me', type: 'K-Drama', img: 'https://images.justwatch.com/poster/306800731/s718/season-1.jpg', link: 'HydeJekyllMe.html' },
+        { title: 'Healer', type: 'K-Drama', img: 'https://images.plex.tv/photo?size=large-1280&url=https%3A%2F%2Fmetadata-static.plex.tv%2F5%2Fgracenote%2F548770922e51188df74f8628ec46d5ee.jpg', link: 'healer.html' },
+       { title: 'King The Land', type: 'K-Drama', img: 'https://i.mydramalist.com/wJAkqn_4c.jpg?v=1', link: 'kingtheland.html' },
+       { title: 'Lawless Lawyer', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BYmQ0NTg3MWItYTg4MS00NzMyLTk5NjgtZjk3NzAwMTdlZTc5XkEyXkFqcGc@._V1_.jpg', link: 'lawlesslawyer.html' },
+       { title: 'Lost', type: 'K-Drama', img: 'https://asianwiki.com/images/b/b3/Lost_KM-p.jpeg', link: 'lost.html' }, 
+       { title: 'Lovestruck in the City', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNmU3ZmY2MDItY2U1NS00ODQ5LWIyYjctNTE3ZWEwZWQzZDAyXkEyXkFqcGc@._V1_.jpg', link: 'LovestruckintheCity.html' },
+       { title: 'Love Scenery (良辰美景好时光)', type: 'C-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNjQ1MGQ3OTItMDExMS00MTAzLTg4ZTUtMjMzNmE4M2VmNDVmXkEyXkFqcGc@._V1_.jpg', link: 'LoveScenery.html' }, 
+       { title: 'Love in the Clouds', type: 'C-Drama', img: 'https://media.themoviedb.org/t/p/w500/jsQYb6yXT6ZnEZ6KMMA1sChxPrb.jpg', link: 'Love in the Clouds.html' },
+       { title: 'The ATypical Family', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZDE5Njc0ODYtYWRhYS00NjVlLTg2MWQtZWY5YTRmYjJlNjNiXkEyXkFqcGc@._V1_.jpg', link: 'theatypicalfamily.html' },
+       { title: 'A Killer Paradox', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BYmU3MjZhNjYtODI2Yi00Nzg4LTg0NTctNWNmZDhhNmNiNWQ2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'akillerparadox.html' },
+       { title: 'My Dearest Nemesis', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZmQwNDU5MTYtNTdiMS00YjYyLTk0NDktODNkOWVjY2NmZWRmXkEyXkFqcGc@._V1_.jpg', link: 'mydearestnemesis.html' },
+       { title: 'Serial Homicide', type: 'C-Drama', img: 'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/nxasYg0ClRdkn7K9tpbYsl7jIrv.jpg', link: 'SerialHomicide.html' },
+       { title: 'True Beauty', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZTFlNWFiNGQtNjA3Zi00ODNmLTgyNWQtODk4ZGQ2OWZjZjAxXkEyXkFqcGc@._V1_.jpg', link: 'truebeauty.html' }, 
+       { title: 'Hotel Del Luna', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZmFmYTU0YTItZTk4ZS00ZWMzLThmOTgtOGIyOTBkY2QwZjc0XkEyXkFqcGc@._V1_.jpg', link: 'hoteldelluna.html' },
+       { title: 'Itaewon Class', type: 'K-Drama', img: 'https://image.tmdb.org/t/p/original/8iOhZBbMWG8qdQyNWdgGIunrxhv.jpg', link: 'itaewonclass.html' }, 
+       { title: "It's Okay to Not Be Okay", type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNWJhMDNjMWUtMWM5NS00MGZlLWI2MWQtODMxYjZiYmFlZjgzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'itsokaynotbeokay.html' },
+        { title: 'Reborn', type: 'C-Drama', img: 'https://m.media-amazon.com/images/M/MV5BYzAyNGFmZDItMTYyZC00ZGFjLWIwOTItYmQwYTRmNGFkODVlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'reborn.html' },
+       { title: 'Reply 1988', type: 'K-Drama', img: 'https://i.mydramalist.com/EVe0p_4f.jpg', link: 'reply1988.html' },
+        { title: 'Record of Youth', type: 'K-Drama', img: 'https://i.mydramalist.com/BgnKz_4f.jpg', link: 'RecordofYouth.html' },
+        { title: 'Kill Me, Heal Me', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNmI3YmVlOWUtZWE1OS00YmE0LWJkOTQtZDAzY2I2MzM0ZmJkXkEyXkFqcGc@._V1_.jpg', link: 'killmehealme.html' },
+        { title: 'Legend of the Blue Sea', type: 'K-Drama', img: 'https://i.mydramalist.com/BjZj6f.jpg', link: 'legendofbluesea.html' },
+        { title: 'Love Lasts Forever', type: 'J-Drama', img: 'https://i.namu.wiki/i/spQ6DuB0-LQE1Qu_90Daq5S3x8XhafjQG4CJva8CR9aFjQ_4deIU2FGg18H-x4FQGUR0Z-6fwjGGK4dpG3fQLw.webp', link: 'lovelastsforever.html' },
+        { title: 'Lovely Runner', type: 'K-Drama', img: 'https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png', link: 'lovelyrunner.html' },
+        { title: 'My Beautiful Man', type: 'J-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZWQxYzdkOGYtMWUyYi00NGEyLWFjOGEtNjI3NzkwZDVjODIxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'mybeautifulman.html' },
+        { title: 'Marry My Husband', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMzVhNjM5MmUtNjU5YS00OGE5LTg3ZGYtMzk0NDcwNGMwOGM0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'marrymyhusband.html' },
+        { title: 'Misaeng Incomplete Life', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMGFlM2M2M2ItOTQyOS00YjY4LWI2MWItMDBlZjYwZTQ0M2MzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'Misaengincompletelife.html' }, 
+        { title: 'My Demon', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNTg5YmU0OTYtNzIzNy00MzM1LWI0OWEtYzc5ZmRlNmJlODk5XkEyXkFqcGc@._V1_.jpg', link: 'mydemon.html' },
+        { title: 'Mouse', type: 'K-Drama', img: 'https://i.mydramalist.com/XNeKO_4f.jpg', link: 'mouse.html' },
+        { title: 'My Love from the Star', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMjM4MzhmYTAtY2EwYi00ZTI1LWI0OTYtZmNkNzFiYWM0NzU2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'mylovefromstar.html' },
+        { title: 'My Love Mix-Up!', type: 'J-Drama', img: 'https://image.tmdb.org/t/p/w500/iP7S1y9jS2fL2aBf2dF4RF3dYyR.jpg', link: 'mylovemixup.html' },
+        { title: 'My Mister', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNTc0MjA2MWItOTFjMC00ZTQ3LThkOGEtYjQxMjM0ZTY2MzUzXkEyXkFqcGc@._V1_.jpg', link: 'mymister.html' },
+        { title: 'My Roommate Is a Gumiho', type: 'K-Drama', img: 'https://i.mydramalist.com/E1WPb_3f.jpg', link: 'myroommateisgumhino.html' },
+        { title: 'One/1 Litre of Tears', type: 'J-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMmQ3MmY3M2EtYjJkYy00OTBmLTgzOGQtZGU4MDMzOWZkYjJkXkEyXkFqcGc@._V1_.jpg', link: 'onelitreoftears.html' },
+        { title: 'Our Beloved Summer', type: 'K-Drama', img: 'https://upload.wikimedia.org/wikipedia/en/2/29/Our_Beloved_Summer.jpg', link: 'ourbelovedsummer.html' },
+        { title: 'Queen of Tears', type: 'K-Drama', img: 'https://i.pinimg.com/736x/0b/2e/9f/0b2e9f2a20b251450178800397c419b2.jpg', link: 'queensoftears.html' },
+        { title: 'Rich Man, Poor Woman', type: 'J-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMDM0NWI2MDQtNWE0Ny00ZTA2LWEwMzMtNjVmYTBjNzE0YzU0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'richmanpoorwoman.html' },
+        { title: 'Strong Woman Do Bong Soon', type: 'K-Drama', img: 'https://i.mydramalist.com/XZqYJf.jpg', link: 'strongwomandobongsoon.html' },
+        { title: 'She Was Pretty', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZWY0MmNiNzQtMzJhNy00NmM5LTllZjItOTY3NTIxYTRkNGRiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'shewaspretty.html' },
+        { title: 'Silent', type: 'J-Drama', img: 'https://image.tmdb.org/t/p/w500/zWPPqt2Bzv9vAZf3mFpCFBvoQu.jpg', link: 'silent.html' },
+        { title: 'Suspicious Partner', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMTg4YjAyNWEtYjc1YS00NTQ4LWJhMTgtODcwNzQ4MDI4Y2Y3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'SuspiciousPartner.html' },
+        { title: 'Signal', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNzM5Njc3YTctMmIzNi00Mjk2LWFhYjUtNTk5ODFkOTU3YzhiXkEyXkFqcGc@._V1_.jpg', link: 'signal.html' },
+        { title: 'Semantic Error', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNzhmMDMwNmQtZWFjYy00YWQ3LTk3ZTUtNmVmMDA0ZmU0MWY5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'SemanticError.html' },
+        { title: 'Sell Your Haunted House', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNzYyMWI2ZTktNDM3YS00ZTFhLThkNzEtNDFhM2M0OWJjMWI5XkEyXkFqcGc@._V1_.jpg', link: 'SellYourHauntedHouse.html' },
+        { title: 'Sniper Butterfly', type: 'C-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMWUyMGY3NjYtMTQ0Zi00OTNjLTkzZjUtNTE2NmQ3ZjM2MzBlXkEyXkFqcGc@._V1_.jpg', link: 'SniperButterfly.html' },
+        { title: 'Speed And Love', type: 'C-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMDE5ZTc1MDItMzI0MS00NWYwLWEzYjUtOGEyZmVhYTk1YzJmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'speedandlove.html' },
+        { title: 'Sunshine Through the Rain (今天是太阳雨)', type: 'C-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMGM5NWE3YzEtNzBjYy00M2RmLTk4N2EtNjI1MTJlNjVkMTU5XkEyXkFqcGc@._V1_.jpg', link: 'SunshineThroughtheRain.html' },
+        { title: 'Surely Tomorrow', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BYTBiMjM4NDEtMDBlZS00ZjE3LWE0NTAtZWZmMjY0MTFiNDdmXkEyXkFqcGc@._V1_.jpg', link: 'SurelyTomorrow.html' }, 
+        { title: 'The Devil Judge', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZmU5ZDZhMTktOTAzZC00NTk1LWIyZWQtMTBjMTBiOGJkYWMxXkEyXkFqcGc@._V1_.jpg', link: 'TheDevilJudge.html' },
+        { title: 'The Fiery Priest', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BYWNiYjlkN2ItYjk2Zi00ODhmLTkwMjQtOWZhMzdhNmU3ZjY0XkEyXkFqcGc@._V1_.jpg', link: 'TheFieryPriest.html' },
+        { title: 'The K2', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BODc4NDA2MTYtMzk1Ni00OTM1LWFhOTItMDA2OWM4NTZkYzVmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'TheK2.html' },
+        { title: 'The Seven Relics of Ill Omen (七根心简)', type: 'C-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNTg2NTZmYzUtZmQ0ZS00OTczLTgxYjItODMyNDU5YmZjZDAwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'TheSevenRelicsofIllOmen.html' }, 
+        { title: 'Touch Your Heart', type: 'K-Drama', img: 'https://image.tmdb.org/t/p/original/eiFQsWGUYGGrinbAe4VBHMV6XtC.jpg', link: 'TouchYourHeart.html' },
+        { title: 'Twinkling Watermelon', type: 'K-Drama', img: 'https://images.plex.tv/photo?size=large-1920&scale=1&url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fm56EaJ4zLG84F8jpNT7ZmaL0IAS.jpg', link: 'TwinklingWatermelon.html' },
+        { title: 'Weightlifting Fairy Kim Bok-joo', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BMDcyZmUyZGYtMGFiYi00OGVlLTk4MzktYTM4MDJmNTU1ZDE5XkEyXkFqcGc@._V1_.jpg', link: 'WeightliftingFairyKimBokjoo.html' },
+        { title: 'Taxi Driver', type: 'K-Drama', img: 'https://i.mydramalist.com/2Bkww_4f.jpg', link: 'taxidriver.html' },
+        { title: 'Tale of the Nine Tailed', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNWYxNDM2NDYtM2EwOS00NTMxLThmNGQtMTJiZWEzMDJiMDQ1XkEyXkFqcGc@._V1_.jpg', link: 'taleofninetailed.html' },
+        { title: 'The King: Eternal Monarch', type: 'K-Drama', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTriCWaftmuFdXvCdxP_IDRpy1IsGkc3GaOQQ&s', link: 'thekingeternalmonarch.html' },
+        { title: 'Twelve Letters', type: 'C-Drama', img: 'https://m.media-amazon.com/images/M/MV5BYzAyNGFmZDItMTYyZC00ZGFjLWIwOTItYmQwYTRmNGFkODVlXkEyXkFqcGc@._V1_.jpg', link: 'TwelveLetters.html' },
+        { title: 'Study Group (스터디그룹)', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZDJmMDU0MTEtNmZkOS00ZGViLWExYTctYWY5YWQ0NTZlZTdhXkEyXkFqcGc@._V1_.jpg', link: 'studygroup.html' },
+        { title: 'The Untamed', type: 'C-Drama', img: 'https://upload.wikimedia.org/wikipedia/en/3/31/Theuntamed.jpg', link: 'theuntamed.html' },
+        { title: 'Twenty-Five Twenty-One', type: 'K-Drama', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZ5X5pEHtBzkpH6n8i1-iRU9Imf8FtBYZIYQ&s', link: '25-21.html' },
+        { title: 'Vincenzo', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNjA1YmJiNTMtMDc4OC00ZjlkLTgyMjctYzRmMWJhMmZhMjkyXkEyXkFqcGc@._V1_.jpg', link: 'vincenzo.html' },
+        { title: 'Bon Appétit, Your Majesty (폭군의 셰프)', type: 'K-Drama', img: 'https://images.ctfassets.net/4cd45et68cgf/7pvghs1THNmEyWKDcxQ2BC/bf583cfb3a10d025a396e10e82efbd6e/ENUS_BonAppetitYourMajesty_TeaserKA_Vertical_RGB_PRE.jpg?w=2000', link: 'yourmajesty.html' },
+        { title: 'Heavenly Even After', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZGE4MTNhNTgtY2I3YS00NmNmLWE1NWUtMmJkM2YzNjVhZjE0XkEyXkFqcGc@._V1_.jpg', link: 'heavenlyevenafter.html' },
+        { title: 'When It Rains, It Pours', type: 'J-Drama', img: 'https://i.mydramalist.com/zBbR4A_4f.jpg', link: 'whenitrainsitpours.html' },
+        { title: 'W Two Worlds', type: 'K-Drama', img: 'https://images.justwatch.com/poster/306333408/s718/deobeulyu.jpg', link: 'wtwoworlds.html' },
+         { title: 'When The Phone Rings', type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZWMyMjRkYzMtZDMyNS00ZTEwLTg3ZmMtYTljZDMxMjg2MjNhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'whenthephonerings.html' },
+        { title: "What's Wrong with Secretary Kim", type: 'K-Drama', img: 'https://m.media-amazon.com/images/M/MV5BOGM3ZDg4MmUtMWFiZi00OTVkLTk1ZjEtZTJkYjdkMmM3NWZkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', link: 'whatswrongwithsecretarykim.html' },
+       { title: 'The First Frost', type: 'C-Drama', img: 'https://m.media-amazon.com/images/M/MV5BNGRhZjkxNmMtMGI0Ny00N2M1LTkzM2ItNzg2YWIwYjcwNzE0XkEyXkFqcGc@._V1_.jpg', link: 'thefirstfrost.html' },
+        { title: "The Best Thing", type: 'C-Drama', img: 'https://m.media-amazon.com/images/M/MV5BZWE5NGJjMmMtOTI5Ni00NWYzLWI4NTUtYmMyM2QwNzNmMDYwXkEyXkFqcGc@._V1_.jpg', link: 'thebestthing.html' },
+        { title: 'You Are My Lover Friend', type: 'C-Drama', img: 'https://m.media-amazon.com/images/M/MV5BY2UxNzM4M2MtMzM4MS00YmY4LTk2NTMtMDNmMDg1OGU4YTUxXkEyXkFqcGc@._V1_.jpg', link: 'YouAreMyLoverFriend.html' }
+        ];
+
+        const fuse = new Fuse(dramas, {
+  keys: ['title'],
+  threshold: 0.45,          // faster & smoother
+  ignoreLocation: true,
+  includeScore: false
+});
+
+
+function debounce(fn, delay = 80) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
+     const runSearch = debounce(() => {
+  const query = searchInput.value.trim();
+  searchResults.innerHTML = '';
+
+  if (!query) {
+    searchResults.style.display = 'none';
+    return;
+  }
+
+  const results = fuse.search(query).slice(0, 8);
+
+  if (!results.length) {
+    searchResults.innerHTML = `<div class="no-result">No results found</div>`;
+  } else {
+    const fragment = document.createDocumentFragment();
+    for (const { item } of results) {
+      const el = document.createElement('a');
+      el.href = item.link;
+      el.className = 'search-result-item';
+      el.innerHTML = `
+        <img loading="lazy" src="${item.img}" alt="${item.title}">
+        <div>
+          <div>${item.title}</div>
+          <small>${item.type}</small>
+        </div>
+      `;
+      fragment.appendChild(el);
+    }
+    searchResults.appendChild(fragment);
+  }
+
+  searchResults.style.display = 'block';
+}, 80);
+
+ /* --- Drama Request Popup Logic (Clickable Toggle) --- */
+    
+    const TELEGRAM_LINK = "https://t.me/+lqMKFXUFkVBlODU1";
+
+    function setupDramaRequestPopup() {
+        
+        // 1. Create the persistent button
+        const toggleButton = document.createElement('a');
+        toggleButton.id = 'drama-request-toggle-button';
+        toggleButton.innerHTML = '<i class="fas fa-question-circle"></i> Didn\'t Find Your Drama?';
+        document.body.appendChild(toggleButton);
+
+        // 2. Define Pop-up HTML (The content that appears on click)
+        const POPUP_HTML = `
+            <h3 class="popup-title-center">Request A New Drama!</h3>
+            <p class="popup-message-center">If you couldn't find your favourite drama, don't worry!</p>
+            <p class="popup-promise">
+                DM us the drama name on Telegram, and it will be available on our site on sameday or within 2 days!
+            </p>
+            <a href="https://t.me/iamashish6700" target="_blank" class="btn btn-primary" style="width: 100%; display: block; background-color: #0088CC; border-color: #0088CC; font-weight: 600;">
+                <i class="fab fa-telegram-plane"></i> DM Drama Name Now
+            </a>
+            <button class="popup-close-btn" data-action="close">&times;</button>
+        `;
+
+        const overlay = document.createElement('div');
+        overlay.id = 'drama-request-overlay-center';
+        
+        const content = document.createElement('div');
+        content.id = 'drama-request-content-center';
+        content.innerHTML = POPUP_HTML;
+        
+        overlay.appendChild(content);
+        document.body.appendChild(overlay);
+
+
+        // 3. Function to dismiss the popup
+        const dismissPopup = () => {
+            overlay.classList.remove('active');
+            // Remove focus/hover effect from button
+            toggleButton.blur(); 
+        };
+
+        // 4. Function to show the popup
+        const showPopup = () => {
+            overlay.classList.add('active');
+        };
+
+        // 5. Attach Event Listeners
+        toggleButton.addEventListener('click', showPopup);
+
+        content.addEventListener('click', (e) => {
+            // Close on click of the 'x' button or the Telegram link
+            if (e.target.dataset.action === 'close' || e.target.closest('a')) {
+                dismissPopup();
+            }
+        });
+        
+        overlay.addEventListener('click', (e) => {
+            // Close on click of the dark overlay itself
+            if (e.target === overlay) {
+                dismissPopup();
+            }
+        });
+    }
+
+    // Initialize the new click-based pop-up system
+    document.addEventListener('DOMContentLoaded', setupDramaRequestPopup);
