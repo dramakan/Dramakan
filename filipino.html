@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese Dramas - DramaKan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #8A2BE2;
+            --background-color: #0B0C10;
+            --surface-color: #1A1A1D;
+            --text-color: #F5F5F5;
+            --text-muted-color: #a0a0a0;
+            --border-color: #2c2c34;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        
+        /* Simplified Header */
+        .main-header { 
+            background-color: rgba(11, 12, 16, 0.9); 
+            padding: 15px 0; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            border-bottom: 1px solid var(--border-color); 
+        }
+        .main-header .container { display: flex; align-items: center; justify-content: space-between; }
+        .logo { font-size: 1.8rem; font-weight: 700; }
+        .logo span { color: var(--primary-color); }
+        .home-link { font-weight: 500; color: var(--primary-color); font-size: 0.9rem; }
+
+        .category-header { padding: 40px 0; text-align: center; }
+        .category-title { font-size: 2.5rem; font-weight: 700; }
+        .category-title span { color: var(--primary-color); }
+
+        .drama-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; padding-bottom: 40px; }
+        .drama-card { background-color: var(--surface-color); border-radius: 8px; overflow: hidden; transition: 0.3s; }
+        .drama-card:hover { transform: translateY(-5px); }
+        .drama-card-img img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+        .drama-card-info { padding: 12px; }
+        .drama-card-title { font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        @media (max-width: 992px) {
+            .drama-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .category-title { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container">
+            <a href="index.html" class="logo">Drama<span>Kan</span></a>
+            <a href="index.html" class="home-link"><i class="fas fa-home"></i> Go to Home</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="category-header">
+            <h1 class="category-title"><span>Filipino</span> Dramas</h1>
+        </section>
+        <div id="drama-grid" class="drama-grid"></div>
+    </main>
+
+    <script>
+        async function loadDramas() {
+            const grid = document.getElementById('drama-grid');
+            try {
+                const response = await fetch('dramas.json');
+                const allDramas = await response.json();
+                const filtered = allDramas.filter(d => d.type === "P-Drama");
+                grid.innerHTML = filtered.map(drama => `
+                    <a href="${drama.link}" class="drama-card">
+                        <div class="drama-card-img"><img loading="lazy" src="${drama.img}" alt="${drama.title}"></div>
+                        <div class="drama-card-info"><h3 class="drama-card-title">${drama.title}</h3></div>
+                    </a>
+                `).join('');
+            } catch (e) { grid.innerHTML = "<p>Failed to load dramas.</p>"; }
+        }
+        window.onload = loadDramas;
+    </script>
+</body>
+</html>
