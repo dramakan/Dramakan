@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
         threshold: 0.4,           // Typo tolerance (0.0 exact, 1.0 loose)
         distance: 100,
         ignoreLocation: true,
-        minMatchCharLength: 2
+        minMatchCharLength: 1
       });
       console.log("Search database loaded successfully.");
     })
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <img loading="lazy" src="${item.img}" alt="${item.title}" width="45" height="65">
             <div>
               <div style="font-weight:600; font-size:14px; color:#333;">${item.title}</div>
-              <small style="color:#666;">${item.type}</small>
+              <small style="color:#fff;">${item.type}</small>
             </div>
           `;
           fragment.appendChild(a);
