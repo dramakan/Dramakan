@@ -172,8 +172,7 @@
             { id: 31, e: 31, title: 'Episode 31', url: 'https://multiembed.mov/?video_id=tt31828796&s=1&e=31' },
             { id: 32, e: 32, title: 'Episode 32', url: 'https://multiembed.mov/?video_id=tt31828796&s=1&e=32' }
         ];
-        
-        let currentIndex = 0;
+         let currentEpisode = 1;
         const totalEpisodes = 32;
 
         const episodeListContainer = document.getElementById('episodes-list-container');
@@ -183,55 +182,76 @@
         const nextBtn = document.getElementById('next-ep-btn');
         const videoPlayer = document.getElementById('video-player-iframe');
 
-        function updateUI(index) {
-            currentIndex = index;
-            const episode = episodeData[currentIndex];
-            if (episode && episode.url) { videoPlayer.src = episode.url; }
-            currentEpisodeTitle.textContent = `You are watching ${episode.title}`;
-            
-            document.querySelectorAll('.episode-item').forEach((item, idx) => {
-                item.classList.toggle('current', idx === currentIndex);
-            });
-            
-            downloadLinksTbody.innerHTML = `
-                <tr>
-                    <td data-label=\"Episode\">Episode ${episode.number}</td>
-                    <td data-label=\"Quality\">1080p</td>
-                    <td data-label=\"Video\"><a href=\"#\" class=\"download-btn\"><i class=\"fas fa-download\"></i> Download</a></td>
-                    <td data-label=\"Subtitles\"><a href=\"#\" class=\"download-btn\"><i class=\"fas fa-closed-captioning\"></i> Download</a></td>
-                </tr>`;
-
-            prevBtn.disabled = currentIndex === 0;
-            nextBtn.disabled = currentIndex === totalEpisodes - 1;
+        function updateUI(episodeNumber) {
+            currentEpisode = parseInt(episodeNumber, 10);
+            const episode = episodeData.find(ep => ep.number === currentEpisode);
+            if (episode && episode.videoUrl) { videoPlayer.src = episode.videoUrl; }
+            currentEpisodeTitle.textContent = `You are watching Episode ${currentEpisode}`;
+            document.querySelectorAll('.episode-item').forEach(item => { item.classList.toggle('current', parseInt(item.dataset.episode, 10) === currentEpisode); });
+            document.querySelector(`.episode-item[data-episode='${currentEpisode}']`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            downloadLinksTbody.innerHTML = '';
+            if (episode && episode.downloadLinks) {
+                episode.downloadLinks.forEach(link => {
+                    downloadLinksTbody.innerHTML += `
+                        <tr>
+                            <td data-label="Episode">Episode ${currentEpisode}</td>
+                            <td data-label="Quality">${link.quality}</td>
+                            <td data-label="Video"><a href="${link.url}" class="download-btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-download"></i> Download</a></td>
+                            <td data-label="Subtitles"><a href="${episode.subtitleUrl}" class="download-btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-closed-captioning"></i> Download</a></td>
+                        </tr>`;
+                });
+            }
+            prevBtn.disabled = currentEpisode === 1;
+            nextBtn.disabled = currentEpisode === totalEpisodes;
         }
 
         function generateEpisodeList() {
-            episodeData.forEach((ep, index) => {
-                episodeListContainer.innerHTML += `<a class=\"episode-item\" data-index=\"${index}\"><div class=\"ep-info\"><p class=\"ep-number\">EP ${ep.number}</p><p class=\"ep-desc\">${ep.title}</p></div></a>`;
-            });
+            for (let i = 1; i <= totalEpisodes; i++) {
+                const episode = episodeData.find(ep => ep.number === i) || { number: i, title: `Episode ${i}` };
+                episodeListContainer.innerHTML += `<a class="episode-item" data-episode="${episode.number}"><div class="ep-info"><p class="ep-number">Episode ${episode.number}</p><p class="ep-desc">${episode.title}</p></div></a>`;
+            }
         }
         
-        episodeListContainer.addEventListener('click', (e) => {
-            const item = e.target.closest('.episode-item');
-            if (item) updateUI(parseInt(item.dataset.index));
-        });
-
-        prevBtn.addEventListener('click', () => { if (currentIndex > 0) updateUI(currentIndex - 1); });
-        nextBtn.addEventListener('click', () => { if (currentIndex < totalEpisodes - 1) updateUI(currentIndex + 1); });
-
+        episodeListContainer.addEventListener('click', (e) => { const item = e.target.closest('.episode-item'); if (item) updateUI(item.dataset.episode); });
+        prevBtn.addEventListener('click', () => { if (currentEpisode > 1) updateUI(currentEpisode - 1); });
+        nextBtn.addEventListener('click', () => { if (currentEpisode < totalEpisodes) updateUI(currentEpisode + 1); });
         generateEpisodeList();
-        updateUI(0);
+        updateUI(1);
 
         const synopsisText = document.getElementById('synopsis-text');
         const readMoreBtn = document.getElementById('read-more-btn');
-        if (synopsisText && readMoreBtn) {
-            readMoreBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                synopsisText.classList.toggle('truncated');
-                readMoreBtn.textContent = synopsisText.classList.contains('truncated') ? 'Read More' : 'Read Less';
-            });
-        }
+        if (synopsisText && readMoreBtn) { readMoreBtn.addEventListener('click', (e) => { e.preventDefault(); synopsisText.classList.toggle('truncated'); readMoreBtn.textContent = synopsisText.classList.contains('truncated') ? 'Read More' : 'Read Less'; }); }
+
+        const commentForm = document.getElementById('comment-form');
+        const commentTextarea = commentForm.querySelector('textarea');
+        const commentsListContainer = document.getElementById('comments-list-container');
+        const commentCountSpan = document.getElementById('comment-count');
+        const customAvatars = [ 'https://i.pravatar.cc/40?u=userA', 'https://i.pravatar.cc/40?u=userB', 'https://i.pravatar.cc/40?u=userC', 'https://i.pravatar.cc/40?u=userD', 'https://i.pravatar.cc/40?u=userE' ];
+
+        commentForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const commentText = commentTextarea.value.trim();
+            if (commentText === '') { return; }
+            const randomAvatar = customAvatars[Math.floor(Math.random() * customAvatars.length)];
+            const sanitizedText = commentText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const newCommentHTML = `
+                <div class="comment">
+                    <img class="user-avatar" src="${randomAvatar}" alt="User Avatar">
+                    <div class="comment-content">
+                        <p class="comment-author">Guest <span>- just now</span></p>
+                        <p class="comment-text">${sanitizedText}</p>
+                        <div class="comment-actions">
+                            <a href="#"><i class="fas fa-thumbs-up"></i> 0</a>
+                            <a href="#"><i class="fas fa-reply"></i> Reply</a>
+                        </div>
+                    </div>
+                </div>`;
+            commentsListContainer.insertAdjacentHTML('beforeend', newCommentHTML);
+            commentTextarea.value = '';
+            commentCountSpan.textContent = parseInt(commentCountSpan.textContent) + 1;
+        });
     });
-    </script>
+</script>
+
 </body>
 </html>
