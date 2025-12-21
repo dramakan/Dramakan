@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disneyplus Dramas - DramaKan</title>
+    <link rel="icon" type="image/png" href="favicon.png" sizes="48x48">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="indexstyle.css">
+    <style>
+        /* Customizing for Disneyplus Brand Color */
+        :root {
+            --primary-color: #00AEFF; /* Disneyplus Blue */
+        }
+        body { 
+            padding-bottom: 70px; 
+        }
+        .category-header { 
+            padding: 40px 0; 
+            text-align: center; 
+        }
+        .category-title { 
+            font-size: 2.5rem; 
+            font-weight: 700; 
+        }
+        .category-title span { 
+            color: var(--primary-color); 
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container">
+            <a href="index.html" class="logo">Drama<span>Kan</span></a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="category-header">
+            <h1 class="category-title"><span>Disney Plus</span> Dramas</h1>
+        </section>
+        
+        <div id="disneyplus-grid" class="drama-grid">
+            </div>
+    </main>
+
+    <script>
+        async function loadDisneyplusDramas() {
+            const grid = document.getElementById('disneyplus-grid');
+            
+            try {
+                // Fetch the central database
+                const response = await fetch('dramas.json');
+                if (!response.ok) throw new Error("Failed to load data");
+                
+                const allDramas = await response.json();
+                
+                // Filter specifically for dramas where platform is 'disneyplus'
+                const disneyplusDramas = allDramas.filter(d => d.platform === "disneyplus");
+                
+                if (disneyplusDramas.length === 0) {
+                    grid.innerHTML = `<p style="text-align:center; width:100%;">No dramas found for Disneyplus yet.</p>`;
+                    return;
+                }
+                
+                // Render using standard card layout and hover effects
+                grid.innerHTML = disneyplusDramas.map(drama => `
+                    <a href="${drama.link}" class="drama-card">
+                        <div class="drama-card-img">
+                            <img loading="lazy" src="${drama.img}" alt="${drama.title}">
+                        </div>
+                        <div class="drama-card-info">
+                            <h3 class="drama-card-title">${drama.title}</h3>
+                            <p class="drama-card-meta">${drama.type}</p>
+                        </div>
+                    </a>
+                `).join('');
+                
+            } catch (error) {
+                console.error("Error loading dramas:", error);
+                grid.innerHTML = `<p style="text-align:center; width:100%;">Error loading content.</p>`;
+            }
+        }
+
+        window.onload = loadDisneyplusDramas;
+    </script>
+</body>
+</html>
