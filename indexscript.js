@@ -45,51 +45,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 keys: ['title'],
                 threshold: 0.4
             });
-// Add this helper function at the top
-function shuffleArray(array) {
-    return array.sort(() => Math.random() - 0.5);
-}
 
-async function initializeDramaSite() {
-    try {
-        const response = await fetch('dramas.json');
-        const data = await response.json();
-
-        fuse = new Fuse(data, { keys: ['title'], threshold: 0.4 });
-
-        // 1. Logic for Randomization (except Trending)
-        populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15)); 
-        populateGrid('kdrama-grid', shuffleArray(data.filter(d => d.type === "K-Drama")).slice(0, 15));
-        populateGrid('cdrama-grid', shuffleArray(data.filter(d => d.type === "C-Drama")).slice(0, 15));
-        populateGrid('jdrama-grid', shuffleArray(data.filter(d => d.type === "J-Drama")).slice(0, 15));
-
-        // 2. Carousel Button Logic
-        document.querySelectorAll('.carousel-container').forEach(container => {
-            const track = container.querySelector('.carousel-track');
-            const nextBtn = container.querySelector('.next');
-            const prevBtn = container.querySelector('.prev');
-
-            nextBtn.addEventListener('click', () => {
-                track.scrollBy({ left: 300, behavior: 'smooth' });
-            });
-            prevBtn.addEventListener('click', () => {
-                track.scrollBy({ left: -300, behavior: 'smooth' });
-            });
-        });
-
-        // 3. Floating Button Modal Logic
-        const modal = document.getElementById('request-modal');
-        const btn = document.getElementById('floating-request-btn');
-        const close = document.querySelector('.close-modal');
-
-        btn.onclick = () => modal.classList.add('active');
-        close.onclick = () => modal.classList.remove('active');
-        window.onclick = (e) => { if(e.target == modal) modal.classList.remove('active'); }
-
-    } catch (err) {
-        console.error("Data Load Error:", err);
+            populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 18)); 
+            populateGrid('kdrama-grid', data.filter(d => d.type === "K-Drama").slice(0, 18));
+            populateGrid('cdrama-grid', data.filter(d => d.type === "C-Drama").slice(0, 18));
+            populateGrid('jdrama-grid', data.filter(d => d.type === "J-Drama").slice(0, 18));
+            populateGrid('pdrama-grid', data.filter(d => d.type === "P-Drama").slice(0, 18));
+        } catch (err) {
+            console.error("Data Load Error:", err);
+        }
     }
-}
+
     function populateGrid(elementId, items) {
         const grid = document.getElementById(elementId);
         if (!grid) return;
