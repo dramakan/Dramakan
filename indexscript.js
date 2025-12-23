@@ -36,7 +36,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
 
+    async function initializeDramaSite() {
+        try {
+            const response = await fetch('dramas.json');
+            const data = await response.json();
 
+            fuse = new Fuse(data, {
+                keys: ['title'],
+                threshold: 0.4
+            });
 // Add this helper function at the top
 function shuffleArray(array) {
     return array.sort(() => Math.random() - 0.5);
@@ -54,8 +62,6 @@ async function initializeDramaSite() {
         populateGrid('kdrama-grid', shuffleArray(data.filter(d => d.type === "K-Drama")).slice(0, 15));
         populateGrid('cdrama-grid', shuffleArray(data.filter(d => d.type === "C-Drama")).slice(0, 15));
         populateGrid('jdrama-grid', shuffleArray(data.filter(d => d.type === "J-Drama")).slice(0, 15));
-        populateGrid('pdrama-grid', shuffleArray(data.filter(d => d.type === "P-Drama")).slice(0, 15));
-        populateGrid('tdrama-grid', shuffleArray(data.filter(d => d.type === "T-Drama")).slice(0, 15));
 
         // 2. Carousel Button Logic
         document.querySelectorAll('.carousel-container').forEach(container => {
@@ -84,6 +90,19 @@ async function initializeDramaSite() {
         console.error("Data Load Error:", err);
     }
 }
+    function populateGrid(elementId, items) {
+        const grid = document.getElementById(elementId);
+        if (!grid) return;
+        grid.innerHTML = items.map(drama => `
+            <a href="${drama.link}" class="drama-card">
+                <div class="drama-card-img"><img src="${drama.img}" alt="${drama.title}"></div>
+                <div class="drama-card-info">
+                    <h3 class="drama-card-title">${drama.title}</h3>
+                    <p class="drama-card-meta">${drama.type}</p>
+                </div>
+            </a>
+        `).join('');
+    }
 
     if (searchInput) {
         searchInput.addEventListener('input', () => {
