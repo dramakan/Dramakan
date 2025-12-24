@@ -406,43 +406,87 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 /* --- Change 1: Carousel Mode --- */
-/* --- 1. Global Layout: Edge-to-Edge Desktop View --- */
-@media (min-width: 1024px) {
-    .container {
-        max-width: 100%; /* Removes fixed width constraints */
-        padding: 0 2%;   /* Small safety gap so it doesn't touch the screen bezel */
-    }
-    
-    .main-header .container {
-        padding: 0 4%;   /* Keeps header items slightly more centered for better UX */
-    }
+/* --- 1. Global Layout: True Edge-to-Edge --- */
+.container {
+    max-width: 100% !important; /* Forces the site to touch the screen edges */
+    padding: 0 !important;      /* Removes the side padding gaps */
+    width: 100% !important;
 }
 
-/* --- 2. Add Gap: Platform Section and Content --- */
+/* --- 2. Platform Section: Remove Bottom Gap --- */
 .platforms-section {
-    margin-bottom: 50px; /* Creates the requested gap between platforms and trending */
-    background: #110c1f;
-    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 0 !important; /* Eliminates the black gap below platforms */
     padding: 1rem 0;
-    overflow: hidden;
-    position: relative;
-    z-index: 2;
+    background: #110c1f;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+/* --- 3. Section Glass Box: Continuous Flow Mode --- */
+.section-glass-box {
+    margin-bottom: 0 !important; /* Removes gaps between all drama categories */
+    padding: 40px 0;             /* Vertical breathing room */
+    border-radius: 0 !important; /* Removes rounded corners for a seamless blend */
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Faint separator */
+    background: rgba(26, 26, 29, 0.4); 
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: none;
+}
+
+/* --- 4. Content Alignment (Indents text but not the box) --- */
+.section-header {
+    padding: 0 4%; /* Keeps text slightly away from the screen edge on PC */
+    margin-bottom: 20px;
+}
+
+.drama-grid.carousel-mode {
+    padding: 0 4% 30px 4%; /* Bottom padding for the sliding bar */
+    gap: 20px;
+}
+
+/* --- 5. Custom Sliding Bar (Scrollbar) --- */
+.drama-grid.carousel-mode::-webkit-scrollbar {
+    height: 6px;
+}
+
+.drama-grid.carousel-mode::-webkit-scrollbar-track {
+    margin: 0 35%; /* Centers the scrollbar visually */
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.drama-grid.carousel-mode::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+}
+
+/* --- 6. Footer: Attach directly to the flow --- */
+.main-footer {
+    margin-top: 0 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* --- 7. Mobile Specific Refinements --- */
 @media (max-width: 768px) {
-    /* 1. Universal reset for Flow Mode */
-    .container {
-        padding: 0 !important;
-        width: 100% !important;
-    }
-
-    /* 2. Remove gap below the platform section */
-    .platforms-section {
-        margin-bottom: 0 !important;
-        padding-bottom: 15px; /* Slight padding for the marquee itself */
-    }
-
-    /* 3. Eliminate section gaps and side radius */
     .section-glass-box {
+        padding: 25px 0 15px 0;
+    }
+    .section-header, .drama-grid.carousel-mode {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .drama-grid.carousel-mode::-webkit-scrollbar {
+        height: 3px;
+    }
+}
+   
+/* --- 3. Section Glass Box: Edge-to-Edge & Scrolling --- */
+.section-glass-box {
+    background: rgba(26, 26, 29, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
         margin-bottom: 0 !important; /* Removes the gap between boxes */
         padding: 25px 0 15px 0;
         border-radius: 0 !important;
@@ -451,45 +495,6 @@ img { max-width: 100%; height: auto; display: block; }
         border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Very faint divider line */
         background: rgba(26, 26, 29, 0.5); /* Matching backgrounds creates the flow */
         box-shadow: none;
-    }
-
-    /* 4. Ensure the footer attaches directly to the last section */
-    .main-footer {
-        margin-top: 0 !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    /* 5. Header & Carousel alignment */
-    .section-header {
-        padding: 0 15px;
-        margin-bottom: 15px;
-    }
-
-    .drama-grid.carousel-mode {
-        padding: 0 15px 25px 15px;
-        gap: 12px;
-    }
-
-    /* 6. Refine the sliding bar (scrollbar) to be less intrusive */
-    .drama-grid.carousel-mode::-webkit-scrollbar-track {
-        margin: 0 30%; 
-    }
-
-    .drama-grid.carousel-mode::-webkit-scrollbar {
-        height: 2px;
-    }
-}
-
-/* --- 3. Section Glass Box: Edge-to-Edge & Scrolling --- */
-.section-glass-box {
-    background: rgba(26, 26, 29, 0.4);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 25px 15px; /* Comfortable padding inside the glass box */
-    margin-bottom: 60px; /* Space between different drama sections */
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
 /* --- 4. Custom Sliding Bar (Scrollbar) --- */
@@ -545,6 +550,7 @@ img { max-width: 100%; height: auto; display: block; }
     padding: 20px;
     margin-bottom: 40px; /* Separates the boxes from each other */
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    
 }
 
 .section-header {
@@ -729,3 +735,148 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .drama-modal-close { position: absolute; top: 15px; right: 20px; background: none; border: none; color: white; font-size: 28px; cursor: pointer; }
+/* =====================================================
+   MOBILE HERO BOTTOM BAR (SAFE PATCH)
+   DOES NOT AFFECT PC
+===================================================== */
+
+@media (max-width: 768px) {
+
+  /* Keep same image, same slider */
+  .hero-slider {
+    height: auto;
+  }
+
+  .slide {
+    aspect-ratio: 16 / 9;
+    background-size: cover;
+    background-position: center;
+  }
+
+  /* Hide desktop hero text on mobile */
+  .slide-content,
+  .slider-nav {
+    display: none !important;
+  }
+
+  /* Bottom overlay bar */
+  .hero-mobile-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 5;
+
+    background: linear-gradient(
+      to top,
+      rgba(11,12,16,0.95),
+      rgba(11,12,16,0.6),
+      transparent
+    );
+  }
+
+}
+
+/* =====================================================
+   AUTO-HIDE CAROUSEL SCROLLBAR (VISUAL ONLY)
+===================================================== */
+
+.drama-grid.carousel-mode::-webkit-scrollbar {
+  height: 4px;
+  opacity: 0;
+}
+
+.drama-grid.carousel-mode:hover::-webkit-scrollbar {
+  opacity: 1;
+}
+
+.drama-grid.carousel-mode::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 10px;
+}
+
+/* =====================================================
+   BACKGROUND CONSISTENCY FIX
+===================================================== */
+
+.hero-slider,
+.platforms-section,
+.section-glass-box,
+.main-footer {
+  background-color: var(--background-color);
+}
+/* =====================================================
+   COOL OTT-STYLE MOBILE HERO UPGRADE
+===================================================== */
+
+@media (max-width: 768px) {
+
+  /* Give banner depth */
+  .slide {
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.55);
+    transform: scale(0.98);
+    transition: transform 0.4s ease;
+  }
+
+  .slide:active {
+    transform: scale(1);
+  }
+
+  /* Cinematic gradient */
+  .slide::after {
+    background: linear-gradient(
+      to top,
+      rgba(5,6,10,0.98) 0%,
+      rgba(5,6,10,0.75) 35%,
+      rgba(5,6,10,0.25) 65%,
+      transparent 100%
+    );
+  }
+
+  /* Glassmorphism bottom bar */
+  .hero-mobile-bar {
+    backdrop-filter: blur(8px);
+    background: linear-gradient(
+      to top,
+      rgba(10,10,15,0.85),
+      rgba(10,10,15,0.45)
+    );
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  /* Title polish */
+  .hero-mobile-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+  }
+
+  /* Icon-only Play button */
+  .hero-play-btn {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(
+      135deg,
+      var(--primary-color),
+      #b55cff
+    );
+    box-shadow: 0 6px 16px rgba(138,43,226,0.55);
+  }
+
+  .hero-play-btn:active {
+    transform: scale(0.9);
+  }
+}

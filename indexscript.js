@@ -168,4 +168,12 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     };
 });
+// Add this inside your slider logic in indexscript.js
+const slides = document.querySelectorAll('.slide');
+slides.forEach(slide => {
+    slide.addEventListener('click', () => {
+        const link = slide.querySelector('.btn-primary').getAttribute('href');
+        window.location.href = link;
+    });
+});
      
