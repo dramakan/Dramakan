@@ -5,54 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Netflix Dramas - DramaKan</title>
     <link rel="icon" type="image/png" href="favicon.png" sizes="48x48">
-    <link rel="stylesheet" href="platform.css">
+   
     <style>
-        /* Inheriting your color theme */
-        :root {
-            --primary-color: #E50914; /* Using Netflix Red for this specific page */
-        }
-        body { padding-bottom: 70px; }
-        .category-header { padding: 40px 0; text-align: center; }
-        .category-title { font-size: 2.5rem; font-weight: 700; }
-        .category-title span { color: var(--primary-color); }
-        /* --- Unified Responsive Styles for DramaKan --- */
+     /* --- DramaKan Universal Responsive CSS --- */
 
-/* 1. Base Container Scaling */
-.container {
-    width: 95%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 15px;
+:root {
+    /* These variables will be overridden by the inline styles in your HTML files */
+    --primary-color: #ff0000; 
+    --bg-dark: #0f0f0f;
+    --card-bg: #1a1a1a;
+    --text-main: #ffffff;
+    --text-dim: #b3b3b3;
 }
 
-/* 2. Responsive Grid System */
-/* This will automatically adjust the number of columns based on screen width */
+/* Base resets for mobile compatibility */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+}
+
+.container {
+    width: 100%;
+    padding: 0 15px;
+    margin: 0 auto;
+}
+
+/* --- Header & Logo --- */
+.main-header {
+    padding: 15px 0;
+    border-bottom: 1px solid #333;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-decoration: none;
+    color: #fff;
+}
+
+.logo span {
+    color: var(--primary-color);
+}
+
+/* --- Page Titles --- */
+.category-header {
+    padding: 30px 0 20px;
+    text-align: center;
+}
+
+.category-title {
+    font-size: clamp(1.8rem, 6vw, 2.5rem);
+    font-weight: 700;
+}
+
+/* --- The Responsive Grid --- */
 .drama-grid {
     display: grid;
-    gap: 20px;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* Mobile default */
-    padding: 20px 0;
+    /* This creates 2 columns on small screens, scaling up to more on large screens */
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 15px;
+    padding-bottom: 40px;
 }
 
-/* 3. Drama Card Adjustments */
+/* --- Drama Cards --- */
 .drama-card {
     display: flex;
     flex-direction: column;
     text-decoration: none;
-    color: inherit;
-    background: #1a1a1a; /* Assuming a dark theme based on typical drama sites */
-    border-radius: 8px;
+    background: var(--card-bg);
+    border-radius: 10px;
     overflow: hidden;
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.drama-card:hover {
-    transform: translateY(-5px);
+.drama-card:active {
+    transform: scale(0.98); /* Visual feedback for touch screens */
+}
+
+.drama-card-img {
+    width: 100%;
+    aspect-ratio: 2/3; /* Standard poster ratio */
+    overflow: hidden;
 }
 
 .drama-card-img img {
     width: 100%;
-    aspect-ratio: 2/3; /* Keeps poster dimensions consistent */
+    height: 100%;
     object-fit: cover;
     display: block;
 }
@@ -62,44 +108,47 @@
 }
 
 .drama-card-title {
-    font-size: 0.95rem;
-    margin: 5px 0;
-    white-space: nowrap;
+    color: var(--text-main);
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limits title to 2 lines */
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis; /* Prevents long titles from breaking layout */
 }
 
-/* 4. Header and Typography Scaling */
-.category-title {
-    font-size: clamp(1.5rem, 5vw, 2.5rem); /* Dynamically scales font size */
-    padding: 20px 0;
+.drama-card-meta {
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    text-transform: uppercase;
 }
 
-/* --- Media Queries for Larger Screens --- */
+/* --- Media Queries for Larger Devices --- */
 
-/* Tablets */
+/* Tablets (Portrait) */
 @media (min-width: 600px) {
     .drama-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 25px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
     }
 }
 
-/* Desktops */
-@media (min-width: 1024px) {
+/* Tablets (Landscape) & Small Laptops */
+@media (min-width: 900px) {
     .drama-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(4, 1fr);
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .container {
+        width: 90%;
     }
 }
 
-/* Specific Fix for Mobile Headers */
-@media (max-width: 480px) {
-    .main-header .container {
-        justify-content: center; /* Centers logo on small phones */
-    }
-    
-    .category-header {
-        padding: 20px 0;
+/* Large Desktops */
+@media (min-width: 1200px) {
+    .drama-grid {
+        grid-template-columns: repeat(5, 1fr);
     }
 }
     </style>
