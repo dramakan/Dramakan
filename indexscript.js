@@ -105,4 +105,52 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeDramaSite();
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+    const modal = document.getElementById("dramaModal");
+    const openBtn = document.getElementById("dramaRequestBtn");
+    const closeBtn = document.getElementById("closeDramaModal");
+    const form = document.getElementById("dramaRequestForm");
+
+    // 1. YOUR DETAILS (Fill these in!)
+    const BOT_TOKEN = "8473278366:AAFgUjLJGAjRoh4Ig1DCat0qCs2D7yZHcbA";
+    const CHAT_ID = "5780542178";
+
+    // Open/Close Modal
+    openBtn.onclick = () => modal.style.display = "flex";
+    closeBtn.onclick = () => modal.style.display = "none";
+    window.onclick = (e) => { if(e.target === modal) modal.style.display = "none"; }
+
+    // Form Submission
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        const dramaName = document.getElementById("dramaName").value;
+        const status = document.getElementById("statusMessage");
+        const submitBtn = document.getElementById("submitBtn");
+
+        submitBtn.innerText = "Sending...";
+        submitBtn.disabled = true;
+
+        const text = `🎬 *New Drama Request*\n\nName: ${dramaName}`;
+        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
+
+        try {
+            const response = await fetch(url);
+            if (response.ok) {
+                status.style.display = "block";
+                status.style.color = "#4CAF50";
+                status.innerText = "Request sent! Check back in 48 hours.";
+                form.reset();
+            } else {
+                throw new Error();
+            }
+        } catch (err) {
+            status.style.display = "block";
+            status.style.color = "#ff4d4d";
+            status.innerText = "Error sending request. Try joining Telegram.";
+        } finally {
+            submitBtn.innerText = "Send Request";
+            submitBtn.disabled = false;
+        }
+    };
+});
      
