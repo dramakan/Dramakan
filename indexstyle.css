@@ -406,17 +406,126 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 /* --- Change 1: Carousel Mode --- */
+/* --- 1. Global Layout: Edge-to-Edge Desktop View --- */
+@media (min-width: 1024px) {
+    .container {
+        max-width: 100%; /* Removes fixed width constraints */
+        padding: 0 2%;   /* Small safety gap so it doesn't touch the screen bezel */
+    }
+    
+    .main-header .container {
+        padding: 0 4%;   /* Keeps header items slightly more centered for better UX */
+    }
+}
+
+/* --- 2. Add Gap: Platform Section and Content --- */
+.platforms-section {
+    margin-bottom: 50px; /* Creates the requested gap between platforms and trending */
+    background: #110c1f;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 0;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+}
+@media (max-width: 768px) {
+    /* 1. Universal reset for Flow Mode */
+    .container {
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    /* 2. Remove gap below the platform section */
+    .platforms-section {
+        margin-bottom: 0 !important;
+        padding-bottom: 15px; /* Slight padding for the marquee itself */
+    }
+
+    /* 3. Eliminate section gaps and side radius */
+    .section-glass-box {
+        margin-bottom: 0 !important; /* Removes the gap between boxes */
+        padding: 25px 0 15px 0;
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Very faint divider line */
+        background: rgba(26, 26, 29, 0.5); /* Matching backgrounds creates the flow */
+        box-shadow: none;
+    }
+
+    /* 4. Ensure the footer attaches directly to the last section */
+    .main-footer {
+        margin-top: 0 !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* 5. Header & Carousel alignment */
+    .section-header {
+        padding: 0 15px;
+        margin-bottom: 15px;
+    }
+
+    .drama-grid.carousel-mode {
+        padding: 0 15px 25px 15px;
+        gap: 12px;
+    }
+
+    /* 6. Refine the sliding bar (scrollbar) to be less intrusive */
+    .drama-grid.carousel-mode::-webkit-scrollbar-track {
+        margin: 0 30%; 
+    }
+
+    .drama-grid.carousel-mode::-webkit-scrollbar {
+        height: 2px;
+    }
+}
+
+/* --- 3. Section Glass Box: Edge-to-Edge & Scrolling --- */
+.section-glass-box {
+    background: rgba(26, 26, 29, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 25px 15px; /* Comfortable padding inside the glass box */
+    margin-bottom: 60px; /* Space between different drama sections */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* --- 4. Custom Sliding Bar (Scrollbar) --- */
 .drama-grid.carousel-mode {
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
-    gap: 10px;
-    padding: 10px 5px 30px;
+    gap: 20px;
+    padding-bottom: 25px; /* Space for the custom sliding bar */
     scroll-behavior: smooth;
-    scrollbar-width: none; /* Firefox */
 }
-.drama-grid.carousel-mode::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
+/* Custom Scrollbar for Chrome/Safari/Edge */
+.drama-grid.carousel-mode::-webkit-scrollbar {
+    height: 6px; /* Visible bar height */
+}
+
+.drama-grid.carousel-mode::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    margin: 0 40px; /* Insets the bar slightly from the box edges */
+}
+
+.drama-grid.carousel-mode::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.6); /* Glowing purple effect */
+}
+
+/* --- 5. Drama Card Scaling for PC --- */
+@media (min-width: 1024px) {
+    .drama-card {
+        min-width: 185px; /* Larger posters to utilize the extra screen width */
+        max-width: 185px;
+    }
+}
 .drama-card {
     min-width: 150px;
     max-width: 150px;
@@ -425,6 +534,76 @@ img { max-width: 100%; height: auto; display: block; }
     overflow: hidden;
     transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     flex-shrink: 0;
+}
+/* --- New Glass Section Styling --- */
+.section-glass-box {
+    background: rgba(26, 26, 29, 0.4); /* Subtle transparent background */
+    backdrop-filter: blur(12px); /* The blurry effect */
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Thin light border */
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 40px; /* Separates the boxes from each other */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 0 5px;
+}
+
+.section-title {
+    font-size: 1.4rem;
+    margin-bottom: 0 !important; /* Overriding original margin */
+}
+
+.view-all-link {
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    padding: 5px 12px;
+    background: rgba(138, 43, 226, 0.1);
+    border-radius: 50px;
+    transition: 0.3s;
+}
+
+.view-all-link:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.view-all-link i {
+    font-size: 0.7rem;
+    margin-left: 5px;
+}
+
+/* --- Mobile Carousel Resizing --- */
+@media (max-width: 768px) {
+    .section-glass-box {
+        padding: 15px 10px;
+        margin-bottom: 25px;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+    }
+
+    /* Making the cards smaller on mobile as requested */
+    .drama-card {
+        min-width: 120px; /* Reduced from 150px */
+        max-width: 120px;
+    }
+    
+    .drama-card-info {
+        padding: 8px;
+    }
+    
+    .drama-card-title {
+        font-size: 0.8rem;
+    }
 }
 .drama-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 10px 10px rgba(0,0,0,0.5); }
 .drama-card-img img { width: 100%; aspect-ratio: 4/5; object-fit: cover; }
