@@ -6,26 +6,151 @@
     <title>iQIYI Dramas - DramaKan</title>
     <link rel="icon" type="image/png" href="favicon.png" sizes="48x48">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="indexstyle.css">
     <style>
-        /* Customizing for iQIYI Brand Identity */
-        :root {
-            --primary-color: #00D06D; /* iQIYI Green */
-        }
-        body { 
-            padding-bottom: 70px; 
-        }
-        .category-header { 
-            padding: 40px 0; 
-            text-align: center; 
-        }
-        .category-title { 
-            font-size: 2.5rem; 
-            font-weight: 700; 
-        }
-        .category-title span { 
-            color: var(--primary-color); 
-        }
+       /* --- DramaKan Universal Responsive CSS --- */
+
+:root {
+    /* These variables will be overridden by the inline styles in your HTML files */
+   --primary-color: #00D06D; 
+    --bg-dark: #0f0f0f;
+    --card-bg: #1a1a1a;
+    --text-main: #ffffff;
+    --text-dim: #b3b3b3;
+}
+
+/* Base resets for mobile compatibility */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+}
+
+.container {
+    width: 100%;
+    padding: 0 15px;
+    margin: 0 auto;
+}
+
+/* --- Header & Logo --- */
+.main-header {
+    padding: 15px 0;
+    border-bottom: 1px solid #333;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-decoration: none;
+    color: #fff;
+}
+
+.logo span {
+    color: var(--primary-color);
+}
+
+/* --- Page Titles --- */
+.category-header {
+    padding: 30px 0 20px;
+    text-align: center;
+}
+
+.category-title {
+    font-size: clamp(1.8rem, 6vw, 2.5rem);
+    font-weight: 700;
+}
+
+/* --- The Responsive Grid --- */
+.drama-grid {
+    display: grid;
+    /* This creates 2 columns on small screens, scaling up to more on large screens */
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 15px;
+    padding-bottom: 40px;
+}
+
+/* --- Drama Cards --- */
+.drama-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    background: var(--card-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.drama-card:active {
+    transform: scale(0.98); /* Visual feedback for touch screens */
+}
+
+.drama-card-img {
+    width: 100%;
+    aspect-ratio: 2/3; /* Standard poster ratio */
+    overflow: hidden;
+}
+
+.drama-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.drama-card-info {
+    padding: 10px;
+}
+
+.drama-card-title {
+    color: var(--text-main);
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limits title to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.drama-card-meta {
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+/* --- Media Queries for Larger Devices --- */
+
+/* Tablets (Portrait) */
+@media (min-width: 600px) {
+    .drama-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+}
+
+/* Tablets (Landscape) & Small Laptops */
+@media (min-width: 900px) {
+    .drama-grid {
+        grid-template-columns: repeat(4, 1fr);
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .container {
+        width: 90%;
+    }
+}
+
+/* Large Desktops */
+@media (min-width: 1200px) {
+    .drama-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
     </style>
 </head>
 <body>
