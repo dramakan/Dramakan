@@ -31,7 +31,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // --- 2. SEARCH & DATA POPULATION ---
+     // --- 2. RANDOMIZATION UTILITY ---
+    function shuffleArray(array) {
+        let shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
+    // --- 3. DATA POPULATION & CAROUSELS ---
     let fuse;
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
@@ -46,11 +56,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 threshold: 0.4
             });
 
-            populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 18)); 
-            populateGrid('kdrama-grid', data.filter(d => d.type === "K-Drama").slice(0, 18));
-            populateGrid('cdrama-grid', data.filter(d => d.type === "C-Drama").slice(0, 18));
-            populateGrid('jdrama-grid', data.filter(d => d.type === "J-Drama").slice(0, 18));
-            populateGrid('pdrama-grid', data.filter(d => d.type === "P-Drama").slice(0, 18));
+            // TRENDING: Keep as is (Standard Order)
+            populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15)); 
+
+            // CATEGORIES: Random Selection (Change 2)
+            populateGrid('kdrama-grid', shuffleArray(data.filter(d => d.type === "K-Drama")).slice(0, 15));
+            populateGrid('cdrama-grid', shuffleArray(data.filter(d => d.type === "C-Drama")).slice(0, 15));
+            populateGrid('jdrama-grid', shuffleArray(data.filter(d => d.type === "J-Drama")).slice(0, 15));
+            populateGrid('pdrama-grid', shuffleArray(data.filter(d => d.type === "P-Drama")).slice(0, 15));
+            populateGrid('tdrama-grid', shuffleArray(data.filter(d => d.type === "T-Drama")).slice(0, 15));
+
         } catch (err) {
             console.error("Data Load Error:", err);
         }

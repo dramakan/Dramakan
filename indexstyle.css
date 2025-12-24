@@ -405,19 +405,33 @@ img { max-width: 100%; height: auto; display: block; }
   }
 }
 
-/* --- Grids & Cards --- */
-.section-title { font-size: 1.8rem; font-weight: 700; margin: 40px 0 20px; padding: 0 10px; }
+/* --- Change 1: Carousel Mode --- */
+.drama-grid.carousel-mode {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 10px;
+    padding: 10px 5px 30px;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+}
+.drama-grid.carousel-mode::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
-        .drama-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-        .drama-card { background-color: var(--surface-color); border-radius: 8px; overflow: hidden; transition: 0.3s; }
-        .drama-card:hover { transform: translateY(-5px); }
-        .drama-card-img img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
-        .drama-card-info { padding: 12px; }
-        .drama-card-title { font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.drama-card {
+    min-width: 150px;
+    max-width: 150px;
+    background: var(--surface-color);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+}
+.drama-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 10px 10px rgba(0,0,0,0.5); }
+.drama-card-img img { width: 100%; aspect-ratio: 4/5; object-fit: cover; }
+.drama-card-info { padding: 15px; }
+.drama-card-title { font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.drama-card-meta { font-size: 0.8rem; color: var(--text-muted-color); }
 
-        @media (max-width: 992px) {
-            .drama-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        }
 /* --- Search Dropdown --- */
 .search-results {
   position: absolute; top: 110%; left: 0; width: 100%;
