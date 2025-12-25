@@ -14,8 +14,33 @@
 </head>
 <body>
     <header class="main-header">
-        <a href="index.html" class="logo">Drama<span>Kan</span></a>
-    </header>
+  <div class="container">
+    <div class="header-top-row">
+      <div class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="fas fa-bars"></i>
+      </div>
+      <a href="index.html" class="logo">Drama<span>Kan</span></a>
+      <div class="header-actions-placeholder"></div> 
+    </div>
+
+    <div class="search-bar">
+      <i class="fas fa-search"></i>
+      <input id="searchInput" type="text" placeholder="Search drama...">
+      <div id="searchResults" class="search-results"></div>
+    </div>
+
+    <nav class="nav-links" id="navLinks">
+      <ul>
+        <li><a href="korean.html">K-Drama</a></li>
+        <li><a href="japanese.html">J-Drama</a></li>
+        <li><a href="chinese.html">C-Drama</a></li>
+        <li><a href="filipino.html">P-Drama</a></li>
+        <li><a href="https://anikan.netlify.app/">Anikan</a></li>
+        <li><a href="https://Cinekan.netlify.app/">Cinekan</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
 
     <main class="container">
         <div class="watch-layout" data-total-episodes="10">
@@ -214,6 +239,55 @@
             });
         }
     });
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.trim();
+            if (query.length < 1 || !fuse) {
+                searchResults.style.display = 'none';
+                return;
+            }
+            const results = fuse.search(query, { limit: 10 });
+            searchResults.innerHTML = results.map(({ item }) => `
+                <a href="${item.link}" class="search-result-item">
+                    <img src="${item.img}" width="40" height="55">
+                    <div>
+                        <div style="color:#fff; font-weight:600;">${item.title}</div>
+                        <small style="color:#aaa;">${item.type}</small>
+                    </div>
+                </a>
+            `).join('');
+            searchResults.style.display = 'block';
+        });
+    }
+       // --- 3. DATA POPULATION & CAROUSELS ---
+    let fuse;
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+
+    async function initializeDramaSite() {
+        try {
+            const response = await fetch('dramas.json');
+            const data = await response.json();
+
+            fuse = new Fuse(data, {
+                keys: ['title'],
+                threshold: 0.4
+            });
+
+            // TRENDING: Keep as is (Standard Order)
+            populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15)); 
+
+            // CATEGORIES: Random Selection (Change 2)
+            populateGrid('kdrama-grid', shuffleArray(data.filter(d => d.type === "K-Drama")).slice(0, 15));
+            populateGrid('cdrama-grid', shuffleArray(data.filter(d => d.type === "C-Drama")).slice(0, 15));
+            populateGrid('jdrama-grid', shuffleArray(data.filter(d => d.type === "J-Drama")).slice(0, 15));
+            populateGrid('pdrama-grid', shuffleArray(data.filter(d => d.type === "P-Drama")).slice(0, 15));
+            populateGrid('tdrama-grid', shuffleArray(data.filter(d => d.type === "T-Drama")).slice(0, 15));
+
+        } catch (err) {
+            console.error("Data Load Error:", err);
+        }
+    }
     </script>
 </body>
 </html>
