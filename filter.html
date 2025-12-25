@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filter Dramas - Dramakan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="indexstyle.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #0f0f0f;
+    --secondary-color: #1a1a1a;
+    --accent-color: #e50914;
+    --text-color: #ffffff;
+    --text-muted: #b3b3b3;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+/* Header & Nav */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background-color: var(--primary-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+nav ul li a:hover, nav ul li a.active {
+    color: var(--text-color);
+}
+
+.search-bar {
+    display: flex;
+    background-color: var(--secondary-color);
+    padding: 8px 15px;
+    border-radius: 5px;
+}
+
+.search-bar input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text-color);
+    font-family: 'Poppins', sans-serif;
+}
+
+.search-bar button {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.user-profile button {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    border: none;
+    padding: 8px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.user-profile button:hover {
+    background-color: #b30000;
+}
+
+/* Slider */
+.slider-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+}
+
+.slider-wrapper {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    height: 100%;
+}
+
+.slide {
+    min-width: 100%;
+    position: relative;
+}
+
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.6);
+}
+
+.slide-content {
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
+    max-width: 600px;
+}
+
+.slide-content h2 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.slide-content p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    color: var(--text-muted);
+}
+
+.slide-content button {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+.slide-content button:hover{
+    background-color: #b30000;
+}
+
+.slider-controls {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    padding: 0 20px;
+}
+
+.prev-btn, .next-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+/* Sections */
+.section-container {
+    padding: 40px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    font-size: 1.5rem;
+}
+
+.section-header a {
+    text-decoration: none;
+    color: var(--text-muted);
+    transition: color 0.3s;
+}
+
+.section-header a:hover {
+    color: var(--text-color);
+}
+
+/* Cards */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background-color: var(--secondary-color);
+    border-radius: 5px;
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 15px;
+}
+
+.card-content h3 {
+    font-size: 1rem;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-content p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Trending */
+.trending-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.trending-card {
+    position: relative;
+    border-radius: 5px;
+    overflow: hidden;
+    height: 150px;
+}
+
+.trending-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.7);
+    transition: transform 0.3s;
+}
+
+.trending-card:hover img {
+    transform: scale(1.05);
+}
+
+.trending-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 15px;
+    width: 100%;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+}
+
+.trending-content h3 {
+    font-size: 1.1rem;
+}
+
+/* Footer */
+footer {
+    background-color: var(--secondary-color);
+    padding: 40px;
+    text-align: center;
+    margin-top: 40px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.footer-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.footer-links ul {
+    list-style: none;
+    display: flex;
+}
+
+.footer-links ul li {
+    margin: 0 15px;
+}
+
+.footer-links ul li a {
+    text-decoration: none;
+    color: var(--text-muted);
+    transition: color 0.3s;
+}
+
+.footer-links ul li a:hover {
+    color: var(--text-color);
+}
+
+.social-media a {
+    color: var(--text-color);
+    font-size: 1.2rem;
+    margin: 0 10px;
+    transition: color 0.3s;
+}
+
+.social-media a:hover {
+    color: var(--accent-color);
+}
+
+footer p {
+    color: var(--text-muted);
+}
+
+/* --- NEW STYLES FOR FILTER PAGE --- */
+
+.filter-page-container {
+    display: flex;
+    padding: 20px 40px;
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: calc(100vh - 200px); /* Ensure minimum height */
+}
+
+/* Sidebar Styling */
+.filter-sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    background-color: var(--secondary-color);
+    padding: 20px;
+    border-radius: 8px;
+    height: fit-content;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    position: sticky;
+    top: 90px; /* Below header */
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #333;
+}
+
+.filter-header h2 {
+    font-size: 1.2rem;
+    color: var(--text-color);
+}
+
+.close-filter-btn {
+    display: none; /* Hidden on desktop */
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.filter-group {
+    margin-bottom: 25px;
+}
+
+.filter-group h3 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.checkbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Custom Scrollbar for checkbox list */
+.checkbox-list::-webkit-scrollbar {
+    width: 5px;
+}
+.checkbox-list::-webkit-scrollbar-thumb {
+    background-color: #444;
+    border-radius: 5px;
+}
+
+.checkbox-list label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.checkbox-list label:hover {
+    color: var(--text-color);
+}
+
+/* Custom checkbox styling */
+.checkbox-list input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #444;
+    border-radius: 3px;
+    background-color: transparent;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.checkbox-list input[type="checkbox"]:checked {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.checkbox-list input[type="checkbox"]:checked::after {
+    content: '\2713'; /* Checkmark symbol */
+    font-size: 12px;
+    color: white;
+}
+
+#clear-filters-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: transparent;
+    border: 1px solid var(--accent-color);
+    border-radius: 5px;
+    color: var(--accent-color);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+
+#clear-filters-btn:hover {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+/* Results Grid Styling */
+.filter-page-container section {
+    flex-grow: 1;
+}
+
+.filter-page-container section h2 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.filter-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+.rating {
+    color: #FFD700; /* Gold color for star */
+    margin-left: 5px;
+}
+
+/* Mobile Filter Toggle Button */
+.filter-toggle-btn {
+    display: none; /* Hidden on desktop */
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 990;
+    padding: 12px 24px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.3s;
+}
+
+.filter-toggle-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Media Queries for Mobile Responsiveness */
+@media (max-width: 1024px) {
+    .filter-page-container {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        padding: 15px 20px;
+    }
+    nav {
+        display: none; /* Hide nav links on small screens for now */
+    }
+    .search-bar {
+        display: none; /* Hide search bar on small screens for now */
+    }
+
+    .filter-page-container {
+        flex-direction: column;
+        padding: 15px;
+    }
+
+    /* Show toggle button on mobile */
+    .filter-toggle-btn {
+        display: flex;
+    }
+
+    /* Off-canvas sidebar style on mobile */
+    .filter-sidebar {
+        position: fixed;
+        top: 0;
+        left: -100%; /* Hide off-screen */
+        width: 80%;
+        max-width: 320px;
+        height: 100vh;
+        max-height: 100vh;
+        z-index: 1000;
+        transition: left 0.3s ease-in-out;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    .filter-sidebar.active {
+        left: 0; /* Slide in */
+        box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+    }
+
+    .close-filter-btn {
+        display: block;
+    }
+
+    /* Overlay background */
+    .filter-sidebar.active::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.7);
+        z-index: -1;
+        opacity: 1;
+        transition: opacity 0.3s;
+    }
+
+    .filter-results-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Smaller cards on mobile */
+        gap: 15px;
+    }
+    .card img {
+        height: 200px;
+    }
+}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="index.html" style="text-decoration: none; color: inherit;">
+                <i class="fa-solid fa-film"></i> Dramakan
+            </a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="filter.html" class="active">Dramas</a></li>
+                <li><a href="#">Movies</a></li>
+                <li><a href="#">Trending</a></li>
+                <li><a href="#">My List</a></li>
+            </ul>
+        </nav>
+        <div class="search-bar">
+            <input type="text" placeholder="Search for dramas...">
+            <button><i class="fa-solid fa-search"></i></button>
+        </div>
+        <div class="user-profile">
+             <button>Login</button>
+        </div>
+    </header>
+
+    <main class="filter-page-container">
+        <button id="filter-toggle-btn" class="filter-toggle-btn">
+            <i class="fa-solid fa-filter"></i> Filters
+        </button>
+
+        <aside id="filter-sidebar" class="filter-sidebar">
+            <div class="filter-header">
+                <h2>Filters</h2>
+                <button id="close-filter-btn" class="close-filter-btn"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div id="filter-groups">
+                </div>
+             <button id="clear-filters-btn">Clear All Filters</button>
+        </aside>
+
+        <section>
+            <h2>All Dramas</h2>
+            <div id="filter-results" class="filter-results-grid">
+                </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fa-solid fa-film"></i> Dramakan
+            </div>
+            <div class="footer-links">
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="social-media">
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            </div>
+        </div>
+        <p>&copy; 2025 Dramakan. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    let allDramas = [];
+    const filterGroupsContainer = document.getElementById('filter-groups');
+    const resultsContainer = document.getElementById('filter-results');
+    const filterToggleBtn = document.getElementById('filter-toggle-btn');
+    const filterSidebar = document.getElementById('filter-sidebar');
+    const closeFilterBtn = document.getElementById('close-filter-btn');
+    const clearFiltersBtn = document.getElementById('clear-filters-btn');
+
+    // 1. Fetch data from dramas.json
+    fetch('dramas.json')
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            allDramas = data;
+            initializeFilters(allDramas);
+            renderResults(allDramas); // Initially show all dramas
+        })
+        .catch(error => {
+            console.error('Error fetching dramas:', error);
+            resultsContainer.innerHTML = '<p>Error loading dramas. Please try again later.</p>';
+        });
+
+    // 2. Initialize filters dynamically based on data
+    function initializeFilters(dramas) {
+        const genres = new Set();
+        const types = new Set();
+        const years = new Set();
+        const platforms = new Set();
+
+        dramas.forEach(drama => {
+            if (drama.genre) drama.genre.split(',').forEach(g => genres.add(g.trim()));
+            if (drama.type) types.add(drama.type);
+            if (drama.year) years.add(drama.year);
+            if (drama.platform) platforms.add(drama.platform);
+        });
+
+        createFilterGroup('Genre', Array.from(genres).sort());
+        createFilterGroup('Type', Array.from(types).sort());
+        createFilterGroup('Year', Array.from(years).sort((a, b) => b - a)); // Sort years descending
+        createFilterGroup('Platform', Array.from(platforms).sort());
+    }
+
+    // Helper function to create filter checkboxes
+    function createFilterGroup(name, options) {
+        if (options.length === 0) return;
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'filter-group';
+        groupDiv.innerHTML = `<h3>${name}</h3>`;
+        const listDiv = document.createElement('div');
+        listDiv.className = 'checkbox-list';
+
+        options.forEach(option => {
+            const label = document.createElement('label');
+            // Use a safe ID for the checkbox
+            const safeOption = option.toString().replace(/\s+/g, '-').toLowerCase();
+            label.innerHTML = `
+                <input type="checkbox" id="${name.toLowerCase()}-${safeOption}" name="${name.toLowerCase()}" value="${option}">
+                <span>${option}</span>
+            `;
+            // Add event listener to re-apply filters on change
+            label.querySelector('input').addEventListener('change', applyFilters);
+            listDiv.appendChild(label);
+        });
+        groupDiv.appendChild(listDiv);
+        filterGroupsContainer.appendChild(groupDiv);
+    }
+
+    // 3. Apply selected filters to the data
+    function applyFilters() {
+        const selectedGenres = getSelectedValues('genre');
+        const selectedTypes = getSelectedValues('type');
+        const selectedYears = getSelectedValues('year').map(Number);
+        const selectedPlatforms = getSelectedValues('platform');
+
+        const filteredDramas = allDramas.filter(drama => {
+            // Check if drama matches selected filters. If no filter is selected for a category, it's a match.
+            const genreMatch = selectedGenres.length === 0 || (drama.genre && selectedGenres.some(g => drama.genre.includes(g)));
+            const typeMatch = selectedTypes.length === 0 || selectedTypes.includes(drama.type);
+            const yearMatch = selectedYears.length === 0 || selectedYears.includes(drama.year);
+            const platformMatch = selectedPlatforms.length === 0 || selectedPlatforms.includes(drama.platform);
+
+            return genreMatch && typeMatch && yearMatch && platformMatch;
+        });
+
+        renderResults(filteredDramas);
+    }
+
+    function getSelectedValues(name) {
+        return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
+    }
+
+    // 4. Render the filtered results as cards
+    function renderResults(dramas) {
+        resultsContainer.innerHTML = '';
+        if (dramas.length === 0) {
+            resultsContainer.innerHTML = '<p class="no-results">No dramas found matching your criteria.</p>';
+            return;
+        }
+        dramas.forEach(drama => {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            // Reusing the card structure from your index.html
+            card.innerHTML = `
+                <a href="${drama.link}">
+                    <img src="${drama.img}" alt="${drama.title}" loading="lazy">
+                    <div class="card-content">
+                        <h3>${drama.title}</h3>
+                        <p>${drama.type} • ${drama.year} <span class="rating"><i class="fa-solid fa-star"></i> ${drama.imdb}</span></p>
+                    </div>
+                </a>
+            `;
+            resultsContainer.appendChild(card);
+        });
+    }
+
+    // 5. Event Listeners for Mobile Toggle and Clear Button
+    filterToggleBtn.addEventListener('click', () => {
+        filterSidebar.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling the body
+    });
+
+    closeFilterBtn.addEventListener('click', () => {
+        filterSidebar.classList.remove('active');
+        document.body.style.overflow = ''; // Restore scrolling
+    });
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', (e) => {
+        if (filterSidebar.classList.contains('active') &&
+            !filterSidebar.contains(e.target) &&
+            e.target !== filterToggleBtn) {
+            filterSidebar.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
+    clearFiltersBtn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-group input[type="checkbox"]').forEach(cb => cb.checked = false);
+        applyFilters();
+        if (window.innerWidth <= 768) {
+            filterSidebar.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+});
+    </script>
+</body>
+</html>
