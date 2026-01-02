@@ -65,6 +65,8 @@ document.addEventListener('DOMContentLoaded', function () {
             populateGrid('jdrama-grid', shuffleArray(data.filter(d => d.type === "J-Drama")).slice(0, 15));
             populateGrid('pdrama-grid', shuffleArray(data.filter(d => d.type === "P-Drama")).slice(0, 15));
             populateGrid('tdrama-grid', shuffleArray(data.filter(d => d.type === "T-Drama")).slice(0, 15));
+            populateGrid('upcoming-grid', shuffleArray(data.filter(d => d.release_date === "Upcoming")).slice(0, 15));
+
 
         } catch (err) {
             console.error("Data Load Error:", err);
@@ -135,17 +137,25 @@ document.addEventListener("DOMContentLoaded", function() {
     closeBtn.onclick = () => modal.style.display = "none";
     window.onclick = (e) => { if(e.target === modal) modal.style.display = "none"; }
 
-    // Form Submission
+   // Form Submission
     form.onsubmit = async (e) => {
         e.preventDefault();
+        
+        // Capture both input values
         const dramaName = document.getElementById("dramaName").value;
+        const contactDetail = document.getElementById("contactname").value; // Added this line
+        
         const status = document.getElementById("statusMessage");
         const submitBtn = document.getElementById("submitBtn");
 
         submitBtn.innerText = "Sending...";
         submitBtn.disabled = true;
 
-        const text = `🎬 *New Drama Request*\n\nName: ${dramaName}`;
+        // Updated text to include Contact Detail
+        const text = `🎬 *New Drama Request*\n\n` +
+                     `📺 *Drama:* ${dramaName}\n` +
+                     `👤 *Contact:* ${contactDetail}`;  
+        
         const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
 
         try {
