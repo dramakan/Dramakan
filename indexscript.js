@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
             populateGrid('pdrama-grid', shuffleArray(data.filter(d => d.type === "P-Drama")).slice(0, 15));
             populateGrid('tdrama-grid', shuffleArray(data.filter(d => d.type === "T-Drama")).slice(0, 15));
             populateGrid('upcoming-grid', shuffleArray(data.filter(d => d.release_date === "Upcoming")).slice(0, 15));
-            populateGrid('turkish-grid', shuffleArray(data.filter(d => d.type === "Turkish-Drama")).slice(0, 15));
+            populateGrid('turkishdrama-grid', shuffleArray(data.filter(d => d.type === "Turkish-Drama")).slice(0, 15));
 
 
 
