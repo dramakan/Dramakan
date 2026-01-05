@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - Dramakan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="indexstyle.css">
+  <style>
+    /* Contact Page Specific Styles */
+    .contact-container { padding: 40px 0; max-width: 600px !important; margin: 0 auto; }
+    .contact-card {
+        background: rgba(26, 26, 29, 0.6);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .contact-header { text-align: center; margin-bottom: 25px; }
+    .contact-header h1 { color: var(--primary-color); font-size: 2rem; }
+    
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-muted-color); }
+    .contact-input, .contact-select, .contact-textarea {
+    width: 100%; 
+    padding: 12px 15px; 
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1); 
+    background: #1A1A1D; /* Using solid color instead of RGBA to prevent transparency bugs */
+    color: white; 
+    font-family: inherit; 
+    outline: none; 
+    transition: 0.3s;
+    appearance: none; /* Removes default browser styling */
+    -webkit-appearance: none;
+}
+
+/* Standard styling for the dropdown items */
+.contact-select option {
+    background-color: #1A1A1D;
+    color: white;
+}
+
+/* Optional: Add a custom arrow since 'appearance: none' removes the default one */
+.form-group {
+    position: relative;
+}
+
+.contact-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+}
+    .platform-selector {
+        display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 25px;
+    }
+    .platform-btn {
+        padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.05); color: white; cursor: pointer;
+        display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.8rem;
+        transition: 0.3s;
+    }
+    .platform-btn i { font-size: 1.2rem; }
+    .platform-btn.active { background: var(--primary-color); border-color: var(--primary-color); }
+    
+    .submit-contact-btn {
+        width: 100%; padding: 15px; border-radius: 10px; border: none;
+        background: var(--primary-color); color: white; font-weight: 700;
+        cursor: pointer; font-size: 1rem; transition: 0.3s;
+    }
+    .submit-contact-btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(138, 43, 226, 0.4); }
+  </style>
+</head>
+<body>
+
+<header class="main-header">
+    <div class="container">
+        <a href="index.html" class="logo">Drama<span>Kan</span></a>
+    </div>
+</header>
+
+<main class="container contact-container">
+    <div class="contact-card">
+        <div class="contact-header">
+            <h1>Get In Touch</h1>
+            <p style="color: var(--text-muted-color); font-size: 0.9rem;">Have a suggestion or a legal concern? Select your platform and reason below.</p>
+        </div>
+
+        <form id="contactForm">
+            <div class="form-group">
+                <label>Your Name / Social Handle</label>
+                <input type="text" id="userName" class="contact-input" placeholder="e.g. Dramakan" required>
+            </div>
+
+            <div class="form-group">
+                <label>Reason for Contact</label>
+                <select id="contactReason" class="contact-select" required>
+                    <option value="" disabled selected>Choose a reason...</option>
+                    <option value="Content Removal (DMCA)">Content Removal (DMCA)</option>
+                    <option value="Drama Request">Drama Request</option>
+                    <option value="Website Suggestion">Website Suggestion</option>
+                    <option value="Bug Report">Report a Bug</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Message Detail</label>
+                <textarea id="contactMessage" class="contact-textarea" rows="4" placeholder="Describe your request..." required></textarea>
+            </div>
+
+            <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-muted-color);">Contact via:</label>
+            <div class="platform-selector">
+                <div class="platform-btn active" data-platform="mail">
+                    <i class="fas fa-envelope"></i> Email
+                </div>
+                <div class="platform-btn" data-platform="telegram">
+                    <i class="fab fa-telegram"></i> Telegram
+                </div>
+                <div class="platform-btn" data-platform="instagram">
+                    <i class="fab fa-instagram"></i> Instagram
+                </div>
+            </div>
+
+            <button type="submit" class="submit-contact-btn" id="sendBtn">Prepare Message</button>
+        </form>
+    </div>
+</main>
+
+<script>
+    const platformBtns = document.querySelectorAll('.platform-btn');
+    let selectedPlatform = 'mail';
+
+    // Platform Selection Logic
+    platformBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            platformBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedPlatform = btn.dataset.platform;
+            
+            // Update button text
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.innerText = selectedPlatform === 'mail' ? 'Send Email' : `Open ${selectedPlatform.charAt(0).toUpperCase() + selectedPlatform.slice(1)}`;
+        });
+    });
+
+    // Form Submission Logic
+    document.getElementById('contactForm').onsubmit = function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('userName').value;
+        const reason = document.getElementById('contactReason').value;
+        const message = document.getElementById('contactMessage').value;
+        
+        const subject = encodeURIComponent(`Dramakan Contact: ${reason}`);
+        const bodyText = `Hello Dramakan Team,\n\nName: ${name}\nReason: ${reason}\n\nMessage:\n${message}`;
+        const encodedBody = encodeURIComponent(bodyText);
+
+        if (selectedPlatform === 'mail') {
+            window.location.href = `mailto:privacy@dramakan.site?subject=${subject}&body=${encodedBody}`;
+        } 
+        else if (selectedPlatform === 'telegram') {
+            // Your Telegram Username
+            window.open(`https://t.me/iamashish6700?text=${encodedBody}`, '_blank');
+        } 
+        else if (selectedPlatform === 'instagram') {
+            // Redirecting to profile as Instagram doesn't support pre-filled direct messages via URL easily
+            alert("Redirecting to Instagram. Please paste your message in the DM.");
+            window.open(`https://www.instagram.com/dramakanofficial/`, '_blank');
+        }
+    };
+</script>
+
+</body>
+</html>
