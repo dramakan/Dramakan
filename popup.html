@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+/* === Report Issue Floating Button === */
+.report-fab {
+    position: fixed;
+    bottom: 25px;
+    right: 25px; /* Adjusts side position */
+    background: linear-gradient(135deg, #ff4b4b, #d81b60); /* Red/Pink warning color */
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 9999;
+    box-shadow: 0 8px 20px rgba(216, 27, 96, 0.4);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.report-fab:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 25px rgba(216, 27, 96, 0.6);
+}
+
+.report-fab i { font-size: 1.1rem; }
+
+/* === Report Modal Overlay === */
+.report-modal-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+/* === Report Modal Card === */
+.report-modal-card {
+    background: rgba(30, 30, 35, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 380px;
+    width: 100%;
+    position: relative;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.report-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.report-modal-close:hover { color: #fff; }
+
+.report-icon-header {
+    font-size: 3rem;
+    color: #ff4b4b;
+    margin-bottom: 15px;
+}
+
+.report-modal-card h3 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.report-modal-card p {
+    color: #ccc;
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+/* === Action Buttons === */
+.report-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.report-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.2s;
+}
+
+.report-action-btn:hover { transform: scale(1.02); }
+
+.report-action-btn.telegram {
+    background: #0088cc;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
+}
+
+.report-action-btn.instagram {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 39, 67, 0.3);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+</style>
+<button id="reportErrorBtn" class="report-fab" title="Report Video Issue">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span class="report-text">Report Issue</span>
+</button>
+
+<div id="reportModal" class="report-modal-overlay">
+    <div class="report-modal-card">
+        <button class="report-modal-close" id="closeReportModal">&times;</button>
+        
+        <div class="report-icon-header">
+            <i class="fas fa-video-slash"></i>
+        </div>
+        
+        <h3>Video Not Playing?</h3>
+        <p>If you are facing playback issues or errors, please let us know directly. We will fix it ASAP!</p>
+        
+        <div class="report-actions">
+            <a href="https://t.me/iamashish6700" target="_blank" class="report-action-btn telegram">
+                <i class="fab fa-telegram-plane"></i> DM on Telegram
+            </a>
+            <a href="https://instagram.com/YOUR_INSTAGRAM_HERE" target="_blank" class="report-action-btn instagram">
+                <i class="fab fa-instagram"></i> DM on Instagram
+            </a>
+        </div>
+    </div>
+</div>
+</head>
+<script>
+// Report Issue Modal Logic
+const reportBtn = document.getElementById('reportErrorBtn');
+const reportModal = document.getElementById('reportModal');
+const closeReportModal = document.getElementById('closeReportModal');
+
+if (reportBtn && reportModal) {
+    // Open Modal
+    reportBtn.addEventListener('click', () => {
+        reportModal.style.display = 'flex';
+    });
+
+    // Close Modal on X button
+    closeReportModal.addEventListener('click', () => {
+        reportModal.style.display = 'none';
+    });
+
+    // Close Modal when clicking outside the card
+    window.addEventListener('click', (e) => {
+        if (e.target === reportModal) {
+            reportModal.style.display = 'none';
+        }
+    });
+}
+</script>
+</html>
