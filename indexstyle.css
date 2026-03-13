@@ -96,7 +96,13 @@ img { max-width: 100%; height: auto; display: block; }
 .nav-links a { font-weight: 500; font-size: 1.1rem; transition: 0.3s; }
 .nav-links a:hover, .nav-links a.active { color: var(--primary-color); }
 
-.mobile-menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; }
+.mobile-menu-toggle { 
+    display: none; 
+    font-size: 1.5rem; 
+    cursor: pointer; 
+    position: relative; /* Keeps it in its original spot */
+    z-index: 10005;     /* Forces it to stay above the sliding menu (9999) */
+}
 
 /* --- Hero Slider --- */
 .hero-slider {
@@ -729,7 +735,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 /* Floating FAB */
 .drama-fab {
-    position: fixed; bottom: 25px; right: 25px;
+    position: fixed; bottom: 7px; right: 15px;
     background: var(--primary-purple); color: white; border: none;
     border-radius: 50px; padding: 12px 22px; cursor: pointer;
     display: flex; align-items: center; gap: 10px;
@@ -921,4 +927,57 @@ img { max-width: 100%; height: auto; display: block; }
   .hero-play-btn:active {
     transform: scale(0.9);
   }
+}
+/* --- ✨ MOBILE BOTTOM APP BAR (DRAMAKAN STYLE) ✨ --- */
+.bottom-nav {
+    display: none;
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%;
+    background: rgba(26, 26, 29, 0.95); /* Matches --surface-color */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 9999;
+    padding-bottom: env(safe-area-inset-bottom); /* Critical for modern iOS */
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+}
+
+.bottom-nav-item {
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    padding: 12px 0; 
+    color: var(--text-muted-color); 
+    text-decoration: none; 
+    transition: 0.3s;
+}
+
+.bottom-nav-item:hover, .bottom-nav-item.active { 
+    color: var(--primary-color); 
+}
+
+.nav-icon { 
+    font-size: 20px; 
+    margin-bottom: 4px; 
+    transition: 0.3s; 
+}
+
+.bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { 
+    transform: translateY(-3px); 
+}
+
+.nav-label { 
+    font-size: 11px; 
+    font-weight: 700; 
+}
+
+/* Ensure body and footer don't hide behind the bottom bar on mobile */
+@media (max-width: 992px) {
+    .bottom-nav { display: flex; }
+    body { padding-bottom: 70px; } 
+    .main-footer { padding-bottom: 80px; }
 }
