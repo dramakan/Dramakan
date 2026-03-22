@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             setInterval(() => {
                 // Animate to left
-                sliderWrapper.style.transition = 'transform 0.5s ease-in-out';
+                sliderWrapper.style.transition = 'transform 0.3s ease-in-out';
                 sliderWrapper.style.transform = `translateX(-200%)`; 
                 
                 // Shift classes instantly for smooth scaling
@@ -136,14 +136,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     sliderWrapper.style.transition = 'none';
                     sliderWrapper.appendChild(sliderWrapper.firstElementChild);
                     sliderWrapper.style.transform = `translateX(-100%)`; 
-                }, 500); 
-            }, 5000);
+                }, 300); 
+            }, 3000);
             
         } else {
             // Desktop Setup
             setInterval(() => {
                 slideIndex = (slideIndex + 1) % heroSlides.length;
-                sliderWrapper.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+                sliderWrapper.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
                 sliderWrapper.style.transform = `translateX(-${slideIndex * 100}%)`;
             }, 5000);
         }
