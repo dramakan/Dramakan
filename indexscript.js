@@ -222,3 +222,31 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.log('Service Worker Failed', err));
   });
 }
+// --- 5. NEW APP INSTALL POPUP LOGIC ---
+document.addEventListener("DOMContentLoaded", function() {
+    const installPopup = document.getElementById('appInstallPopup');
+    const closePopupBtn = document.getElementById('closeInstallPopup');
+
+    if (installPopup && closePopupBtn) {
+        // Optional: Checks session storage so if a user closes it, 
+        // it doesn't annoy them again until they open a new tab/session.
+        if (sessionStorage.getItem('hideAppInstallPopup') === 'true') {
+            installPopup.style.display = 'none';
+        } else {
+            // Small delay so it pops up smoothly after the page loads
+            installPopup.classList.add('hidden');
+            setTimeout(() => {
+                installPopup.classList.remove('hidden');
+            }, 800);
+        }
+
+        closePopupBtn.addEventListener('click', () => {
+            installPopup.classList.add('hidden');
+            // Hide it completely from DOM after animation finishes
+            setTimeout(() => {
+                installPopup.style.display = 'none';
+            }, 400); 
+            sessionStorage.setItem('hideAppInstallPopup', 'true');
+        });
+    }
+});
