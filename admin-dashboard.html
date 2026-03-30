@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Control Panel - DramaKan</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-base: #09090b;
+            --bg-surface: #18181b;
+            --accent-gold: #d4af37;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --border-subtle: rgba(255,255,255,0.08);
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* Top Admin Nav */
+        .admin-nav {
+            padding: 20px 5%;
+            background: rgba(24, 24, 27, 0.9);
+            border-bottom: 1px solid var(--accent-gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-brand { font-size: 1.5rem; font-weight: 700; color: #fff; }
+        .admin-brand span { color: var(--danger); } /* Red accent for Admin */
+        .btn-logout { background: transparent; color: var(--text-main); border: 1px solid var(--border-subtle); padding: 8px 15px; border-radius: 6px; cursor: pointer; }
+        
+        /* Container */
+        .admin-container { max-width: 1200px; margin: 40px auto; padding: 0 5%; }
+
+        /* Login Screen (Hidden by default) */
+        #login-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh;
+        }
+        .login-box {
+            background: var(--bg-surface); padding: 40px; border-radius: 12px; border: 1px solid var(--border-subtle); width: 100%; max-width: 400px;
+        }
+        .login-box h2 { text-align: center; margin-bottom: 20px; color: var(--danger); }
+        .admin-input { width: 100%; padding: 12px; margin-bottom: 15px; background: var(--bg-base); border: 1px solid var(--border-subtle); color: #fff; border-radius: 6px; }
+        .btn-login { width: 100%; padding: 12px; background: var(--danger); color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+
+        /* Dashboard Screen (Hidden until verified) */
+        #dashboard-screen { display: none; }
+        
+        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        
+        /* Data Table */
+        .table-wrapper {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 15px 20px; border-bottom: 1px solid var(--border-subtle); }
+        th { background: rgba(0,0,0,0.2); color: var(--accent-gold); font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        td { font-size: 0.95rem; }
+        
+        .creator-name { font-weight: 600; color: #fff; }
+        .creator-email { font-size: 0.8rem; color: var(--text-muted); }
+        .money-owed { color: var(--success); font-weight: bold; font-size: 1.1rem; }
+        
+        .btn-pay {
+            background: var(--accent-gold); color: #000; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.85rem;
+        }
+        .btn-pay:hover { background: #f1c40f; }
+        .btn-pay:disabled { background: #3f3f46; color: #a1a1aa; cursor: not-allowed; }
+
+        #error-msg { color: var(--danger); margin-top: 10px; text-align: center; font-size: 0.9rem; display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-box">
+            <h2><i class="fas fa-lock"></i> Owner Login</h2>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">Restricted Access</p>
+            <form id="admin-login-form">
+                <input type="email" id="admin-email" class="admin-input" placeholder="Admin Email" required>
+                <input type="password" id="admin-password" class="admin-input" placeholder="Password" required>
+                <button type="submit" class="btn-login" id="login-btn">Verify Access</button>
+                <div id="error-msg"></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="dashboard-screen">
+        <nav class="admin-nav">
+            <div class="admin-brand">DramaKan <span>Admin</span></div>
+            <button class="btn-logout" id="logout-btn">Logout</button>
+        </nav>
+
+        <div class="admin-container">
+            <div class="header-flex">
+                <h2>Creator Payout Management</h2>
+                <button id="refresh-btn" class="btn-logout" style="border-color: var(--accent-gold); color: var(--accent-gold);">
+                    <i class="fas fa-sync-alt"></i> Refresh Data
+                </button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Creator / Channel</th>
+                            <th>Total Clicks</th>
+                            <th>Unpaid Clicks</th>
+                            <th>Amount Owed</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="creators-table-body">
+                        <tr><td colspan="5" style="text-align: center;">Loading creators...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // ** 1. PASTE YOUR FIREBASE KEYS HERE **
+        const firebaseConfig = {
+  apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
+  authDomain: "dramakan007.firebaseapp.com",
+  projectId: "dramakan007",
+  storageBucket: "dramakan007.firebasestorage.app",
+  messagingSenderId: "1069933586213",
+  appId: "1:1069933586213:web:b28ab37436679a4906dccc"
+};
+
+        // ** 2. SET YOUR EXACT ADMIN EMAIL HERE **
+        const OWNER_EMAIL = "zabaazcreations@gmail.com"; // CHANGE THIS TO YOUR REAL EMAIL
+
+        // ** 3. SET YOUR PAY RATE ($0.05 per click = ₹4 approximately) **
+        const PAY_RATE = 0.05;
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const loginScreen = document.getElementById('login-screen');
+        const dashboardScreen = document.getElementById('dashboard-screen');
+        const tableBody = document.getElementById('creators-table-body');
+
+        // --- SECURITY & LOGIN LOGIC ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // If logged in, check if they are the true owner
+                if (user.email.toLowerCase() === OWNER_EMAIL.toLowerCase()) {
+                    loginScreen.style.display = 'none';
+                    dashboardScreen.style.display = 'block';
+                    loadCreators(); // Fetch the data
+                } else {
+                    // Imposter! Log them out immediately
+                    alert("Unauthorized Access. You are not the owner.");
+                    signOut(auth);
+                }
+            } else {
+                // Not logged in
+                loginScreen.style.display = 'flex';
+                dashboardScreen.style.display = 'none';
+            }
+        });
+
+        document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            const errorMsg = document.getElementById('error-msg');
+            const loginBtn = document.getElementById('login-btn');
+
+            if (email.toLowerCase() !== OWNER_EMAIL.toLowerCase()) {
+                errorMsg.textContent = "Access Denied: Unrecognized Admin Email.";
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            try {
+                loginBtn.textContent = "Verifying...";
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                errorMsg.textContent = "Incorrect password.";
+                errorMsg.style.display = 'block';
+                loginBtn.textContent = "Verify Access";
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+        document.getElementById('refresh-btn').addEventListener('click', loadCreators);
+
+        // --- DATA FETCHING & TABLE LOGIC ---
+        async function loadCreators() {
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Fetching data...</td></tr>';
+            
+            try {
+                const querySnapshot = await getDocs(collection(db, "creators"));
+                tableBody.innerHTML = ''; // Clear loading text
+
+                if (querySnapshot.empty) {
+                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No creators found.</td></tr>';
+                    return;
+                }
+
+                querySnapshot.forEach((documentSnapshot) => {
+                    const data = documentSnapshot.data();
+                    const creatorId = documentSnapshot.id; // The unique Firebase ID
+                    const owedAmount = (data.unpaidClicks * PAY_RATE).toFixed(2);
+                    
+                    // Create the table row
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>
+                            <div class="creator-name">@${data.creatorId}</div>
+                            <div class="creator-email"><a href="mailto:${data.email}" style="color:var(--text-muted);">${data.email}</a></div>
+                        </td>
+                        <td>${data.totalClicks}</td>
+                        <td>${data.unpaidClicks}</td>
+                        <td class="money-owed">$${owedAmount}</td>
+                        <td>
+                            <button class="btn-pay" onclick="markAsPaid('${creatorId}', '${data.creatorId}')" ${data.unpaidClicks === 0 ? 'disabled' : ''}>
+                                ${data.unpaidClicks === 0 ? '<i class="fas fa-check"></i> Paid' : 'Mark as Paid'}
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error("Error fetching creators:", error);
+                tableBody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Error loading data. Check console.</td></tr>`;
+            }
+        }
+
+        // --- MARK AS PAID LOGIC ---
+        // We attach this to the window object so the HTML onclick="" attribute can find it
+        window.markAsPaid = async function(firebaseUserId, channelName) {
+            const confirmPay = confirm(`Are you sure you want to mark ${channelName} as paid? This will reset their unpaid clicks to 0.`);
+            
+            if (confirmPay) {
+                try {
+                    const creatorRef = doc(db, "creators", firebaseUserId);
+                    
+                    // Update the database to set unpaidClicks back to 0
+                    await updateDoc(creatorRef, {
+                        unpaidClicks: 0
+                    });
+                    
+                    alert(`Successfully marked ${channelName} as paid!`);
+                    loadCreators(); // Refresh the table
+                } catch (error) {
+                    console.error("Error updating payment:", error);
+                    alert("Failed to update database.");
+                }
+            }
+        };
+    </script>
+</body>
+</html>
