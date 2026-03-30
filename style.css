@@ -1,225 +1,280 @@
-/* === GLOBAL STYLES & ENHANCED THEME === */
+/* =====================================================
+   1. GLOBAL RESET & GLASS DESIGN SYSTEM
+===================================================== */
 :root {
+    /* Brand Colors */
     --primary-color: #8A2BE2;
-    --primary-color-rgb: 138, 43, 226;
+    --primary-glow: rgba(138, 43, 226, 0.4);
     --background-color: #0B0C10;
-    --surface-color-darker: #1A1A1D;
-    --surface-color-lighter: #2a2a2d;
     --text-color: #F5F5F5;
     --text-muted-color: #a0a0a0;
-    --border-color: #3a3a40;
+    
+    /* Unified Glassmorphism Variables */
+    --glass-bg: rgba(26, 26, 29, 0.45);
+    --glass-bg-hover: rgba(26, 26, 29, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-border-light: rgba(255, 255, 255, 0.15);
+    --glass-blur: blur(16px);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
 }
-
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); line-height: 1.6; font-size: 16px; }
+
+body { 
+    font-family: 'Poppins', sans-serif; 
+    background-color: var(--background-color); 
+    color: var(--text-color); 
+    line-height: 1.6; 
+    font-size: 16px; 
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
 a { text-decoration: none; color: inherit; }
 img { max-width: 100%; height: auto; display: block; }
 
-.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-.widget {
-    background: linear-gradient(180deg, var(--surface-color-lighter), var(--surface-color-darker));
-    border: 1px solid var(--border-color);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    border-radius: 8px; margin-bottom: 20px; padding: 20px;
-}
-.widget-title {
-    font-size: 1.2rem; font-weight: 600; margin-bottom: 15px;
-    padding-bottom: 10px; border-bottom: 1px solid var(--border-color);
-}
+/* Edge-to-Edge Container (Matches index) */
+.container { max-width: 1400px; margin: 0 auto; padding: 0 4%; width: 100%; }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--surface-color-darker); }
-::-webkit-scrollbar-thumb { background: #4f4f5a; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+::-webkit-scrollbar-track { background: var(--background-color); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary-color); box-shadow: 0 0 10px var(--primary-glow); }
 
-/* === HEADER === */
+/* =====================================================
+   2. HEADER (FROSTED GLASS)
+===================================================== */
 .main-header {
-    background-color: rgba(11, 12, 16, 0.8); backdrop-filter: blur(10px); padding: 15px 20px;
-    position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color);
+    position: sticky; top: 0; z-index: 1000;
+    background: rgba(11, 12, 16, 0.75);
+    backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    border-bottom: 1px solid var(--glass-border); padding: 15px 0; margin-bottom: 30px;
 }
-.logo { font-size: 1.8rem; font-weight: 700; }
-.logo span { color: var(--primary-color); }
+.header-container { display: flex; align-items: center; justify-content: space-between; }
+.logo { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; padding-left: 30px;}
+.logo span { color: var(--primary-color); text-shadow: 0 0 10px var(--primary-glow); }
 
-/* === WATCH PAGE LAYOUT === */
-.watch-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+/* =====================================================
+   3. WATCH PAGE LAYOUT & WIDGETS
+===================================================== */
+.watch-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; margin-bottom: 40px; }
+.main-content-col { min-width: 0; }
 
-/* === MAIN CONTENT (LEFT COLUMN) */
-.main-content-col {
-    min-width: 0;
+/* Premium Glass Widgets */
+.widget {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 20px; 
+    margin-bottom: 25px; 
+    padding: 25px;
 }
+
+.widget-title {
+    font-size: 1.25rem; font-weight: 600; margin-bottom: 20px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--glass-border);
+    color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* =====================================================
+   4. VIDEO PLAYER & CONTROLS
+===================================================== */
 .video-player-container {
-    position: relative;
-    width: 100%;
-    background-color: #000;
-    border-radius: 8px;
-    overflow: hidden;
-    aspect-ratio: 16 / 9;
-    border: 2px solid var(--border-color);
-    margin-bottom: 20px;
+    position: relative; width: 100%; aspect-ratio: 16 / 9;
+    background-color: #000; overflow: hidden;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border-light);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(138,43,226,0.15);
+    margin-bottom: 25px;
 }
+#video-player-iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-#video-player-iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-}
+.episode-meta { padding: 0 5px 15px 5px; }
+.episode-title { font-size: 1.6rem; font-weight: 600; margin-bottom: 15px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+.episode-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
 
-.episode-meta { padding: 0 0 15px 0; }
-.episode-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 15px; }
-.episode-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-
-/* -- PREMIUM BUTTON STYLES -- */
+/* Glass Pill Buttons */
 .action-btn, .download-btn, .comment-form button {
-    border: none;
-    border-radius: 6px;
-    padding: 10px 20px;
-    font-weight: 500;
-    font-family: 'Poppins', sans-serif;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-.action-btn:hover:not(:disabled), .download-btn:hover, .comment-form button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-.action-btn:disabled {
-    background-color: #222;
-    color: #555;
-    cursor: not-allowed;
+    border: none; border-radius: 50px; padding: 10px 24px;
+    font-weight: 600; font-family: 'Poppins', sans-serif;
+    cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: rgba(255, 255, 255, 0.05); color: var(--text-color);
+    border: 1px solid var(--glass-border); backdrop-filter: var(--glass-blur);
 }
 
-.action-btn {
-    background: linear-gradient(180deg, #4a4a52, #313136);
-    color: var(--text-color);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
 .action-btn:hover:not(:disabled) {
-    background: linear-gradient(180deg, #5a5a62, #414146);
+    background: rgba(255, 255, 255, 0.1); border-color: var(--glass-border-light);
+    transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+.action-btn:disabled { background: rgba(0,0,0,0.3); color: #555; border-color: transparent; cursor: not-allowed; }
+
+#next-ep-btn, .download-btn, .comment-form button {
+    background: var(--primary-color); color: white; border: none;
+    box-shadow: 0 4px 15px var(--primary-glow);
+}
+#next-ep-btn:hover:not(:disabled), .download-btn:hover, .comment-form button:hover {
+    background: #9d4edd; transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(157, 78, 221, 0.6);
 }
 
-#next-ep-btn {
-    background: linear-gradient(180deg, #ffffff, #e0e0e0);
-    color: #0B0C10;
-    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
-}
-#next-ep-btn:hover:not(:disabled) {
-    background: linear-gradient(180deg, #f0f0f0, #d0d0d0);
-}
-
-.download-btn {
-    background: linear-gradient(180deg, hsl(262, 77%, 60%), hsl(262, 77%, 50%));
-    color: white;
-    box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.25);
-    padding: 8px 15px;
-    font-size: 0.9rem;
-}
-.download-btn:hover {
-     background: linear-gradient(180deg, hsl(262, 77%, 65%), hsl(262, 77%, 55%));
-}
-
+/* =====================================================
+   5. EPISODE LIST
+===================================================== */
 .episodes-list-widget .episodes-list { max-height: 400px; overflow-y: auto; padding-right: 10px; }
-.episode-item { display: flex; align-items: center; gap: 15px; padding: 10px; border-radius: 5px; margin-bottom: 5px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s ease; }
-.episode-item:hover { background-color: var(--surface-color-lighter); border-color: var(--border-color); }
-.episode-item.current { background: rgba(var(--primary-color-rgb), 0.1); border-color: var(--primary-color); }
-.episode-item .ep-number { font-weight: 600; font-size: 1.1rem; }
+.episodes-list::-webkit-scrollbar { width: 6px; }
+.episode-item { 
+    display: flex; align-items: center; gap: 15px; padding: 12px 16px; 
+    border-radius: 12px; margin-bottom: 8px; cursor: pointer; 
+    border: 1px solid transparent; transition: all 0.3s ease; 
+    background: rgba(255, 255, 255, 0.02);
+}
+.episode-item:hover { background: var(--glass-bg-hover); border-color: var(--glass-border-light); transform: translateX(4px); }
+.episode-item.current { 
+    background: rgba(138, 43, 226, 0.15); border-color: var(--primary-color); 
+    box-shadow: inset 0 0 15px rgba(138,43,226,0.1);
+}
+.episode-item .ep-number { font-weight: 600; font-size: 1.1rem; color: var(--primary-color); }
+.episode-item .ep-desc { color: #ddd; }
 
-/* -- START: REDESIGNED CAST SECTION -- */
+/* =====================================================
+   6. CAST LIST & DOWNLOADS
+===================================================== */
 .cast-list-wrapper { overflow-x: auto; padding-bottom: 15px; }
+.cast-list-wrapper::-webkit-scrollbar { height: 6px; }
 .cast-list { display: flex; gap: 15px; }
 .cast-card {
-    flex: 0 0 140px;
-    width: 140px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    position: relative; /* Needed for the overlay */
+    flex: 0 0 130px; width: 130px;
+    border: 1px solid var(--glass-border); border-radius: 16px; overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); position: relative;
+    background: rgba(0,0,0,0.5);
 }
-.cast-card:hover {
-    transform: translateY(-5px) scale(1.03);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-}
-.cast-card img {
-    width: 100%;
-    height: 100%;
-    aspect-ratio: 2/3;
-    object-fit: cover;
-    object-position: center top;
-    /* Placeholder styling */
-    background-color: #333;
-}
+.cast-card:hover { transform: translateY(-6px); box-shadow: 0 12px 25px rgba(0,0,0,0.6), 0 0 15px var(--primary-glow); border-color: var(--glass-border-light); }
+.cast-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
 .cast-info {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 30px 10px 10px 10px;
-    background: linear-gradient(to top, rgba(11, 12, 16, 1) 20%, rgba(11, 12, 16, 0));
+    position: absolute; bottom: 0; left: 0; right: 0; padding: 30px 10px 10px 10px;
+    background: linear-gradient(to top, rgba(11, 12, 16, 0.95) 10%, rgba(11, 12, 16, 0));
 }
-.actor-name {
-    font-size: 0.9rem;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: var(--text-color);
-}
-.character-name {
-    font-size: 0.8rem;
-    color: #ccc;
-}
-/* -- END: REDESIGNED CAST SECTION -- */
+.actor-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.character-name { font-size: 0.75rem; color: var(--primary-color); }
 
 .download-list table { width: 100%; border-collapse: collapse; }
-.download-list th, .download-list td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
-.download-list th { color: var(--text-muted-color); font-weight: 500; }
+.download-list th, .download-list td { padding: 14px 10px; text-align: left; border-bottom: 1px solid var(--glass-border); }
+.download-list th { color: var(--text-muted-color); font-weight: 500; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
 
-/* -- IMPROVED COMMENT SECTION STYLES -- */
-.comment-form { display: flex; gap: 15px; margin-top: 15px; margin-bottom: 25px; align-items: flex-start; }
-.comment-form .user-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;}
-.comment-form textarea { flex-grow: 1; background-color: var(--background-color); border: 1px solid var(--border-color); border-radius: 5px; padding: 10px; color: var(--text-color); font-family: 'Poppins', sans-serif; resize: vertical; min-height: 50px; transition: all 0.2s; }
-.comment-form textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 0 4px rgba(var(--primary-color-rgb), 0.25); outline: none; }
-.comment-form button { background: var(--primary-color); color: white; padding: 0; height: 50px; width: 50px; flex-shrink: 0; }
-.comment-form button:hover { filter: brightness(1.2); }
+/* =====================================================
+   7. COMMENTS SECTION
+===================================================== */
+.comment-form { display: flex; gap: 15px; margin-top: 10px; margin-bottom: 30px; align-items: flex-start; }
+.comment-form .user-avatar { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--glass-border); }
+.comment-form textarea { 
+    flex-grow: 1; background: rgba(255, 255, 255, 0.04); 
+    border: 1px solid var(--glass-border); border-radius: 16px; 
+    padding: 14px; color: var(--text-color); font-family: 'Poppins', sans-serif; 
+    resize: vertical; min-height: 50px; transition: all 0.3s; 
+}
+.comment-form textarea:focus { 
+    border-color: var(--primary-color); outline: none; 
+    box-shadow: 0 0 15px rgba(138,43,226,0.15); background: rgba(255, 255, 255, 0.06); 
+}
+.comment-form button { height: 50px; width: 50px; padding: 0; flex-shrink: 0; border-radius: 50%; font-size: 1.1rem; }
+
 .comment { display: flex; gap: 15px; margin-bottom: 25px; }
-.comment .user-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
-.comment-content { flex-grow: 1; background-color: var(--background-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 15px; }
-.comment-author { font-weight: 600; margin-bottom: 4px; }
+.comment .user-avatar { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; border: 1px solid var(--glass-border); }
+.comment-content { 
+    flex-grow: 1; background: rgba(255, 255, 255, 0.03); 
+    border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px; 
+}
+.comment-author { font-weight: 600; margin-bottom: 6px; color: #fff; }
 .comment-author span { font-weight: 400; color: var(--text-muted-color); font-size: 0.8rem; margin-left: 10px; }
-.comment-text { color: var(--text-muted-color); line-height: 1.7; }
-.comment-actions { display: flex; gap: 15px; margin-top: 10px; font-size: 0.9rem; color: var(--text-muted-color); }
-.comment-actions a { cursor: pointer; transition: color 0.2s; }
+.comment-text { color: #d0d0d0; line-height: 1.6; font-size: 0.95rem; }
+.comment-actions { display: flex; gap: 15px; margin-top: 12px; font-size: 0.85rem; color: var(--text-muted-color); }
+.comment-actions a { cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 5px; }
 .comment-actions a:hover { color: var(--primary-color); }
 
-.drama-info-widget .info-poster img { border-radius: 8px; margin-bottom: 15px; background-color: #333; /* Placeholder styling */ }
-.drama-info-widget .info-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 10px; }
-.info-synopsis.truncated { max-height: 70px; -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%); mask-image: linear-gradient(to bottom, black 50%, transparent 100%); }
-.read-more-btn { color: var(--primary-color); cursor: pointer; font-weight: 600; font-size: 0.9rem; }
-.drama-info-widget .info-details { margin-top: 15px; }
-.drama-info-widget .info-details p { font-size: 0.9rem; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
+/* =====================================================
+   8. SIDEBAR (DRAMA INFO & RECS)
+===================================================== */
+.drama-info-widget .info-poster img { 
+    border-radius: 16px; margin-bottom: 20px; width: 100%; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid var(--glass-border);
+}
+.drama-info-widget .info-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 12px; }
+.info-synopsis { color: #d0d0d0; font-size: 0.95rem; line-height: 1.7; }
+.info-synopsis.truncated { 
+    max-height: 75px; 
+    -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%); 
+    mask-image: linear-gradient(to bottom, black 40%, transparent 100%); 
+}
+.read-more-btn { color: var(--primary-color); cursor: pointer; font-weight: 600; font-size: 0.9rem; margin-top: 5px; display: inline-block; }
+.drama-info-widget .info-details { margin-top: 20px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border); }
+.drama-info-widget .info-details p { font-size: 0.9rem; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .drama-info-widget .info-details p:last-child { border-bottom: none; }
-.drama-info-widget .info-details span { color: var(--text-muted-color); display: inline-block; width: 110px; }
+.drama-info-widget .info-details span { color: var(--text-muted-color); display: inline-block; width: 90px; font-weight: 500;}
 
-.recommendations-list .rec-card { display: flex; gap: 15px; margin-bottom: 15px; padding: 10px; border-radius: 8px; transition: all 0.2s ease-in-out; }
-.recommendations-list .rec-card:hover { background-color: var(--surface-color-lighter); transform: translateX(5px); }
-.recommendations-list .rec-card img { width: 70px; height: 100px; object-fit: cover; border-radius: 4px; flex-shrink: 0; background-color: #333; /* Placeholder styling */ }
-.recommendations-list .rec-card .rec-title { font-weight: 500; margin-bottom: 5px; }
-.recommendations-list .rec-card .rec-meta { font-size: 0.8rem; color: var(--text-muted-color); }
+.recommendations-list .rec-card { 
+    display: flex; gap: 15px; margin-bottom: 15px; padding: 12px; 
+    border-radius: 16px; transition: all 0.3s ease; 
+    background: rgba(255,255,255,0.02); border: 1px solid transparent;
+}
+.recommendations-list .rec-card:hover { 
+    background: var(--glass-bg-hover); border-color: var(--glass-border-light); 
+    transform: translateX(6px); box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.recommendations-list .rec-card img { width: 70px; height: 100px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+.recommendations-list .rec-card .rec-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 5px; color: #fff; }
+.recommendations-list .rec-card .rec-meta { font-size: 0.8rem; color: var(--primary-color); font-weight: 500; }
 
-.main-footer { background-color: var(--surface-color-darker); border-top: 1px solid var(--border-color); padding: 20px; margin-top: 20px; text-align: center; }
+/* =====================================================
+   9. FOOTER
+===================================================== */
+.main-footer { 
+    background: rgba(11, 12, 16, 0.9); border-top: 1px solid var(--glass-border); 
+    padding: 30px 20px; text-align: center; color: var(--text-muted-color); font-size: 0.9rem;
+}
 
-/* === RESPONSIVE STYLES DONE === */
-@media (min-width: 1600px) { body { font-size: 18px; } .container { max-width: 1500px; } }
-@media (max-width: 992px) { .watch-layout { grid-template-columns: 1fr; } .episode-title, .info-title { font-size: 1.4rem; } .container { padding: 15px; } }
-@media (max-width: 768px) { .episode-title, .info-title { font-size: 1.3rem; } .widget { padding: 15px; } .cast-card { flex: 0 0 120px; width: 120px; } }
-@media (max-width: 576px) { body { font-size: 14px; } .container { padding: 10px; } .logo { font-size: 1.6rem; } .episode-title, .info-title { font-size: 1.2rem; } .widget-title { font-size: 1.1rem; } .ep-info .ep-desc { display: none; } .download-list thead { display: none; } .download-list tr { display: block; border-bottom: 2px solid var(--primary-color); margin-bottom: 15px; padding-bottom: 15px; } .download-list tr:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; } .download-list td { display: block; text-align: right; font-size: 0.9rem; border-bottom: none; padding: 5px 8px; position: relative; } .download-list td::before { content: attr(data-label); position: absolute; left: 8px; font-weight: bold; color: var(--text-muted-color); text-align: left; } .action-btn { padding: 6px 12px; font-size: 0.9rem; } .comment-actions { font-size: 0.8rem; } .comment.reply { margin-left: 40px; } }
+/* =====================================================
+   10. MOBILE & TABLET RESPONSIVE OVERRIDES
+===================================================== */
+@media (max-width: 992px) { 
+    .watch-layout { grid-template-columns: 1fr; } 
+    .episode-title, .info-title { font-size: 1.4rem; } 
+    
+    /* Ensure room for the bottom nav bar */
+    body { padding-bottom: 80px; }
+}
+
+@media (max-width: 768px) { 
+    .widget { padding: 18px; border-radius: 16px; } 
+    .cast-card { flex: 0 0 110px; width: 110px; } 
+    .drama-info-widget .info-poster img { max-width: 250px; margin: 0 auto 20px auto; }
+    .drama-info-widget { text-align: center; }
+    .drama-info-widget .info-details { text-align: left; }
+}
+
+@media (max-width: 576px) { 
+    body { font-size: 14px; } 
+    .container { padding: 0 4%; } 
+    .logo { font-size: 1.6rem; } 
+    .episode-title { font-size: 1.25rem; } 
+    .widget-title { font-size: 1.15rem; } 
+    
+    /* Mobile Video ratio fix */
+    .video-player-container { border-radius: 12px; }
+
+    /* Compact Episode List */
+    .ep-info .ep-desc { font-size: 0.85rem; } 
+    
+    /* Responsive Table to Cards */
+    .download-list thead { display: none; } 
+    .download-list tr { display: block; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.02); border-radius: 12px; margin-bottom: 15px; padding: 10px; } 
+    .download-list td { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px 5px; } 
+    .download-list td:last-child { border-bottom: none; }
+    .download-list td::before { content: attr(data-label); font-weight: 600; color: var(--text-muted-color); } 
+    
+    .action-btn { padding: 8px 16px; font-size: 0.85rem; } 
+    .comment-actions { font-size: 0.8rem; }
+}
