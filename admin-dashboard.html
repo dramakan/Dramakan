@@ -9,65 +9,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <style>
-        :root {
-            --bg-base: #09090b;
-            --bg-surface: #18181b;
-            --accent-gold: #d4af37;
-            --text-main: #f4f4f5;
-            --text-muted: #a1a1aa;
-            --border-subtle: rgba(255,255,255,0.08);
-            --danger: #ef4444;
-            --success: #10b981;
-        }
-
+        :root { --bg-base: #09090b; --bg-surface: #18181b; --accent-gold: #d4af37; --text-main: #f4f4f5; --text-muted: #a1a1aa; --border-subtle: rgba(255,255,255,0.08); --danger: #ef4444; --success: #10b981; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            min-height: 100vh;
-        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; }
 
-        /* Top Admin Nav */
-        .admin-nav {
-            padding: 20px 5%;
-            background: rgba(24, 24, 27, 0.9);
-            border-bottom: 1px solid var(--accent-gold);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .admin-nav { padding: 20px 5%; background: rgba(24, 24, 27, 0.9); border-bottom: 1px solid var(--accent-gold); display: flex; justify-content: space-between; align-items: center; }
         .admin-brand { font-size: 1.5rem; font-weight: 700; color: #fff; }
-        .admin-brand span { color: var(--danger); } /* Red accent for Admin */
+        .admin-brand span { color: var(--danger); }
         .btn-logout { background: transparent; color: var(--text-main); border: 1px solid var(--border-subtle); padding: 8px 15px; border-radius: 6px; cursor: pointer; }
         
-        /* Container */
-        .admin-container { max-width: 1200px; margin: 40px auto; padding: 0 5%; }
+        .admin-container { max-width: 1300px; margin: 40px auto; padding: 0 5%; }
 
-        /* Login Screen (Hidden by default) */
-        #login-screen {
-            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh;
-        }
-        .login-box {
-            background: var(--bg-surface); padding: 40px; border-radius: 12px; border: 1px solid var(--border-subtle); width: 100%; max-width: 400px;
-        }
+        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; }
+        .login-box { background: var(--bg-surface); padding: 40px; border-radius: 12px; border: 1px solid var(--border-subtle); width: 100%; max-width: 400px; }
         .login-box h2 { text-align: center; margin-bottom: 20px; color: var(--danger); }
         .admin-input { width: 100%; padding: 12px; margin-bottom: 15px; background: var(--bg-base); border: 1px solid var(--border-subtle); color: #fff; border-radius: 6px; }
         .btn-login { width: 100%; padding: 12px; background: var(--danger); color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
 
-        /* Dashboard Screen (Hidden until verified) */
         #dashboard-screen { display: none; }
-        
         .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         
-        /* Data Table */
-        .table-wrapper {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            overflow-x: auto;
-        }
+        .table-wrapper { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th, td { padding: 15px 20px; border-bottom: 1px solid var(--border-subtle); }
         th { background: rgba(0,0,0,0.2); color: var(--accent-gold); font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
@@ -77,9 +39,15 @@
         .creator-email { font-size: 0.8rem; color: var(--text-muted); }
         .money-owed { color: var(--success); font-weight: bold; font-size: 1.1rem; }
         
-        .btn-pay {
-            background: var(--accent-gold); color: #000; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.85rem;
-        }
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        .status-pending { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); }
+        .status-ready { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success); }
+        .status-waiting { background: rgba(161, 161, 170, 0.1); color: var(--text-muted); }
+
+        /* Highlight rows that need attention */
+        .row-action-needed { background: rgba(239, 68, 68, 0.05); }
+        
+        .btn-pay { background: var(--accent-gold); color: #000; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.85rem; width: 100%; }
         .btn-pay:hover { background: #f1c40f; }
         .btn-pay:disabled { background: #3f3f46; color: #a1a1aa; cursor: not-allowed; }
 
@@ -91,7 +59,6 @@
     <div id="login-screen">
         <div class="login-box">
             <h2><i class="fas fa-lock"></i> Owner Login</h2>
-            <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">Restricted Access</p>
             <form id="admin-login-form">
                 <input type="email" id="admin-email" class="admin-input" placeholder="Admin Email" required>
                 <input type="password" id="admin-password" class="admin-input" placeholder="Password" required>
@@ -119,10 +86,10 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Creator / Channel</th>
-                            <th>Total Clicks</th>
-                            <th>Unpaid Clicks</th>
+                            <th>Creator</th>
+                            <th>Clicks (Total / Unpaid)</th>
                             <th>Amount Owed</th>
+                            <th>Payout Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -139,21 +106,18 @@
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // ** 1. PASTE YOUR FIREBASE KEYS HERE **
         const firebaseConfig = {
-  apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
-  authDomain: "dramakan007.firebaseapp.com",
-  projectId: "dramakan007",
-  storageBucket: "dramakan007.firebasestorage.app",
-  messagingSenderId: "1069933586213",
-  appId: "1:1069933586213:web:b28ab37436679a4906dccc"
-};
+            apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
+            authDomain: "dramakan007.firebaseapp.com",
+            projectId: "dramakan007",
+            storageBucket: "dramakan007.firebasestorage.app",
+            messagingSenderId: "1069933586213",
+            appId: "1:1069933586213:web:b28ab37436679a4906dccc"
+        };
 
-        // ** 2. SET YOUR EXACT ADMIN EMAIL HERE **
-        const OWNER_EMAIL = "zabaazcreations@gmail.com"; // CHANGE THIS TO YOUR REAL EMAIL
-
-        // ** 3. SET YOUR PAY RATE ($0.05 per click = ₹4 approximately) **
+        const OWNER_EMAIL = "zabaazcreations@gmail.com"; 
         const PAY_RATE = 0.05;
+        const THRESHOLD = 10.00;
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -163,21 +127,16 @@
         const dashboardScreen = document.getElementById('dashboard-screen');
         const tableBody = document.getElementById('creators-table-body');
 
-        // --- SECURITY & LOGIN LOGIC ---
+        // Security Check
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // If logged in, check if they are the true owner
-                if (user.email.toLowerCase() === OWNER_EMAIL.toLowerCase()) {
-                    loginScreen.style.display = 'none';
-                    dashboardScreen.style.display = 'block';
-                    loadCreators(); // Fetch the data
-                } else {
-                    // Imposter! Log them out immediately
-                    alert("Unauthorized Access. You are not the owner.");
-                    signOut(auth);
-                }
+            if (user && user.email.toLowerCase() === OWNER_EMAIL.toLowerCase()) {
+                loginScreen.style.display = 'none';
+                dashboardScreen.style.display = 'block';
+                loadCreators();
+            } else if (user) {
+                alert("Unauthorized Access.");
+                signOut(auth);
             } else {
-                // Not logged in
                 loginScreen.style.display = 'flex';
                 dashboardScreen.style.display = 'none';
             }
@@ -209,36 +168,54 @@
         document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
         document.getElementById('refresh-btn').addEventListener('click', loadCreators);
 
-        // --- DATA FETCHING & TABLE LOGIC ---
+        // Fetch and build the table
         async function loadCreators() {
             tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Fetching data...</td></tr>';
             
             try {
                 const querySnapshot = await getDocs(collection(db, "creators"));
-                tableBody.innerHTML = ''; // Clear loading text
+                tableBody.innerHTML = ''; 
 
                 if (querySnapshot.empty) {
                     tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No creators found.</td></tr>';
                     return;
                 }
 
-                querySnapshot.forEach((documentSnapshot) => {
-                    const data = documentSnapshot.data();
-                    const creatorId = documentSnapshot.id; // The unique Firebase ID
+                // Sort so people asking for money appear at the top
+                const creators = [];
+                querySnapshot.forEach(doc => creators.push({ id: doc.id, ...doc.data() }));
+                creators.sort((a, b) => (b.payoutRequested === true) - (a.payoutRequested === true));
+
+                creators.forEach((data) => {
                     const owedAmount = (data.unpaidClicks * PAY_RATE).toFixed(2);
+                    const hasReachedThreshold = (owedAmount >= THRESHOLD);
+                    const isRequested = data.payoutRequested === true;
                     
-                    // Create the table row
+                    let statusHtml = '';
+                    let rowClass = '';
+
+                    // UI Logic for status
+                    if (isRequested) {
+                        statusHtml = `<span class="status-badge status-pending"><i class="fas fa-exclamation-circle"></i> Action Required</span><br><span style="color:#fff; font-size: 0.85rem; display:inline-block; margin-top:5px;"><strong>Send to:</strong> ${data.payoutDetails}</span>`;
+                        rowClass = 'row-action-needed';
+                    } else if (hasReachedThreshold) {
+                        statusHtml = `<span class="status-badge status-ready"><i class="fas fa-check-circle"></i> Threshold Hit</span><br><span style="color:var(--text-muted); font-size: 0.8rem;">Waiting for user to request</span>`;
+                    } else {
+                        statusHtml = `<span class="status-badge status-waiting">Earning...</span>`;
+                    }
+
                     const tr = document.createElement('tr');
+                    if(rowClass) tr.className = rowClass;
                     tr.innerHTML = `
                         <td>
                             <div class="creator-name">@${data.creatorId}</div>
                             <div class="creator-email"><a href="mailto:${data.email}" style="color:var(--text-muted);">${data.email}</a></div>
                         </td>
-                        <td>${data.totalClicks}</td>
-                        <td>${data.unpaidClicks}</td>
+                        <td><strong>${data.totalClicks}</strong> Total <br> <span style="color: var(--text-muted); font-size: 0.85rem;">${data.unpaidClicks} Unpaid</span></td>
                         <td class="money-owed">$${owedAmount}</td>
+                        <td>${statusHtml}</td>
                         <td>
-                            <button class="btn-pay" onclick="markAsPaid('${creatorId}', '${data.creatorId}')" ${data.unpaidClicks === 0 ? 'disabled' : ''}>
+                            <button class="btn-pay" onclick="markAsPaid('${data.id}', '${data.creatorId}', ${owedAmount})" ${data.unpaidClicks === 0 ? 'disabled' : ''}>
                                 ${data.unpaidClicks === 0 ? '<i class="fas fa-check"></i> Paid' : 'Mark as Paid'}
                             </button>
                         </td>
@@ -251,22 +228,23 @@
             }
         }
 
-        // --- MARK AS PAID LOGIC ---
-        // We attach this to the window object so the HTML onclick="" attribute can find it
-        window.markAsPaid = async function(firebaseUserId, channelName) {
-            const confirmPay = confirm(`Are you sure you want to mark ${channelName} as paid? This will reset their unpaid clicks to 0.`);
+        // Global function to reset a user after paying them
+        window.markAsPaid = async function(firebaseUserId, channelName, amount) {
+            const confirmPay = confirm(`CONFIRM PAYMENT: Have you successfully sent $${amount} to ${channelName}?\n\nClicking OK will reset their unpaid clicks to 0 and clear their payment request.`);
             
             if (confirmPay) {
                 try {
                     const creatorRef = doc(db, "creators", firebaseUserId);
                     
-                    // Update the database to set unpaidClicks back to 0
+                    // Reset unpaid clicks and completely clear the payout request flags
                     await updateDoc(creatorRef, {
-                        unpaidClicks: 0
+                        unpaidClicks: 0,
+                        payoutRequested: false,
+                        payoutDetails: ""
                     });
                     
-                    alert(`Successfully marked ${channelName} as paid!`);
-                    loadCreators(); // Refresh the table
+                    alert(`Success! ${channelName}'s balance has been reset to 0.`);
+                    loadCreators(); 
                 } catch (error) {
                     console.error("Error updating payment:", error);
                     alert("Failed to update database.");
