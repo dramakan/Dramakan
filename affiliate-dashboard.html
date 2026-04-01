@@ -6,16 +6,26 @@
     <title>Creator Dashboard - DramaKan</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="bottom-bar.css"> 
+
     <style>
         :root { --bg-base: #09090b; --bg-surface: #18181b; --accent-gold: #d4af37; --text-main: #f4f4f5; --text-muted: #a1a1aa; --border-subtle: rgba(255,255,255,0.08); --radius-md: 12px; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; background-image: radial-gradient(circle at 50% -20%, #1e1e24 0%, var(--bg-base) 70%); }
+        
+        /* Updated Top Nav */
         .dash-nav { padding: 20px 5%; background: rgba(24, 24, 27, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
-        .brand { font-size: 1.5rem; font-weight: 700; letter-spacing: 1px; }
+        .brand { font-size: 1.5rem; font-weight: 700; letter-spacing: 1px; text-decoration: none; color: #fff; }
         .brand span { color: var(--accent-gold); }
-        .btn-logout { background: transparent; color: var(--text-muted); border: 1px solid var(--border-subtle); padding: 8px 15px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        .nav-actions { display: flex; gap: 10px; }
+        .btn-action { background: transparent; color: var(--text-muted); border: 1px solid var(--border-subtle); padding: 8px 15px; border-radius: 6px; cursor: pointer; transition: 0.3s; text-decoration: none; display: flex; align-items: center; gap: 6px; }
+        .btn-action:hover { color: #fff; border-color: var(--accent-gold); }
         .btn-logout:hover { color: #ef4444; border-color: #ef4444; }
-        .dash-container { max-width: 1100px; margin: 40px auto; padding: 0 5%; width: 100%; flex: 1; }
+        
+        /* Padding added to bottom so mobile nav doesn't cover content */
+        .dash-container { max-width: 1100px; margin: 40px auto; padding: 0 5% 80px 5%; width: 100%; flex: 1; }
+        
         .welcome-header h1 { font-size: 2rem; font-weight: 600; }
         .welcome-header span { color: var(--accent-gold); }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; margin-top: 30px; }
@@ -39,14 +49,20 @@
         #loader { position: fixed; inset: 0; background: var(--bg-base); z-index: 999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
         .spinner { width: 50px; height: 50px; border: 4px solid var(--border-subtle); border-top-color: var(--accent-gold); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Hide text on very small phones so buttons fit */
+        @media (max-width: 480px) { .hide-mobile-text { display: none; } }
     </style>
 </head>
 <body>
     <div id="loader"><div class="spinner"></div><p>Securely loading dashboard...</p></div>
 
     <nav class="dash-nav">
-        <div class="brand">Drama<span>Kan</span> Partners</div>
-        <button class="btn-logout" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        <a href="index.html" class="brand">Drama<span>Kan</span> Partners</a>
+        <div class="nav-actions">
+            <a href="index.html" class="btn-action"><i class="fas fa-home"></i> <span class="hide-mobile-text">Home</span></a>
+            <button class="btn-action btn-logout" id="logout-btn"><i class="fas fa-sign-out-alt"></i> <span class="hide-mobile-text">Logout</span></button>
+        </div>
     </nav>
 
     <main class="dash-container">
@@ -99,10 +115,33 @@
         </div>
     </main>
 
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span class="nav-label">Home</span>
+        </a>
+        <a href="Korean.html" class="bottom-nav-item">
+            <i class="fa-solid fa-won-sign"></i>
+            <span class="nav-label">Korean</span>
+        </a>
+        <a href="chinese.html" class="bottom-nav-item">
+            <i class="fa-brands fa-renren"></i>
+            <span class="nav-label">Chinese</span>
+        </a>
+        <a href="japanese.html" class="bottom-nav-item">
+            <i class="fa-solid fa-yen-sign"></i>
+            <span class="nav-label">Japanese</span>
+        </a>
+        <a href="affiliate.html" class="bottom-nav-item active" style="color: #d4af37;">
+            <i class="fas fa-hand-holding-dollar"></i>
+            <span class="nav-label">Earn</span>
+        </a>
+    </nav>
+    <script src="/js/bottom-bar.js"></script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        // ADDED updateDoc to the imports
         import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -145,7 +184,6 @@
                         if(progressPercent > 100) progressPercent = 100;
                         document.getElementById('ui-progress-bar').style.width = progressPercent + "%";
 
-                        // Check if they already requested a payout
                         if (data.payoutRequested) {
                             document.getElementById('ui-payout-lock').style.display = 'none';
                             const payoutForm = document.getElementById('ui-payout-form');
@@ -185,7 +223,6 @@
             setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy', 2000);
         });
         
-        // --- NEW: THE REAL PAYOUT REQUEST ENGINE ---
         document.getElementById('btn-request-payout').addEventListener('click', async () => {
             const detailsInput = document.getElementById('payout-details');
             const btn = document.getElementById('btn-request-payout');
@@ -198,14 +235,13 @@
             btn.disabled = true;
 
             try {
-                // Update the database to notify the admin!
                 await updateDoc(currentUserDocRef, {
                     payoutRequested: true,
                     payoutDetails: detailsInput.value.trim()
                 });
                 
                 alert("Success! Your payout request has been securely sent to DramaKan Admin.");
-                window.location.reload(); // Reload to show the pending screen
+                window.location.reload(); 
             } catch (error) {
                 console.error(error);
                 alert("Error submitting request. Please try again.");

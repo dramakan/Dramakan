@@ -8,17 +8,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
+    <link rel="stylesheet" href="bottom-bar.css"> 
+    
     <style>
         :root { --bg-base: #09090b; --bg-surface: #18181b; --accent-gold: #d4af37; --text-main: #f4f4f5; --text-muted: #a1a1aa; --border-subtle: rgba(255,255,255,0.08); --danger: #ef4444; --success: #10b981; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; }
 
+        /* Updated Top Nav */
         .admin-nav { padding: 20px 5%; background: rgba(24, 24, 27, 0.9); border-bottom: 1px solid var(--accent-gold); display: flex; justify-content: space-between; align-items: center; }
-        .admin-brand { font-size: 1.5rem; font-weight: 700; color: #fff; }
+        .admin-brand { font-size: 1.5rem; font-weight: 700; color: #fff; text-decoration: none; }
         .admin-brand span { color: var(--danger); }
-        .btn-logout { background: transparent; color: var(--text-main); border: 1px solid var(--border-subtle); padding: 8px 15px; border-radius: 6px; cursor: pointer; }
+        .nav-actions { display: flex; gap: 10px; }
+        .btn-action { background: transparent; color: var(--text-main); border: 1px solid var(--border-subtle); padding: 8px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; text-decoration: none; display: flex; align-items: center; gap: 6px; }
+        .btn-action:hover { background: rgba(255,255,255,0.05); }
+        .btn-logout:hover { color: #ef4444; border-color: #ef4444; }
         
-        .admin-container { max-width: 1300px; margin: 40px auto; padding: 0 5%; }
+        /* Padding added to bottom so mobile nav doesn't cover content */
+        .admin-container { max-width: 1300px; margin: 40px auto; padding: 0 5% 80px 5%; }
 
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; }
         .login-box { background: var(--bg-surface); padding: 40px; border-radius: 12px; border: 1px solid var(--border-subtle); width: 100%; max-width: 400px; }
@@ -44,7 +51,6 @@
         .status-ready { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success); }
         .status-waiting { background: rgba(161, 161, 170, 0.1); color: var(--text-muted); }
 
-        /* Highlight rows that need attention */
         .row-action-needed { background: rgba(239, 68, 68, 0.05); }
         
         .btn-pay { background: var(--accent-gold); color: #000; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.85rem; width: 100%; }
@@ -52,6 +58,8 @@
         .btn-pay:disabled { background: #3f3f46; color: #a1a1aa; cursor: not-allowed; }
 
         #error-msg { color: var(--danger); margin-top: 10px; text-align: center; font-size: 0.9rem; display: none; }
+        
+        @media (max-width: 480px) { .hide-mobile-text { display: none; } }
     </style>
 </head>
 <body>
@@ -70,15 +78,18 @@
 
     <div id="dashboard-screen">
         <nav class="admin-nav">
-            <div class="admin-brand">DramaKan <span>Admin</span></div>
-            <button class="btn-logout" id="logout-btn">Logout</button>
+            <a href="index.html" class="admin-brand">DramaKan <span>Admin</span></a>
+            <div class="nav-actions">
+                <a href="index.html" class="btn-action"><i class="fas fa-home"></i> <span class="hide-mobile-text">Home</span></a>
+                <button class="btn-action btn-logout" id="logout-btn"><i class="fas fa-sign-out-alt"></i> <span class="hide-mobile-text">Logout</span></button>
+            </div>
         </nav>
 
         <div class="admin-container">
             <div class="header-flex">
                 <h2>Creator Payout Management</h2>
-                <button id="refresh-btn" class="btn-logout" style="border-color: var(--accent-gold); color: var(--accent-gold);">
-                    <i class="fas fa-sync-alt"></i> Refresh Data
+                <button id="refresh-btn" class="btn-action" style="border-color: var(--accent-gold); color: var(--accent-gold);">
+                    <i class="fas fa-sync-alt"></i> <span class="hide-mobile-text">Refresh Data</span>
                 </button>
             </div>
 
@@ -100,6 +111,30 @@
             </div>
         </div>
     </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span class="nav-label">Home</span>
+        </a>
+        <a href="Korean.html" class="bottom-nav-item">
+            <i class="fa-solid fa-won-sign"></i>
+            <span class="nav-label">Korean</span>
+        </a>
+        <a href="chinese.html" class="bottom-nav-item">
+            <i class="fa-brands fa-renren"></i>
+            <span class="nav-label">Chinese</span>
+        </a>
+        <a href="japanese.html" class="bottom-nav-item">
+            <i class="fa-solid fa-yen-sign"></i>
+            <span class="nav-label">Japanese</span>
+        </a>
+        <a href="affiliate.html" class="bottom-nav-item active" style="color: #d4af37;">
+            <i class="fas fa-hand-holding-dollar"></i>
+            <span class="nav-label">Earn</span>
+        </a>
+    </nav>
+    <script src="/js/bottom-bar.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
@@ -127,7 +162,6 @@
         const dashboardScreen = document.getElementById('dashboard-screen');
         const tableBody = document.getElementById('creators-table-body');
 
-        // Security Check
         onAuthStateChanged(auth, (user) => {
             if (user && user.email.toLowerCase() === OWNER_EMAIL.toLowerCase()) {
                 loginScreen.style.display = 'none';
@@ -168,7 +202,6 @@
         document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
         document.getElementById('refresh-btn').addEventListener('click', loadCreators);
 
-        // Fetch and build the table
         async function loadCreators() {
             tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Fetching data...</td></tr>';
             
@@ -181,7 +214,6 @@
                     return;
                 }
 
-                // Sort so people asking for money appear at the top
                 const creators = [];
                 querySnapshot.forEach(doc => creators.push({ id: doc.id, ...doc.data() }));
                 creators.sort((a, b) => (b.payoutRequested === true) - (a.payoutRequested === true));
@@ -194,7 +226,6 @@
                     let statusHtml = '';
                     let rowClass = '';
 
-                    // UI Logic for status
                     if (isRequested) {
                         statusHtml = `<span class="status-badge status-pending"><i class="fas fa-exclamation-circle"></i> Action Required</span><br><span style="color:#fff; font-size: 0.85rem; display:inline-block; margin-top:5px;"><strong>Send to:</strong> ${data.payoutDetails}</span>`;
                         rowClass = 'row-action-needed';
@@ -228,15 +259,12 @@
             }
         }
 
-        // Global function to reset a user after paying them
         window.markAsPaid = async function(firebaseUserId, channelName, amount) {
             const confirmPay = confirm(`CONFIRM PAYMENT: Have you successfully sent $${amount} to ${channelName}?\n\nClicking OK will reset their unpaid clicks to 0 and clear their payment request.`);
             
             if (confirmPay) {
                 try {
                     const creatorRef = doc(db, "creators", firebaseUserId);
-                    
-                    // Reset unpaid clicks and completely clear the payout request flags
                     await updateDoc(creatorRef, {
                         unpaidClicks: 0,
                         payoutRequested: false,

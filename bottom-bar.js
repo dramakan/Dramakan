@@ -85,3 +85,40 @@ if (creatorRef) {
         
     }).catch(err => console.error("Tracking error:", err));
 }
+// ==========================================
+// 4. SECRET ADMIN PORTAL (EASTER EGG)
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // PC METHOD: The Keyboard Cheat Code (Ctrl + Shift + Y)
+    document.addEventListener('keydown', (e) => {
+        // You can change 'Y' to any letter you want!
+        if (e.ctrlKey && e.shiftKey && e.key === 'Y') {
+            window.location.href = 'admin-dashboard.html';
+        }
+    });
+
+    // MOBILE METHOD: The "5-Tap" Footer Trick
+    // Finds the footer at the bottom of the page
+    const footerText = document.querySelector('.main-footer') || document.querySelector('footer');
+    
+    if (footerText) {
+        let tapCount = 0;
+        let tapTimer;
+
+        footerText.addEventListener('click', () => {
+            tapCount++;
+            clearTimeout(tapTimer);
+
+            // If tapped 5 times fast, teleport to the admin dashboard
+            if (tapCount >= 5) {
+                window.location.href = 'admin-dashboard.html';
+            }
+
+            // Reset the counter if you stop tapping for 1.5 seconds
+            tapTimer = setTimeout(() => { 
+                tapCount = 0; 
+            }, 1500);
+        });
+    }
+});
