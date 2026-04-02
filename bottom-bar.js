@@ -12,35 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ==========================================
-// 2. DRAMAKAN BULLETPROOF "CINEMA MODE" ENGINE
-// ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    const videoIframe = document.querySelector('iframe');
-    if (!videoIframe) return;
 
-    const cinemaBtn = document.createElement('button');
-    cinemaBtn.className = 'btn-cinema';
-    cinemaBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Cinema Mode';
-    videoIframe.parentNode.insertBefore(cinemaBtn, videoIframe);
-
-    cinemaBtn.addEventListener('click', () => {
-        document.body.classList.toggle('cinema-mode-active');
-        
-        if(document.body.classList.contains('cinema-mode-active')) {
-            cinemaBtn.innerHTML = '<i class="fas fa-sun"></i> Turn on Lights';
-            videoIframe.style.position = 'relative';
-            videoIframe.style.zIndex = '99999';
-            cinemaBtn.style.position = 'relative';
-            cinemaBtn.style.zIndex = '99999';
-            videoIframe.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-            cinemaBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Cinema Mode';
-            videoIframe.style.zIndex = '1';
-            cinemaBtn.style.zIndex = '1';
-        }
-    });
-});
 
 // ==========================================
 // 3. DRAMAKAN SECURE AFFILIATE TRACKING
