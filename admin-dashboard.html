@@ -17,7 +17,7 @@
         .admin-brand { font-size: 1.5rem; font-weight: 700; color: #fff; text-decoration: none; }
         .admin-brand span { color: var(--danger); }
         .nav-actions { display: flex; gap: 10px; }
-        .btn-action { background: transparent; color: var(--text-main); border: 1px solid var(--border-subtle); padding: 8px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; text-decoration: none; display: flex; align-items: center; gap: 6px; }
+        .btn-action { background: transparent; color: var(--text-main); border: 1px solid var(--border-subtle); padding: 8px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; text-decoration: none; display: flex; align-items: center; gap: 6px; justify-content: center; }
         .btn-action:hover { background: rgba(255,255,255,0.05); }
         .btn-logout:hover { color: #ef4444; border-color: #ef4444; }
         
@@ -53,12 +53,14 @@
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th, td { padding: 15px 20px; border-bottom: 1px solid var(--border-subtle); }
         th { background: rgba(0,0,0,0.2); color: var(--accent-gold); font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        /* Override th color for CMS table */
+        #cms-tab th { color: var(--primary); }
         td { font-size: 0.95rem; }
+        
         .btn-pay { background: var(--accent-gold); color: #000; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.85rem; width: 100%; }
         .btn-pay:hover { background: #f1c40f; }
         .btn-pay:disabled { background: #3f3f46; color: #a1a1aa; cursor: not-allowed; }
-
-        /* Status Badges */
+        
         .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
         .status-pending { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); }
         .status-ready { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success); }
@@ -69,7 +71,7 @@
         .cms-group { margin-bottom: 10px; }
         .cms-group label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.85rem; }
         .cms-group.full-width { grid-column: 1 / -1; }
-        .btn-publish { background: var(--primary); color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; width: 100%; grid-column: 1 / -1; margin-top: 10px; transition: 0.3s; }
+        .btn-publish { background: var(--primary); color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; width: 100%; transition: 0.3s; }
         .btn-publish:hover { background: #9d4edd; box-shadow: 0 0 15px rgba(138, 43, 226, 0.4); }
 
         .section-title { font-size: 1.1rem; color: var(--primary); margin-top: 15px; margin-bottom: 5px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 5px; grid-column: 1 / -1; }
@@ -104,7 +106,7 @@
             
             <div class="admin-tabs">
                 <button class="tab-btn active" data-target="analytics-tab"><i class="fas fa-chart-pie"></i> Analytics & Payouts</button>
-                <button class="tab-btn" data-target="cms-tab"><i class="fas fa-upload"></i> Publish Drama</button>
+                <button class="tab-btn" data-target="cms-tab"><i class="fas fa-upload"></i> Content Manager</button>
             </div>
 
             <div id="analytics-tab" class="tab-content active">
@@ -128,8 +130,8 @@
             </div>
 
             <div id="cms-tab" class="tab-content">
-                <div class="table-wrapper" style="padding: 30px;">
-                    <h2 style="margin-bottom: 20px; color: var(--primary);"><i class="fas fa-film"></i> Upload New Drama</h2>
+                <div class="table-wrapper" style="padding: 30px; margin-bottom: 40px;">
+                    <h2 style="margin-bottom: 20px; color: var(--primary);"><i class="fas fa-film"></i> <span id="form-title">Upload New Drama</span></h2>
                     <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">Submitting this form automatically generates the watch.html page and handles multiple seasons natively.</p>
                     
                     <form id="cms-form">
@@ -217,9 +219,24 @@
                                 <input type="url" id="cms-actor2-img" class="admin-input" placeholder="https://..." required>
                             </div>
 
-                            <button type="submit" id="cms-submit" class="btn-publish"><i class="fas fa-rocket"></i> Publish Drama</button>
+                            <div style="display: flex; gap: 10px; grid-column: 1 / -1; margin-top: 10px;">
+                                <button type="submit" id="cms-submit" class="btn-publish"><i class="fas fa-rocket"></i> Publish Drama</button>
+                                <button type="button" id="cms-cancel" class="btn-action" style="display: none; width: 100%; border-color: var(--danger); color: var(--danger);"><i class="fas fa-times"></i> Cancel Edit</button>
+                            </div>
                         </div>
                     </form>
+                </div>
+
+                <div class="header-flex" style="border-top: 1px solid var(--border-subtle); padding-top: 30px;">
+                    <h2 style="color: var(--primary);"><i class="fas fa-list"></i> Manage Uploaded Dramas</h2>
+                    <button id="refresh-dramas-btn" class="btn-action" style="border-color: var(--primary); color: var(--primary);"><i class="fas fa-sync-alt"></i></button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Title</th><th>Type</th><th>Total Eps</th><th>Date Added</th><th>Actions</th></tr></thead>
+                        <tbody id="dramas-table-body"><tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Fetching dramas...</td></tr></tbody>
+                    </table>
                 </div>
             </div>
 
@@ -229,7 +246,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, getDoc, setDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
@@ -248,6 +265,8 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        let editingDramaId = null; // Tracks if we are editing an existing drama
+
         // --- TAB LOGIC ---
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -263,7 +282,9 @@
             if (user && user.email.toLowerCase() === OWNER_EMAIL.toLowerCase()) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('dashboard-screen').style.display = 'block';
-                loadGlobalStats(); loadCreators();
+                loadGlobalStats(); 
+                loadCreators();
+                loadDramas(); // Load existing CMS dramas
             } else if (user) {
                 alert("Unauthorized Access."); signOut(auth);
             } else {
@@ -284,8 +305,9 @@
 
         document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
         document.getElementById('refresh-btn').addEventListener('click', () => { loadGlobalStats(); loadCreators(); });
+        document.getElementById('refresh-dramas-btn').addEventListener('click', () => loadDramas());
 
-        // --- DATA LOADERS ---
+        // --- DATA LOADERS (ANALYTICS) ---
         async function loadGlobalStats() {
             try {
                 const visitDoc = await getDoc(doc(db, "drama_stats", "_global_visits_"));
@@ -354,30 +376,141 @@
             }
         };
 
-        // --- THE NEW CMS UPLOAD LOGIC (WITH SEASON ARRAY) ---
+        // --- NEW: CMS MANAGE (EDIT / DELETE) LOGIC ---
+        async function loadDramas() {
+            const tbody = document.getElementById('dramas-table-body');
+            try {
+                // Fetch all CMS dramas sorted by newest
+                const q = query(collection(db, "dramas"), orderBy("createdAt", "desc"));
+                const snap = await getDocs(q);
+                tbody.innerHTML = '';
+                
+                if (snap.empty) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No dramas published yet.</td></tr>';
+                    return;
+                }
+
+                snap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const id = docSnap.id;
+                    const dateAdded = new Date(data.createdAt).toLocaleDateString();
+                    
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${data.title}</strong></td>
+                        <td>${data.type}</td>
+                        <td>${data.totalEps}</td>
+                        <td>${dateAdded}</td>
+                        <td style="display:flex; gap:10px;">
+                            <button class="btn-action edit-btn" style="color:var(--info); border-color:var(--info); padding: 6px 12px; font-size:0.85rem;" data-id="${id}"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="btn-action delete-btn" style="color:var(--danger); border-color:var(--danger); padding: 6px 12px; font-size:0.85rem;" data-id="${id}"><i class="fas fa-trash"></i> Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                // Attach Action Listeners
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => startEditDrama(e.currentTarget.getAttribute('data-id')));
+                });
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => deleteDrama(e.currentTarget.getAttribute('data-id')));
+                });
+
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="5" style="color:red; text-align:center;">Error loading dramas.</td></tr>';
+                console.error(err);
+            }
+        }
+
+        async function startEditDrama(id) {
+            try {
+                const docSnap = await getDoc(doc(db, "dramas", id));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    editingDramaId = id; // Lock into Edit Mode
+                    
+                    // Populate Form
+                    document.getElementById('form-title').innerText = "Edit Drama";
+                    document.getElementById('cms-title').value = data.title;
+                    document.getElementById('cms-img').value = data.img;
+                    document.getElementById('cms-synopsis').value = data.synopsis;
+                    document.getElementById('cms-imdb-id').value = data.imdbId;
+                    document.getElementById('cms-eps').value = (data.seasons || [data.totalEps]).join(', ');
+                    document.getElementById('cms-type').value = data.type;
+                    document.getElementById('cms-status').value = data.status;
+                    document.getElementById('cms-year').value = data.year;
+                    document.getElementById('cms-score').value = data.imdb;
+                    document.getElementById('cms-genre').value = data.genre;
+                    document.getElementById('cms-trend').value = data.Trend;
+                    document.getElementById('cms-actor1').value = data.actor1;
+                    document.getElementById('cms-actor1-img').value = data.actor1Img;
+                    document.getElementById('cms-actor2').value = data.actor2;
+                    document.getElementById('cms-actor2-img').value = data.actor2Img;
+
+                    // Swap Buttons
+                    document.getElementById('cms-submit').innerHTML = '<i class="fas fa-save"></i> Update Drama';
+                    document.getElementById('cms-cancel').style.display = 'flex';
+                    
+                    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll up to the form
+                }
+            } catch(e) { console.error(e); alert("Error fetching drama details."); }
+        }
+
+        async function deleteDrama(id) {
+            if (confirm("WARNING: Are you sure you want to permanently delete this drama from your live website?")) {
+                try {
+                    await deleteDoc(doc(db, "dramas", id));
+                    alert("Drama deleted successfully.");
+                    loadDramas(); // Refresh Table
+                } catch(e) { console.error(e); alert("Error deleting drama."); }
+            }
+        }
+
+        function resetCMSForm() {
+            document.getElementById('cms-form').reset();
+            editingDramaId = null;
+            document.getElementById('form-title').innerText = "Upload New Drama";
+            document.getElementById('cms-submit').innerHTML = '<i class="fas fa-rocket"></i> Publish Drama';
+            document.getElementById('cms-cancel').style.display = 'none';
+        }
+        document.getElementById('cms-cancel').addEventListener('click', resetCMSForm);
+
+
+        // --- MAIN CMS SUBMIT LOGIC (HANDLES BOTH PUBLISH & UPDATE) ---
         document.getElementById('cms-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('cms-submit');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing...';
+            const isEditing = editingDramaId !== null;
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (isEditing ? 'Updating...' : 'Publishing...');
             btn.disabled = true;
 
             try {
-                // 1. Process the Seasons Input (e.g. "16, 12, 10" -> [16, 12, 10])
+                // Parse Seasons Array
                 const epsInput = document.getElementById('cms-eps').value.trim();
                 const seasonsArray = epsInput.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
                 const totalCalculatedEps = seasonsArray.reduce((a, b) => a + b, 0);
 
-                // 2. Generate a unique ID for this drama in Firestore
-                const newDocRef = doc(collection(db, "dramas"));
-                const smartLink = `watch.html?id=${newDocRef.id}`;
+                // Set Target Database Location
+                let targetDocRef;
+                let smartLink;
+                
+                if (isEditing) {
+                    targetDocRef = doc(db, "dramas", editingDramaId);
+                    smartLink = `watch.html?id=${editingDramaId}`;
+                } else {
+                    targetDocRef = doc(collection(db, "dramas"));
+                    smartLink = `watch.html?id=${targetDocRef.id}`;
+                }
 
-                const newDrama = {
+                const dramaData = {
                     title: document.getElementById('cms-title').value.trim(),
                     img: document.getElementById('cms-img').value.trim(),
                     link: smartLink, 
                     synopsis: document.getElementById('cms-synopsis').value.trim(),
                     imdbId: document.getElementById('cms-imdb-id').value.trim(),
-                    seasons: seasonsArray, // SAVED AS ARRAY FOR MULTI-SEASON SUPPORT!
+                    seasons: seasonsArray, 
                     totalEps: totalCalculatedEps, 
                     type: document.getElementById('cms-type').value,
                     status: document.getElementById('cms-status').value,
@@ -388,18 +521,26 @@
                     actor1: document.getElementById('cms-actor1').value.trim(),
                     actor1Img: document.getElementById('cms-actor1-img').value.trim(),
                     actor2: document.getElementById('cms-actor2').value.trim(),
-                    actor2Img: document.getElementById('cms-actor2-img').value.trim(),
-                    createdAt: new Date().getTime() 
+                    actor2Img: document.getElementById('cms-actor2-img').value.trim()
                 };
 
-                await setDoc(newDocRef, newDrama);
-                alert("Success! Drama pushed to live website and Player Page created.");
-                document.getElementById('cms-form').reset();
+                // Save to Database
+                if (isEditing) {
+                    await updateDoc(targetDocRef, dramaData);
+                    alert("Success! Drama updated on the live website.");
+                } else {
+                    dramaData.createdAt = new Date().getTime(); // Only add timestamp to new dramas
+                    await setDoc(targetDocRef, dramaData);
+                    alert("Success! Drama published and Player Page created.");
+                }
+                
+                resetCMSForm();
+                loadDramas(); // Refresh the table below
             } catch (error) {
                 console.error(error);
-                alert("Error publishing drama.");
+                alert("Error saving drama.");
             } finally {
-                btn.innerHTML = '<i class="fas fa-rocket"></i> Publish Drama';
+                btn.innerHTML = isEditing ? '<i class="fas fa-save"></i> Update Drama' : '<i class="fas fa-rocket"></i> Publish Drama';
                 btn.disabled = false;
             }
         });
