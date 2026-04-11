@@ -12,7 +12,6 @@
     <meta property="og:image" content="https://m.media-amazon.com/images/M/MV5BMWE5NGQ5YmUtZGU1Ny00ZDM3LWIyZGMtZWI0YWRkZTM0Y2I4XkEyXkFqcGc@._V1_.jpg">
     <meta name="twitter:card" content="summary_large_image">
 
-    <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -20,99 +19,381 @@
     <link rel="stylesheet" href="style.css">
 
     <style>
-        /* Details Page Specific Premium Styles */
-        .details-hero {
-            display: flex; gap: 40px; padding: 60px 20px; max-width: 1200px; margin: 0 auto; align-items: center;
+        /* Modern Details Page UI Variables */
+        :root {
+            --primary-bg: #0a0a0c;
+            --secondary-bg: #141519;
+            --accent-purple: #8A2BE2;
+            --accent-red: #E50914;
+            --accent-gold: #FFD700;
+            --text-main: #ffffff;
+            --text-muted: #a0a0ab;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(20, 21, 25, 0.6);
         }
-        .details-poster {
-            flex: 0 0 300px; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(138,43,226,0.3);
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
-        .details-poster img { width: 100%; height: auto; display: block; }
-        .details-info h1 { font-family: 'Space Grotesk', sans-serif; font-size: 3rem; margin-bottom: 15px; color: #fff; }
-        .meta-tags { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
-        .meta-tags span { background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
-        .synopsis { color: #a0a0ab; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px; }
-        
-        .watch-btn {
-            display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #8A2BE2, #E50914);
-            color: #fff; padding: 15px 40px; border-radius: 30px; font-size: 1.1rem; font-weight: 700; text-decoration: none;
-            box-shadow: 0 10px 25px rgba(138,43,226,0.4); transition: 0.3s;
+
+        /* Hero Backdrop Section */
+        .hero-section {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
         }
-        .watch-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(229,9,20,0.5); }
-        
-        .details-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; max-width: 1200px; margin: 0 auto 100px; padding: 0 20px; }
-        
-        .sidebar-widget { 
-            background: rgba(26,26,29,0.45); backdrop-filter: blur(16px); 
-            border: 1px solid rgba(255,255,255,0.08); padding: 30px; border-radius: 20px; margin-bottom: 30px; 
+
+        .hero-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://m.media-amazon.com/images/M/MV5BMWE5NGQ5YmUtZGU1Ny00ZDM3LWIyZGMtZWI0YWRkZTM0Y2I4XkEyXkFqcGc@._V1_.jpg'); /* Uncanny Counter Poster */
+            background-size: cover;
+            background-position: center 20%;
+            filter: blur(15px) brightness(0.4);
+            transform: scale(1.1);
+            z-index: 1;
         }
-        .widget-title { 
-            font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; color: #fff; 
-            margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; 
+
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to top, var(--primary-bg) 0%, transparent 100%);
+            z-index: 2;
         }
-        
-        /* Cast Grid Layout */
-        .cast-list {
+
+        /* Main Content Layout */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto 100px;
+            padding: 0 20px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            grid-template-columns: 300px 1fr;
+            gap: 40px;
+            margin-top: -150px; /* Pull up over the hero */
+        }
+
+        /* Sidebar (Poster & Actions) */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
             gap: 20px;
         }
+
+        .poster-container {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        .poster-container img {
+            width: 100%;
+            display: block;
+        }
+
+        .watch-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-red));
+            color: #fff;
+            padding: 16px 0;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 10px 25px rgba(138,43,226,0.3);
+            transition: 0.3s;
+        }
+
+        .watch-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(229,9,20,0.4);
+        }
+
+        /* Content Area */
+        .content-area {
+            padding-top: 20px;
+        }
+
+        .drama-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 15px;
+            color: #fff;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .meta-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .meta-info span {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid var(--glass-border);
+        }
+
+        .meta-info .rating { color: var(--accent-gold); border-color: rgba(255, 215, 0, 0.3); }
+        .meta-info .age-rating { background: rgba(229, 9, 20, 0.15); color: #fff; border-color: rgba(229, 9, 20, 0.4); }
+
+        .genre-tags {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .genre-tags span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--accent-purple);
+            padding-bottom: 2px;
+        }
+
+        /* Synopsis */
+        .synopsis-section {
+            background: var(--secondary-bg);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            margin-bottom: 40px;
+        }
+
+        .section-heading {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-heading i { color: var(--accent-purple); }
+
+        .synopsis {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        .synopsis.truncated {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .read-more-btn {
+            color: var(--accent-purple);
+            background: none;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            padding: 0;
+            font-size: 1rem;
+        }
+
+        /* Cast Section */
+        .cast-section {
+            margin-bottom: 40px;
+        }
+
+        .cast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px;
+        }
+
         .cast-card {
-            background: rgba(0,0,0,0.2);
+            background: var(--secondary-bg);
             border-radius: 12px;
             overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            transition: 0.3s;
+        }
+
+        .cast-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-purple);
+        }
+
+        .cast-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .cast-info {
+            padding: 12px;
             text-align: center;
         }
-        .cast-card img { width: 100%; height: 160px; object-fit: cover; }
-        .cast-info { padding: 10px; }
-        .actor-name { color: #fff; font-size: 0.95rem; margin-bottom: 4px; }
-        .character-name { color: #a0a0ab; font-size: 0.8rem; }
 
-        /* Details Sidebar */
-        .detail-item { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 10px; }
-        .detail-label { color: #a0a0ab; font-weight: 600; font-size: 0.95rem; }
-        .detail-value { color: #fff; font-weight: 500; text-align: right; font-size: 0.95rem; }
+        .actor-name { color: #fff; font-size: 0.95rem; margin-bottom: 4px; font-weight: 600; }
+        .character-name { color: var(--text-muted); font-size: 0.8rem; }
+
+        /* Detail Widgets (Sidebar) */
+        .sidebar-widget {
+            background: var(--secondary-bg);
+            border: 1px solid var(--glass-border);
+            padding: 25px;
+            border-radius: 16px;
+        }
+
+        .widget-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 10px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
         
-        .review-card { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border-left: 3px solid #8A2BE2; }
-        .review-user { font-weight: bold; color: #fff; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .review-text { color: #a0a0ab; font-size: 0.95rem; font-style: italic; line-height: 1.5; }
+        .detail-item:last-child { margin-bottom: 0; }
+        .detail-label { color: var(--text-muted); font-size: 0.9rem; }
+        .detail-value { color: #fff; font-size: 0.9rem; font-weight: 500; text-align: right; max-width: 60%; }
 
-        @media(max-width: 768px) {
-            .details-hero { flex-direction: column; text-align: center; padding: 40px 20px; }
-            .details-grid { grid-template-columns: 1fr; }
-            .meta-tags { justify-content: center; }
-            .details-poster { flex: 0 0 250px; margin: 0 auto; }
+        .review-card {
+            background: var(--primary-bg);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 3px solid var(--accent-purple);
+        }
+        
+        .review-user { font-weight: bold; color: #fff; margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 0.9rem;}
+        .review-text { color: var(--text-muted); font-size: 0.9rem; font-style: italic; line-height: 1.5; }
+
+        @media (max-width: 992px) {
+            .main-container { grid-template-columns: 1fr; margin-top: -100px; }
+            .sidebar { flex-direction: row; align-items: flex-end; }
+            .poster-container { width: 150px; flex-shrink: 0; }
+            .sidebar-widget { display: none; } /* Hide technical details on mobile top, show below */
+            .mobile-details { display: block; margin-top: 30px; }
+        }
+
+        @media (max-width: 600px) {
+            .hero-section { height: 350px; }
+            .sidebar { flex-direction: column; align-items: center; text-align: center; }
+            .poster-container { width: 200px; margin-top: -100px; }
+            .drama-title { font-size: 2.2rem; text-align: center; }
+            .meta-info, .genre-tags { justify-content: center; }
+        }
+
+        /* Desktop hide mobile details */
+        @media (min-width: 993px) {
+            .mobile-details { display: none; }
         }
     </style>
 </head>
 <body>
-    <header class="main-header">
-        <a href="index.html" class="logo">Drama<span>Kan</span></a>
+
+    <header class="main-header" style="position: absolute; width: 100%; z-index: 100; background: transparent; border: none; box-shadow: none;">
+        <div class="container" style="padding: 15px 20px;">
+            <a href="index.html" class="logo" style="text-shadow: 0 2px 10px rgba(0,0,0,0.8);">Drama<span>Kan</span></a>
+        </div>
     </header>
 
-    <div class="details-hero">
-        <div class="details-poster">
-            <img src="https://m.media-amazon.com/images/M/MV5BMWE5NGQ5YmUtZGU1Ny00ZDM3LWIyZGMtZWI0YWRkZTM0Y2I4XkEyXkFqcGc@._V1_.jpg" alt="The Uncanny Counter Poster">
-        </div>
-        <div class="details-info">
-            <h1>The Uncanny Counter</h1>
-            <div class="meta-tags">
-                <span style="background: #E50914; border-color: #E50914;">TV-MA</span>
-                <span>2 Seasons</span>
-                <span>Action / Fantasy</span>
-                <span><i class="fas fa-star" style="color:#FFD700;"></i> 8.1</span>
-            </div>
-            <p class="synopsis" id="synopsis-text">Noodle shop employees by day and demon hunters by night, the "Counters" use their special abilities to chase down malevolent spirits that prey on humans. Based on a popular webtoon, follow So Mun, the newest and youngest member of the group, as he discovers his immense powers and uncovers the truth behind his parents' tragic death.</p>
-            <a href="TheUncannyCounter_Watch.html" class="watch-btn"><i class="fas fa-play"></i> Watch Episodes</a>
-        </div>
+    <div class="hero-section">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
     </div>
 
-    <main class="details-grid">
-        <div class="main-content">
-            <div class="sidebar-widget cast-section">
-                <h2 class="widget-title">Main Cast</h2>
-                <div class="cast-list">
+    <main class="main-container">
+        
+        <aside class="sidebar">
+            <div class="poster-container">
+                <img src="https://m.media-amazon.com/images/M/MV5BMWE5NGQ5YmUtZGU1Ny00ZDM3LWIyZGMtZWI0YWRkZTM0Y2I4XkEyXkFqcGc@._V1_.jpg" alt="The Uncanny Counter Poster">
+            </div>
+            
+            <a href="TheUncannyCounter_Watch.html" class="watch-btn">
+                <i class="fa-solid fa-play"></i> Watch Episodes
+            </a>
+
+            <div class="sidebar-widget">
+                <h3 class="widget-title">Information</h3>
+                <div class="detail-item">
+                    <span class="detail-label">Native Title</span>
+                    <span class="detail-value">경이로운 소문</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Network</span>
+                    <span class="detail-value">OCN / tvN / Netflix</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Episodes</span>
+                    <span class="detail-value">28 (S1 & S2)</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Aired</span>
+                    <span class="detail-value">Nov 28, 2020 - Sep 3, 2023</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Content Rating</span>
+                    <span class="detail-value">TV-MA</span>
+                </div>
+            </div>
+
+            <div class="sidebar-widget">
+                <h3 class="widget-title">Community Review</h3>
+                <div class="review-card">
+                    <div class="review-user"><span>K-DramaFan99</span> <span><i class="fas fa-star" style="color:var(--accent-gold)"></i> 9/10</span></div>
+                    <p class="review-text">"One of the best action/fantasy dramas! The team dynamic is amazing, the fight scenes are top-tier, and Season 2 introduces incredible new villains."</p>
+                </div>
+            </div>
+
+        </aside>
+
+        <div class="content-area">
+            <h1 class="drama-title">The Uncanny Counter</h1>
+            
+            <div class="meta-info">
+                <span class="rating"><i class="fa-solid fa-star"></i> 8.1 / 10</span>
+                <span class="year">2020</span>
+                <span class="episodes">2 Seasons</span>
+                <span class="age-rating">TV-MA</span>
+            </div>
+
+            <div class="genre-tags">
+                <span>Action</span>
+                <span>Fantasy</span>
+                <span>Supernatural</span>
+                <span>Mystery</span>
+            </div>
+
+            <div class="synopsis-section">
+                <h2 class="section-heading"><i class="fa-solid fa-scroll"></i> Synopsis</h2>
+                <p class="synopsis truncated" id="synopsis-text">Noodle shop employees by day and demon hunters by night, the "Counters" use their special abilities to chase down malevolent spirits that prey on humans. Based on a popular webtoon, follow So Mun, the newest and youngest member of the group, as he discovers his immense powers and uncovers the truth behind his parents' tragic death.</p>
+                <button class="read-more-btn" id="read-more-btn">Read More <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem;"></i></button>
+            </div>
+
+            <div class="cast-section">
+                <h2 class="section-heading"><i class="fa-solid fa-users"></i> Main Cast</h2>
+                <div class="cast-grid">
                     <div class="cast-card">
                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzH_X9S_X6tG0F0vQ_z7T_Tf-jVvT7B0n0j6h3Yig&s" onerror="this.src='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';" alt="Jo Byung-gyu">
                         <div class="cast-info"><h4 class="actor-name">Jo Byung-gyu</h4><p class="character-name">So Mun</p></div>
@@ -131,36 +412,41 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <aside class="sidebar">
-            <div class="sidebar-widget">
-                <h3 class="widget-title">Drama Details</h3>
+            <div class="sidebar-widget mobile-details">
+                <h3 class="widget-title">Information</h3>
                 <div class="detail-item"><span class="detail-label">Native Title</span><span class="detail-value">경이로운 소문</span></div>
                 <div class="detail-item"><span class="detail-label">Network</span><span class="detail-value">OCN / tvN / Netflix</span></div>
+                <div class="detail-item"><span class="detail-label">Episodes</span><span class="detail-value">28 (S1 & S2)</span></div>
                 <div class="detail-item"><span class="detail-label">Aired</span><span class="detail-value">Nov 28, 2020 - Sep 3, 2023</span></div>
-                <div class="detail-item"><span class="detail-label">Total Episodes</span><span class="detail-value">28 (S1 & S2)</span></div>
                 <div class="detail-item"><span class="detail-label">Content Rating</span><span class="detail-value">TV-MA</span></div>
             </div>
             
-            <div class="sidebar-widget">
-                <h3 class="widget-title">Community Reviews</h3>
+            <div class="sidebar-widget mobile-details">
+                <h3 class="widget-title">Community Review</h3>
                 <div class="review-card">
-                    <div class="review-user"><span>K-DramaFan99</span> <span><i class="fas fa-star" style="color:#FFD700;"></i> 9/10</span></div>
+                    <div class="review-user"><span>K-DramaFan99</span> <span><i class="fas fa-star" style="color:var(--accent-gold)"></i> 9/10</span></div>
                     <p class="review-text">"One of the best action/fantasy dramas! The team dynamic is amazing, the fight scenes are top-tier, and Season 2 introduces incredible new villains."</p>
                 </div>
             </div>
-        </aside>
+
+        </div>
     </main>
 
-    <footer class="main-footer" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px;">
-        <div class="container" style="text-align: center; padding-bottom: 30px; color: #a0a0ab;">
-            <p>&copy; 2026 DramaKan. All rights reserved.</p>
-        </div>
-    </footer>
+<script> 
+    const synopsisText = document.getElementById('synopsis-text');
+        const readMoreBtn = document.getElementById('read-more-btn');
+        if (synopsisText && readMoreBtn) {
+            readMoreBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                synopsisText.classList.toggle('truncated');
+                readMoreBtn.innerHTML = synopsisText.classList.contains('truncated') ? 'Read More <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem;"></i>' : 'Read Less <i class="fa-solid fa-chevron-up" style="font-size: 0.8rem;"></i>';
+            });
+        }
+</script>
 
-    <link rel="stylesheet" href="bottom-bar.css"> 
-    <nav class="bottom-nav">
+<link rel="stylesheet" href="bottom-bar.css"> 
+<nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item active">
             <i class="fa-solid fa-house"></i>
             <span class="nav-label">Home</span>
@@ -181,7 +467,7 @@
             <i class="fa-solid fa-coins"></i>
             <span class="nav-label">Earn</span>
         </a>
-    </nav>
-    <script src="/js/bottom-bar.js"></script>
+</nav>
+<script src="/js/bottom-bar.js"></script>
 </body>
 </html>
