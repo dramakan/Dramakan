@@ -69,26 +69,31 @@ document.addEventListener('DOMContentLoaded', function () {
                 threshold: 0.4
             });
 
-            // B. RENDER CONTINUE WATCHING (From User's Browser Memory)
-            const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-            const historyArr = Object.values(historyObj).sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
-            
-            if(historyArr.length > 0) {
-                const cwSection = document.getElementById('continue-watching-section');
-                const cwGrid = document.getElementById('continue-watching-grid');
-                if (cwSection && cwGrid) {
-                    cwSection.style.display = 'block';
-                    cwGrid.innerHTML = historyArr.map(item => `
-                        <a href="${item.link}" class="drama-card" style="border-color: #8A2BE2; box-shadow: 0 0 15px rgba(138, 43, 226, 0.15);">
-                            <div class="drama-card-img"><img src="${item.img}" alt="${item.title}"></div>
-                            <div class="drama-card-info">
-                                <h3 class="drama-card-title">${item.title}</h3>
-                                <p class="drama-card-meta" style="color: #a1a1aa;"><i class="fas fa-history"></i> Jump back in</p>
-                            </div>
-                        </a>
-                    `).join('');
+            // B. RENDER CONTINUE WATCHING (With Cloud Sync Re-Render)
+            function renderContinueWatching() {
+                const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                const historyArr = Object.values(historyObj).sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
+                
+                if(historyArr.length > 0) {
+                    const cwSection = document.getElementById('continue-watching-section');
+                    const cwGrid = document.getElementById('continue-watching-grid');
+                    if (cwSection && cwGrid) {
+                        cwSection.style.display = 'block';
+                        cwGrid.innerHTML = historyArr.map(item => `
+                            <a href="${item.link}" class="drama-card" style="border-color: #8A2BE2; box-shadow: 0 0 15px rgba(138, 43, 226, 0.15);">
+                                <div class="drama-card-img"><img src="${item.img}" alt="${item.title}"></div>
+                                <div class="drama-card-info">
+                                    <h3 class="drama-card-title">${item.title}</h3>
+                                    <p class="drama-card-meta" style="color: #a1a1aa;"><i class="fas fa-history"></i> Jump back in</p>
+                                </div>
+                            </a>
+                        `).join('');
+                    }
                 }
             }
+            
+            renderContinueWatching(); // Load instantly from local storage
+            window.addEventListener('historySynced', renderContinueWatching); // Re-load if cloud gives us newer data!
 
             // C. RENDER LIVE TRENDING (From Firebase Database)
             try {

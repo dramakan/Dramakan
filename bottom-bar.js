@@ -10,18 +10,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const dramaTitleElement = document.querySelector('.info-title') || document.querySelector('h1') || document.querySelector('.drama-title');
 
     // ---------------------------------------------------------
-    // PART A: CONTINUE WATCHING & AUTO-RESUME (Runs Instantly!)
+    // PART A: CONTINUE WATCHING & AUTO-RESUME (Local Cache)
     // ---------------------------------------------------------
     if (videoIframe && dramaTitleElement) {
         const dramaTitle = dramaTitleElement.innerText.trim();
         const dramaId = dramaTitle.replace(/\s+/g, '').toLowerCase();
 
-        // 1. Save to Homepage / Profile History
+        // 1. Save to Local History Cache immediately
         const dramaImg = document.querySelector('.info-poster img')?.src || document.querySelector('.poster img')?.src || '';
         const pagePath = window.location.pathname.split('/').pop() || window.location.href;
 
         let history = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-        history[dramaId] = { title: dramaTitle, img: dramaImg, link: pagePath, timestamp: Date.now() };
+        history[dramaId] = { 
+            title: dramaTitle, 
+            img: dramaImg, 
+            link: pagePath, 
+            timestamp: Date.now(),
+            epIndex: localStorage.getItem(`dramakan_ep_${dramaId}`) || "0"
+        };
         localStorage.setItem('dramakan_history', JSON.stringify(history));
 
         // 2. The "Seeker" Auto-Resume Episode
@@ -36,11 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     clearInterval(episodeSeeker);
                 }
                 searchAttempts++;
-                if (searchAttempts > 10) clearInterval(episodeSeeker); // Give up after 5 seconds
+                if (searchAttempts > 10) clearInterval(episodeSeeker); 
             }, 500);
         }
 
-        // 3. Save Episode Progress Automatically
+        // 3. Save Episode Progress Locally Automatically
         document.addEventListener('click', (e) => {
             const clickedEpItem = e.target.closest('.episode-item');
             const clickedNextPrev = e.target.closest('#next-ep-btn') || e.target.closest('#prev-ep-btn');
@@ -59,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ---------------------------------------------------------
-    // PART B: FIREBASE AUTH & LIVE TRACKING (Loads in background)
+    // PART B: FIREBASE CLOUD SYNC & LIVE TRACKING 
     // ---------------------------------------------------------
     Promise.all([
         import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"),
@@ -68,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ]).then(([appModule, authModule, fsModule]) => {
         const { initializeApp, getApps, getApp } = appModule;
         const { getAuth, onAuthStateChanged } = authModule;
-        // ADDED getDoc to fetch the user's avatar
         const { getFirestore, doc, setDoc, increment, collection, query, where, getDocs, updateDoc, getDoc } = fsModule;
 
         const firebaseConfig = {
@@ -84,47 +89,101 @@ document.addEventListener('DOMContentLoaded', () => {
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // 1. Update Profile Buttons with User's Avatar if Logged In
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                let avatarSrc = 'https://api.dicebear.com/7.x/adventurer/svg?seed=DramaKan'; // Fallback
-                
+                // --- 1. UI AVATAR UPDATE ---
+                let avatarSrc = 'https://api.dicebear.com/7.x/adventurer/svg?seed=DramaKan'; 
                 try {
-                    // Fetch the user's profile data
                     const userDoc = await getDoc(doc(db, "users", user.uid));
                     if (userDoc.exists()) {
                         const data = userDoc.data();
-                        if (data.avatarUrl) {
-                            avatarSrc = data.avatarUrl; // Use their custom uploaded photo
-                        } else if (data.username) {
-                            avatarSrc = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(data.username)}`; // Use their unique Dicebear
-                        }
+                        if (data.avatarUrl) avatarSrc = data.avatarUrl; 
+                        else if (data.username) avatarSrc = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(data.username)}`;
                     }
-                } catch (error) {
-                    console.warn("Could not fetch user avatar, using default.");
-                }
+                } catch (error) { console.warn("Could not fetch avatar."); }
 
-                // Pre-build the HTML for the avatar image
                 const pcAvatarHtml = `<img src="${avatarSrc}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.8);">`;
                 const mobileAvatarHtml = `<img src="${avatarSrc}" alt="Profile" class="nav-icon" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); margin-bottom: 4px;">`;
 
-                // Update Mobile Bottom Bar
                 const bottomAuth = document.getElementById('bottomAuthBtn');
-                if(bottomAuth) {
-                    bottomAuth.href = 'profile.html';
-                    bottomAuth.innerHTML = `${mobileAvatarHtml}<span class="nav-label">Profile</span>`;
-                }
-
-                // Update PC Top Header
+                if(bottomAuth) { bottomAuth.href = 'profile.html'; bottomAuth.innerHTML = `${mobileAvatarHtml}<span class="nav-label">Profile</span>`; }
                 const topAuthBtn = document.getElementById('topAuthBtn');
-                if(topAuthBtn) {
-                    topAuthBtn.href = 'profile.html';
-                    topAuthBtn.innerHTML = `${pcAvatarHtml} Profile`;
+                if(topAuthBtn) { topAuthBtn.href = 'profile.html'; topAuthBtn.innerHTML = `${pcAvatarHtml} Profile`; }
+
+                // --- 2. NEW CROSS-DEVICE CLOUD SYNC FOR CONTINUE WATCHING ---
+                try {
+                    const userDocRef = doc(db, "users", user.uid);
+                    const userDoc = await getDoc(userDocRef);
+                    
+                    if (userDoc.exists()) {
+                        const data = userDoc.data();
+                        let cloudHistory = data.watchHistory || {};
+                        let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                        let changed = false;
+
+                        // A. Pull History from Cloud to Local (If logged in on a new device)
+                        for (const [dramaId, cloudItem] of Object.entries(cloudHistory)) {
+                            if (!localHistory[dramaId] || cloudItem.timestamp > localHistory[dramaId].timestamp) {
+                                localHistory[dramaId] = cloudItem;
+                                if (cloudItem.epIndex) localStorage.setItem(`dramakan_ep_${dramaId}`, cloudItem.epIndex);
+                                changed = true;
+                            }
+                        }
+
+                        // B. Push Local History Up to Cloud (To save current session)
+                        for (const [dramaId, localItem] of Object.entries(localHistory)) {
+                            if (!cloudHistory[dramaId] || localItem.timestamp > cloudHistory[dramaId].timestamp) {
+                                localItem.epIndex = localStorage.getItem(`dramakan_ep_${dramaId}`) || "0";
+                                cloudHistory[dramaId] = localItem;
+                                changed = true;
+                            }
+                        }
+
+                        // C. Commit Updates & Notify Page to refresh grids!
+                        if (changed) {
+                            localStorage.setItem('dramakan_history', JSON.stringify(localHistory));
+                            await updateDoc(userDocRef, { watchHistory: cloudHistory });
+                            window.dispatchEvent(new Event('historySynced')); // Tells the UI to update
+                        }
+
+                        // D. Live-Sync Episodes when actively clicking on Drama pages
+                        if (videoIframe && dramaTitleElement) {
+                            const dramaTitle = dramaTitleElement.innerText.trim();
+                            const dramaId = dramaTitle.replace(/\s+/g, '').toLowerCase();
+
+                            document.addEventListener('click', (e) => {
+                                const clickedEpItem = e.target.closest('.episode-item');
+                                const clickedNextPrev = e.target.closest('#next-ep-btn') || e.target.closest('#prev-ep-btn');
+
+                                if (clickedEpItem || clickedNextPrev) {
+                                    setTimeout(async () => {
+                                        const epIndex = localStorage.getItem(`dramakan_ep_${dramaId}`);
+                                        if (epIndex) {
+                                            const dramaImg = document.querySelector('.info-poster img')?.src || document.querySelector('.poster img')?.src || '';
+                                            const pagePath = window.location.pathname.split('/').pop() || window.location.href;
+
+                                            const historyUpdate = {};
+                                            historyUpdate[`watchHistory.${dramaId}`] = {
+                                                title: dramaTitle,
+                                                img: dramaImg,
+                                                link: pagePath,
+                                                timestamp: Date.now(),
+                                                epIndex: epIndex
+                                            };
+                                            await updateDoc(userDocRef, historyUpdate).catch(()=>{});
+                                        }
+                                    }, 1000); // 1-second delay ensures UI settles before saving to cloud
+                                }
+                            });
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Cloud Sync skipped:", err);
                 }
             }
         });
 
-        // 2. Affiliate Clicks
+        // 3. Affiliate Clicks
         if (creatorRef) {
             const findCreatorQuery = query(collection(db, "creators"), where("creatorId", "==", creatorRef));
             getDocs(findCreatorQuery).then((querySnapshot) => {
@@ -134,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // 3. Live Drama Views (For Trending)
+        // 4. Live Drama Views (For Trending)
         if (videoIframe && dramaTitleElement) {
             const dramaTitle = dramaTitleElement.innerText.trim();
             const dramaId = dramaTitle.replace(/\s+/g, '').toLowerCase();
@@ -142,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 title: dramaTitle,
                 views: increment(1),
                 lastActive: new Date()
-            }, { merge: true }).catch(() => {}); // Failsafe so adblockers don't crash it
+            }, { merge: true }).catch(() => {});
         }
 
     }).catch(err => console.warn("Firebase scripts delayed by browser."));
