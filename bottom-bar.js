@@ -91,9 +91,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // --- 1. GLOBAL WEBSITE VISITS TRACKER (For Admin Dashboard) ---
+        // Uses sessionStorage so it counts 1 view per visit, preventing spam refreshes.
+        if (!sessionStorage.getItem('dk_visited')) {
+            sessionStorage.setItem('dk_visited', 'true');
+            setDoc(doc(db, "drama_stats", "_global_visits_"), {
+                views: increment(1),
+                lastActive: new Date()
+            }, { merge: true }).catch(() => {});
+        }
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // --- 1. UI AVATAR UPDATE ---
+                // --- 2. UI AVATAR UPDATE ---
                 let avatarSrc = 'https://api.dicebear.com/7.x/adventurer/svg?seed=DramaKan'; 
                 try {
                     const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -112,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const topAuthBtn = document.getElementById('topAuthBtn');
                 if(topAuthBtn) { topAuthBtn.href = 'profile.html'; topAuthBtn.innerHTML = `${pcAvatarHtml} Profile`; }
 
-                // --- 2. CROSS-DEVICE CLOUD SYNC FOR CONTINUE WATCHING ---
+                // --- 3. CROSS-DEVICE CLOUD SYNC FOR CONTINUE WATCHING ---
                 try {
                     const userDocRef = doc(db, "users", user.uid);
                     const userDoc = await getDoc(userDocRef);
@@ -125,7 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         // Pull History from Cloud to Local
                         for (const [id, cloudItem] of Object.entries(cloudHistory)) {
-                            // Only pull clean, uncorrupted data
                             if (cloudItem.link && !cloudItem.link.includes('index.html')) {
                                 if (!localHistory[id] || cloudItem.timestamp > localHistory[id].timestamp) {
                                     localHistory[id] = cloudItem;
@@ -137,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         // Push Local History Up to Cloud
                         for (const [id, localItem] of Object.entries(localHistory)) {
-                            // Only push clean, uncorrupted data
                             if (localItem.link && !localItem.link.includes('index.html')) {
                                 if (!cloudHistory[id] || localItem.timestamp > cloudHistory[id].timestamp) {
                                     localItem.epIndex = localStorage.getItem(`dramakan_ep_${id}`) || "0";
@@ -188,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 3. Affiliate Clicks
+        // 4. Affiliate Clicks
         if (creatorRef) {
             const findCreatorQuery = query(collection(db, "creators"), where("creatorId", "==", creatorRef));
             getDocs(findCreatorQuery).then((querySnapshot) => {
@@ -198,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // 4. Live Drama Views (For Trending)
+        // 5. Live Drama Views (For Trending)
         if (isDramaPage) {
             const dramaTitle = dramaTitleElement.innerText.trim();
             const dramaId = dramaTitle.replace(/\s+/g, '').toLowerCase();
