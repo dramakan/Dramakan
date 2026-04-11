@@ -68,7 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
     ]).then(([appModule, authModule, fsModule]) => {
         const { initializeApp, getApps, getApp } = appModule;
         const { getAuth, onAuthStateChanged } = authModule;
-        const { getFirestore, doc, setDoc, increment, collection, query, where, getDocs, updateDoc } = fsModule;
+        // ADDED getDoc to fetch the user's avatar
+        const { getFirestore, doc, setDoc, increment, collection, query, where, getDocs, updateDoc, getDoc } = fsModule;
 
         const firebaseConfig = {
             apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
@@ -83,18 +84,42 @@ document.addEventListener('DOMContentLoaded', () => {
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // 1. Update Profile Buttons if Logged In
-        onAuthStateChanged(auth, (user) => {
+        // 1. Update Profile Buttons with User's Avatar if Logged In
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
+                let avatarSrc = 'https://api.dicebear.com/7.x/adventurer/svg?seed=DramaKan'; // Fallback
+                
+                try {
+                    // Fetch the user's profile data
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists()) {
+                        const data = userDoc.data();
+                        if (data.avatarUrl) {
+                            avatarSrc = data.avatarUrl; // Use their custom uploaded photo
+                        } else if (data.username) {
+                            avatarSrc = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(data.username)}`; // Use their unique Dicebear
+                        }
+                    }
+                } catch (error) {
+                    console.warn("Could not fetch user avatar, using default.");
+                }
+
+                // Pre-build the HTML for the avatar image
+                const pcAvatarHtml = `<img src="${avatarSrc}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.8);">`;
+                const mobileAvatarHtml = `<img src="${avatarSrc}" alt="Profile" class="nav-icon" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); margin-bottom: 4px;">`;
+
+                // Update Mobile Bottom Bar
                 const bottomAuth = document.getElementById('bottomAuthBtn');
                 if(bottomAuth) {
                     bottomAuth.href = 'profile.html';
-                    bottomAuth.innerHTML = '<i class="fas fa-user-circle nav-icon"></i><span class="nav-label">Profile</span>';
+                    bottomAuth.innerHTML = `${mobileAvatarHtml}<span class="nav-label">Profile</span>`;
                 }
+
+                // Update PC Top Header
                 const topAuthBtn = document.getElementById('topAuthBtn');
                 if(topAuthBtn) {
                     topAuthBtn.href = 'profile.html';
-                    topAuthBtn.innerHTML = '<i class="fas fa-user-circle"></i> Profile';
+                    topAuthBtn.innerHTML = `${pcAvatarHtml} Profile`;
                 }
             }
         });
