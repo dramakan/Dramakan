@@ -39,36 +39,10 @@ document.addEventListener('DOMContentLoaded', function () {
         return shuffled;
     }
 
-    // --- 3. DATA POPULATION & CAROUSELS ---
+    // --- 3. DATA POPULATION & CAROUSELS (WITH FIREBASE LIVE TRENDING & CONTINUE WATCHING) ---
     let fuse;
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
-
-    async function initializeDramaSite() {
-        try {
-            const response = await fetch('dramas.json');
-            const data = await response.json();
-
-            fuse = new Fuse(data, {
-                keys: ['title'],
-                threshold: 0.4
-            });
-
-            populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15)); 
-            populateGrid('kdrama-grid', shuffleArray(data.filter(d => d.type === "K-Drama")).slice(0, 15));
-            populateGrid('cdrama-grid', shuffleArray(data.filter(d => d.type === "C-Drama")).slice(0, 15));
-            populateGrid('jdrama-grid', shuffleArray(data.filter(d => d.type === "J-Drama")).slice(0, 15));
-            populateGrid('pdrama-grid', shuffleArray(data.filter(d => d.type === "P-Drama")).slice(0, 15));
-            populateGrid('tdrama-grid', shuffleArray(data.filter(d => d.type === "T-Drama")).slice(0, 15));
-            populateGrid('upcoming-grid', shuffleArray(data.filter(d => d.release_date === "Upcoming")).slice(0, 15));
-            populateGrid('turkishdrama-grid', shuffleArray(data.filter(d => d.type === "Turkish-Drama")).slice(0, 15));
-            populateGrid('usdrama-grid', shuffleArray(data.filter(d => d.type === "US-Drama")).slice(0, 15));
-            populateGrid('Movie-grid', shuffleArray(data.filter(d => d.type === "Movie")).slice(0, 15));
-
-        } catch (err) {
-            console.error("Data Load Error:", err);
-        }
-    }
 
     function populateGrid(elementId, items) {
         const grid = document.getElementById(elementId);
@@ -84,6 +58,88 @@ document.addEventListener('DOMContentLoaded', function () {
         `).join('');
     }
 
+    async function initializeDramaSite() {
+        try {
+            // A. Load the base JSON data
+            const response = await fetch('dramas.json');
+            const data = await response.json();
+
+            fuse = new Fuse(data, {
+                keys: ['title'],
+                threshold: 0.4
+            });
+
+            // B. RENDER CONTINUE WATCHING (From User's Browser Memory)
+            const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+            const historyArr = Object.values(historyObj).sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
+            
+            if(historyArr.length > 0) {
+                const cwSection = document.getElementById('continue-watching-section');
+                const cwGrid = document.getElementById('continue-watching-grid');
+                if (cwSection && cwGrid) {
+                    cwSection.style.display = 'block';
+                    cwGrid.innerHTML = historyArr.map(item => `
+                        <a href="${item.link}" class="drama-card" style="border-color: #8A2BE2; box-shadow: 0 0 15px rgba(138, 43, 226, 0.15);">
+                            <div class="drama-card-img"><img src="${item.img}" alt="${item.title}"></div>
+                            <div class="drama-card-info">
+                                <h3 class="drama-card-title">${item.title}</h3>
+                                <p class="drama-card-meta" style="color: #a1a1aa;"><i class="fas fa-history"></i> Jump back in</p>
+                            </div>
+                        </a>
+                    `).join('');
+                }
+            }
+
+            // C. RENDER LIVE TRENDING (From Firebase Database)
+            try {
+                const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
+                const { getFirestore, collection, query, orderBy, limit, getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
+                
+                const firebaseConfig = {
+                    apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
+                    authDomain: "dramakan007.firebaseapp.com",
+                    projectId: "dramakan007"
+                };
+                const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+                const db = getFirestore(app);
+
+                // Fetch the top 15 most viewed dramas
+                const q = query(collection(db, "drama_stats"), orderBy("views", "desc"), limit(15));
+                const querySnapshot = await getDocs(q);
+                
+                let dynamicTrending = [];
+                querySnapshot.forEach((doc) => {
+                    const found = data.find(d => d.title.toLowerCase() === doc.data().title.toLowerCase());
+                    if(found) dynamicTrending.push(found);
+                });
+
+                if(dynamicTrending.length > 0) {
+                    populateGrid('trending-grid', dynamicTrending);
+                } else {
+                    populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15));
+                }
+            } catch(firebaseErr) {
+                console.warn("Live Trending skipped (Using offline mode).", firebaseErr);
+                populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15));
+            }
+
+            // D. RENDER THE REST OF THE CATEGORIES
+            populateGrid('kdrama-grid', shuffleArray(data.filter(d => d.type === "K-Drama")).slice(0, 15));
+            populateGrid('cdrama-grid', shuffleArray(data.filter(d => d.type === "C-Drama")).slice(0, 15));
+            populateGrid('jdrama-grid', shuffleArray(data.filter(d => d.type === "J-Drama")).slice(0, 15));
+            populateGrid('pdrama-grid', shuffleArray(data.filter(d => d.type === "P-Drama")).slice(0, 15));
+            populateGrid('tdrama-grid', shuffleArray(data.filter(d => d.type === "T-Drama")).slice(0, 15));
+            populateGrid('upcoming-grid', shuffleArray(data.filter(d => d.release_date === "Upcoming")).slice(0, 15));
+            populateGrid('turkishdrama-grid', shuffleArray(data.filter(d => d.type === "Turkish-Drama")).slice(0, 15));
+            populateGrid('usdrama-grid', shuffleArray(data.filter(d => d.type === "US-Drama")).slice(0, 15));
+            populateGrid('Movie-grid', shuffleArray(data.filter(d => d.type === "Movie")).slice(0, 15));
+
+        } catch (err) {
+            console.error("Data Load Error:", err);
+        }
+    }
+
+    // --- SEARCH LOGIC ---
     if (searchInput) {
         searchInput.addEventListener('input', () => {
             const query = searchInput.value.trim();
@@ -109,7 +165,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const sliderWrapper = document.querySelector('.slider-wrapper');
     if (sliderWrapper) {
         let slideIndex = 0;
-        // Used heroSlides to avoid the duplicate declaration error freezing your app
         const heroSlides = document.querySelectorAll('.slide');
         
         // Mobile Setup
@@ -165,6 +220,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeDramaSite();
 });
 
+// --- 5. DRAMA REQUEST MODAL (TELEGRAM BOT) ---
 document.addEventListener("DOMContentLoaded", function() {
     const modal = document.getElementById("dramaModal");
     const openBtn = document.getElementById("dramaRequestBtn");
@@ -174,66 +230,69 @@ document.addEventListener("DOMContentLoaded", function() {
     const BOT_TOKEN = "8473278366:AAFgUjLJGAjRoh4Ig1DCat0qCs2D7yZHcbA";
     const CHAT_ID = "5780542178";
 
-    openBtn.onclick = () => modal.style.display = "flex";
-    closeBtn.onclick = () => modal.style.display = "none";
-    window.onclick = (e) => { if(e.target === modal) modal.style.display = "none"; }
+    if(openBtn && modal) {
+        openBtn.onclick = () => modal.style.display = "flex";
+        closeBtn.onclick = () => modal.style.display = "none";
+        window.onclick = (e) => { if(e.target === modal) modal.style.display = "none"; }
+    }
 
-    form.onsubmit = async (e) => {
-        e.preventDefault();
-        
-        const dramaName = document.getElementById("dramaName").value;
-        const contactDetail = document.getElementById("contactname").value; 
-        const status = document.getElementById("statusMessage");
-        const submitBtn = document.getElementById("submitBtn");
+    if(form) {
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const dramaName = document.getElementById("dramaName").value;
+            const contactDetail = document.getElementById("contactname").value; 
+            const status = document.getElementById("statusMessage");
+            const submitBtn = document.getElementById("submitBtn");
 
-        submitBtn.innerText = "Sending...";
-        submitBtn.disabled = true;
+            submitBtn.innerText = "Sending...";
+            submitBtn.disabled = true;
 
-        const text = `🎬 *New Drama Request*\n\n` +
-                     `📺 *Drama:* ${dramaName}\n` +
-                     `👤 *Contact:* ${contactDetail}`;  
-        
-        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
+            const text = `🎬 *New Drama Request*\n\n` +
+                         `📺 *Drama:* ${dramaName}\n` +
+                         `👤 *Contact:* ${contactDetail}`;  
+            
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
 
-        try {
-            const response = await fetch(url);
-            if (response.ok) {
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    status.style.display = "block";
+                    status.style.color = "#4CAF50";
+                    status.innerText = "Request sent! Check back in 48 hours.";
+                    form.reset();
+                } else {
+                    throw new Error();
+                }
+            } catch (err) {
                 status.style.display = "block";
-                status.style.color = "#4CAF50";
-                status.innerText = "Request sent! Check back in 48 hours.";
-                form.reset();
-            } else {
-                throw new Error();
+                status.style.color = "#ff4d4d";
+                status.innerText = "Error sending request. Try joining Telegram.";
+            } finally {
+                submitBtn.innerText = "Send Request";
+                submitBtn.disabled = false;
             }
-        } catch (err) {
-            status.style.display = "block";
-            status.style.color = "#ff4d4d";
-            status.innerText = "Error sending request. Try joining Telegram.";
-        } finally {
-            submitBtn.innerText = "Send Request";
-            submitBtn.disabled = false;
-        }
-    };
+        };
+    }
 });
 
+// --- 6. PWA SERVICE WORKER ---
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .catch(err => console.log('Service Worker Failed', err));
   });
 }
-// --- 5. NEW APP INSTALL POPUP LOGIC ---
+
+// --- 7. APP INSTALL POPUP LOGIC ---
 document.addEventListener("DOMContentLoaded", function() {
     const installPopup = document.getElementById('appInstallPopup');
     const closePopupBtn = document.getElementById('closeInstallPopup');
 
     if (installPopup && closePopupBtn) {
-        // Optional: Checks session storage so if a user closes it, 
-        // it doesn't annoy them again until they open a new tab/session.
         if (sessionStorage.getItem('hideAppInstallPopup') === 'true') {
             installPopup.style.display = 'none';
         } else {
-            // Small delay so it pops up smoothly after the page loads
             installPopup.classList.add('hidden');
             setTimeout(() => {
                 installPopup.classList.remove('hidden');
@@ -242,7 +301,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
         closePopupBtn.addEventListener('click', () => {
             installPopup.classList.add('hidden');
-            // Hide it completely from DOM after animation finishes
             setTimeout(() => {
                 installPopup.style.display = 'none';
             }, 400); 
