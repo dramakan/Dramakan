@@ -414,10 +414,15 @@
         });
 
         // --- 4. CONTINUE WATCHING LOGIC ---
+        // --- 4. CONTINUE WATCHING LOGIC ---
         function loadHistory() {
             const historyGrid = document.getElementById('history-grid');
             const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-            const historyArr = Object.values(historyObj).sort((a, b) => b.timestamp - a.timestamp);
+            
+            // FILTER: Instantly ignores any corrupt data caused by the old homepage bug
+            const historyArr = Object.values(historyObj)
+                .filter(item => item.link && !item.link.toLowerCase().includes('index.html') && item.img && item.img.length > 5)
+                .sort((a, b) => b.timestamp - a.timestamp);
 
             if (historyArr.length === 0) {
                 historyGrid.style.display = "block";

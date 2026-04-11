@@ -69,10 +69,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 threshold: 0.4
             });
 
-            // B. RENDER CONTINUE WATCHING (With Cloud Sync Re-Render)
+           // B. RENDER CONTINUE WATCHING (With Auto-Clean Filter)
             function renderContinueWatching() {
                 const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-                const historyArr = Object.values(historyObj).sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
+                
+                // FILTER: Instantly ignores any corrupt data caused by the old homepage bug
+                const historyArr = Object.values(historyObj)
+                    .filter(item => item.link && !item.link.toLowerCase().includes('index.html') && item.img && item.img.length > 5)
+                    .sort((a, b) => b.timestamp - a.timestamp)
+                    .slice(0, 10);
                 
                 if(historyArr.length > 0) {
                     const cwSection = document.getElementById('continue-watching-section');
@@ -92,8 +97,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
             
-            renderContinueWatching(); // Load instantly from local storage
-            window.addEventListener('historySynced', renderContinueWatching); // Re-load if cloud gives us newer data!
+            renderContinueWatching(); 
+            window.addEventListener('historySynced', renderContinueWatching);
 
             // C. RENDER LIVE TRENDING (From Firebase Database)
             try {

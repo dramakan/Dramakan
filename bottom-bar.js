@@ -5,21 +5,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const creatorRef = urlParams.get('ref');
 
-    // Indestructible DOM Selectors
-    const videoIframe = document.querySelector('iframe') || document.querySelector('video') || document.querySelector('.video-container');
-    const dramaTitleElement = document.querySelector('.info-title') || document.querySelector('h1') || document.querySelector('.drama-title');
+    // STRICT DOM Selectors (Prevents the Homepage Overwrite Bug)
+    const dramaTitleElement = document.querySelector('.info-title');
+    const dramaPosterElement = document.querySelector('.info-poster img');
+    const pagePath = window.location.pathname.split('/').pop() || window.location.href;
+    
+    // Only triggers if we are DEFINITELY on a Drama Page
+    const isDramaPage = dramaTitleElement && dramaPosterElement && !pagePath.toLowerCase().includes('index.html') && !pagePath.toLowerCase().includes('profile.html');
 
     // ---------------------------------------------------------
     // PART A: CONTINUE WATCHING & AUTO-RESUME (Local Cache)
     // ---------------------------------------------------------
-    if (videoIframe && dramaTitleElement) {
+    if (isDramaPage) {
         const dramaTitle = dramaTitleElement.innerText.trim();
         const dramaId = dramaTitle.replace(/\s+/g, '').toLowerCase();
+        const dramaImg = dramaPosterElement.src;
 
         // 1. Save to Local History Cache immediately
-        const dramaImg = document.querySelector('.info-poster img')?.src || document.querySelector('.poster img')?.src || '';
-        const pagePath = window.location.pathname.split('/').pop() || window.location.href;
-
         let history = JSON.parse(localStorage.getItem('dramakan_history')) || {};
         history[dramaId] = { 
             title: dramaTitle, 
@@ -110,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const topAuthBtn = document.getElementById('topAuthBtn');
                 if(topAuthBtn) { topAuthBtn.href = 'profile.html'; topAuthBtn.innerHTML = `${pcAvatarHtml} Profile`; }
 
-                // --- 2. NEW CROSS-DEVICE CLOUD SYNC FOR CONTINUE WATCHING ---
+                // --- 2. CROSS-DEVICE CLOUD SYNC FOR CONTINUE WATCHING ---
                 try {
                     const userDocRef = doc(db, "users", user.uid);
                     const userDoc = await getDoc(userDocRef);
@@ -121,33 +123,38 @@ document.addEventListener('DOMContentLoaded', () => {
                         let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
                         let changed = false;
 
-                        // A. Pull History from Cloud to Local (If logged in on a new device)
-                        for (const [dramaId, cloudItem] of Object.entries(cloudHistory)) {
-                            if (!localHistory[dramaId] || cloudItem.timestamp > localHistory[dramaId].timestamp) {
-                                localHistory[dramaId] = cloudItem;
-                                if (cloudItem.epIndex) localStorage.setItem(`dramakan_ep_${dramaId}`, cloudItem.epIndex);
-                                changed = true;
+                        // Pull History from Cloud to Local
+                        for (const [id, cloudItem] of Object.entries(cloudHistory)) {
+                            // Only pull clean, uncorrupted data
+                            if (cloudItem.link && !cloudItem.link.includes('index.html')) {
+                                if (!localHistory[id] || cloudItem.timestamp > localHistory[id].timestamp) {
+                                    localHistory[id] = cloudItem;
+                                    if (cloudItem.epIndex) localStorage.setItem(`dramakan_ep_${id}`, cloudItem.epIndex);
+                                    changed = true;
+                                }
                             }
                         }
 
-                        // B. Push Local History Up to Cloud (To save current session)
-                        for (const [dramaId, localItem] of Object.entries(localHistory)) {
-                            if (!cloudHistory[dramaId] || localItem.timestamp > cloudHistory[dramaId].timestamp) {
-                                localItem.epIndex = localStorage.getItem(`dramakan_ep_${dramaId}`) || "0";
-                                cloudHistory[dramaId] = localItem;
-                                changed = true;
+                        // Push Local History Up to Cloud
+                        for (const [id, localItem] of Object.entries(localHistory)) {
+                            // Only push clean, uncorrupted data
+                            if (localItem.link && !localItem.link.includes('index.html')) {
+                                if (!cloudHistory[id] || localItem.timestamp > cloudHistory[id].timestamp) {
+                                    localItem.epIndex = localStorage.getItem(`dramakan_ep_${id}`) || "0";
+                                    cloudHistory[id] = localItem;
+                                    changed = true;
+                                }
                             }
                         }
 
-                        // C. Commit Updates & Notify Page to refresh grids!
                         if (changed) {
                             localStorage.setItem('dramakan_history', JSON.stringify(localHistory));
                             await updateDoc(userDocRef, { watchHistory: cloudHistory });
-                            window.dispatchEvent(new Event('historySynced')); // Tells the UI to update
+                            window.dispatchEvent(new Event('historySynced')); 
                         }
 
-                        // D. Live-Sync Episodes when actively clicking on Drama pages
-                        if (videoIframe && dramaTitleElement) {
+                        // Live-Sync Episodes
+                        if (isDramaPage) {
                             const dramaTitle = dramaTitleElement.innerText.trim();
                             const dramaId = dramaTitle.replace(/\s+/g, '').toLowerCase();
 
@@ -159,9 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     setTimeout(async () => {
                                         const epIndex = localStorage.getItem(`dramakan_ep_${dramaId}`);
                                         if (epIndex) {
-                                            const dramaImg = document.querySelector('.info-poster img')?.src || document.querySelector('.poster img')?.src || '';
-                                            const pagePath = window.location.pathname.split('/').pop() || window.location.href;
-
+                                            const dramaImg = dramaPosterElement.src;
                                             const historyUpdate = {};
                                             historyUpdate[`watchHistory.${dramaId}`] = {
                                                 title: dramaTitle,
@@ -172,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                             };
                                             await updateDoc(userDocRef, historyUpdate).catch(()=>{});
                                         }
-                                    }, 1000); // 1-second delay ensures UI settles before saving to cloud
+                                    }, 1000); 
                                 }
                             });
                         }
@@ -194,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 4. Live Drama Views (For Trending)
-        if (videoIframe && dramaTitleElement) {
+        if (isDramaPage) {
             const dramaTitle = dramaTitleElement.innerText.trim();
             const dramaId = dramaTitle.replace(/\s+/g, '').toLowerCase();
             setDoc(doc(db, "drama_stats", dramaId), {
