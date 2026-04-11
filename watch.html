@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch Drama - DramaKan</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="bottom-bar.css"> 
+
+    <style>
+        /* Full Page Loader */
+        #page-loader { position: fixed; inset: 0; background: var(--bg-base, #09090b); z-index: 10000; display: flex; justify-content: center; align-items: center; flex-direction: column; color: #fff; }
+        .spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.1); border-top-color: #8A2BE2; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="page-loader">
+        <div class="spinner"></div>
+        <p>Loading Drama...</p>
+    </div>
+
+    <header class="main-header">
+        <a href="index.html" class="logo">Drama<span>Kan</span></a>
+    </header>
+
+    <main class="container" style="display: none;" id="main-content">
+        <div class="watch-layout">
+            <div class="main-content-col">
+                <div class="video-player-container">
+                    <iframe 
+                        id="video-player-iframe"
+                        src="" 
+                        title="Video Player" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+
+                <div class="episode-meta">
+                    <h1 class="episode-title" id="current-episode-title">Select an Episode</h1>
+                    <div class="episode-actions">
+                        <button class="action-btn" id="prev-ep-btn"><i class="fas fa-arrow-left"></i>Prev</button>
+                        <button class="action-btn" id="next-ep-btn">Next<i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="widget episodes-list-widget">
+                    <h2 class="widget-title">Episode List</h2>
+                    <div class="episodes-list" id="episodes-list-container">
+                        </div>
+                </div>
+                
+                <div class="widget download-widget">
+                    <h2 class="widget-title">Download Links</h2>
+                    <div class="download-list">
+                        <table>
+                            <thead>
+                                <tr><th>Episode</th><th>Quality</th><th>Video</th><th>Subtitles</th></tr>
+                            </thead>
+                            <tbody id="download-links-tbody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="widget cast-section">
+                    <h2 class="widget-title">Main Cast</h2>
+                    <div class="cast-list-wrapper">
+                        <div class="cast-list">
+                            <div class="cast-card">
+                                <img id="ui-cast1-img" src="" alt="Cast 1">
+                                <div class="cast-info"><h4 class="actor-name" id="ui-cast1-name">Loading...</h4><p class="character-name">Lead</p></div>
+                            </div>
+                            <div class="cast-card">
+                                <img id="ui-cast2-img" src="" alt="Cast 2">
+                                <div class="cast-info"><h4 class="actor-name" id="ui-cast2-name">Loading...</h4><p class="character-name">Lead</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget comments-widget">
+                     <div class="comments-header">
+                        <h2 class="widget-title">Comments</h2>
+                     </div>
+                     <form class="comment-form" id="comment-form">
+                        <img class="user-avatar" src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png" alt="User Avatar">
+                        <textarea placeholder="Join the discussion..." required></textarea>
+                        <button type="button" aria-label="Post Comment"><i class="fas fa-paper-plane"></i></button>
+                     </form>
+                </div>
+            </div>
+
+            <div class="sidebar-col">
+                <div class="widget drama-info-widget">
+                    <div class="info-poster"><img id="ui-poster" src="" alt="Poster"></div>
+                    <h2 class="info-title" id="ui-title">Loading...</h2>
+                    <p class="info-synopsis truncated" id="synopsis-text">Loading synopsis...</p>
+                    <a id="read-more-btn" class="read-more-btn">Read More</a>
+                    <div class="info-details">
+                        <p><span>Type:</span> <span id="ui-type"></span></p>
+                        <p><span>Episodes:</span> <span id="ui-total-eps"></span></p>
+                        <p><span>Status:</span> <span id="ui-status"></span></p>
+                        <p><span>Score:</span> <span id="ui-score"></span>/10</p>
+                        <p><span>Genres:</span> <span id="ui-genre"></span></p>
+                    </div>
+                </div>
+
+                <div class="widget recommendations-widget">
+                    <h2 class="widget-title">You Might Also Like</h2>
+                    <div class="recommendations-list" id="ui-recs">
+                        <a href="index.html" class="rec-card">
+                            <div class="rec-card-info" style="text-align:center; width:100%;"><p class="rec-title">Browse Homepage</p><p class="rec-meta">Find more dramas</p></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 DramaKan. All rights reserved.</p>
+    </footer>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item active"><i class="fa-solid fa-house"></i><span class="nav-label">Home</span></a>
+        <a href="Korean.html" class="bottom-nav-item"><i class="fa-solid fa-won-sign"></i><span class="nav-label">Korean</span></a>
+        <a href="chinese.html" class="bottom-nav-item"><i class="fa-brands fa-renren"></i><span class="nav-label">Chinese</span></a>
+        <a href="login.html" class="bottom-nav-item" id="bottomAuthBtn"><i class="fa-solid fa-user"></i><span class="nav-label">Sign In</span></a>
+    </nav>
+
+    <script type="module" src="/js/bottom-bar.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
+            authDomain: "dramakan007.firebaseapp.com",
+            projectId: "dramakan007",
+            storageBucket: "dramakan007.firebasestorage.app",
+            messagingSenderId: "1069933586213",
+            appId: "1:1069933586213:web:b28ab37436679a4906dccc"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const dramaId = urlParams.get('id');
+
+            if (!dramaId) {
+                alert("Drama not found!");
+                window.location.replace('index.html');
+                return;
+            }
+
+            try {
+                // 1. Fetch data securely from your database
+                const docRef = doc(db, "dramas", dramaId);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+
+                    // 2. Populate the entire page UI automatically
+                    document.title = `Watch ${data.title} - DramaKan`;
+                    document.getElementById('ui-title').textContent = data.title;
+                    document.getElementById('ui-poster').src = data.img;
+                    document.getElementById('synopsis-text').textContent = data.synopsis;
+                    document.getElementById('ui-type').textContent = data.type;
+                    document.getElementById('ui-total-eps').textContent = data.totalEps;
+                    document.getElementById('ui-status').textContent = data.status;
+                    document.getElementById('ui-score').textContent = data.imdb;
+                    document.getElementById('ui-genre').textContent = data.genre;
+
+                    document.getElementById('ui-cast1-name').textContent = data.actor1;
+                    document.getElementById('ui-cast1-img').src = data.actor1Img;
+                    document.getElementById('ui-cast2-name').textContent = data.actor2;
+                    document.getElementById('ui-cast2-img').src = data.actor2Img;
+
+                    // 3. Generate the Episode Grid automatically
+                    const grid = document.getElementById('episodes-list-container');
+                    let buttonsHtml = '';
+                    for (let i = 1; i <= data.totalEps; i++) {
+                        buttonsHtml += `<a class="episode-item" data-index="${i}"><div class="ep-info"><p class="ep-number">EP ${i}</p><p class="ep-desc">Episode ${i}</p></div></a>`;
+                    }
+                    grid.innerHTML = buttonsHtml;
+
+                    // 4. Setup the Video Player Engine
+                    let currentIndex = 1;
+                    const totalEpisodes = data.totalEps;
+                    const videoPlayer = document.getElementById('video-player-iframe');
+                    const epText = document.getElementById('current-episode-title');
+                    const downloadTbody = document.getElementById('download-links-tbody');
+                    const prevBtn = document.getElementById('prev-ep-btn');
+                    const nextBtn = document.getElementById('next-ep-btn');
+
+                    function loadEpisode(epNumber) {
+                        currentIndex = parseInt(epNumber);
+                        
+                        // 🔥 YOUR COMMON VIDEO EMBED LINK TEMPLATE 🔥
+                        // Uses the IMDb ID saved in the database!
+                        const embedLink = `https://www.2embed.cc/embedtv/${data.imdbId}&s=1&e=${currentIndex}`;
+                        
+                        videoPlayer.src = embedLink;
+                        epText.textContent = `You are watching EP ${currentIndex} - ${data.title}`;
+                        
+                        document.querySelectorAll('.episode-item').forEach((item) => {
+                            item.classList.toggle('current', parseInt(item.dataset.index) === currentIndex);
+                        });
+                        
+                        downloadTbody.innerHTML = `
+                            <tr>
+                                <td data-label="Episode">Episode ${currentIndex}</td>
+                                <td data-label="Quality">1080p</td>
+                                <td data-label="Video"><a href="#" class="download-btn">Download</a></td>
+                                <td data-label="Subtitles"><a href="#" class="download-btn">Download</a></td>
+                            </tr>`;
+
+                        prevBtn.disabled = currentIndex === 1;
+                        nextBtn.disabled = currentIndex === totalEpisodes;
+                    }
+
+                    // Click listeners
+                    grid.addEventListener('click', (e) => {
+                        const item = e.target.closest('.episode-item');
+                        if (item) loadEpisode(item.dataset.index);
+                    });
+                    prevBtn.addEventListener('click', () => { if (currentIndex > 1) loadEpisode(currentIndex - 1); });
+                    nextBtn.addEventListener('click', () => { if (currentIndex < totalEpisodes) loadEpisode(currentIndex + 1); });
+
+                    // Auto-Resume from Tracker
+                    setTimeout(() => {
+                        const savedEp = localStorage.getItem(`dramakan_ep_${data.title.replace(/\s+/g, '').toLowerCase()}`);
+                        if (savedEp && savedEp !== "0") {
+                            loadEpisode(savedEp);
+                        } else {
+                            loadEpisode(1);
+                        }
+                    }, 500);
+
+                    // Reveal Page
+                    document.getElementById('page-loader').style.display = 'none';
+                    document.getElementById('main-content').style.display = 'block';
+
+                } else {
+                    alert("Drama not found or has been removed.");
+                    window.location.replace('index.html');
+                }
+            } catch (error) {
+                console.error("Error loading drama:", error);
+                alert("Error loading video player.");
+            }
+            
+            // Read More Toggle
+            const synopsisText = document.getElementById('synopsis-text');
+            const readMoreBtn = document.getElementById('read-more-btn');
+            if (synopsisText && readMoreBtn) {
+                readMoreBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    synopsisText.classList.toggle('truncated');
+                    readMoreBtn.textContent = synopsisText.classList.contains('truncated') ? 'Read More' : 'Read Less';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

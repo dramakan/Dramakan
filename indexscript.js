@@ -60,24 +60,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function initializeDramaSite() {
         try {
-            // A. Load the base JSON data
+            // A. Load the base JSON data (Your 170+ legacy dramas)
             const response = await fetch('dramas.json');
-            const data = await response.json();
+            let data = await response.json();
 
-            fuse = new Fuse(data, {
-                keys: ['title'],
-                threshold: 0.4
-            });
+            // B. DYNAMIC MERGE: Pull new dramas from Firebase CMS
+            try {
+                const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
+                const { getFirestore, collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
+                
+                const firebaseConfig = {
+                    apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
+                    authDomain: "dramakan007.firebaseapp.com",
+                    projectId: "dramakan007"
+                };
+                const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+                const db = getFirestore(app);
 
-           // B. RENDER CONTINUE WATCHING (With Auto-Clean Filter)
+                // Fetch new dramas published via CMS
+                const cmsSnap = await getDocs(collection(db, "dramas"));
+                cmsSnap.forEach((doc) => {
+                    data.push(doc.data()); // Inject live database into the JSON array!
+                });
+            } catch(firebaseErr) {
+                console.warn("CMS Sync skipped (Using offline mode).", firebaseErr);
+            }
+
+            // Initialize Search with merged data
+            fuse = new Fuse(data, { keys: ['title'], threshold: 0.4 });
+
+            // C. RENDER CONTINUE WATCHING 
             function renderContinueWatching() {
                 const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-                
-                // FILTER: Instantly ignores any corrupt data caused by the old homepage bug
                 const historyArr = Object.values(historyObj)
                     .filter(item => item.link && !item.link.toLowerCase().includes('index.html') && item.img && item.img.length > 5)
-                    .sort((a, b) => b.timestamp - a.timestamp)
-                    .slice(0, 10);
+                    .sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
                 
                 if(historyArr.length > 0) {
                     const cwSection = document.getElementById('continue-watching-section');
@@ -96,24 +113,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             }
-            
             renderContinueWatching(); 
             window.addEventListener('historySynced', renderContinueWatching);
 
-            // C. RENDER LIVE TRENDING (From Firebase Database)
+            // D. RENDER LIVE TRENDING OR STATIC TRENDING
             try {
-                const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
                 const { getFirestore, collection, query, orderBy, limit, getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
-                
-                const firebaseConfig = {
-                    apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
-                    authDomain: "dramakan007.firebaseapp.com",
-                    projectId: "dramakan007"
-                };
-                const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-                const db = getFirestore(app);
-
-                // Fetch the top 15 most viewed dramas
+                const db = getFirestore();
                 const q = query(collection(db, "drama_stats"), orderBy("views", "desc"), limit(15));
                 const querySnapshot = await getDocs(q);
                 
@@ -123,17 +129,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     if(found) dynamicTrending.push(found);
                 });
 
-                if(dynamicTrending.length > 0) {
-                    populateGrid('trending-grid', dynamicTrending);
-                } else {
-                    populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15));
-                }
-            } catch(firebaseErr) {
-                console.warn("Live Trending skipped (Using offline mode).", firebaseErr);
+                if(dynamicTrending.length > 0) populateGrid('trending-grid', dynamicTrending);
+                else populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15));
+            } catch(e) {
                 populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15));
             }
 
-            // D. RENDER THE REST OF THE CATEGORIES
+            // E. RENDER ALL CATEGORIES (Now includes your CMS uploads!)
             populateGrid('kdrama-grid', shuffleArray(data.filter(d => d.type === "K-Drama")).slice(0, 15));
             populateGrid('cdrama-grid', shuffleArray(data.filter(d => d.type === "C-Drama")).slice(0, 15));
             populateGrid('jdrama-grid', shuffleArray(data.filter(d => d.type === "J-Drama")).slice(0, 15));
