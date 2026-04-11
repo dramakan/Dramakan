@@ -130,14 +130,14 @@
             <div id="cms-tab" class="tab-content">
                 <div class="table-wrapper" style="padding: 30px;">
                     <h2 style="margin-bottom: 20px; color: var(--primary);"><i class="fas fa-film"></i> Upload New Drama</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">Submitting this form automatically generates the watch.html page and adds it to the homepage grids.</p>
+                    <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">Submitting this form automatically generates the watch.html page and handles multiple seasons natively.</p>
                     
                     <form id="cms-form">
                         <div class="cms-form-grid">
                             <div class="section-title">Basic Info</div>
                             <div class="cms-group">
                                 <label>Drama Title</label>
-                                <input type="text" id="cms-title" class="admin-input" placeholder="e.g. Boyfriend on Demand" required>
+                                <input type="text" id="cms-title" class="admin-input" placeholder="e.g. Squid Game" required>
                             </div>
                             <div class="cms-group">
                                 <label>Poster Image URL</label>
@@ -149,14 +149,14 @@
                                 <textarea id="cms-synopsis" class="admin-input" rows="3" placeholder="Write a short description of the drama..." required></textarea>
                             </div>
 
-                            <div class="section-title">Video & Details</div>
+                            <div class="section-title">Video & Seasons</div>
                             <div class="cms-group">
                                 <label>IMDb ID (For Video Embed)</label>
-                                <input type="text" id="cms-imdb-id" class="admin-input" placeholder="e.g. tt35848827" required>
+                                <input type="text" id="cms-imdb-id" class="admin-input" placeholder="e.g. tt10919420" required>
                             </div>
                             <div class="cms-group">
-                                <label>Total Episodes</label>
-                                <input type="number" id="cms-eps" class="admin-input" placeholder="e.g. 12" required>
+                                <label>Episodes Per Season (Comma separated)</label>
+                                <input type="text" id="cms-eps" class="admin-input" placeholder="e.g. 16, 12, 10 (S1=16, S2=12, S3=10)" required>
                             </div>
                             
                             <div class="cms-group">
@@ -307,8 +307,6 @@
                 querySnapshot.forEach(doc => { 
                     const data = doc.data(); 
                     globalDebt += (data.unpaidClicks || 0) * PAY_RATE; 
-                    
-                    // 🔥 THE SMART FILTER: Only push them to the table if they have clicks or requested a payout
                     if ((data.totalClicks && data.totalClicks > 0) || data.payoutRequested) {
                         activeCreators.push({ id: doc.id, ...data }); 
                         activeCount++;
@@ -356,7 +354,7 @@
             }
         };
 
-        // --- CMS UPLOAD LOGIC ---
+        // --- THE NEW CMS UPLOAD LOGIC (WITH SEASON ARRAY) ---
         document.getElementById('cms-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('cms-submit');
@@ -364,10 +362,13 @@
             btn.disabled = true;
 
             try {
-                // Generate a unique ID for this drama in Firestore
+                // 1. Process the Seasons Input (e.g. "16, 12, 10" -> [16, 12, 10])
+                const epsInput = document.getElementById('cms-eps').value.trim();
+                const seasonsArray = epsInput.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+                const totalCalculatedEps = seasonsArray.reduce((a, b) => a + b, 0);
+
+                // 2. Generate a unique ID for this drama in Firestore
                 const newDocRef = doc(collection(db, "dramas"));
-                
-                // The Universal Link points to watch.html and uses the new Database ID!
                 const smartLink = `watch.html?id=${newDocRef.id}`;
 
                 const newDrama = {
@@ -376,7 +377,8 @@
                     link: smartLink, 
                     synopsis: document.getElementById('cms-synopsis').value.trim(),
                     imdbId: document.getElementById('cms-imdb-id').value.trim(),
-                    totalEps: parseInt(document.getElementById('cms-eps').value),
+                    seasons: seasonsArray, // SAVED AS ARRAY FOR MULTI-SEASON SUPPORT!
+                    totalEps: totalCalculatedEps, 
                     type: document.getElementById('cms-type').value,
                     status: document.getElementById('cms-status').value,
                     year: parseInt(document.getElementById('cms-year').value),

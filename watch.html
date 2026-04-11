@@ -16,6 +16,16 @@
         #page-loader { position: fixed; inset: 0; background: var(--bg-base, #09090b); z-index: 10000; display: flex; justify-content: center; align-items: center; flex-direction: column; color: #fff; }
         .spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.1); border-top-color: #8A2BE2; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Season Selector Styling */
+        .season-selector-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .season-select {
+            background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(138, 43, 226, 0.4);
+            padding: 8px 16px; border-radius: 8px; font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem; font-weight: 600; outline: none; cursor: pointer; transition: 0.3s;
+        }
+        .season-select:hover { border-color: #8A2BE2; box-shadow: 0 0 10px rgba(138, 43, 226, 0.2); }
+        .season-select option { background: #1a1a1d; color: #fff; }
     </style>
 </head>
 <body>
@@ -52,7 +62,13 @@
                 </div>
 
                 <div class="widget episodes-list-widget">
-                    <h2 class="widget-title">Episode List</h2>
+                    
+                    <div class="season-selector-wrapper">
+                        <h2 class="widget-title" style="margin: 0;">Episode List</h2>
+                        <select id="season-selector" class="season-select" style="display: none;">
+                            </select>
+                    </div>
+
                     <div class="episodes-list" id="episodes-list-container">
                         </div>
                 </div>
@@ -106,7 +122,7 @@
                     <a id="read-more-btn" class="read-more-btn">Read More</a>
                     <div class="info-details">
                         <p><span>Type:</span> <span id="ui-type"></span></p>
-                        <p><span>Episodes:</span> <span id="ui-total-eps"></span></p>
+                        <p><span>Total Episodes:</span> <span id="ui-total-eps"></span></p>
                         <p><span>Status:</span> <span id="ui-status"></span></p>
                         <p><span>Score:</span> <span id="ui-score"></span>/10</p>
                         <p><span>Genres:</span> <span id="ui-genre"></span></p>
@@ -165,14 +181,13 @@
             }
 
             try {
-                // 1. Fetch data securely from your database
                 const docRef = doc(db, "dramas", dramaId);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
 
-                    // 2. Populate the entire page UI automatically
+                    // UI Setup
                     document.title = `Watch ${data.title} - DramaKan`;
                     document.getElementById('ui-title').textContent = data.title;
                     document.getElementById('ui-poster').src = data.img;
@@ -188,68 +203,146 @@
                     document.getElementById('ui-cast2-name').textContent = data.actor2;
                     document.getElementById('ui-cast2-img').src = data.actor2Img;
 
-                    // 3. Generate the Episode Grid automatically
-                    const grid = document.getElementById('episodes-list-container');
-                    let buttonsHtml = '';
-                    for (let i = 1; i <= data.totalEps; i++) {
-                        buttonsHtml += `<a class="episode-item" data-index="${i}"><div class="ep-info"><p class="ep-number">EP ${i}</p><p class="ep-desc">Episode ${i}</p></div></a>`;
-                    }
-                    grid.innerHTML = buttonsHtml;
+                    // --- SEASON LOGIC SETUP ---
+                    let seasonsArr = data.seasons || [data.totalEps || 1];
+                    let currentSeason = 1;
+                    let currentEpisode = 1;
 
-                    // 4. Setup the Video Player Engine
-                    let currentIndex = 1;
-                    const totalEpisodes = data.totalEps;
+                    const seasonSelector = document.getElementById('season-selector');
+                    const grid = document.getElementById('episodes-list-container');
+
+                    // If multiple seasons, show the dropdown
+                    if (seasonsArr.length > 1) {
+                        seasonSelector.style.display = 'block';
+                        seasonSelector.innerHTML = seasonsArr.map((_, idx) => `<option value="${idx + 1}">Season ${idx + 1}</option>`).join('');
+                    }
+
+                    // Render Grid for specific season
+                    function renderEpisodeGrid(seasonNum) {
+                        currentSeason = parseInt(seasonNum);
+                        const epsInThisSeason = seasonsArr[currentSeason - 1];
+                        
+                        let buttonsHtml = '';
+                        for (let i = 1; i <= epsInThisSeason; i++) {
+                            // Notice data-index is saved as "Season-Episode" (e.g. "2-5") for tracking!
+                            buttonsHtml += `<a class="episode-item" data-season="${currentSeason}" data-index="${currentSeason}-${i}"><div class="ep-info"><p class="ep-number">EP ${i}</p><p class="ep-desc">Season ${currentSeason}</p></div></a>`;
+                        }
+                        grid.innerHTML = buttonsHtml;
+                        updateActiveButton();
+                    }
+
+                    // Update UI Highlights
+                    function updateActiveButton() {
+                        document.querySelectorAll('.episode-item').forEach((item) => {
+                            const isMatch = parseInt(item.dataset.season) === currentSeason && item.getAttribute('data-index') === `${currentSeason}-${currentEpisode}`;
+                            item.classList.toggle('current', isMatch);
+                        });
+                    }
+
+                    // Player Logic
                     const videoPlayer = document.getElementById('video-player-iframe');
                     const epText = document.getElementById('current-episode-title');
                     const downloadTbody = document.getElementById('download-links-tbody');
                     const prevBtn = document.getElementById('prev-ep-btn');
                     const nextBtn = document.getElementById('next-ep-btn');
 
-                    function loadEpisode(epNumber) {
-                        currentIndex = parseInt(epNumber);
+                    function loadEpisode(seasonNum, epNum) {
+                        currentSeason = parseInt(seasonNum);
+                        currentEpisode = parseInt(epNum);
                         
-                        // 🔥 YOUR COMMON VIDEO EMBED LINK TEMPLATE 🔥
-                        // Uses the IMDb ID saved in the database!
-                        const embedLink = `https://www.2embed.cc/embedtv/${data.imdbId}&s=1&e=${currentIndex}`;
-                        
+                        // Check if we need to redraw the grid (e.g., auto-resume loaded Season 2)
+                        if (parseInt(seasonSelector.value) !== currentSeason) {
+                            seasonSelector.value = currentSeason;
+                            renderEpisodeGrid(currentSeason);
+                        }
+
+                        // 🔥 THE DYNAMIC SEASON & EPISODE LINK 🔥
+                        const embedLink = `https://www.2embed.cc/embedtv/${data.imdbId}&s=${currentSeason}&e=${currentEpisode}`;
                         videoPlayer.src = embedLink;
-                        epText.textContent = `You are watching EP ${currentIndex} - ${data.title}`;
                         
-                        document.querySelectorAll('.episode-item').forEach((item) => {
-                            item.classList.toggle('current', parseInt(item.dataset.index) === currentIndex);
-                        });
+                        // Let user know exactly what season and episode they are on
+                        epText.textContent = seasonsArr.length > 1 
+                            ? `Playing S${currentSeason} EP ${currentEpisode} - ${data.title}`
+                            : `Playing EP ${currentEpisode} - ${data.title}`;
                         
+                        updateActiveButton();
+
                         downloadTbody.innerHTML = `
                             <tr>
-                                <td data-label="Episode">Episode ${currentIndex}</td>
+                                <td data-label="Episode">S${currentSeason} EP ${currentEpisode}</td>
                                 <td data-label="Quality">1080p</td>
                                 <td data-label="Video"><a href="#" class="download-btn">Download</a></td>
                                 <td data-label="Subtitles"><a href="#" class="download-btn">Download</a></td>
                             </tr>`;
 
-                        prevBtn.disabled = currentIndex === 1;
-                        nextBtn.disabled = currentIndex === totalEpisodes;
+                        // Smart Prev/Next Boundaries
+                        prevBtn.disabled = (currentSeason === 1 && currentEpisode === 1);
+                        nextBtn.disabled = (currentSeason === seasonsArr.length && currentEpisode === seasonsArr[currentSeason - 1]);
                     }
 
-                    // Click listeners
+                    // Listeners
+                    seasonSelector.addEventListener('change', (e) => {
+                        renderEpisodeGrid(e.target.value);
+                    });
+
                     grid.addEventListener('click', (e) => {
                         const item = e.target.closest('.episode-item');
-                        if (item) loadEpisode(item.dataset.index);
+                        if (item) {
+                            const rawIndex = item.getAttribute('data-index');
+                            const parts = rawIndex.split('-'); // splits "1-5"
+                            loadEpisode(parts[0], parts[1]);
+                        }
                     });
-                    prevBtn.addEventListener('click', () => { if (currentIndex > 1) loadEpisode(currentIndex - 1); });
-                    nextBtn.addEventListener('click', () => { if (currentIndex < totalEpisodes) loadEpisode(currentIndex + 1); });
+
+                    // Smart Next Button (Jumps to next season automatically!)
+                    nextBtn.addEventListener('click', () => { 
+                        let nextEp = currentEpisode + 1;
+                        let nextSeason = currentSeason;
+                        
+                        // If they finished the season, bump to Episode 1 of next season!
+                        if (nextEp > seasonsArr[currentSeason - 1]) {
+                            if (currentSeason < seasonsArr.length) {
+                                nextSeason++;
+                                nextEp = 1;
+                            } else { return; }
+                        }
+                        loadEpisode(nextSeason, nextEp); 
+                    });
+
+                    // Smart Prev Button (Jumps to previous season end!)
+                    prevBtn.addEventListener('click', () => { 
+                        let prevEp = currentEpisode - 1;
+                        let prevSeason = currentSeason;
+                        
+                        if (prevEp < 1) {
+                            if (currentSeason > 1) {
+                                prevSeason--;
+                                prevEp = seasonsArr[prevSeason - 1]; // Jump to final ep of previous season
+                            } else { return; }
+                        }
+                        loadEpisode(prevSeason, prevEp); 
+                    });
+
+                    // Init Layout
+                    renderEpisodeGrid(1);
 
                     // Auto-Resume from Tracker
                     setTimeout(() => {
-                        const savedEp = localStorage.getItem(`dramakan_ep_${data.title.replace(/\s+/g, '').toLowerCase()}`);
-                        if (savedEp && savedEp !== "0") {
-                            loadEpisode(savedEp);
+                        const savedEpRaw = localStorage.getItem(`dramakan_ep_${data.title.replace(/\s+/g, '').toLowerCase()}`);
+                        if (savedEpRaw && savedEpRaw !== "0") {
+                            // Check if it's formatted as "Season-Episode" (e.g. "2-5")
+                            if (savedEpRaw.includes('-')) {
+                                const parts = savedEpRaw.split('-');
+                                loadEpisode(parts[0], parts[1]);
+                            } else {
+                                // Legacy fallback (assumes season 1)
+                                loadEpisode(1, savedEpRaw);
+                            }
                         } else {
-                            loadEpisode(1);
+                            loadEpisode(1, 1);
                         }
                     }, 500);
 
-                    // Reveal Page
                     document.getElementById('page-loader').style.display = 'none';
                     document.getElementById('main-content').style.display = 'block';
 
@@ -262,7 +355,6 @@
                 alert("Error loading video player.");
             }
             
-            // Read More Toggle
             const synopsisText = document.getElementById('synopsis-text');
             const readMoreBtn = document.getElementById('read-more-btn');
             if (synopsisText && readMoreBtn) {
