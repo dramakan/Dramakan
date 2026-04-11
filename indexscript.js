@@ -308,3 +308,54 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+// --- 6. IMMERSIVE SCROLL REVEAL ANIMATIONS ---
+document.addEventListener("DOMContentLoaded", function() {
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.15 // Triggers when 15% of the section is visible
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target); // Stop observing once revealed
+            }
+        });
+    }, observerOptions);
+
+    // Apply the fade-in class to all major sections
+    document.querySelectorAll('section.latest-episodes').forEach(section => {
+        section.classList.add('fade-in-section');
+        observer.observe(section);
+    });
+});
+
+// --- 7. SMART LOGIN PROMPT LOGIC ---
+document.addEventListener("DOMContentLoaded", function() {
+    const loginPopup = document.getElementById('loginPromptPopup');
+    const closePopupBtn = document.getElementById('closeLoginPopup');
+
+    if (loginPopup && closePopupBtn) {
+        // Wait 2 seconds so Firebase has time to confirm if they are logged in
+        setTimeout(() => {
+            // Check if the top button says "Profile" (meaning Firebase logged them in)
+            const topAuthBtn = document.getElementById('topAuthBtn');
+            const isLoggedIn = topAuthBtn && topAuthBtn.innerText.includes('Profile');
+
+            // Only show the popup if they are NOT logged in and haven't closed it recently
+            if (!isLoggedIn && sessionStorage.getItem('hideLoginPopup') !== 'true') {
+                loginPopup.classList.remove('hidden');
+            }
+        }, 2000);
+
+        closePopupBtn.addEventListener('click', () => {
+            loginPopup.classList.add('hidden');
+            setTimeout(() => {
+                loginPopup.style.display = 'none';
+            }, 400); 
+            sessionStorage.setItem('hideLoginPopup', 'true');
+        });
+    }
+});

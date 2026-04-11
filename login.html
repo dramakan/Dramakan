@@ -3,226 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - DramaKan</title>
-     <meta name="title" content="Dramakan - Watch Korean, Japanese, Chinese Dramas Online">
-  <meta name="description" content="Stream the latest Korean, Japanese, Chinese, and Filipino dramas online. Your ultimate destination for Asian entertainment with daily updates.">
-  <meta name="keywords" content="kdrama, cdrama, jdrama, watch dramas online, Asian dramas, Dramakan">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://dramakan.site/">
-
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://dramakan.site/">
-  <meta property="og:title" content="Dramakan - Watch Asian Dramas Online">
-  <meta property="og:description" content="Watch high-quality K-Dramas, J-Dramas, and more for free. New episodes added daily!">
-  <meta property="og:image" content="https://dramakan.site/og-image.jpg"> <meta property="og:site_name" content="Dramakan">
-
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://dramakan.site/">
-  <meta name="twitter:title" content="Dramakan - Watch Asian Dramas Online">
-  <meta name="twitter:description" content="Your home for the latest Asian entertainment. Stream now for free!">
-  <meta name="twitter:image" content="https://dramakan.site/og-image.jpg">
-
-  <link rel="icon" type="image/png" sizes="32x32" href="https://dramakan.site/favicon.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="https://dramakan.site/favicon.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="https://dramakan.site/apple-touch-icon.png">
-  <link rel="shortcut icon" href="https://dramakan.site/favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Sign In - DramaKan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-    <style>
-        /* Shared Styles */
-        :root {
-            --primary-color: #8A2BE2;
-            --background-color: #0B0C10;
-            --surface-color: #1A1A1D;
-            --text-color: #F5F5F5;
-            --text-muted-color: #a0a0a0;
-            --border-color: #2c2c34;
-            --error-color: #dc3545;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); line-height: 1.6; }
-        a { text-decoration: none; color: inherit; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        
-        /* Header & Footer Styles (for consistency) */
-        .main-header { background-color: rgba(11, 12, 16, 0.8); backdrop-filter: blur(10px); padding: 15px 0; border-bottom: 1px solid var(--border-color); }
-        .main-header .container { display: flex; align-items: center; justify-content: space-between; }
-        .logo { font-size: 1.8rem; font-weight: 700; }
-        .logo span { color: var(--primary-color); }
-        .header-actions { display: flex; align-items: center; gap: 15px; }
-        .btn { padding: 8px 15px; border-radius: 5px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
-        .btn-primary { background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); }
-        .btn-icon { background: none; border: none; color: var(--text-color); font-size: 1.2rem; padding: 8px 12px; }
-        .main-footer { background-color: var(--surface-color); padding: 40px 0 20px; border-top: 1px solid var(--border-color); }
-        .footer-bottom { text-align: center; font-size: 0.9rem; color: var(--text-muted-color); }
-        
-        /* Login Page Specific Styles */
-        .auth-background { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; z-index: -1; filter: blur(8px) brightness(0.4); transform: scale(1.1); }
-        .auth-background img { width: 100%; height: 100%; object-fit: cover; }
-        .auth-container { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 150px); padding: 20px; }
-        .auth-form-box { background: rgba(26, 26, 29, 0.75); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 420px; text-align: center; }
-        .auth-form-box h1 { font-size: 1.8rem; margin-bottom: 10px; }
-        .auth-form-box p { color: var(--text-muted-color); margin-bottom: 30px; }
-        .form-group { position: relative; margin-bottom: 20px; }
-        .form-group .icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted-color); }
-        .form-group input { width: 100%; padding: 12px 15px 12px 45px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--background-color); color: var(--text-color); font-size: 1rem; }
-        .message { font-size: 0.9rem; text-align: center; margin-bottom: 15px; padding: 10px; border-radius: 5px; color: white; background-color: var(--error-color); }
-        .auth-form-box .btn { width: 100%; }
-        .bottom-link { margin-top: 25px; font-size: 0.9rem; color: var(--text-muted-color); }
-        .bottom-link a { color: var(--primary-color); }
-        .extra-links { margin-top: 20px; display: flex; justify-content: space-between; font-size: 0.9rem; }
-        .extra-links a { color: var(--text-muted-color); }
-        .extra-links a:hover { color: var(--primary-color); text-decoration: underline; }
+    <link rel="stylesheet" href="indexstyle.css"> <style>
+        body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background-image: radial-gradient(circle at 50% 0%, rgba(138, 43, 226, 0.15) 0%, var(--background-color) 70%); }
+        .btn-back { position: absolute; top: 30px; left: 4%; color: var(--text-muted-color); font-size: 1.1rem; transition: 0.3s; }
+        .btn-back:hover { color: var(--primary-color); transform: translateX(-5px); }
+        .auth-box { width: 100%; max-width: 420px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(138, 43, 226, 0.1); margin: 20px; }
+        .auth-header { text-align: center; margin-bottom: 30px; }
+        .auth-header .logo { font-size: 2.2rem; display: block; margin-bottom: 5px; }
+        .auth-header p { color: var(--text-muted-color); font-size: 0.95rem; }
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted-color); }
+        .auth-input { width: 100%; padding: 14px 16px 14px 45px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-color); font-family: 'Poppins', sans-serif; transition: 0.3s; }
+        .auth-input:focus { outline: none; border-color: var(--primary-color); background: rgba(0, 0, 0, 0.5); box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.15); }
+        .forgot-link { display: block; text-align: right; color: var(--primary-color); font-size: 0.85rem; margin-top: 8px; transition: 0.2s; }
+        .forgot-link:hover { color: #b366ff; }
+        .btn-auth { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-main { background: var(--primary-color); color: white; box-shadow: 0 4px 15px var(--primary-glow); }
+        .btn-main:hover { background: #9d4edd; transform: translateY(-2px); }
+        .btn-google { background: white; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px; }
+        .btn-google:hover { background: #f0f0f0; transform: translateY(-2px); }
+        .btn-google img { width: 20px; }
+        .divider { display: flex; align-items: center; text-align: center; margin: 25px 0; color: var(--text-muted-color); font-size: 0.85rem; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--glass-border); }
+        .divider::before { margin-right: 10px; } .divider::after { margin-left: 10px; }
+        .auth-footer { text-align: center; margin-top: 25px; font-size: 0.9rem; color: var(--text-muted-color); }
+        .auth-footer a { color: var(--primary-color); font-weight: 600; transition: 0.2s; }
+        .auth-footer a:hover { color: #b366ff; }
+        #msg-box { font-size: 0.85rem; text-align: center; margin-top: 15px; display: none; padding: 10px; border-radius: 8px; }
+        .error { color: #ff4d4d; background: rgba(255, 77, 77, 0.1); border: 1px solid rgba(255, 77, 77, 0.3); }
+        .success { color: #4CAF50; background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.3); }
     </style>
- <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Dramakan">
-    <meta name="theme-color" content="#0B0C10">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="https://dramakan.site/og-image.jpg"> 
 </head>
 <body>
-
-    <div class="auth-background">
-        <img src="https://image.tmdb.org/t/p/w500/roYy5z2aTqMDBt2bY2gV2LpCj2.jpg" alt="bg">
-        <img src="https://image.tmdb.org/t/p/w500/yOdjula2rD03aKei2ikV5m2pT02.jpg" alt="bg">
-        <img src="https://image.tmdb.org/t/p/w500/314mS2WfDgbW5s3TzRifvS0xJET.jpg" alt="bg">
-        <img src="https://image.tmdb.org/t/p/w500/tS3iAeD2dfV8iX22rztq2pT1SdA.jpg" alt="bg">
+    <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    <div class="auth-box">
+        <div class="auth-header"><a href="index.html" class="logo">Drama<span>Kan</span></a><p>Sign in to pick up where you left off.</p></div>
+        <form id="login-form">
+            <div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="email" class="auth-input" placeholder="Email Address" required></div>
+            <div class="input-group" style="margin-bottom: 5px;"><i class="fas fa-lock"></i><input type="password" id="password" class="auth-input" placeholder="Password" required><a href="#" class="forgot-link" id="forgot-btn">Forgot Password?</a></div>
+            <button type="submit" class="btn-auth btn-main" id="submit-btn">Sign In</button>
+            <div class="divider">OR</div>
+            <button type="button" class="btn-auth btn-google" id="google-btn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"> Continue with Google</button>
+            <div id="msg-box"></div>
+        </form>
+        <div class="auth-footer">New to DramaKan? <a href="register.html">Sign up now.</a></div>
     </div>
 
-    <header class="main-header">
-        <div class="container">
-            <a href="index.html" class="logo">Drama<span>Kan</span></a>
-            <div class="header-actions">
-                <a href="login.html" id="login-button" class="btn btn-primary">Login</a>
-                <a href="profile.html" id="profile-button" class="btn-icon" style="display: none;"><i class="fas fa-user"></i></a>
-            </div>
-        </div>
-    </header>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-    <main class="auth-container">
-        <div class="auth-form-box">
-            <h1>Welcome Back!</h1>
-            <p>Log in to access your profile and history.</p>
+        const firebaseConfig = { apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", authDomain: "dramakan007.firebaseapp.com", projectId: "dramakan007", storageBucket: "dramakan007.firebasestorage.app", messagingSenderId: "1069933586213", appId: "1:1069933586213:web:b28ab37436679a4906dccc" };
+        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); const googleProvider = new GoogleAuthProvider();
+        const msgBox = document.getElementById('msg-box'); const submitBtn = document.getElementById('submit-btn');
 
-            <div id="message-container"></div>
-            <form id="login-form">
-                <div class="form-group">
-                    <i class="fas fa-envelope icon"></i>
-                    <input type="email" id="email" placeholder="Email Address" required>
-                </div>
-                <div class="form-group">
-                    <i class="fas fa-lock icon"></i>
-                    <input type="password" id="password" placeholder="Password" required>
-                </div>
-                <button type="submit" id="submit-button" class="btn btn-primary">Login</button>
-            </form>
-            
-            <div class="extra-links">
-                <a href="#">Forgot Password?</a>
-                <a href="register.html">Sign Up</a>
-            </div>
-        </div>
-    </main>
+        function showMessage(msg, type) { msgBox.textContent = msg; msgBox.className = type; msgBox.style.display = 'block'; }
+        let isActivelyLoggingIn = false;
 
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-bottom">
-                 <p>&copy; 2025 DramaKan. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is already logged in and redirect
-            const userString = localStorage.getItem('dramaKanUser');
-            if (userString && JSON.parse(userString).isLoggedIn) {
-                window.location.href = 'profile.html';
-                return;
-            }
-            
-            const loginForm = document.getElementById('login-form');
-            const messageContainer = document.getElementById('message-container');
-            const submitButton = document.getElementById('submit-button');
-
-            loginForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                messageContainer.innerHTML = '';
-                submitButton.disabled = true;
-                submitButton.textContent = 'Logging in...';
-
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-
-                // This sends the data to your Node.js server
-                fetch('https://dramakan-backend.onrender.com/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email, password: password })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Server confirmed login is successful. Save the NEW session object with the TOKEN.
-                        const userSession = {
-                            isLoggedIn: true,
-                            username: data.user.username,
-                            email: data.user.email,
-                            token: data.token // <-- This is the crucial security token
-                        };
-                        localStorage.setItem('dramaKanUser', JSON.stringify(userSession));
-                        
-                        alert('Login successful!');
-                        window.location.href = 'profile.html';
-                    } else {
-                        // Server said login failed
-                        displayMessage(data.message || 'Invalid email or password.');
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Login';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    displayMessage('Cannot connect to the server. Please make sure it is running.');
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Login';
-                });
-            });
-
-            function displayMessage(message) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message';
-                messageDiv.textContent = message;
-                messageContainer.appendChild(messageDiv);
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                if (isActivelyLoggingIn) return; // Hold the door!
+                document.querySelector('.auth-box').innerHTML = `
+                    <div style="text-align:center;">
+                        <i class="fas fa-check-circle" style="font-size: 3.5rem; color: #10b981; margin-bottom: 15px; text-shadow: 0 0 15px rgba(16, 185, 129, 0.4);"></i>
+                        <h2 style="margin-bottom: 10px; color: #fff;">Already Logged In!</h2>
+                        <p style="color: var(--text-muted-color); margin-bottom: 25px; font-size: 0.9rem;">You are currently signed in as:<br><strong style="color: #fff;">${user.email}</strong></p>
+                        <a href="profile.html" class="btn-auth btn-main" style="display:block; text-decoration:none; margin-bottom: 15px;"><i class="fas fa-user"></i> Go to Profile</a>
+                        <button id="force-logout" class="btn-auth" style="background: rgba(255,0,0,0.1); color: #ff4d4d; border: 1px solid rgba(255,0,0,0.3);"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+                    </div>`;
+                document.getElementById('force-logout').addEventListener('click', () => { signOut(auth).then(() => window.location.reload()); });
             }
         });
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault(); isActivelyLoggingIn = true; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...'; msgBox.style.display = 'none';
+            try {
+                await signInWithEmailAndPassword(auth, document.getElementById('email').value.trim(), document.getElementById('password').value);
+                window.location.replace('profile.html');
+            } catch (error) { showMessage("Invalid email or password.", "error"); submitBtn.innerHTML = 'Sign In'; isActivelyLoggingIn = false; }
+        });
+
+        document.getElementById('google-btn').addEventListener('click', async () => {
+            isActivelyLoggingIn = true;
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                const docRef = doc(db, "users", result.user.uid);
+                const docSnap = await getDoc(docRef);
+                if (!docSnap.exists()) {
+                    let baseName = result.user.displayName || "DramaFan";
+                    await setDoc(docRef, { username: baseName, email: result.user.email, role: "viewer", createdAt: new Date() });
+                }
+                window.location.replace('profile.html');
+            } catch (error) { showMessage("Google Sign-In failed.", "error"); isActivelyLoggingIn = false; }
+        });
+
+        document.getElementById('forgot-btn').addEventListener('click', async (e) => {
+            e.preventDefault(); const email = document.getElementById('email').value.trim();
+            if (!email) return showMessage("Enter your email address first.", "error");
+            try { await sendPasswordResetEmail(auth, email); showMessage("Password reset link sent to your email!", "success"); } 
+            catch (error) { showMessage("Email not found in our system.", "error"); }
+        });
     </script>
-<link rel="stylesheet" href="bottom-bar.css"> 
-<nav class="bottom-nav">
-        <a href="index.html" class="bottom-nav-item active">
-            <i class="fa-solid fa-house"></i>
-            <span class="nav-label">Home</span>
-        </a>
-        <a href="Korean.html" class="bottom-nav-item">
-            <i class="fa-solid fa-won-sign"></i>
-            <span class="nav-label">Korean</span>
-        </a>
-        <a href="chinese.html" class="bottom-nav-item" id="bottomRequestBtn">
-            <i class="fa-brands fa-renren"></i>
-            <span class="nav-label">Chinese</span>
-        </a>
-        <a href="japanese.html" class="bottom-nav-item" id="bottomAuthBtn">
-            <i class="fa-solid fa-yen-sign"></i>
-            <span class="nav-label">Japanese</span>
-        </a>
-        
-        <a href="affiliate.html" class="bottom-nav-item" style="color: #d4af37;">
-            <i class="fas fa-hand-holding-dollar"></i>
-            <span class="nav-label">Earn</span>
-        </a>
-    </nav>
-<script src="/js/bottom-bar.js"></script>
 </body>
 </html>
