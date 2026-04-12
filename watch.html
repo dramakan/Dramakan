@@ -62,15 +62,11 @@
                 </div>
 
                 <div class="widget episodes-list-widget">
-                    
                     <div class="season-selector-wrapper">
                         <h2 class="widget-title" style="margin: 0;">Episode List</h2>
-                        <select id="season-selector" class="season-select" style="display: none;">
-                            </select>
+                        <select id="season-selector" class="season-select" style="display: none;"></select>
                     </div>
-
-                    <div class="episodes-list" id="episodes-list-container">
-                        </div>
+                    <div class="episodes-list" id="episodes-list-container"></div>
                 </div>
                 
                 <div class="widget download-widget">
@@ -80,8 +76,7 @@
                             <thead>
                                 <tr><th>Episode</th><th>Quality</th><th>Video</th><th>Subtitles</th></tr>
                             </thead>
-                            <tbody id="download-links-tbody">
-                            </tbody>
+                            <tbody id="download-links-tbody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -103,9 +98,7 @@
                 </div>
 
                 <div class="widget comments-widget">
-                     <div class="comments-header">
-                        <h2 class="widget-title">Comments</h2>
-                     </div>
+                     <div class="comments-header"><h2 class="widget-title">Comments</h2></div>
                      <form class="comment-form" id="comment-form">
                         <img class="user-avatar" src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png" alt="User Avatar">
                         <textarea placeholder="Join the discussion..." required></textarea>
@@ -141,9 +134,7 @@
         </div>
     </main>
 
-    <footer class="main-footer">
-        <p>&copy; 2026 DramaKan. All rights reserved.</p>
-    </footer>
+    <footer class="main-footer"><p>&copy; 2026 DramaKan. All rights reserved.</p></footer>
 
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item active"><i class="fa-solid fa-house"></i><span class="nav-label">Home</span></a>
@@ -161,10 +152,7 @@
         const firebaseConfig = {
             apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
             authDomain: "dramakan007.firebaseapp.com",
-            projectId: "dramakan007",
-            storageBucket: "dramakan007.firebasestorage.app",
-            messagingSenderId: "1069933586213",
-            appId: "1:1069933586213:web:b28ab37436679a4906dccc"
+            projectId: "dramakan007"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -203,7 +191,6 @@
                     document.getElementById('ui-cast2-name').textContent = data.actor2;
                     document.getElementById('ui-cast2-img').src = data.actor2Img;
 
-                    // --- SEASON LOGIC SETUP ---
                     let seasonsArr = data.seasons || [data.totalEps || 1];
                     let currentSeason = 1;
                     let currentEpisode = 1;
@@ -211,27 +198,23 @@
                     const seasonSelector = document.getElementById('season-selector');
                     const grid = document.getElementById('episodes-list-container');
 
-                    // If multiple seasons, show the dropdown
                     if (seasonsArr.length > 1) {
                         seasonSelector.style.display = 'block';
                         seasonSelector.innerHTML = seasonsArr.map((_, idx) => `<option value="${idx + 1}">Season ${idx + 1}</option>`).join('');
                     }
 
-                    // Render Grid for specific season
                     function renderEpisodeGrid(seasonNum) {
                         currentSeason = parseInt(seasonNum);
                         const epsInThisSeason = seasonsArr[currentSeason - 1];
                         
                         let buttonsHtml = '';
                         for (let i = 1; i <= epsInThisSeason; i++) {
-                            // Notice data-index is saved as "Season-Episode" (e.g. "2-5") for tracking!
                             buttonsHtml += `<a class="episode-item" data-season="${currentSeason}" data-index="${currentSeason}-${i}"><div class="ep-info"><p class="ep-number">EP ${i}</p><p class="ep-desc">Season ${currentSeason}</p></div></a>`;
                         }
                         grid.innerHTML = buttonsHtml;
                         updateActiveButton();
                     }
 
-                    // Update UI Highlights
                     function updateActiveButton() {
                         document.querySelectorAll('.episode-item').forEach((item) => {
                             const isMatch = parseInt(item.dataset.season) === currentSeason && item.getAttribute('data-index') === `${currentSeason}-${currentEpisode}`;
@@ -239,7 +222,6 @@
                         });
                     }
 
-                    // Player Logic
                     const videoPlayer = document.getElementById('video-player-iframe');
                     const epText = document.getElementById('current-episode-title');
                     const downloadTbody = document.getElementById('download-links-tbody');
@@ -250,92 +232,83 @@
                         currentSeason = parseInt(seasonNum);
                         currentEpisode = parseInt(epNum);
                         
-                        // Check if we need to redraw the grid (e.g., auto-resume loaded Season 2)
                         if (parseInt(seasonSelector.value) !== currentSeason) {
                             seasonSelector.value = currentSeason;
                             renderEpisodeGrid(currentSeason);
                         }
 
-                        // 🔥 THE DYNAMIC SEASON & EPISODE LINK 🔥
                         const embedLink = `https://www.2embed.cc/embedtv/${data.imdbId}&s=${currentSeason}&e=${currentEpisode}`;
                         videoPlayer.src = embedLink;
                         
-                        // Let user know exactly what season and episode they are on
                         epText.textContent = seasonsArr.length > 1 
                             ? `Playing S${currentSeason} EP ${currentEpisode} - ${data.title}`
                             : `Playing EP ${currentEpisode} - ${data.title}`;
                         
                         updateActiveButton();
 
-                        downloadTbody.innerHTML = `
-                            <tr>
-                                <td data-label="Episode">S${currentSeason} EP ${currentEpisode}</td>
-                                <td data-label="Quality">1080p</td>
-                                <td data-label="Video"><a href="#" class="download-btn">Download</a></td>
-                                <td data-label="Subtitles"><a href="#" class="download-btn">Download</a></td>
-                            </tr>`;
+                        // 🌟 THE BULLETPROOF TRACKER INJECTION 🌟
+                        // We save exactly what the user is watching directly to local storage!
+                        const epIndexToSave = `${currentSeason}-${currentEpisode}`;
+                        localStorage.setItem(`dramakan_ep_${dramaId}`, epIndexToSave);
+                        
+                        let history = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                        history[dramaId] = {
+                            title: data.title,
+                            img: data.img,
+                            link: window.location.pathname + window.location.search,
+                            timestamp: Date.now(),
+                            epIndex: epIndexToSave
+                        };
+                        localStorage.setItem('dramakan_history', JSON.stringify(history));
+                        
+                        // Tell bottom-bar to sync this up to Firebase instantly
+                        window.dispatchEvent(new CustomEvent('updateCloudHistory', { detail: { id: dramaId, epIndex: epIndexToSave } }));
 
-                        // Smart Prev/Next Boundaries
+                        downloadTbody.innerHTML = `<tr><td data-label="Episode">S${currentSeason} EP ${currentEpisode}</td><td data-label="Quality">1080p</td><td data-label="Video"><a href="#" class="download-btn">Download</a></td><td data-label="Subtitles"><a href="#" class="download-btn">Download</a></td></tr>`;
+
                         prevBtn.disabled = (currentSeason === 1 && currentEpisode === 1);
                         nextBtn.disabled = (currentSeason === seasonsArr.length && currentEpisode === seasonsArr[currentSeason - 1]);
                     }
 
-                    // Listeners
-                    seasonSelector.addEventListener('change', (e) => {
-                        renderEpisodeGrid(e.target.value);
-                    });
-
+                    seasonSelector.addEventListener('change', (e) => { renderEpisodeGrid(e.target.value); });
+                    
                     grid.addEventListener('click', (e) => {
                         const item = e.target.closest('.episode-item');
                         if (item) {
                             const rawIndex = item.getAttribute('data-index');
-                            const parts = rawIndex.split('-'); // splits "1-5"
+                            const parts = rawIndex.split('-');
                             loadEpisode(parts[0], parts[1]);
                         }
                     });
 
-                    // Smart Next Button (Jumps to next season automatically!)
                     nextBtn.addEventListener('click', () => { 
                         let nextEp = currentEpisode + 1;
                         let nextSeason = currentSeason;
-                        
-                        // If they finished the season, bump to Episode 1 of next season!
                         if (nextEp > seasonsArr[currentSeason - 1]) {
-                            if (currentSeason < seasonsArr.length) {
-                                nextSeason++;
-                                nextEp = 1;
-                            } else { return; }
+                            if (currentSeason < seasonsArr.length) { nextSeason++; nextEp = 1; } else { return; }
                         }
                         loadEpisode(nextSeason, nextEp); 
                     });
 
-                    // Smart Prev Button (Jumps to previous season end!)
                     prevBtn.addEventListener('click', () => { 
                         let prevEp = currentEpisode - 1;
                         let prevSeason = currentSeason;
-                        
                         if (prevEp < 1) {
-                            if (currentSeason > 1) {
-                                prevSeason--;
-                                prevEp = seasonsArr[prevSeason - 1]; // Jump to final ep of previous season
-                            } else { return; }
+                            if (currentSeason > 1) { prevSeason--; prevEp = seasonsArr[prevSeason - 1]; } else { return; }
                         }
                         loadEpisode(prevSeason, prevEp); 
                     });
 
-                    // Init Layout
                     renderEpisodeGrid(1);
 
-                    // Auto-Resume from Tracker
+                    // Auto-Resume (NOW PERFECTLY MATCHED TO THE ID)
                     setTimeout(() => {
-                        const savedEpRaw = localStorage.getItem(`dramakan_ep_${data.title.replace(/\s+/g, '').toLowerCase()}`);
+                        const savedEpRaw = localStorage.getItem(`dramakan_ep_${dramaId}`);
                         if (savedEpRaw && savedEpRaw !== "0") {
-                            // Check if it's formatted as "Season-Episode" (e.g. "2-5")
                             if (savedEpRaw.includes('-')) {
                                 const parts = savedEpRaw.split('-');
                                 loadEpisode(parts[0], parts[1]);
                             } else {
-                                // Legacy fallback (assumes season 1)
                                 loadEpisode(1, savedEpRaw);
                             }
                         } else {
@@ -350,18 +323,14 @@
                     alert("Drama not found or has been removed.");
                     window.location.replace('index.html');
                 }
-            } catch (error) {
-                console.error("Error loading drama:", error);
-                alert("Error loading video player.");
-            }
+            } catch (error) { console.error("Error loading drama:", error); }
             
-            const synopsisText = document.getElementById('synopsis-text');
             const readMoreBtn = document.getElementById('read-more-btn');
-            if (synopsisText && readMoreBtn) {
+            if (readMoreBtn) {
                 readMoreBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    synopsisText.classList.toggle('truncated');
-                    readMoreBtn.textContent = synopsisText.classList.contains('truncated') ? 'Read More' : 'Read Less';
+                    document.getElementById('synopsis-text').classList.toggle('truncated');
+                    readMoreBtn.textContent = document.getElementById('synopsis-text').classList.contains('truncated') ? 'Read More' : 'Read Less';
                 });
             }
         });
