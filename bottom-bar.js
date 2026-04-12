@@ -256,3 +256,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }).catch(err => console.warn("Firebase scripts delayed."));
 });
+// ==========================================
+// 8. GHOST PROTOCOL (ADMIN EASTER EGG)
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    // METHOD 1: PC/KEYBOARD - Type "admin" anywhere on the screen
+    let secretKeys = '';
+    document.addEventListener('keydown', (e) => {
+        secretKeys += e.key.toLowerCase();
+        if (secretKeys.length > 5) secretKeys = secretKeys.substring(1);
+        if (secretKeys === 'admin') {
+            // Flash a quick transition effect
+            document.body.style.transition = "filter 0.5s ease";
+            document.body.style.filter = "invert(1) hue-rotate(180deg)";
+            setTimeout(() => window.location.href = 'admin-dashboard.html', 500);
+        }
+    });
+
+    // METHOD 2: MOBILE/TOUCH - Tap the Footer 7 times quickly
+    let footerTapCount = 0;
+    let footerTapTimer;
+    
+    // Attach listener to the footer
+    const footer = document.querySelector('.main-footer');
+    if (footer) {
+        footer.addEventListener('click', () => {
+            footerTapCount++;
+            clearTimeout(footerTapTimer);
+            
+            if (footerTapCount >= 7) {
+                // Haptic feedback if the mobile device supports it
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                document.body.style.transition = "filter 0.5s ease";
+                document.body.style.filter = "invert(1) hue-rotate(180deg)";
+                setTimeout(() => window.location.href = 'admin-dashboard.html', 500);
+                footerTapCount = 0;
+            }
+            
+            // Reset the counter if they stop tapping for 1.5 seconds
+            footerTapTimer = setTimeout(() => { footerTapCount = 0; }, 1500);
+        });
+    }
+});

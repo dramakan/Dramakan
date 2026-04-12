@@ -89,18 +89,16 @@ document.addEventListener('DOMContentLoaded', function () {
             const safeImg = encodeURIComponent(drama.img);
             const safeLink = encodeURIComponent(drama.link);
             return `
-            <div class="drama-card" style="position:relative;">
-                <a href="${drama.link}" style="display:block;">
-                    <div class="drama-card-img"><img src="${drama.img}" alt="${drama.title}"></div>
-                    <div class="drama-card-info">
-                        <h3 class="drama-card-title">${drama.title}</h3>
-                        <p class="drama-card-meta">${drama.type}</p>
-                    </div>
-                </a>
+            <a href="${drama.link}" class="drama-card">
+                <div class="drama-card-img"><img src="${drama.img}" alt="${drama.title}"></div>
+                <div class="drama-card-info">
+                    <h3 class="drama-card-title">${drama.title}</h3>
+                    <p class="drama-card-meta">${drama.type}</p>
+                </div>
                 <button class="bookmark-btn" onclick="event.preventDefault(); window.toggleMyList(this, '${safeTitle}', '${safeImg}', '${safeLink}')" title="Add to My List">
                     <i class="fas fa-plus"></i>
                 </button>
-            </div>
+            </a>
         `;
         }).join('');
     }
@@ -135,11 +133,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (cwSection && cwGrid) {
                         cwSection.style.display = 'block';
                         cwGrid.innerHTML = historyArr.map(item => `
-                            <a href="${item.link}" class="drama-card" style="border-color: #8A2BE2; box-shadow: 0 0 15px rgba(138, 43, 226, 0.15);">
+                            <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
                                 <div class="drama-card-img"><img src="${item.img}" alt="${item.title}"></div>
                                 <div class="drama-card-info">
                                     <h3 class="drama-card-title">${item.title}</h3>
-                                    <p class="drama-card-meta" style="color: #a1a1aa;"><i class="fas fa-history"></i> Jump back in</p>
+                                    <p class="drama-card-meta" style="color: var(--primary-color);"><i class="fas fa-play"></i> Resume</p>
                                 </div>
                             </a>
                         `).join('');
@@ -187,15 +185,10 @@ document.addEventListener('DOMContentLoaded', function () {
             searchResults.innerHTML = results.map(({ item }) => {
                 const safeTitle = encodeURIComponent(item.title); const safeImg = encodeURIComponent(item.img); const safeLink = encodeURIComponent(item.link);
                 return `
-                <div style="position:relative;">
-                    <a href="${item.link}" class="search-result-item">
-                        <img src="${item.img}" width="40" height="55">
-                        <div><div style="color:#fff; font-weight:600;">${item.title}</div><small style="color:#aaa;">${item.type}</small></div>
-                    </a>
-                    <button class="bookmark-btn" style="top:13px; right:10px; width:30px; height:30px; font-size:0.75rem;" onclick="event.preventDefault(); window.toggleMyList(this, '${safeTitle}', '${safeImg}', '${safeLink}')">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>`;
+                <a href="${item.link}" class="search-result-item">
+                    <img src="${item.img}" width="45" height="60">
+                    <div><div style="color:#fff; font-weight:600; font-size: 0.95rem;">${item.title}</div><small style="color:var(--primary-color);">${item.type}</small></div>
+                </a>`;
             }).join('');
             searchResults.style.display = 'block';
         });
@@ -214,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function () {
             sliderWrapper.children[1].classList.add('active');
 
             setInterval(() => {
-                sliderWrapper.style.transition = 'transform 0.3s ease-in-out';
+                sliderWrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
                 sliderWrapper.style.transform = `translateX(-200%)`; 
                 sliderWrapper.children[1].classList.remove('active');
                 sliderWrapper.children[2].classList.add('active');
@@ -222,8 +215,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     sliderWrapper.style.transition = 'none';
                     sliderWrapper.appendChild(sliderWrapper.firstElementChild);
                     sliderWrapper.style.transform = `translateX(-100%)`; 
-                }, 300); 
-            }, 3000);
+                }, 400); 
+            }, 3500);
         } else {
             setInterval(() => {
                 slideIndex = (slideIndex + 1) % heroSlides.length;
@@ -273,7 +266,7 @@ document.addEventListener("DOMContentLoaded", function() {
             e.preventDefault();
             const submitBtn = document.getElementById("submitBtn");
             const status = document.getElementById("statusMessage");
-            submitBtn.innerText = "Sending...";
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
             submitBtn.disabled = true;
 
             try {
@@ -306,19 +299,18 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
 
                 status.style.display = "block";
-                status.style.color = "#4CAF50";
-                status.innerText = "Request securely sent! Check your Profile later.";
+                status.style.color = "#10b981";
+                status.innerHTML = "<i class='fas fa-check-circle'></i> Request securely sent! Check your Profile later.";
                 form.reset();
 
             } catch (err) {
                 console.error("FIREBASE ERROR:", err);
                 status.style.display = "block";
-                status.style.color = "#ff4d4d";
-                // SMART ERROR CATCHING: Directly tells you if Firebase Rules are blocking it
+                status.style.color = "#ef4444";
                 if (err.code === 'permission-denied' || err.message.includes('permission')) {
-                    status.innerText = "Error: Database Rules are blocking this request. Update Firebase Rules!";
+                    status.innerHTML = "<i class='fas fa-exclamation-circle'></i> Error: Database Rules are blocking this request.";
                 } else {
-                    status.innerText = "Error: " + err.message;
+                    status.innerHTML = "<i class='fas fa-exclamation-circle'></i> Error: " + err.message;
                 }
             } finally {
                 submitBtn.innerText = "Send Request";
@@ -335,22 +327,22 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// --- 7. SMART LOGIN PROMPT LOGIC ---
+// --- 7. SMART APP INSTALL PROMPT LOGIC ---
 document.addEventListener("DOMContentLoaded", function() {
-    const loginPopup = document.getElementById('loginPromptPopup');
-    const closePopupBtn = document.getElementById('closeLoginPopup');
-    if (loginPopup && closePopupBtn) {
-        setTimeout(() => {
-            const topAuthBtn = document.getElementById('topAuthBtn');
-            const isLoggedIn = topAuthBtn && topAuthBtn.innerText.includes('Profile');
-            if (!isLoggedIn && sessionStorage.getItem('hideLoginPopup') !== 'true') {
-                loginPopup.classList.remove('hidden');
-            }
-        }, 2000);
-        closePopupBtn.addEventListener('click', () => {
-            loginPopup.classList.add('hidden');
-            setTimeout(() => { loginPopup.style.display = 'none'; }, 400); 
-            sessionStorage.setItem('hideLoginPopup', 'true');
+    const installPopup = document.getElementById('appInstallPopup');
+    const closeInstallBtn = document.getElementById('closeInstallPopup');
+    
+    if (installPopup && closeInstallBtn) {
+        // If the user already dismissed it this session, hide it immediately
+        if (sessionStorage.getItem('hideInstallPopup') === 'true') {
+            installPopup.classList.add('hidden');
+        }
+
+        // Handle the close button click
+        closeInstallBtn.addEventListener('click', () => {
+            installPopup.classList.add('hidden');
+            // Save to session storage so it doesn't pop up again while browsing
+            sessionStorage.setItem('hideInstallPopup', 'true');
         });
     }
 });
