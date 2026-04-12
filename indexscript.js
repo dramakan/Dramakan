@@ -41,13 +41,13 @@ document.addEventListener('DOMContentLoaded', function () {
         return shuffled;
     }
 
-    // --- 2. GLOBAL MY LIST LOGIC ---
+    // --- 2. GLOBAL MY LIST LOGIC (Updated to Merge for Safety) ---
     window.toggleMyList = async function(btn, title, img, link) {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         try {
             const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
             const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js");
-            const { getFirestore, doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
+            const { getFirestore, doc, setDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
             
             const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
             const auth = getAuth(app);
@@ -62,9 +62,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const decodedTitle = decodeURIComponent(title);
             const userRef = doc(db, "users", auth.currentUser.uid);
             
-            await updateDoc(userRef, {
+            await setDoc(userRef, {
                 myList: arrayUnion({ title: decodedTitle, img: decodeURIComponent(img), link: decodeURIComponent(link), addedAt: Date.now() })
-            });
+            }, { merge: true });
 
             btn.innerHTML = '<i class="fas fa-check"></i>';
             btn.style.color = 'var(--primary-color)';
@@ -104,65 +104,65 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function initializeDramaSite() {
+        let data = [];
         try {
-            const response = await fetch('dramas.json');
-            let data = await response.json();
+            const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
+            const { getFirestore, collection, getDocs, query, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
+            
+            const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+            const db = getFirestore(app);
 
-            try {
-                const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
-                const { getFirestore, collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
-                
-                const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-                const db = getFirestore(app);
-
-                const cmsSnap = await getDocs(collection(db, "dramas"));
-                cmsSnap.forEach((doc) => { data.push(doc.data()); });
-            } catch(e) {}
+            const cmsSnap = await getDocs(collection(db, "dramas"));
+            cmsSnap.forEach((doc) => { 
+                data.push(doc.data()); 
+            });
 
             fuse = new Fuse(data, { keys: ['title'], threshold: 0.4 });
 
             function renderContinueWatching() {
-                const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-                const historyArr = Object.values(historyObj)
-                    .filter(item => item.link && !item.link.toLowerCase().includes('index.html') && item.img && item.img.length > 5)
-                    .sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
-                
-                if(historyArr.length > 0) {
+                try {
+                    const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                    const historyArr = Object.values(historyObj)
+                        .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
+                        .sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
+                    
                     const cwSection = document.getElementById('continue-watching-section');
                     const cwGrid = document.getElementById('continue-watching-grid');
+                    
                     if (cwSection && cwGrid) {
-                        cwSection.style.display = 'block';
-                        cwGrid.innerHTML = historyArr.map(item => `
-                            <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
-                                <div class="drama-card-img"><img src="${item.img}" alt="${item.title}"></div>
-                                <div class="drama-card-info">
-                                    <h3 class="drama-card-title">${item.title}</h3>
-                                    <p class="drama-card-meta" style="color: var(--primary-color);"><i class="fas fa-play"></i> Resume</p>
-                                </div>
-                            </a>
-                        `).join('');
+                        if(historyArr.length > 0) {
+                            cwSection.style.display = 'block';
+                            cwGrid.innerHTML = historyArr.map(item => `
+                                <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
+                                    <div class="drama-card-img"><img src="${item.img}" alt="${item.title}"></div>
+                                    <div class="drama-card-info">
+                                        <h3 class="drama-card-title">${item.title}</h3>
+                                        <p class="drama-card-meta" style="color: var(--primary-color);"><i class="fas fa-play"></i> Resume</p>
+                                    </div>
+                                </a>
+                            `).join('');
+                        } else {
+                            cwSection.style.display = 'none';
+                        }
                     }
-                }
+                } catch(e) { console.error("CW Render Error:", e); }
             }
             renderContinueWatching(); 
             window.addEventListener('historySynced', renderContinueWatching);
 
             try {
-                const { getFirestore, collection, query, orderBy, limit, getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
-                const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
-                const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-                const db = getFirestore(app);
-
                 const q = query(collection(db, "drama_stats"), orderBy("views", "desc"), limit(15));
                 const querySnapshot = await getDocs(q);
                 let dynamicTrending = [];
-                querySnapshot.forEach((doc) => {
-                    const found = data.find(d => d.title.toLowerCase() === doc.data().title.toLowerCase());
+                querySnapshot.forEach((docStats) => {
+                    const found = data.find(d => d.title.toLowerCase() === docStats.data().title.toLowerCase());
                     if(found) dynamicTrending.push(found);
                 });
                 if(dynamicTrending.length > 0) populateGrid('trending-grid', dynamicTrending);
                 else populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15));
-            } catch(e) { populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15)); }
+            } catch(e) { 
+                populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15)); 
+            }
 
             populateGrid('kdrama-grid', shuffleArray(data.filter(d => d.type === "K-Drama")).slice(0, 15));
             populateGrid('cdrama-grid', shuffleArray(data.filter(d => d.type === "C-Drama")).slice(0, 15));
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
             populateGrid('usdrama-grid', shuffleArray(data.filter(d => d.type === "US-Drama")).slice(0, 15));
             populateGrid('Movie-grid', shuffleArray(data.filter(d => d.type === "Movie")).slice(0, 15));
 
-        } catch (err) { console.error("Data Load Error:", err); }
+        } catch (err) { console.error("Firebase Database Load Error:", err); }
     }
 
     if (searchInput) {
@@ -333,15 +333,12 @@ document.addEventListener("DOMContentLoaded", function() {
     const closeInstallBtn = document.getElementById('closeInstallPopup');
     
     if (installPopup && closeInstallBtn) {
-        // If the user already dismissed it this session, hide it immediately
         if (sessionStorage.getItem('hideInstallPopup') === 'true') {
             installPopup.classList.add('hidden');
         }
 
-        // Handle the close button click
         closeInstallBtn.addEventListener('click', () => {
             installPopup.classList.add('hidden');
-            // Save to session storage so it doesn't pop up again while browsing
             sessionStorage.setItem('hideInstallPopup', 'true');
         });
     }

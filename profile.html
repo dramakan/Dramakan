@@ -304,26 +304,32 @@
             }
         };
 
-        // 2. RENDER HISTORY WITH REMOVE BUTTONS (Clean Grid Classes Added)
+        // 2. RENDER HISTORY WITH REMOVE BUTTONS
         window.loadHistory = function() {
-            const historyGrid = document.getElementById('history-grid');
-            const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-            const historyArr = Object.entries(historyObj).filter(([k, i]) => i.link && !i.link.includes('index.html')).sort((a, b) => b[1].timestamp - a[1].timestamp);
-            
-            if (historyArr.length === 0) return historyGrid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><i class="fas fa-tv"></i><h3>No watch history found</h3><p style="font-size:0.9rem; margin-top:10px;">Dramas you start watching will appear here.</p></div>`;
-            
-            historyGrid.innerHTML = historyArr.map(([id, item]) => `
-                <div class="item-wrapper">
-                    <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
-                        <div class="drama-card-img"><img src="${item.img}"></div>
-                        <div class="drama-card-info">
-                            <h3 class="drama-card-title">${item.title}</h3>
-                            <p class="drama-card-meta" style="color: var(--primary-color); font-weight:600;"><i class="fas fa-play"></i> Ep ${item.epIndex === "0" ? "1" : item.epIndex}</p>
-                        </div>
-                    </a>
-                    <button class="remove-btn" onclick="removeFromHistory('${id}')" title="Remove from History"><i class="fas fa-times"></i></button>
-                </div>
-            `).join('');
+            try {
+                const historyGrid = document.getElementById('history-grid');
+                if(!historyGrid) return;
+                
+                const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                const historyArr = Object.entries(historyObj)
+                    .filter(([k, i]) => i && i.link && i.title && !i.link.includes('index.html'))
+                    .sort((a, b) => b[1].timestamp - a[1].timestamp);
+                
+                if (historyArr.length === 0) return historyGrid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><i class="fas fa-tv"></i><h3>No watch history found</h3><p style="font-size:0.9rem; margin-top:10px;">Dramas you start watching will appear here.</p></div>`;
+                
+                historyGrid.innerHTML = historyArr.map(([id, item]) => `
+                    <div class="item-wrapper">
+                        <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
+                            <div class="drama-card-img"><img src="${item.img}"></div>
+                            <div class="drama-card-info">
+                                <h3 class="drama-card-title">${item.title}</h3>
+                                <p class="drama-card-meta" style="color: var(--primary-color); font-weight:600;"><i class="fas fa-play"></i> Ep ${item.epIndex === "0" ? "1" : item.epIndex}</p>
+                            </div>
+                        </a>
+                        <button class="remove-btn" onclick="removeFromHistory('${id}')" title="Remove from History"><i class="fas fa-times"></i></button>
+                    </div>
+                `).join('');
+            } catch(e) { console.error("Profile History Error", e); }
         };
 
         // 3. REMOVE SPECIFIC HISTORY ITEM (Local + Cloud)
