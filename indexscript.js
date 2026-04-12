@@ -5,6 +5,26 @@ const firebaseConfig = {
     projectId: "dramakan007"
 };
 
+// --- SINGLETON FIREBASE LOADER ---
+// This ensures Firebase is only downloaded and initialized exactly once.
+let firebaseInstance = null;
+async function getFirebase() {
+    if (firebaseInstance) return firebaseInstance;
+    
+    const [appModule, authModule, firestoreModule] = await Promise.all([
+        import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"),
+        import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js")
+    ]);
+
+    const app = !appModule.getApps().length ? appModule.initializeApp(firebaseConfig) : appModule.getApp();
+    const auth = authModule.getAuth(app);
+    const db = firestoreModule.getFirestore(app);
+    
+    firebaseInstance = { app, auth, db, appModule, authModule, firestoreModule };
+    return firebaseInstance;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // --- 1. MOBILE MENU LOGIC ---
@@ -52,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const safeLink = encodeURIComponent(drama.link);
             return `
             <a href="${drama.link}" class="drama-card">
-                <div class="drama-card-img"><img src="${drama.img}" alt="${drama.title}"></div>
+                <div class="drama-card-img"><img src="${drama.img}" alt="${drama.title}" loading="lazy"></div>
                 <div class="drama-card-info">
                     <h3 class="drama-card-title">${drama.title}</h3>
                     <p class="drama-card-meta">${drama.type}</p>
@@ -73,18 +93,24 @@ document.addEventListener('DOMContentLoaded', function () {
             const cacheTime = sessionStorage.getItem('dramakan_cache_time');
             const now = new Date().getTime();
             
+            let db; 
+            let firestoreModule;
+
             // If cache exists and is less than 2 hours old (7200000 ms), use it!
             if (cachedDramas && cacheTime && (now - parseInt(cacheTime) < 7200000)) {
                 data = JSON.parse(cachedDramas);
                 console.log("Loaded dramas from local cache! (Saved Firebase reads)");
-            } else {
-                // 2. NO CACHE? FETCH FROM FIREBASE
-                const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
-                const { getFirestore, collection, getDocs, query, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
                 
-                const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-                const db = getFirestore(app);
-
+                const fb = await getFirebase();
+                db = fb.db;
+                firestoreModule = fb.firestoreModule;
+            } else {
+                // 2. NO CACHE? FETCH FROM FIREBASE (Using Singleton)
+                const fb = await getFirebase();
+                db = fb.db;
+                firestoreModule = fb.firestoreModule;
+                
+                const { collection, getDocs } = firestoreModule;
                 const cmsSnap = await getDocs(collection(db, "dramas"));
                 cmsSnap.forEach((doc) => { 
                     data.push(doc.data()); 
@@ -96,8 +122,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             fuse = new Fuse(data, { keys: ['title'], threshold: 0.4 });
-
-            // ... (Keep the rest of your renderContinueWatching and populateGrid logic exactly the same below here)
 
             // RENDER CONTINUE WATCHING DYNAMICALLY
             function renderContinueWatching() {
@@ -115,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             cwSection.style.display = 'block';
                             cwGrid.innerHTML = historyArr.map(item => `
                                 <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
-                                    <div class="drama-card-img"><img src="${item.img}" alt="${item.title}"></div>
+                                    <div class="drama-card-img"><img src="${item.img}" alt="${item.title}" loading="lazy"></div>
                                     <div class="drama-card-info">
                                         <h3 class="drama-card-title">${item.title}</h3>
                                         <p class="drama-card-meta" style="color: var(--primary-color);"><i class="fas fa-play"></i> Resume</p>
@@ -132,9 +156,10 @@ document.addEventListener('DOMContentLoaded', function () {
             renderContinueWatching(); 
             window.addEventListener('historySynced', renderContinueWatching);
 
+            const { collection: col, getDocs: gd, query, orderBy, limit } = firestoreModule;
             try {
-                const q = query(collection(db, "drama_stats"), orderBy("views", "desc"), limit(15));
-                const querySnapshot = await getDocs(q);
+                const q = query(col(db, "drama_stats"), orderBy("views", "desc"), limit(15));
+                const querySnapshot = await gd(q);
                 let dynamicTrending = [];
                 querySnapshot.forEach((docStats) => {
                     const found = data.find(d => d.title.toLowerCase() === docStats.data().title.toLowerCase());
@@ -146,15 +171,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15)); 
             }
 
-            populateGrid('kdrama-grid', shuffleArray(data.filter(d => d.type === "K-Drama")).slice(0, 15));
-            populateGrid('cdrama-grid', shuffleArray(data.filter(d => d.type === "C-Drama")).slice(0, 15));
-            populateGrid('jdrama-grid', shuffleArray(data.filter(d => d.type === "J-Drama")).slice(0, 15));
-            populateGrid('pdrama-grid', shuffleArray(data.filter(d => d.type === "P-Drama")).slice(0, 15));
-            populateGrid('tdrama-grid', shuffleArray(data.filter(d => d.type === "T-Drama")).slice(0, 15));
-            populateGrid('upcoming-grid', shuffleArray(data.filter(d => d.release_date === "Upcoming")).slice(0, 15));
-            populateGrid('turkishdrama-grid', shuffleArray(data.filter(d => d.type === "Turkish-Drama")).slice(0, 15));
-            populateGrid('usdrama-grid', shuffleArray(data.filter(d => d.type === "US-Drama")).slice(0, 15));
-            populateGrid('Movie-grid', shuffleArray(data.filter(d => d.type === "Movie")).slice(0, 15));
+            // STAGGERED RENDERING TO PREVENT MAIN THREAD BLOCKING
+            setTimeout(() => populateGrid('kdrama-grid', shuffleArray(data.filter(d => d.type === "K-Drama")).slice(0, 15)), 0);
+            setTimeout(() => populateGrid('cdrama-grid', shuffleArray(data.filter(d => d.type === "C-Drama")).slice(0, 15)), 50);
+            setTimeout(() => populateGrid('jdrama-grid', shuffleArray(data.filter(d => d.type === "J-Drama")).slice(0, 15)), 100);
+            setTimeout(() => populateGrid('pdrama-grid', shuffleArray(data.filter(d => d.type === "P-Drama")).slice(0, 15)), 150);
+            setTimeout(() => populateGrid('tdrama-grid', shuffleArray(data.filter(d => d.type === "T-Drama")).slice(0, 15)), 200);
+            setTimeout(() => populateGrid('upcoming-grid', shuffleArray(data.filter(d => d.release_date === "Upcoming")).slice(0, 15)), 250);
+            setTimeout(() => populateGrid('turkishdrama-grid', shuffleArray(data.filter(d => d.type === "Turkish-Drama")).slice(0, 15)), 300);
+            setTimeout(() => populateGrid('usdrama-grid', shuffleArray(data.filter(d => d.type === "US-Drama")).slice(0, 15)), 350);
+            setTimeout(() => populateGrid('Movie-grid', shuffleArray(data.filter(d => d.type === "Movie")).slice(0, 15)), 400);
 
         } catch (err) { console.error("Firebase Database Load Error:", err); }
     }
@@ -165,10 +191,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (query.length < 1 || !fuse) { searchResults.style.display = 'none'; return; }
             const results = fuse.search(query, { limit: 10 });
             searchResults.innerHTML = results.map(({ item }) => {
-                const safeTitle = encodeURIComponent(item.title); const safeImg = encodeURIComponent(item.img); const safeLink = encodeURIComponent(item.link);
                 return `
                 <a href="${item.link}" class="search-result-item">
-                    <img src="${item.img}" width="45" height="60">
+                    <img src="${item.img}" width="45" height="60" loading="lazy">
                     <div><div style="color:#fff; font-weight:600; font-size: 0.95rem;">${item.title}</div><small style="color:var(--primary-color);">${item.type}</small></div>
                 </a>`;
             }).join('');
@@ -227,10 +252,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if(openBtn && modal) {
         openBtn.onclick = async () => {
-            const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
-            const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js");
-            const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-            const auth = getAuth(app);
+            const { auth } = await getFirebase();
             
             if (!auth.currentUser) {
                 alert("You must be logged in to request a drama. Redirecting to Login...");
@@ -252,13 +274,8 @@ document.addEventListener("DOMContentLoaded", function() {
             submitBtn.disabled = true;
 
             try {
-                const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
-                const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js");
-                const { getFirestore, collection, addDoc } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
-                
-                const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-                const auth = getAuth(app);
-                const db = getFirestore(app);
+                const { auth, db, firestoreModule } = await getFirebase();
+                const { collection, addDoc } = firestoreModule;
 
                 const user = auth.currentUser;
                 
