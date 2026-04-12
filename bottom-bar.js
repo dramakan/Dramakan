@@ -1,82 +1,137 @@
 // ==========================================
+// GLOBAL FUNCTION: MY LIST / BOOKMARKS
+// ==========================================
+window.toggleMyList = async function(btn, title, img, link) {
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    try {
+        const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
+        const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js");
+        const { getFirestore, doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
+        
+        const firebaseConfig = { apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", authDomain: "dramakan007.firebaseapp.com", projectId: "dramakan007" };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        if (!auth.currentUser) {
+            alert("Please Sign In to add dramas to your List!");
+            window.location.href = "login.html";
+            return;
+        }
+
+        const decodedTitle = decodeURIComponent(title);
+        const userRef = doc(db, "users", auth.currentUser.uid);
+        
+        await updateDoc(userRef, {
+            myList: arrayUnion({ title: decodedTitle, img: decodeURIComponent(img), link: decodeURIComponent(link), addedAt: Date.now() })
+        });
+
+        btn.innerHTML = '<i class="fas fa-check"></i>';
+        btn.style.color = 'var(--primary-color)';
+        btn.style.background = 'white';
+        btn.style.borderColor = 'var(--primary-color)';
+    } catch (e) {
+        console.error(e);
+        btn.innerHTML = '<i class="fas fa-plus"></i>';
+        alert("Error saving to My List.");
+    }
+};
+
+// ==========================================
 // 1. THE MASTER TRACKING & MEMORY ENGINE
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const creatorRef = urlParams.get('ref');
+    const dramaIdFromUrl = urlParams.get('id');
 
-    // DOM Selectors
-    const dramaTitleElement = document.querySelector('.info-title');
-    const dramaPosterElement = document.querySelector('.info-poster img');
-    
-    // THE FIX: Capture the correct relative path regardless of subdirectories or search query strings.
-    // This ensures dramas clicked directly from the Fuse.js search bar are tracked flawlessly.
+    // Capture the correct relative path 
     const pagePath = window.location.pathname.replace(/^\/+/, '') + window.location.search;
     
-    const isDramaPage = dramaTitleElement && dramaPosterElement && !pagePath.toLowerCase().includes('index.html') && !pagePath.toLowerCase().includes('profile.html');
+    // Explicitly exclude non-drama pages
+    const isExcludePage = pagePath.toLowerCase().includes('index.html') || 
+                          pagePath.toLowerCase().includes('profile.html') || 
+                          pagePath.toLowerCase().includes('login.html') ||
+                          pagePath.toLowerCase().includes('community.html') ||
+                          pagePath.toLowerCase().includes('admin') ||
+                          pagePath.toLowerCase().includes('affiliate') ||
+                          pagePath === '' || pagePath === '/';
+
+    // It is a drama page if it has an ID parameter or is not on the exclude list
+    const isDramaPage = dramaIdFromUrl || !isExcludePage;
 
     // ---------------------------------------------------------
-    // PART A: CONTINUE WATCHING (With Smart Delay for CMS Pages)
+    // PART A: CONTINUE WATCHING (Dynamic Polling for watch.html)
     // ---------------------------------------------------------
     if (isDramaPage) {
         let searchAttempts = 0;
         
-        // Wait until the CMS finishes loading the title from Firebase
+        // DYNAMIC SENSOR: Wait until Firebase injects the content into the DOM
         const titleSensor = setInterval(() => {
-            const dramaTitle = dramaTitleElement.innerText.trim();
+            // Smart selectors to find dynamically injected titles and posters
+            const dramaTitleElement = document.querySelector('.info-title') || document.querySelector('.drama-title') || document.querySelector('h1');
+            const dramaPosterElement = document.querySelector('.info-poster img') || document.querySelector('.poster img') || document.querySelector('.drama-card-img img') || document.querySelector('img[src*="http"]');
             
-            if (dramaTitle !== "Loading..." && dramaTitle !== "Loading Drama..." && dramaTitle !== "") {
-                clearInterval(titleSensor); 
+            if (dramaTitleElement && dramaPosterElement) {
+                const dramaTitle = dramaTitleElement.innerText.trim();
                 
-                const dramaId = dramaTitle.replace(/\s+/g, '').toLowerCase();
-                const dramaImg = dramaPosterElement.src;
+                if (dramaTitle && !dramaTitle.includes("Loading")) {
+                    clearInterval(titleSensor); 
+                    
+                    // Use URL ID if available, otherwise fallback to stripped title
+                    const dramaId = dramaIdFromUrl || dramaTitle.replace(/\s+/g, '').toLowerCase();
+                    const dramaImg = dramaPosterElement.src;
 
-                // 1. Save to Local History Cache immediately
-                let history = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-                history[dramaId] = { 
-                    title: dramaTitle, 
-                    img: dramaImg, 
-                    link: pagePath, // Correctly generated link is saved here
-                    timestamp: Date.now(),
-                    epIndex: localStorage.getItem(`dramakan_ep_${dramaId}`) || "0"
-                };
-                localStorage.setItem('dramakan_history', JSON.stringify(history));
+                    // 1. Save to Local History Cache immediately
+                    let history = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                    history[dramaId] = { 
+                        title: dramaTitle, 
+                        img: dramaImg, 
+                        link: pagePath, // This will correctly save as watch.html?id=...
+                        timestamp: Date.now(),
+                        epIndex: localStorage.getItem(`dramakan_ep_${dramaId}`) || "0"
+                    };
+                    localStorage.setItem('dramakan_history', JSON.stringify(history));
+                    
+                    // Force the UI to refresh if it's open
+                    window.dispatchEvent(new Event('historySynced')); 
 
-                // 2. The "Seeker" Auto-Resume Episode
-                const savedEpIndex = localStorage.getItem(`dramakan_ep_${dramaId}`);
-                if (savedEpIndex && savedEpIndex !== "0") {
-                    let epSearch = 0;
-                    const episodeSeeker = setInterval(() => {
-                        const targetEp = document.querySelector(`.episode-item[data-index="${savedEpIndex}"]`);
-                        if (targetEp) {
-                            targetEp.click();
-                            targetEp.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            clearInterval(episodeSeeker);
-                        }
-                        epSearch++;
-                        if (epSearch > 10) clearInterval(episodeSeeker); 
-                    }, 500);
-                }
-
-                // 3. Save Episode Progress Locally Automatically
-                document.addEventListener('click', (e) => {
-                    const clickedEpItem = e.target.closest('.episode-item');
-                    const clickedNextPrev = e.target.closest('#next-ep-btn') || e.target.closest('#prev-ep-btn');
-
-                    if (clickedEpItem) {
-                        localStorage.setItem(`dramakan_ep_${dramaId}`, clickedEpItem.getAttribute('data-index'));
-                    } else if (clickedNextPrev) {
-                        setTimeout(() => {
-                            const currentActiveEp = document.querySelector('.episode-item.current') || document.querySelector('.episode-item.active');
-                            if (currentActiveEp) {
-                                localStorage.setItem(`dramakan_ep_${dramaId}`, currentActiveEp.getAttribute('data-index'));
+                    // 2. The "Seeker" Auto-Resume Episode
+                    const savedEpIndex = localStorage.getItem(`dramakan_ep_${dramaId}`);
+                    if (savedEpIndex && savedEpIndex !== "0") {
+                        let epSearch = 0;
+                        const episodeSeeker = setInterval(() => {
+                            const targetEp = document.querySelector(`.episode-item[data-index="${savedEpIndex}"]`);
+                            if (targetEp) {
+                                targetEp.click();
+                                try { targetEp.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch(e){}
+                                clearInterval(episodeSeeker);
                             }
+                            epSearch++;
+                            if (epSearch > 20) clearInterval(episodeSeeker); // Stop looking after 10 seconds
                         }, 500);
                     }
-                });
+
+                    // 3. Save Episode Progress Locally Automatically
+                    document.addEventListener('click', (e) => {
+                        const clickedEpItem = e.target.closest('.episode-item');
+                        const clickedNextPrev = e.target.closest('#next-ep-btn') || e.target.closest('#prev-ep-btn');
+
+                        if (clickedEpItem) {
+                            localStorage.setItem(`dramakan_ep_${dramaId}`, clickedEpItem.getAttribute('data-index'));
+                        } else if (clickedNextPrev) {
+                            setTimeout(() => {
+                                const currentActiveEp = document.querySelector('.episode-item.current') || document.querySelector('.episode-item.active');
+                                if (currentActiveEp) {
+                                    localStorage.setItem(`dramakan_ep_${dramaId}`, currentActiveEp.getAttribute('data-index'));
+                                }
+                            }, 500);
+                        }
+                    });
+                }
             }
             searchAttempts++;
-            if (searchAttempts > 20) clearInterval(titleSensor); 
+            if (searchAttempts > 30) clearInterval(titleSensor); // Give up after 15 seconds
         }, 500);
     }
 
@@ -111,12 +166,16 @@ document.addEventListener('DOMContentLoaded', () => {
             setDoc(doc(db, "drama_stats", "_global_visits_"), { views: increment(1), lastActive: new Date() }, { merge: true }).catch(() => {});
         }
 
+        let userDocRef = null;
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                userDocRef = doc(db, "users", user.uid);
+                
                 // 1. UI Avatar Sync
                 let avatarSrc = 'https://api.dicebear.com/7.x/adventurer/svg?seed=DramaKan'; 
                 try {
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    const userDoc = await getDoc(userDocRef);
                     if (userDoc.exists()) {
                         const data = userDoc.data();
                         if (data.avatarUrl) avatarSrc = data.avatarUrl; 
@@ -132,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const topAuthBtn = document.getElementById('topAuthBtn');
                 if(topAuthBtn) { topAuthBtn.href = 'profile.html'; topAuthBtn.innerHTML = `${pcAvatarHtml} Profile`; }
 
-                // 2. DRAMA REQUEST NOTIFICATIONS (Upgraded with Link)
+                // 2. DRAMA REQUEST NOTIFICATIONS
                 try {
                     const reqQuery = query(collection(db, "requests"), where("userId", "==", user.uid), where("status", "==", "Uploaded"), where("notified", "==", false));
                     const reqSnap = await getDocs(reqQuery);
@@ -140,11 +199,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     reqSnap.forEach(async (docSnap) => {
                         const reqData = docSnap.data();
                         
-                        // Build the sleek Toast Notification
                         const toast = document.createElement('div');
                         toast.style.cssText = "position:fixed;top:20px;right:20px;background:rgba(138,43,226,0.95);backdrop-filter:blur(10px);color:#fff;padding:16px 24px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.5);z-index:99999;font-family:'Poppins',sans-serif;font-size:0.95rem;display:flex;align-items:center;gap:15px;border:1px solid rgba(255,255,255,0.2);transform:translateX(120%);transition:transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);";
                         
-                        // Smart check: If admin provided a link, generate the "Watch Now" button
                         const linkHtml = reqData.link 
                             ? `<a href="${reqData.link}" style="display:inline-block; margin-top:6px; color:#c488ff; font-weight:600; font-size:0.85rem; text-decoration:none;"><i class="fas fa-play-circle"></i> Watch Now</a>` 
                             : '';
@@ -165,16 +222,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         toast.querySelector('button').onclick = () => { toast.style.transform = 'translateX(120%)'; setTimeout(()=>toast.remove(), 500); };
                         setTimeout(() => { if(toast.parentElement) { toast.style.transform = 'translateX(120%)'; setTimeout(()=>toast.remove(), 500); } }, 8000);
 
-                        // Mark as notified so it never shows again
                         await updateDoc(docSnap.ref, { notified: true });
                     });
                 } catch(e) { console.warn("Notification error", e); }
 
                 // 3. Cross-Device Sync
                 try {
-                    const userDocRef = doc(db, "users", user.uid);
                     const userDoc = await getDoc(userDocRef);
-                    
                     if (userDoc.exists()) {
                         const data = userDoc.data();
                         let cloudHistory = data.watchHistory || {};
@@ -206,33 +260,66 @@ document.addEventListener('DOMContentLoaded', () => {
                             await updateDoc(userDocRef, { watchHistory: cloudHistory });
                             window.dispatchEvent(new Event('historySynced')); 
                         }
-
-                        // Live Sync for the specific drama you are watching
-                        if (isDramaPage) {
-                            document.addEventListener('click', (e) => {
-                                const clickedEpItem = e.target.closest('.episode-item');
-                                const clickedNextPrev = e.target.closest('#next-ep-btn') || e.target.closest('#prev-ep-btn');
-
-                                if (clickedEpItem || clickedNextPrev) {
-                                    setTimeout(async () => {
-                                        const dramaTitle = dramaTitleElement.innerText.trim();
-                                        const dramaId = dramaTitle.replace(/\s+/g, '').toLowerCase();
-                                        const epIndex = localStorage.getItem(`dramakan_ep_${dramaId}`);
-                                        if (epIndex) {
-                                            const historyUpdate = {};
-                                            historyUpdate[`watchHistory.${dramaId}`] = {
-                                                title: dramaTitle, img: dramaPosterElement.src, link: pagePath, timestamp: Date.now(), epIndex: epIndex
-                                            };
-                                            await updateDoc(userDocRef, historyUpdate).catch(()=>{});
-                                        }
-                                    }, 1000); 
-                                }
-                            });
-                        }
                     }
                 } catch (err) {}
             }
         });
+
+        // Live Sync for the specific drama you are watching
+        if (isDramaPage) {
+            document.addEventListener('click', (e) => {
+                const clickedEpItem = e.target.closest('.episode-item');
+                const clickedNextPrev = e.target.closest('#next-ep-btn') || e.target.closest('#prev-ep-btn');
+
+                if (clickedEpItem || clickedNextPrev) {
+                    setTimeout(async () => {
+                        const dramaTitleElement = document.querySelector('.info-title') || document.querySelector('.drama-title') || document.querySelector('h1');
+                        const dramaPosterElement = document.querySelector('.info-poster img') || document.querySelector('.drama-card-img img') || document.querySelector('img[src*="http"]');
+                        
+                        if (dramaTitleElement && dramaPosterElement) {
+                            const dramaTitle = dramaTitleElement.innerText.trim();
+                            const dramaId = dramaIdFromUrl || dramaTitle.replace(/\s+/g, '').toLowerCase();
+                            
+                            // Capture the exact episode index clicked
+                            let epIndex = localStorage.getItem(`dramakan_ep_${dramaId}`) || "0";
+                            if (clickedEpItem) {
+                                epIndex = clickedEpItem.getAttribute('data-index');
+                                localStorage.setItem(`dramakan_ep_${dramaId}`, epIndex);
+                            }
+
+                            // Force local timestamp update
+                            let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                            if (localHistory[dramaId]) {
+                                localHistory[dramaId].timestamp = Date.now();
+                                localHistory[dramaId].epIndex = epIndex;
+                                localStorage.setItem('dramakan_history', JSON.stringify(localHistory));
+                            }
+
+                            if (userDocRef) {
+                                const historyUpdate = {};
+                                historyUpdate[`watchHistory.${dramaId}`] = {
+                                    title: dramaTitle, img: dramaPosterElement.src, link: pagePath, timestamp: Date.now(), epIndex: epIndex
+                                };
+                                await updateDoc(userDocRef, historyUpdate).catch(()=>{});
+                            }
+                        }
+                    }, 1000); 
+                }
+            });
+            
+            // Live Views Counter
+            const titleSensorViews = setInterval(() => {
+                const dramaTitleElement = document.querySelector('.info-title') || document.querySelector('h1');
+                if (dramaTitleElement) {
+                    const dramaTitle = dramaTitleElement.innerText.trim();
+                    if (dramaTitle && !dramaTitle.includes("Loading")) {
+                        clearInterval(titleSensorViews);
+                        const dramaId = dramaIdFromUrl || dramaTitle.replace(/\s+/g, '').toLowerCase();
+                        setDoc(doc(db, "drama_stats", dramaId), { title: dramaTitle, views: increment(1), lastActive: new Date() }, { merge: true }).catch(() => {});
+                    }
+                }
+            }, 500);
+        }
 
         // Affiliate Clicks
         if (creatorRef) {
@@ -242,20 +329,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Live Views
-        if (isDramaPage) {
-            const titleSensor = setInterval(() => {
-                const dramaTitle = dramaTitleElement.innerText.trim();
-                if (dramaTitle !== "Loading..." && dramaTitle !== "Loading Drama..." && dramaTitle !== "") {
-                    clearInterval(titleSensor);
-                    const dramaId = dramaTitle.replace(/\s+/g, '').toLowerCase();
-                    setDoc(doc(db, "drama_stats", dramaId), { title: dramaTitle, views: increment(1), lastActive: new Date() }, { merge: true }).catch(() => {});
-                }
-            }, 500);
-        }
-
     }).catch(err => console.warn("Firebase scripts delayed."));
 });
+
 // ==========================================
 // 8. GHOST PROTOCOL (ADMIN EASTER EGG)
 // ==========================================
@@ -264,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let secretKeys = '';
     document.addEventListener('keydown', (e) => {
         secretKeys += e.key.toLowerCase();
-        if (secretKeys.length > 5) secretKeys = secretKeys.substring(1);
+        if (secretKeys.length > 5) secretKeys = secretKeys.substring(secretKeys.length - 5);
         if (secretKeys === 'admin') {
             // Flash a quick transition effect
             document.body.style.transition = "filter 0.5s ease";
