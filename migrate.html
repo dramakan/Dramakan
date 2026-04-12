@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DramaKan Bulk Migration Tool</title>
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #0B0C10; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .box { background: #1A1A1D; padding: 40px; border-radius: 20px; border: 1px solid #8A2BE2; text-align: center; max-width: 500px;}
+        button { background: #8A2BE2; color: #fff; border: none; padding: 15px 30px; font-size: 1.2rem; border-radius: 12px; cursor: pointer; font-weight: bold; margin-top: 20px; transition: 0.3s;}
+        button:hover { background: #9d4edd; transform: translateY(-3px); }
+        #log { margin-top: 20px; font-family: monospace; color: #10b981; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2><i class="fas fa-database"></i> Firebase Bulk Uploader</h2>
+        <p>This will read your local <b>dramas.json</b> file and securely upload all entries to the Firestore database.</p>
+        <button id="startBtn">Start Mass Upload</button>
+        <div id="log">Waiting to start...</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", authDomain: "dramakan007.firebaseapp.com", projectId: "dramakan007" };
+        const app = initializeApp(firebaseConfig); 
+        const db = getFirestore(app);
+
+        document.getElementById('startBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('startBtn');
+            const log = document.getElementById('log');
+            btn.disabled = true; btn.innerText = "Uploading...";
+            
+            try {
+                // Fetch your local dramas.json file
+                const response = await fetch('dramas.json');
+                const dramas = await response.json();
+                
+                log.innerText = `Found ${dramas.length} dramas. Starting upload...`;
+                
+                let successCount = 0;
+
+                for (const drama of dramas) {
+                    // Extract the exact filename to use as the document ID (e.g., "BoyfriendOnDemand")
+                    // This is CRITICAL for keeping old links safe
+                    let docId = drama.link.replace('.html', '').replace(/^\/+/, '');
+                    if (!docId) docId = drama.title.replace(/\s+/g, '').toLowerCase();
+
+                    // Format the data to match your new Admin CMS structure
+                    const dramaData = {
+                        title: drama.title || "Unknown Title",
+                        img: drama.img || "",
+                        link: `watch.html?id=${docId}`, // Convert old link to new dynamic link
+                        type: drama.type || "K-Drama",
+                        Trend: drama.Trend || "F",
+                        createdAt: new Date().getTime(),
+                        // Add placeholder defaults for the new CMS fields
+                        synopsis: "Synopsis coming soon...",
+                        imdbId: "", seasons: [16], totalEps: 16, status: "Completed",
+                        year: 2024, imdb: "N/A", genre: "Drama", actor1: "", actor1Img: "", actor2: "", actor2Img: ""
+                    };
+
+                    await setDoc(doc(db, "dramas", docId), dramaData);
+                    successCount++;
+                    log.innerText = `Uploaded ${successCount} / ${dramas.length}...`;
+                }
+
+                log.style.color = "#10b981";
+                log.innerText = `✅ Success! All ${successCount} dramas migrated. You can now delete this file.`;
+                btn.innerText = "Migration Complete";
+
+            } catch(e) {
+                console.error(e);
+                log.style.color = "#ef4444";
+                log.innerText = "Error: " + e.message;
+            }
+        });
+    </script>
+</body>
+</html>
