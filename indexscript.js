@@ -2,10 +2,7 @@
 const firebaseConfig = {
     apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
     authDomain: "dramakan007.firebaseapp.com",
-    projectId: "dramakan007",
-    storageBucket: "dramakan007.firebasestorage.app",
-    messagingSenderId: "1069933586213",
-    appId: "1:1069933586213:web:b28ab37436679a4906dccc"
+    projectId: "dramakan007"
 };
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -41,42 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return shuffled;
     }
 
-    // --- 2. GLOBAL MY LIST LOGIC (Updated to Merge for Safety) ---
-    window.toggleMyList = async function(btn, title, img, link) {
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        try {
-            const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
-            const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js");
-            const { getFirestore, doc, setDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
-            
-            const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-            const auth = getAuth(app);
-            const db = getFirestore(app);
-
-            if (!auth.currentUser) {
-                alert("Please Sign In to add dramas to your List!");
-                window.location.href = "login.html";
-                return;
-            }
-
-            const decodedTitle = decodeURIComponent(title);
-            const userRef = doc(db, "users", auth.currentUser.uid);
-            
-            await setDoc(userRef, {
-                myList: arrayUnion({ title: decodedTitle, img: decodeURIComponent(img), link: decodeURIComponent(link), addedAt: Date.now() })
-            }, { merge: true });
-
-            btn.innerHTML = '<i class="fas fa-check"></i>';
-            btn.style.color = 'var(--primary-color)';
-            btn.style.background = 'white';
-        } catch (e) {
-            console.error(e);
-            btn.innerHTML = '<i class="fas fa-plus"></i>';
-            alert("Error saving to My List.");
-        }
-    };
-
-    // --- 3. DATA POPULATION & CAROUSELS ---
+    // --- 2. DATA POPULATION & CAROUSELS ---
     let fuse;
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
@@ -106,19 +68,38 @@ document.addEventListener('DOMContentLoaded', function () {
     async function initializeDramaSite() {
         let data = [];
         try {
-            const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
-            const { getFirestore, collection, getDocs, query, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
+            // 1. CHECK CACHE FIRST
+            const cachedDramas = sessionStorage.getItem('dramakan_master_db');
+            const cacheTime = sessionStorage.getItem('dramakan_cache_time');
+            const now = new Date().getTime();
             
-            const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-            const db = getFirestore(app);
+            // If cache exists and is less than 2 hours old (7200000 ms), use it!
+            if (cachedDramas && cacheTime && (now - parseInt(cacheTime) < 7200000)) {
+                data = JSON.parse(cachedDramas);
+                console.log("Loaded dramas from local cache! (Saved Firebase reads)");
+            } else {
+                // 2. NO CACHE? FETCH FROM FIREBASE
+                const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
+                const { getFirestore, collection, getDocs, query, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
+                
+                const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+                const db = getFirestore(app);
 
-            const cmsSnap = await getDocs(collection(db, "dramas"));
-            cmsSnap.forEach((doc) => { 
-                data.push(doc.data()); 
-            });
+                const cmsSnap = await getDocs(collection(db, "dramas"));
+                cmsSnap.forEach((doc) => { 
+                    data.push(doc.data()); 
+                });
+                
+                // Save to cache for next time
+                sessionStorage.setItem('dramakan_master_db', JSON.stringify(data));
+                sessionStorage.setItem('dramakan_cache_time', now.toString());
+            }
 
             fuse = new Fuse(data, { keys: ['title'], threshold: 0.4 });
 
+            // ... (Keep the rest of your renderContinueWatching and populateGrid logic exactly the same below here)
+
+            // RENDER CONTINUE WATCHING DYNAMICALLY
             function renderContinueWatching() {
                 try {
                     const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
@@ -147,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 } catch(e) { console.error("CW Render Error:", e); }
             }
+            
             renderContinueWatching(); 
             window.addEventListener('historySynced', renderContinueWatching);
 
