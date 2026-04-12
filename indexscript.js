@@ -1,9 +1,18 @@
+// --- UNIFIED MASTER FIREBASE CONFIGURATION ---
+const firebaseConfig = {
+    apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
+    authDomain: "dramakan007.firebaseapp.com",
+    projectId: "dramakan007",
+    storageBucket: "dramakan007.firebasestorage.app",
+    messagingSenderId: "1069933586213",
+    appId: "1:1069933586213:web:b28ab37436679a4906dccc"
+};
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // --- 1. MOBILE MENU LOGIC ---
     const menuToggle = document.getElementById('mobileMenuToggle');
     const navLinks = document.getElementById('navLinks');
-    
     const overlay = document.createElement('div');
     overlay.className = 'menu-overlay';
     document.body.appendChild(overlay);
@@ -14,22 +23,15 @@ document.addEventListener('DOMContentLoaded', function () {
             navLinks.classList.toggle('active');
             overlay.classList.toggle('active');
             const icon = menuToggle.querySelector('i');
-            if (icon) {
-                icon.classList.toggle('fa-bars');
-                icon.classList.toggle('fa-times');
-            }
+            if (icon) { icon.classList.toggle('fa-bars'); icon.classList.toggle('fa-times'); }
         });
-
         overlay.addEventListener('click', () => {
             navLinks.classList.remove('active');
             overlay.classList.remove('active');
-            if (menuToggle.querySelector('i')) {
-                menuToggle.querySelector('i').className = 'fas fa-bars';
-            }
+            if (menuToggle.querySelector('i')) { menuToggle.querySelector('i').className = 'fas fa-bars'; }
         });
     }
 
-     // --- 2. RANDOMIZATION UTILITY ---
     function shuffleArray(array) {
         let shuffled = [...array];
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -39,7 +41,42 @@ document.addEventListener('DOMContentLoaded', function () {
         return shuffled;
     }
 
-    // --- 3. DATA POPULATION & CAROUSELS (WITH FIREBASE LIVE TRENDING & CONTINUE WATCHING) ---
+    // --- 2. GLOBAL MY LIST LOGIC ---
+    window.toggleMyList = async function(btn, title, img, link) {
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        try {
+            const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
+            const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js");
+            const { getFirestore, doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
+            
+            const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            if (!auth.currentUser) {
+                alert("Please Sign In to add dramas to your List!");
+                window.location.href = "login.html";
+                return;
+            }
+
+            const decodedTitle = decodeURIComponent(title);
+            const userRef = doc(db, "users", auth.currentUser.uid);
+            
+            await updateDoc(userRef, {
+                myList: arrayUnion({ title: decodedTitle, img: decodeURIComponent(img), link: decodeURIComponent(link), addedAt: Date.now() })
+            });
+
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            btn.style.color = 'var(--primary-color)';
+            btn.style.background = 'white';
+        } catch (e) {
+            console.error(e);
+            btn.innerHTML = '<i class="fas fa-plus"></i>';
+            alert("Error saving to My List.");
+        }
+    };
+
+    // --- 3. DATA POPULATION & CAROUSELS ---
     let fuse;
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
@@ -47,49 +84,45 @@ document.addEventListener('DOMContentLoaded', function () {
     function populateGrid(elementId, items) {
         const grid = document.getElementById(elementId);
         if (!grid) return;
-        grid.innerHTML = items.map(drama => `
-            <a href="${drama.link}" class="drama-card">
-                <div class="drama-card-img"><img src="${drama.img}" alt="${drama.title}"></div>
-                <div class="drama-card-info">
-                    <h3 class="drama-card-title">${drama.title}</h3>
-                    <p class="drama-card-meta">${drama.type}</p>
-                </div>
-            </a>
-        `).join('');
+        grid.innerHTML = items.map(drama => {
+            const safeTitle = encodeURIComponent(drama.title);
+            const safeImg = encodeURIComponent(drama.img);
+            const safeLink = encodeURIComponent(drama.link);
+            return `
+            <div class="drama-card" style="position:relative;">
+                <a href="${drama.link}" style="display:block;">
+                    <div class="drama-card-img"><img src="${drama.img}" alt="${drama.title}"></div>
+                    <div class="drama-card-info">
+                        <h3 class="drama-card-title">${drama.title}</h3>
+                        <p class="drama-card-meta">${drama.type}</p>
+                    </div>
+                </a>
+                <button class="bookmark-btn" onclick="event.preventDefault(); window.toggleMyList(this, '${safeTitle}', '${safeImg}', '${safeLink}')" title="Add to My List">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        `;
+        }).join('');
     }
 
     async function initializeDramaSite() {
         try {
-            // A. Load the base JSON data (Your 170+ legacy dramas)
             const response = await fetch('dramas.json');
             let data = await response.json();
 
-            // B. DYNAMIC MERGE: Pull new dramas from Firebase CMS
             try {
                 const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
                 const { getFirestore, collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
                 
-                const firebaseConfig = {
-                    apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
-                    authDomain: "dramakan007.firebaseapp.com",
-                    projectId: "dramakan007"
-                };
                 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
                 const db = getFirestore(app);
 
-                // Fetch new dramas published via CMS
                 const cmsSnap = await getDocs(collection(db, "dramas"));
-                cmsSnap.forEach((doc) => {
-                    data.push(doc.data()); // Inject live database into the JSON array!
-                });
-            } catch(firebaseErr) {
-                console.warn("CMS Sync skipped (Using offline mode).", firebaseErr);
-            }
+                cmsSnap.forEach((doc) => { data.push(doc.data()); });
+            } catch(e) {}
 
-            // Initialize Search with merged data
             fuse = new Fuse(data, { keys: ['title'], threshold: 0.4 });
 
-            // C. RENDER CONTINUE WATCHING 
             function renderContinueWatching() {
                 const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
                 const historyArr = Object.values(historyObj)
@@ -116,26 +149,23 @@ document.addEventListener('DOMContentLoaded', function () {
             renderContinueWatching(); 
             window.addEventListener('historySynced', renderContinueWatching);
 
-            // D. RENDER LIVE TRENDING OR STATIC TRENDING
             try {
                 const { getFirestore, collection, query, orderBy, limit, getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
-                const db = getFirestore();
+                const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
+                const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+                const db = getFirestore(app);
+
                 const q = query(collection(db, "drama_stats"), orderBy("views", "desc"), limit(15));
                 const querySnapshot = await getDocs(q);
-                
                 let dynamicTrending = [];
                 querySnapshot.forEach((doc) => {
                     const found = data.find(d => d.title.toLowerCase() === doc.data().title.toLowerCase());
                     if(found) dynamicTrending.push(found);
                 });
-
                 if(dynamicTrending.length > 0) populateGrid('trending-grid', dynamicTrending);
                 else populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15));
-            } catch(e) {
-                populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15));
-            }
+            } catch(e) { populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15)); }
 
-            // E. RENDER ALL CATEGORIES (Now includes your CMS uploads!)
             populateGrid('kdrama-grid', shuffleArray(data.filter(d => d.type === "K-Drama")).slice(0, 15));
             populateGrid('cdrama-grid', shuffleArray(data.filter(d => d.type === "C-Drama")).slice(0, 15));
             populateGrid('jdrama-grid', shuffleArray(data.filter(d => d.type === "J-Drama")).slice(0, 15));
@@ -146,85 +176,66 @@ document.addEventListener('DOMContentLoaded', function () {
             populateGrid('usdrama-grid', shuffleArray(data.filter(d => d.type === "US-Drama")).slice(0, 15));
             populateGrid('Movie-grid', shuffleArray(data.filter(d => d.type === "Movie")).slice(0, 15));
 
-        } catch (err) {
-            console.error("Data Load Error:", err);
-        }
+        } catch (err) { console.error("Data Load Error:", err); }
     }
 
-    // --- SEARCH LOGIC ---
     if (searchInput) {
         searchInput.addEventListener('input', () => {
             const query = searchInput.value.trim();
-            if (query.length < 1 || !fuse) {
-                searchResults.style.display = 'none';
-                return;
-            }
+            if (query.length < 1 || !fuse) { searchResults.style.display = 'none'; return; }
             const results = fuse.search(query, { limit: 10 });
-            searchResults.innerHTML = results.map(({ item }) => `
-                <a href="${item.link}" class="search-result-item">
-                    <img src="${item.img}" width="40" height="55">
-                    <div>
-                        <div style="color:#fff; font-weight:600;">${item.title}</div>
-                        <small style="color:#aaa;">${item.type}</small>
-                    </div>
-                </a>
-            `).join('');
+            searchResults.innerHTML = results.map(({ item }) => {
+                const safeTitle = encodeURIComponent(item.title); const safeImg = encodeURIComponent(item.img); const safeLink = encodeURIComponent(item.link);
+                return `
+                <div style="position:relative;">
+                    <a href="${item.link}" class="search-result-item">
+                        <img src="${item.img}" width="40" height="55">
+                        <div><div style="color:#fff; font-weight:600;">${item.title}</div><small style="color:#aaa;">${item.type}</small></div>
+                    </a>
+                    <button class="bookmark-btn" style="top:13px; right:10px; width:30px; height:30px; font-size:0.75rem;" onclick="event.preventDefault(); window.toggleMyList(this, '${safeTitle}', '${safeImg}', '${safeLink}')">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>`;
+            }).join('');
             searchResults.style.display = 'block';
         });
     }
 
-    // --- 4. HERO SLIDER (PERFECT INFINITE LOOP) ---
     const sliderWrapper = document.querySelector('.slider-wrapper');
     if (sliderWrapper) {
         let slideIndex = 0;
         const heroSlides = document.querySelectorAll('.slide');
         
-        // Mobile Setup
         if (window.innerWidth <= 992 && heroSlides.length > 1) {
             sliderWrapper.prepend(sliderWrapper.lastElementChild);
             sliderWrapper.style.transition = 'none';
             sliderWrapper.style.transform = `translateX(-100%)`;
-            
-            // Set initial active state
             Array.from(sliderWrapper.children).forEach(s => s.classList.remove('active'));
             sliderWrapper.children[1].classList.add('active');
 
             setInterval(() => {
-                // Animate to left
                 sliderWrapper.style.transition = 'transform 0.3s ease-in-out';
                 sliderWrapper.style.transform = `translateX(-200%)`; 
-                
-                // Shift classes instantly for smooth scaling
                 sliderWrapper.children[1].classList.remove('active');
                 sliderWrapper.children[2].classList.add('active');
-                
-                // Quietly reset DOM behind the scenes
                 setTimeout(() => {
                     sliderWrapper.style.transition = 'none';
                     sliderWrapper.appendChild(sliderWrapper.firstElementChild);
                     sliderWrapper.style.transform = `translateX(-100%)`; 
                 }, 300); 
             }, 3000);
-            
         } else {
-            // Desktop Setup
             setInterval(() => {
                 slideIndex = (slideIndex + 1) % heroSlides.length;
                 sliderWrapper.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
                 sliderWrapper.style.transform = `translateX(-${slideIndex * 100}%)`;
             }, 5000);
         }
-
-        // Click Logic 
         heroSlides.forEach(slide => {
             slide.addEventListener('click', () => {
-                // Prevents user from clicking faded side-slides on mobile
                 if (window.innerWidth <= 992 && !slide.classList.contains('active')) return;
-                
                 const btn = slide.querySelector('.btn-primary');
-                if (btn) {
-                    window.location.href = btn.getAttribute('href');
-                }
+                if (btn) window.location.href = btn.getAttribute('href');
             });
         });
     }
@@ -232,18 +243,27 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeDramaSite();
 });
 
-// --- 5. DRAMA REQUEST MODAL (TELEGRAM BOT) ---
+// --- 5. DRAMA REQUEST MODAL (FIREBASE SECURED) ---
 document.addEventListener("DOMContentLoaded", function() {
     const modal = document.getElementById("dramaModal");
     const openBtn = document.getElementById("dramaRequestBtn");
     const closeBtn = document.getElementById("closeDramaModal");
     const form = document.getElementById("dramaRequestForm");
 
-    const BOT_TOKEN = "8473278366:AAFgUjLJGAjRoh4Ig1DCat0qCs2D7yZHcbA";
-    const CHAT_ID = "5780542178";
-
     if(openBtn && modal) {
-        openBtn.onclick = () => modal.style.display = "flex";
+        openBtn.onclick = async () => {
+            const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
+            const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js");
+            const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+            const auth = getAuth(app);
+            
+            if (!auth.currentUser) {
+                alert("You must be logged in to request a drama. Redirecting to Login...");
+                window.location.href = "login.html";
+            } else {
+                modal.style.display = "flex";
+            }
+        };
         closeBtn.onclick = () => modal.style.display = "none";
         window.onclick = (e) => { if(e.target === modal) modal.style.display = "none"; }
     }
@@ -251,35 +271,55 @@ document.addEventListener("DOMContentLoaded", function() {
     if(form) {
         form.onsubmit = async (e) => {
             e.preventDefault();
-            
-            const dramaName = document.getElementById("dramaName").value;
-            const contactDetail = document.getElementById("contactname").value; 
-            const status = document.getElementById("statusMessage");
             const submitBtn = document.getElementById("submitBtn");
-
+            const status = document.getElementById("statusMessage");
             submitBtn.innerText = "Sending...";
             submitBtn.disabled = true;
 
-            const text = `🎬 *New Drama Request*\n\n` +
-                         `📺 *Drama:* ${dramaName}\n` +
-                         `👤 *Contact:* ${contactDetail}`;  
-            
-            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
-
             try {
-                const response = await fetch(url);
-                if (response.ok) {
+                const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
+                const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js");
+                const { getFirestore, collection, addDoc } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
+                
+                const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+
+                const user = auth.currentUser;
+                
+                if (!user) {
                     status.style.display = "block";
-                    status.style.color = "#4CAF50";
-                    status.innerText = "Request sent! Check back in 48 hours.";
-                    form.reset();
-                } else {
-                    throw new Error();
+                    status.style.color = "#ff4d4d";
+                    status.innerText = "Error: Authentication expired. Please login again.";
+                    return;
                 }
+                
+                const dramaName = document.getElementById("dramaName").value.trim();
+
+                await addDoc(collection(db, "requests"), {
+                    userId: user.uid,
+                    userEmail: user.email || "No email provided", 
+                    dramaName: dramaName,
+                    status: "Pending",
+                    notified: false, 
+                    createdAt: new Date().getTime()
+                });
+
+                status.style.display = "block";
+                status.style.color = "#4CAF50";
+                status.innerText = "Request securely sent! Check your Profile later.";
+                form.reset();
+
             } catch (err) {
+                console.error("FIREBASE ERROR:", err);
                 status.style.display = "block";
                 status.style.color = "#ff4d4d";
-                status.innerText = "Error sending request. Try joining Telegram.";
+                // SMART ERROR CATCHING: Directly tells you if Firebase Rules are blocking it
+                if (err.code === 'permission-denied' || err.message.includes('permission')) {
+                    status.innerText = "Error: Database Rules are blocking this request. Update Firebase Rules!";
+                } else {
+                    status.innerText = "Error: " + err.message;
+                }
             } finally {
                 submitBtn.innerText = "Send Request";
                 submitBtn.disabled = false;
@@ -291,82 +331,25 @@ document.addEventListener("DOMContentLoaded", function() {
 // --- 6. PWA SERVICE WORKER ---
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .catch(err => console.log('Service Worker Failed', err));
+    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW Failed', err));
   });
 }
-
-// --- 7. APP INSTALL POPUP LOGIC ---
-document.addEventListener("DOMContentLoaded", function() {
-    const installPopup = document.getElementById('appInstallPopup');
-    const closePopupBtn = document.getElementById('closeInstallPopup');
-
-    if (installPopup && closePopupBtn) {
-        if (sessionStorage.getItem('hideAppInstallPopup') === 'true') {
-            installPopup.style.display = 'none';
-        } else {
-            installPopup.classList.add('hidden');
-            setTimeout(() => {
-                installPopup.classList.remove('hidden');
-            }, 800);
-        }
-
-        closePopupBtn.addEventListener('click', () => {
-            installPopup.classList.add('hidden');
-            setTimeout(() => {
-                installPopup.style.display = 'none';
-            }, 400); 
-            sessionStorage.setItem('hideAppInstallPopup', 'true');
-        });
-    }
-});
-// --- 6. IMMERSIVE SCROLL REVEAL ANIMATIONS ---
-document.addEventListener("DOMContentLoaded", function() {
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.15 // Triggers when 15% of the section is visible
-    };
-
-    const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                observer.unobserve(entry.target); // Stop observing once revealed
-            }
-        });
-    }, observerOptions);
-
-    // Apply the fade-in class to all major sections
-    document.querySelectorAll('section.latest-episodes').forEach(section => {
-        section.classList.add('fade-in-section');
-        observer.observe(section);
-    });
-});
 
 // --- 7. SMART LOGIN PROMPT LOGIC ---
 document.addEventListener("DOMContentLoaded", function() {
     const loginPopup = document.getElementById('loginPromptPopup');
     const closePopupBtn = document.getElementById('closeLoginPopup');
-
     if (loginPopup && closePopupBtn) {
-        // Wait 2 seconds so Firebase has time to confirm if they are logged in
         setTimeout(() => {
-            // Check if the top button says "Profile" (meaning Firebase logged them in)
             const topAuthBtn = document.getElementById('topAuthBtn');
             const isLoggedIn = topAuthBtn && topAuthBtn.innerText.includes('Profile');
-
-            // Only show the popup if they are NOT logged in and haven't closed it recently
             if (!isLoggedIn && sessionStorage.getItem('hideLoginPopup') !== 'true') {
                 loginPopup.classList.remove('hidden');
             }
         }, 2000);
-
         closePopupBtn.addEventListener('click', () => {
             loginPopup.classList.add('hidden');
-            setTimeout(() => {
-                loginPopup.style.display = 'none';
-            }, 400); 
+            setTimeout(() => { loginPopup.style.display = 'none'; }, 400); 
             sessionStorage.setItem('hideLoginPopup', 'true');
         });
     }

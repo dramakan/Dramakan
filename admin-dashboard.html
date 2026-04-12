@@ -6,236 +6,271 @@
     <title>Owner Control Panel - DramaKan</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="bottom-bar.css"> 
     
     <style>
-        :root { --bg-base: #09090b; --bg-surface: #18181b; --accent-gold: #d4af37; --text-main: #f4f4f5; --text-muted: #a1a1aa; --border-subtle: rgba(255,255,255,0.08); --danger: #ef4444; --success: #10b981; --info: #3b82f6; --primary: #8A2BE2;}
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; }
-
-        .admin-nav { padding: 20px 5%; background: rgba(24, 24, 27, 0.9); border-bottom: 1px solid var(--accent-gold); display: flex; justify-content: space-between; align-items: center; }
-        .admin-brand { font-size: 1.5rem; font-weight: 700; color: #fff; text-decoration: none; }
-        .admin-brand span { color: var(--danger); }
-        .nav-actions { display: flex; gap: 10px; }
-        .btn-action { background: transparent; color: var(--text-main); border: 1px solid var(--border-subtle); padding: 8px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; text-decoration: none; display: flex; align-items: center; gap: 6px; justify-content: center; }
-        .btn-action:hover { background: rgba(255,255,255,0.05); }
-        .btn-logout:hover { color: #ef4444; border-color: #ef4444; }
+        :root { 
+            --bg-base: #0B0C10; 
+            --bg-surface: rgba(26, 26, 29, 0.6); 
+            --primary: #8A2BE2; 
+            --primary-glow: rgba(138, 43, 226, 0.4); 
+            --text-main: #F5F5F5; 
+            --text-muted: #a0a0a0; 
+            --border-subtle: rgba(255,255,255,0.08); 
+            --danger: #E50914; 
+            --success: #10b981; 
+            --info: #3b82f6; 
+            --glass-blur: blur(20px);
+        }
         
-        .admin-container { max-width: 1300px; margin: 40px auto; padding: 0 5% 80px 5%; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
-        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; }
-        .login-box { background: var(--bg-surface); padding: 40px; border-radius: 12px; border: 1px solid var(--border-subtle); width: 100%; max-width: 400px; }
-        .login-box h2 { text-align: center; margin-bottom: 20px; color: var(--danger); }
-        .admin-input { width: 100%; padding: 12px; margin-bottom: 15px; background: var(--bg-base); border: 1px solid var(--border-subtle); color: #fff; border-radius: 6px; font-family: 'Poppins'; }
-        .btn-login { width: 100%; padding: 12px; background: var(--danger); color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        /* Premium Nav */
+        .admin-nav { padding: 20px 5%; background: rgba(11, 12, 16, 0.85); backdrop-filter: var(--glass-blur); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .admin-brand { font-size: 1.6rem; font-weight: 700; color: #fff; text-decoration: none; letter-spacing: -0.5px; }
+        .admin-brand span { color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); }
+        .nav-actions { display: flex; gap: 15px; }
+        
+        .btn-action { background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-subtle); padding: 10px 18px; border-radius: 12px; cursor: pointer; transition: 0.3s; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.9rem;}
+        .btn-action:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+        .btn-logout { background: rgba(229, 9, 20, 0.1); color: var(--danger); border-color: rgba(229, 9, 20, 0.2); }
+        .btn-logout:hover { background: var(--danger); color: #fff; box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4); }
+        
+        .admin-container { max-width: 1400px; margin: 40px auto; padding: 0 5% 80px 5%; animation: fadeIn 0.5s ease; }
+
+        /* Login Screen */
+        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; }
+        .login-box { background: var(--bg-surface); backdrop-filter: var(--glass-blur); padding: 50px 40px; border-radius: 24px; border: 1px solid var(--border-subtle); width: 100%; max-width: 420px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .login-box h2 { text-align: center; margin-bottom: 25px; color: var(--primary); font-size: 1.8rem; }
+        .admin-input { width: 100%; padding: 15px 18px; margin-bottom: 20px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); color: #fff; border-radius: 14px; font-family: 'Poppins'; font-size: 1rem; transition: 0.3s; }
+        .admin-input:focus { outline: none; border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary), 0 0 15px var(--primary-glow); background: rgba(0,0,0,0.6); }
+        .btn-primary { width: 100%; padding: 15px; background: var(--primary); color: #fff; border: none; border-radius: 14px; font-weight: 600; font-size: 1.05rem; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--primary-glow); display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .btn-primary:hover { background: #9d4edd; transform: translateY(-2px); }
 
         #dashboard-screen { display: none; }
-        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;}
+        .header-flex h2 { font-size: 1.5rem; font-weight: 600; color: #fff; }
         
         /* Tabs */
-        .admin-tabs { display: flex; gap: 15px; margin-bottom: 30px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px; }
-        .tab-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.05rem; font-weight: 600; cursor: pointer; padding: 10px 20px; border-radius: 8px; transition: 0.3s; }
-        .tab-btn:hover { color: #fff; }
-        .tab-btn.active { background: var(--primary); color: #fff; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.4s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .admin-tabs { display: flex; gap: 12px; margin-bottom: 40px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 15px; overflow-x: auto; scrollbar-width: none; }
+        .admin-tabs::-webkit-scrollbar { display: none; }
+        .tab-btn { background: rgba(255,255,255,0.03); border: 1px solid transparent; color: var(--text-muted); font-size: 1rem; font-weight: 500; cursor: pointer; padding: 12px 24px; border-radius: 50px; transition: 0.3s; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+        .tab-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .tab-btn.active { background: var(--primary); color: #fff; box-shadow: 0 6px 20px var(--primary-glow); border-color: rgba(255,255,255,0.1); font-weight: 600; }
+        .tab-content { display: none; animation: slideUp 0.4s ease forwards; opacity: 0; }
+        .tab-content.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* Analytics Grid */
-        .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; }
-        .analytic-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 25px; border-radius: 16px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .analytic-card i { font-size: 2rem; margin-bottom: 15px; }
-        .analytic-value { font-size: 2.5rem; font-weight: 700; color: #fff; margin-bottom: 5px; }
-        .analytic-label { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .analytic-card { background: var(--bg-surface); backdrop-filter: var(--glass-blur); border: 1px solid var(--border-subtle); padding: 30px; border-radius: 24px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s; }
+        .analytic-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.15); }
+        .analytic-card i { font-size: 2rem; margin-bottom: 15px; display: inline-block; padding: 15px; border-radius: 50%; background: rgba(0,0,0,0.3); }
+        .analytic-value { font-size: 2.4rem; font-weight: 700; color: #fff; margin-bottom: 5px; line-height: 1; }
+        .analytic-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Tables */
-        .table-wrapper { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 15px 20px; border-bottom: 1px solid var(--border-subtle); }
-        th { background: rgba(0,0,0,0.2); color: var(--accent-gold); font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
-        /* Override th color for CMS table */
-        #cms-tab th { color: var(--primary); }
-        td { font-size: 0.95rem; }
+        /* Glass Tables */
+        .table-wrapper { background: var(--bg-surface); backdrop-filter: var(--glass-blur); border: 1px solid var(--border-subtle); border-radius: 20px; overflow-x: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .table-wrapper::-webkit-scrollbar { height: 8px; }
+        .table-wrapper::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        .table-wrapper::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 800px; }
+        th, td { padding: 18px 25px; border-bottom: 1px solid var(--border-subtle); }
+        th { background: rgba(0,0,0,0.4); color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+        td { font-size: 0.95rem; color: #e4e4e7; vertical-align: middle; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
         
-        .btn-pay { background: var(--accent-gold); color: #000; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.85rem; width: 100%; }
-        .btn-pay:hover { background: #f1c40f; }
-        .btn-pay:disabled { background: #3f3f46; color: #a1a1aa; cursor: not-allowed; }
-        
-        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-        .status-pending { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); }
-        .status-ready { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success); }
-        .status-waiting { background: rgba(161, 161, 170, 0.1); color: var(--text-muted); }
+        .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-pending { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); }
+        .status-ready { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--success); }
+
+        /* Search Filter Input */
+        .search-filter { display: flex; align-items: center; background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); border-radius: 50px; padding: 5px 20px; width: 100%; max-width: 350px; }
+        .search-filter i { color: var(--text-muted); }
+        .search-filter input { background: transparent; border: none; color: #fff; padding: 10px; width: 100%; outline: none; font-family: 'Poppins'; }
 
         /* CMS Form */
-        .cms-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .cms-group { margin-bottom: 10px; }
-        .cms-group label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.85rem; }
+        .cms-form-wrapper { background: var(--bg-surface); backdrop-filter: var(--glass-blur); border: 1px solid var(--border-subtle); border-radius: 24px; padding: 40px; margin-bottom: 50px; box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
+        .cms-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .cms-group { margin-bottom: 5px; }
+        .cms-group label { display: block; margin-bottom: 8px; color: #d4d4d8; font-size: 0.9rem; font-weight: 500;}
         .cms-group.full-width { grid-column: 1 / -1; }
-        .btn-publish { background: var(--primary); color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; width: 100%; transition: 0.3s; }
-        .btn-publish:hover { background: #9d4edd; box-shadow: 0 0 15px rgba(138, 43, 226, 0.4); }
+        .section-title { font-size: 1.15rem; color: var(--primary); margin-top: 20px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; grid-column: 1 / -1; font-weight: 600; display: flex; align-items: center; gap: 10px;}
+        
+        .action-buttons-cell { display: flex; gap: 8px; }
+        .icon-btn { width: 38px; height: 38px; border-radius: 10px; display: flex; justify-content: center; align-items: center; border: none; cursor: pointer; transition: 0.3s; font-size: 1rem; }
+        .icon-btn.edit { background: rgba(59, 130, 246, 0.15); color: var(--info); border: 1px solid rgba(59, 130, 246, 0.3); }
+        .icon-btn.edit:hover { background: var(--info); color: #fff; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4); }
+        
+        .icon-btn.warn { background: rgba(212, 175, 55, 0.15); color: #d4af37; border: 1px solid rgba(212, 175, 55, 0.3); }
+        .icon-btn.warn:hover { background: #d4af37; color: #000; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.4); }
 
-        .section-title { font-size: 1.1rem; color: var(--primary); margin-top: 15px; margin-bottom: 5px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 5px; grid-column: 1 / -1; }
+        .icon-btn.delete { background: rgba(229, 9, 20, 0.15); color: var(--danger); border: 1px solid rgba(229, 9, 20, 0.3); }
+        .icon-btn.delete:hover { background: var(--danger); color: #fff; box-shadow: 0 4px 10px rgba(229, 9, 20, 0.4); }
+        
+        .icon-btn.done { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); width: auto; padding: 0 15px; font-weight: 600; font-size: 0.85rem;}
+        .icon-btn.done:hover:not(:disabled) { background: var(--success); color: #fff; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4); }
+        .icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        @media (max-width: 768px) { .cms-form-grid { grid-template-columns: 1fr; } .hide-mobile-text { display: none; } }
+        @media (max-width: 768px) { 
+            .cms-form-grid { grid-template-columns: 1fr; } 
+            .hide-mobile-text { display: none; } 
+            .admin-container { padding: 0 4% 80px 4%; }
+            .analytic-card { padding: 25px 20px; }
+            .header-flex { flex-direction: column; align-items: flex-start; }
+            .search-filter { max-width: 100%; }
+        }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-box">
-            <h2><i class="fas fa-lock"></i> Owner Login</h2>
+            <h2><i class="fas fa-shield-alt" style="display:block; font-size:3rem; margin-bottom:15px; color:var(--primary);"></i> Owner Login</h2>
             <form id="admin-login-form">
-                <input type="email" id="admin-email" class="admin-input" placeholder="Admin Email" required>
-                <input type="password" id="admin-password" class="admin-input" placeholder="Password" required>
-                <button type="submit" class="btn-login" id="login-btn">Verify Access</button>
-                <div id="error-msg" style="color:var(--danger); display:none; margin-top:10px; text-align:center;"></div>
+                <div class="cms-group"><input type="email" id="admin-email" class="admin-input" placeholder="Admin Email" required></div>
+                <div class="cms-group"><input type="password" id="admin-password" class="admin-input" placeholder="Password" required></div>
+                <button type="submit" class="btn-primary" id="login-btn">Verify Access <i class="fas fa-arrow-right"></i></button>
             </form>
         </div>
     </div>
 
     <div id="dashboard-screen">
         <nav class="admin-nav">
-            <a href="index.html" class="admin-brand">DramaKan <span>Admin</span></a>
+            <a href="index.html" class="admin-brand">Drama<span>Kan</span> Control</a>
             <div class="nav-actions">
-                <a href="index.html" class="btn-action"><i class="fas fa-home"></i> <span class="hide-mobile-text">Home</span></a>
-                <button class="btn-action btn-logout" id="logout-btn"><i class="fas fa-sign-out-alt"></i> <span class="hide-mobile-text">Logout</span></button>
+                <a href="index.html" class="btn-action"><i class="fas fa-external-link-alt"></i> <span class="hide-mobile-text">View Site</span></a>
+                <button class="btn-action btn-logout" id="logout-btn"><i class="fas fa-power-off"></i> <span class="hide-mobile-text">Logout</span></button>
             </div>
         </nav>
 
         <div class="admin-container">
             
             <div class="admin-tabs">
-                <button class="tab-btn active" data-target="analytics-tab"><i class="fas fa-chart-pie"></i> Analytics & Payouts</button>
-                <button class="tab-btn" data-target="cms-tab"><i class="fas fa-upload"></i> Content Manager</button>
+                <button class="tab-btn active" data-target="analytics-tab"><i class="fas fa-chart-pie"></i> Dashboard Overview</button>
+                <button class="tab-btn" data-target="cms-tab"><i class="fas fa-cloud-upload-alt"></i> Content Manager</button>
+                <button class="tab-btn" data-target="requests-tab"><i class="fas fa-inbox"></i> Audience Requests</button>
+                <button class="tab-btn" data-target="partner-tab"><i class="fas fa-hand-holding-dollar"></i> Partners & Payouts</button>
             </div>
 
             <div id="analytics-tab" class="tab-content active">
-                <div class="analytics-grid">
-                    <div class="analytic-card"><i class="fas fa-globe" style="color: var(--info);"></i><div class="analytic-value" id="ui-total-visits">0</div><div class="analytic-label">Total Site Visits</div></div>
-                    <div class="analytic-card"><i class="fas fa-users" style="color: var(--accent-gold);"></i><div class="analytic-value" id="ui-total-creators">0</div><div class="analytic-label">Active Partners</div></div>
-                    <div class="analytic-card"><i class="fas fa-hand-holding-dollar" style="color: var(--danger);"></i><div class="analytic-value" id="ui-total-owed">$0.00</div><div class="analytic-label">Total Debt (Unpaid)</div></div>
-                </div>
-
                 <div class="header-flex">
-                    <h2>Active Payouts <span style="font-size: 0.9rem; color: var(--text-muted);">(Hiding 0-Click Clutter)</span></h2>
-                    <button id="refresh-btn" class="btn-action" style="border-color: var(--accent-gold); color: var(--accent-gold);"><i class="fas fa-sync-alt"></i></button>
+                    <h2><i class="fas fa-satellite-dish" style="color:var(--primary); margin-right:10px;"></i> Live Network Status</h2>
                 </div>
-
-                <div class="table-wrapper">
-                    <table>
-                        <thead><tr><th>Creator</th><th>Clicks</th><th>Owed</th><th>Status</th><th>Action</th></tr></thead>
-                        <tbody id="creators-table-body"><tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Fetching data...</td></tr></tbody>
-                    </table>
+                <div class="analytics-grid">
+                    <div class="analytic-card">
+                        <i class="fas fa-globe" style="color: #3b82f6; box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.2);"></i>
+                        <div class="analytic-value" id="ui-total-visits"><i class="fas fa-spinner fa-spin" style="font-size:1rem;"></i></div>
+                        <div class="analytic-label">Total Site Visits</div>
+                    </div>
+                    <div class="analytic-card">
+                        <i class="fas fa-film" style="color: var(--primary); box-shadow: inset 0 0 20px var(--primary-glow);"></i>
+                        <div class="analytic-value" id="ui-total-dramas"><i class="fas fa-spinner fa-spin" style="font-size:1rem;"></i></div>
+                        <div class="analytic-label">Dramas Uploaded</div>
+                    </div>
+                    <div class="analytic-card">
+                        <i class="fas fa-users" style="color: #d4af37; box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.2);"></i>
+                        <div class="analytic-value" id="ui-total-creators"><i class="fas fa-spinner fa-spin" style="font-size:1rem;"></i></div>
+                        <div class="analytic-label">Active Partners</div>
+                    </div>
+                    <div class="analytic-card">
+                        <i class="fas fa-envelope-open-text" style="color: var(--danger); box-shadow: inset 0 0 20px rgba(229, 9, 20, 0.2);"></i>
+                        <div class="analytic-value" id="ui-pending-reqs"><i class="fas fa-spinner fa-spin" style="font-size:1rem;"></i></div>
+                        <div class="analytic-label">Pending Requests</div>
+                    </div>
                 </div>
             </div>
 
             <div id="cms-tab" class="tab-content">
-                <div class="table-wrapper" style="padding: 30px; margin-bottom: 40px;">
-                    <h2 style="margin-bottom: 20px; color: var(--primary);"><i class="fas fa-film"></i> <span id="form-title">Upload New Drama</span></h2>
-                    <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">Submitting this form automatically generates the watch.html page and handles multiple seasons natively.</p>
+                <div class="cms-form-wrapper">
+                    <h2 style="margin-bottom: 25px; color: #fff; font-size: 1.5rem;"><i class="fas fa-plus-circle" style="color:var(--primary);"></i> <span id="form-title">Upload New Drama</span></h2>
                     
                     <form id="cms-form">
                         <div class="cms-form-grid">
-                            <div class="section-title">Basic Info</div>
-                            <div class="cms-group">
-                                <label>Drama Title</label>
-                                <input type="text" id="cms-title" class="admin-input" placeholder="e.g. Squid Game" required>
-                            </div>
-                            <div class="cms-group">
-                                <label>Poster Image URL</label>
-                                <input type="url" id="cms-img" class="admin-input" placeholder="https://..." required>
-                            </div>
-                            
-                            <div class="cms-group full-width">
-                                <label>Synopsis / Plot</label>
-                                <textarea id="cms-synopsis" class="admin-input" rows="3" placeholder="Write a short description of the drama..." required></textarea>
-                            </div>
+                            <div class="section-title"><i class="fas fa-info-circle"></i> Basic Info</div>
+                            <div class="cms-group"><label>Drama Title</label><input type="text" id="cms-title" class="admin-input" required></div>
+                            <div class="cms-group"><label>Poster Image URL</label><input type="url" id="cms-img" class="admin-input" required></div>
+                            <div class="cms-group full-width"><label>Synopsis / Plot</label><textarea id="cms-synopsis" class="admin-input" rows="3" required></textarea></div>
 
-                            <div class="section-title">Video & Seasons</div>
-                            <div class="cms-group">
-                                <label>IMDb ID (For Video Embed)</label>
-                                <input type="text" id="cms-imdb-id" class="admin-input" placeholder="e.g. tt10919420" required>
-                            </div>
-                            <div class="cms-group">
-                                <label>Episodes Per Season (Comma separated)</label>
-                                <input type="text" id="cms-eps" class="admin-input" placeholder="e.g. 16, 12, 10 (S1=16, S2=12, S3=10)" required>
-                            </div>
+                            <div class="section-title"><i class="fas fa-video"></i> Video & Classifications</div>
+                            <div class="cms-group"><label>IMDb ID (For Video Embed)</label><input type="text" id="cms-imdb-id" class="admin-input" required></div>
+                            <div class="cms-group"><label>Episodes Per Season (Comma separated)</label><input type="text" id="cms-eps" class="admin-input" placeholder="e.g. 16, 12" required></div>
                             
                             <div class="cms-group">
                                 <label>Category / Type</label>
                                 <select id="cms-type" class="admin-input" required>
-                                    <option value="K-Drama">K-Drama</option>
-                                    <option value="C-Drama">C-Drama</option>
-                                    <option value="J-Drama">J-Drama</option>
-                                    <option value="P-Drama">P-Drama</option>
-                                    <option value="T-Drama">T-Drama</option>
-                                    <option value="Movie">Movie</option>
+                                    <option value="K-Drama">K-Drama</option><option value="C-Drama">C-Drama</option><option value="J-Drama">J-Drama</option>
+                                    <option value="P-Drama">P-Drama</option><option value="T-Drama">T-Drama</option><option value="Turkish-Drama">Turkish-Drama</option><option value="US-Drama">US-Drama</option><option value="Movie">Movie</option>
                                 </select>
                             </div>
                             <div class="cms-group">
                                 <label>Status</label>
-                                <select id="cms-status" class="admin-input" required>
-                                    <option value="Ongoing">Ongoing</option>
-                                    <option value="Completed">Completed</option>
-                                </select>
+                                <select id="cms-status" class="admin-input" required><option value="Ongoing">Ongoing</option><option value="Completed">Completed</option></select>
+                            </div>
+                            <div class="cms-group"><label>Release Year</label><input type="number" id="cms-year" class="admin-input" required></div>
+                            <div class="cms-group"><label>IMDb Score</label><input type="text" id="cms-score" class="admin-input" required></div>
+                            <div class="cms-group"><label>Genres (Comma separated)</label><input type="text" id="cms-genre" class="admin-input" required></div>
+                            <div class="cms-group">
+                                <label>Trending on Homepage?</label><select id="cms-trend" class="admin-input"><option value="F">No</option><option value="T">Yes</option></select>
                             </div>
 
-                            <div class="cms-group">
-                                <label>Release Year</label>
-                                <input type="number" id="cms-year" class="admin-input" placeholder="2026" required>
-                            </div>
-                            <div class="cms-group">
-                                <label>IMDb Score (e.g. 9.5)</label>
-                                <input type="text" id="cms-score" class="admin-input" placeholder="e.g. 9.5" required>
-                            </div>
-                            
-                            <div class="cms-group">
-                                <label>Genres (Comma separated)</label>
-                                <input type="text" id="cms-genre" class="admin-input" placeholder="Romance, Comedy, Thriller" required>
-                            </div>
-                            <div class="cms-group">
-                                <label>Is this Trending?</label>
-                                <select id="cms-trend" class="admin-input">
-                                    <option value="F">No</option>
-                                    <option value="T">Yes (Show in Trending row)</option>
-                                </select>
-                            </div>
+                            <div class="section-title"><i class="fas fa-user-friends"></i> Main Cast</div>
+                            <div class="cms-group"><label>Actor 1 Name</label><input type="text" id="cms-actor1" class="admin-input" required></div>
+                            <div class="cms-group"><label>Actor 1 Image URL</label><input type="url" id="cms-actor1-img" class="admin-input" required></div>
+                            <div class="cms-group"><label>Actor 2 Name</label><input type="text" id="cms-actor2" class="admin-input" required></div>
+                            <div class="cms-group"><label>Actor 2 Image URL</label><input type="url" id="cms-actor2-img" class="admin-input" required></div>
 
-                            <div class="section-title">Main Cast</div>
-                            <div class="cms-group">
-                                <label>Actor 1 Name</label>
-                                <input type="text" id="cms-actor1" class="admin-input" placeholder="e.g. Donny Pangilinan" required>
-                            </div>
-                            <div class="cms-group">
-                                <label>Actor 1 Image URL</label>
-                                <input type="url" id="cms-actor1-img" class="admin-input" placeholder="https://..." required>
-                            </div>
-                            <div class="cms-group">
-                                <label>Actor 2 Name</label>
-                                <input type="text" id="cms-actor2" class="admin-input" placeholder="e.g. Belle Mariano" required>
-                            </div>
-                            <div class="cms-group">
-                                <label>Actor 2 Image URL</label>
-                                <input type="url" id="cms-actor2-img" class="admin-input" placeholder="https://..." required>
-                            </div>
-
-                            <div style="display: flex; gap: 10px; grid-column: 1 / -1; margin-top: 10px;">
-                                <button type="submit" id="cms-submit" class="btn-publish"><i class="fas fa-rocket"></i> Publish Drama</button>
-                                <button type="button" id="cms-cancel" class="btn-action" style="display: none; width: 100%; border-color: var(--danger); color: var(--danger);"><i class="fas fa-times"></i> Cancel Edit</button>
+                            <div style="display: flex; gap: 15px; grid-column: 1 / -1; margin-top: 15px;">
+                                <button type="submit" id="cms-submit" class="btn-primary" style="flex: 2;"><i class="fas fa-rocket"></i> Publish Drama</button>
+                                <button type="button" id="cms-cancel" class="btn-action" style="display: none; flex: 1; border-color: var(--danger); color: var(--danger); justify-content: center;"><i class="fas fa-times"></i> Cancel Edit</button>
                             </div>
                         </div>
                     </form>
                 </div>
 
-                <div class="header-flex" style="border-top: 1px solid var(--border-subtle); padding-top: 30px;">
-                    <h2 style="color: var(--primary);"><i class="fas fa-list"></i> Manage Uploaded Dramas</h2>
-                    <button id="refresh-dramas-btn" class="btn-action" style="border-color: var(--primary); color: var(--primary);"><i class="fas fa-sync-alt"></i></button>
+                <div class="header-flex">
+                    <h2><i class="fas fa-list-ul" style="color:var(--primary); margin-right:10px;"></i> Manage Database</h2>
+                    <div class="search-filter">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-dramas" placeholder="Search by title...">
+                    </div>
                 </div>
-
                 <div class="table-wrapper">
                     <table>
-                        <thead><tr><th>Title</th><th>Type</th><th>Total Eps</th><th>Date Added</th><th>Actions</th></tr></thead>
-                        <tbody id="dramas-table-body"><tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Fetching dramas...</td></tr></tbody>
+                        <thead><tr><th>Poster</th><th>Title</th><th>Type</th><th>Total Eps</th><th>Actions</th></tr></thead>
+                        <tbody id="dramas-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="requests-tab" class="tab-content">
+                <div class="header-flex">
+                    <h2><i class="fas fa-inbox" style="color:var(--primary); margin-right:10px;"></i> Audience Requests Queue</h2>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Requested By</th><th>Drama Name</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="requests-table-body"><tr><td colspan="5" style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size:2rem; color:var(--primary); margin-bottom:10px; display:block;"></i> Fetching queue...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="partner-tab" class="tab-content">
+                <div class="header-flex">
+                    <h2><i class="fas fa-handshake" style="color:var(--primary); margin-right:10px;"></i> Affiliate Partners & Payouts</h2>
+                </div>
+                <div class="analytics-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-bottom: 30px;">
+                    <div class="analytic-card">
+                        <i class="fas fa-wallet" style="color: var(--danger); box-shadow: inset 0 0 20px rgba(229, 9, 20, 0.2);"></i>
+                        <div class="analytic-value" id="ui-total-owed"><i class="fas fa-spinner fa-spin" style="font-size:1rem;"></i></div>
+                        <div class="analytic-label">Total Unpaid Debt</div>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Creator ID</th><th>Performance</th><th>Owed ($)</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="creators-table-body"><tr><td colspan="5" style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size:2rem; color:var(--primary); margin-bottom:10px; display:block;"></i> Fetching partners...</td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -246,304 +281,333 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, getDoc, setDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, getDoc, setDoc, deleteDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
-            authDomain: "dramakan007.firebaseapp.com",
-            projectId: "dramakan007",
-            storageBucket: "dramakan007.firebasestorage.app",
-            messagingSenderId: "1069933586213",
-            appId: "1:1069933586213:web:b28ab37436679a4906dccc"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", authDomain: "dramakan007.firebaseapp.com", projectId: "dramakan007", storageBucket: "dramakan007.firebasestorage.app", messagingSenderId: "1069933586213", appId: "1:1069933586213:web:b28ab37436679a4906dccc" };
+        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
 
         const OWNER_EMAIL = "zabaazcreations@gmail.com"; 
-        const PAY_RATE = 0.05;
-        const THRESHOLD = 100.00;
+        let editingDramaId = null;
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let editingDramaId = null; // Tracks if we are editing an existing drama
-
-        // --- TAB LOGIC ---
+        // Tabs Logic
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById(btn.dataset.target).classList.add('active');
+                btn.classList.add('active'); document.getElementById(btn.dataset.target).classList.add('active');
             });
         });
 
-        // --- AUTH LOGIC ---
+        // Auth Logic
         onAuthStateChanged(auth, (user) => {
             if (user && user.email.toLowerCase() === OWNER_EMAIL.toLowerCase()) {
-                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('login-screen').style.display = 'none'; 
                 document.getElementById('dashboard-screen').style.display = 'block';
-                loadGlobalStats(); 
-                loadCreators();
-                loadDramas(); // Load existing CMS dramas
-            } else if (user) {
-                alert("Unauthorized Access."); signOut(auth);
-            } else {
-                document.getElementById('login-screen').style.display = 'flex';
-                document.getElementById('dashboard-screen').style.display = 'none';
+                loadGlobalStats(); loadDramas(); loadRequests(); loadCreators();
+            } else if (user) { 
+                alert("Unauthorized Access. You are not the admin."); signOut(auth); 
+            } else { 
+                document.getElementById('login-screen').style.display = 'flex'; 
+                document.getElementById('dashboard-screen').style.display = 'none'; 
             }
         });
-
-        document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('admin-email').value;
-            const password = document.getElementById('admin-password').value;
-            if (email.toLowerCase() !== OWNER_EMAIL.toLowerCase()) return;
-            document.getElementById('login-btn').textContent = "Verifying...";
-            try { await signInWithEmailAndPassword(auth, email, password); } 
-            catch (error) { document.getElementById('login-btn').textContent = "Verify Access"; }
+        
+        document.getElementById('admin-login-form').addEventListener('submit', async (e) => { 
+            e.preventDefault(); 
+            const email = document.getElementById('admin-email').value; 
+            const password = document.getElementById('admin-password').value; 
+            const btn = document.getElementById('login-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+            if (email.toLowerCase() !== OWNER_EMAIL.toLowerCase()) {
+                alert("Only the owner can access this panel.");
+                btn.innerHTML = 'Verify Access <i class="fas fa-arrow-right"></i>';
+                return;
+            }
+            try { 
+                await signInWithEmailAndPassword(auth, email, password); 
+            } catch (error) { 
+                alert("Login Failed: " + error.message);
+                btn.innerHTML = 'Verify Access <i class="fas fa-arrow-right"></i>';
+            } 
         });
-
+        
         document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
-        document.getElementById('refresh-btn').addEventListener('click', () => { loadGlobalStats(); loadCreators(); });
-        document.getElementById('refresh-dramas-btn').addEventListener('click', () => loadDramas());
 
-        // --- DATA LOADERS (ANALYTICS) ---
-        async function loadGlobalStats() {
+        // =====================================
+        // LOADERS & ANALYTICS
+        // =====================================
+        async function loadGlobalStats() { 
+            // 1. Total Visits
+            try { 
+                const visitDoc = await getDoc(doc(db, "drama_stats", "_global_visits_")); 
+                if (visitDoc.exists()) document.getElementById('ui-total-visits').textContent = visitDoc.data().views.toLocaleString(); 
+            } catch(e) {} 
+            
+            // 2. Total Dramas Uploaded
             try {
-                const visitDoc = await getDoc(doc(db, "drama_stats", "_global_visits_"));
-                if (visitDoc.exists()) document.getElementById('ui-total-visits').textContent = visitDoc.data().views.toLocaleString();
+                const dSnap = await getDocs(collection(db, "dramas"));
+                document.getElementById('ui-total-dramas').textContent = dSnap.size.toLocaleString();
+            } catch(e) {}
+
+            // 3. Total Pending Requests
+            try {
+                const rQuery = query(collection(db, "requests"), where("status", "==", "Pending"));
+                const rSnap = await getDocs(rQuery);
+                document.getElementById('ui-pending-reqs').textContent = rSnap.size.toLocaleString();
             } catch(e) {}
         }
 
-        async function loadCreators() {
-            const tableBody = document.getElementById('creators-table-body');
-            try {
-                const querySnapshot = await getDocs(collection(db, "creators"));
-                tableBody.innerHTML = ''; 
-                if (querySnapshot.empty) return tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No creators found.</td></tr>';
 
-                const activeCreators = []; 
-                let globalDebt = 0; 
-                let activeCount = 0;
-
-                querySnapshot.forEach(doc => { 
-                    const data = doc.data(); 
-                    globalDebt += (data.unpaidClicks || 0) * PAY_RATE; 
-                    if ((data.totalClicks && data.totalClicks > 0) || data.payoutRequested) {
-                        activeCreators.push({ id: doc.id, ...data }); 
-                        activeCount++;
-                    }
-                });
-                
-                document.getElementById('ui-total-creators').textContent = activeCount;
-                document.getElementById('ui-total-owed').textContent = "$" + globalDebt.toFixed(2);
-                
-                if (activeCreators.length === 0) {
-                    return tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No active earning creators yet.</td></tr>';
-                }
-
-                activeCreators.sort((a, b) => (b.payoutRequested === true) - (a.payoutRequested === true));
-
-                activeCreators.forEach((data) => {
-                    const owedAmount = ((data.unpaidClicks || 0) * PAY_RATE).toFixed(2);
-                    const isRequested = data.payoutRequested === true;
-                    
-                    let statusHtml = '';
-                    if (isRequested) {
-                        statusHtml = `<span class="status-badge status-pending">Requested</span><br><span style="font-size:0.8rem; color:var(--text-muted); margin-top:5px; display:block;"><strong>To:</strong> ${data.payoutDetails || ''}</span>`;
-                    } else if (owedAmount >= THRESHOLD) {
-                        statusHtml = `<span class="status-badge status-ready">Hit $100</span>`;
-                    } else {
-                        statusHtml = `<span class="status-badge status-waiting">Earning...</span>`;
-                    }
-                    
-                    const tr = document.createElement('tr');
-                    if (isRequested) tr.style.background = "rgba(239, 68, 68, 0.05)";
-                    
-                    tr.innerHTML = `<td><div class="creator-name">@${data.creatorId}</div><div style="font-size: 0.8rem;"><a href="mailto:${data.email}" style="color:var(--text-muted);">${data.email}</a></div></td>
-                        <td>${data.totalClicks} Total <br> <span style="color: gray;">${data.unpaidClicks} Unpaid</span></td>
-                        <td style="color:#10b981; font-weight:bold;">$${owedAmount}</td><td>${statusHtml}</td>
-                        <td><button class="btn-pay" onclick="markAsPaid('${data.id}', '${data.creatorId}', ${owedAmount})" ${data.unpaidClicks === 0 && !data.payoutRequested ? 'disabled' : ''}>${data.unpaidClicks === 0 ? 'Paid' : 'Pay'}</button></td>`;
-                    tableBody.appendChild(tr);
-                });
-            } catch (error) { tableBody.innerHTML = `<tr><td colspan="5">Error loading data.</td></tr>`; }
-        }
-
-        window.markAsPaid = async function(id, name, amount) {
-            if (confirm(`Confirm you sent $${amount} to ${name}?`)) {
-                await updateDoc(doc(db, "creators", id), { unpaidClicks: 0, payoutRequested: false, payoutDetails: "" });
-                loadCreators(); loadGlobalStats();
-            }
-        };
-
-        // --- NEW: CMS MANAGE (EDIT / DELETE) LOGIC ---
+        // =====================================
+        // CONTENT MANAGER (CMS)
+        // =====================================
         async function loadDramas() {
             const tbody = document.getElementById('dramas-table-body');
             try {
-                // Fetch all CMS dramas sorted by newest
-                const q = query(collection(db, "dramas"), orderBy("createdAt", "desc"));
-                const snap = await getDocs(q);
+                const snap = await getDocs(query(collection(db, "dramas"), orderBy("createdAt", "desc"))); 
                 tbody.innerHTML = '';
-                
-                if (snap.empty) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No dramas published yet.</td></tr>';
-                    return;
-                }
-
                 snap.forEach(docSnap => {
-                    const data = docSnap.data();
-                    const id = docSnap.id;
-                    const dateAdded = new Date(data.createdAt).toLocaleDateString();
-                    
+                    const data = docSnap.data(); const id = docSnap.id;
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td><strong>${data.title}</strong></td>
-                        <td>${data.type}</td>
+                        <td><img src="${data.img}" style="width: 40px; height: 55px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border-subtle);"></td>
+                        <td><strong style="color: #fff;">${data.title}</strong></td>
+                        <td><span style="background:rgba(255,255,255,0.05); padding:4px 10px; border-radius:50px; font-size:0.8rem;">${data.type}</span></td>
                         <td>${data.totalEps}</td>
-                        <td>${dateAdded}</td>
-                        <td style="display:flex; gap:10px;">
-                            <button class="btn-action edit-btn" style="color:var(--info); border-color:var(--info); padding: 6px 12px; font-size:0.85rem;" data-id="${id}"><i class="fas fa-edit"></i> Edit</button>
-                            <button class="btn-action delete-btn" style="color:var(--danger); border-color:var(--danger); padding: 6px 12px; font-size:0.85rem;" data-id="${id}"><i class="fas fa-trash"></i> Delete</button>
+                        <td class="action-buttons-cell">
+                            <button class="icon-btn edit" onclick="startEditDrama('${id}')" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="icon-btn delete" onclick="deleteDrama('${id}')" title="Delete"><i class="fas fa-trash-alt"></i></button>
                         </td>
                     `;
                     tbody.appendChild(tr);
                 });
-
-                // Attach Action Listeners
-                document.querySelectorAll('.edit-btn').forEach(btn => {
-                    btn.addEventListener('click', async (e) => startEditDrama(e.currentTarget.getAttribute('data-id')));
-                });
-                document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', async (e) => deleteDrama(e.currentTarget.getAttribute('data-id')));
-                });
-
-            } catch (err) {
-                tbody.innerHTML = '<tr><td colspan="5" style="color:red; text-align:center;">Error loading dramas.</td></tr>';
-                console.error(err);
-            }
+                loadGlobalStats(); // Refresh count
+            } catch (err) {}
         }
 
-        async function startEditDrama(id) {
+        // Live Search Filter for Dramas
+        document.getElementById('search-dramas').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#dramas-table-body tr');
+            rows.forEach(row => {
+                const title = row.cells[1].innerText.toLowerCase();
+                row.style.display = title.includes(term) ? '' : 'none';
+            });
+        });
+
+        window.startEditDrama = async function(id) {
             try {
-                const docSnap = await getDoc(doc(db, "dramas", id));
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    editingDramaId = id; // Lock into Edit Mode
-                    
-                    // Populate Form
+                const snap = await getDoc(doc(db, "dramas", id));
+                if (snap.exists()) {
+                    const data = snap.data(); editingDramaId = id;
                     document.getElementById('form-title').innerText = "Edit Drama";
-                    document.getElementById('cms-title').value = data.title;
-                    document.getElementById('cms-img').value = data.img;
-                    document.getElementById('cms-synopsis').value = data.synopsis;
-                    document.getElementById('cms-imdb-id').value = data.imdbId;
-                    document.getElementById('cms-eps').value = (data.seasons || [data.totalEps]).join(', ');
-                    document.getElementById('cms-type').value = data.type;
-                    document.getElementById('cms-status').value = data.status;
-                    document.getElementById('cms-year').value = data.year;
-                    document.getElementById('cms-score').value = data.imdb;
-                    document.getElementById('cms-genre').value = data.genre;
-                    document.getElementById('cms-trend').value = data.Trend;
-                    document.getElementById('cms-actor1').value = data.actor1;
-                    document.getElementById('cms-actor1-img').value = data.actor1Img;
-                    document.getElementById('cms-actor2').value = data.actor2;
-                    document.getElementById('cms-actor2-img').value = data.actor2Img;
-
-                    // Swap Buttons
-                    document.getElementById('cms-submit').innerHTML = '<i class="fas fa-save"></i> Update Drama';
-                    document.getElementById('cms-cancel').style.display = 'flex';
+                    document.getElementById('cms-title').value = data.title; document.getElementById('cms-img').value = data.img; document.getElementById('cms-synopsis').value = data.synopsis; document.getElementById('cms-imdb-id').value = data.imdbId; document.getElementById('cms-eps').value = (data.seasons || [data.totalEps]).join(', '); document.getElementById('cms-type').value = data.type; document.getElementById('cms-status').value = data.status; document.getElementById('cms-year').value = data.year; document.getElementById('cms-score').value = data.imdb; document.getElementById('cms-genre').value = data.genre; document.getElementById('cms-trend').value = data.Trend || 'F'; document.getElementById('cms-actor1').value = data.actor1; document.getElementById('cms-actor1-img').value = data.actor1Img; document.getElementById('cms-actor2').value = data.actor2; document.getElementById('cms-actor2-img').value = data.actor2Img;
                     
-                    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll up to the form
+                    document.getElementById('cms-submit').innerHTML = '<i class="fas fa-save"></i> Save Changes'; 
+                    document.getElementById('cms-submit').style.background = '#3b82f6';
+                    document.getElementById('cms-cancel').style.display = 'flex';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
-            } catch(e) { console.error(e); alert("Error fetching drama details."); }
-        }
+            } catch(e) {}
+        };
 
-        async function deleteDrama(id) {
-            if (confirm("WARNING: Are you sure you want to permanently delete this drama from your live website?")) {
-                try {
-                    await deleteDoc(doc(db, "dramas", id));
-                    alert("Drama deleted successfully.");
-                    loadDramas(); // Refresh Table
-                } catch(e) { console.error(e); alert("Error deleting drama."); }
-            }
-        }
+        window.deleteDrama = async function(id) { 
+            if (confirm("WARNING: Are you sure you want to permanently delete this drama from the database?")) { 
+                await deleteDoc(doc(db, "dramas", id)); 
+                loadDramas(); 
+            } 
+        };
 
-        function resetCMSForm() {
-            document.getElementById('cms-form').reset();
-            editingDramaId = null;
-            document.getElementById('form-title').innerText = "Upload New Drama";
-            document.getElementById('cms-submit').innerHTML = '<i class="fas fa-rocket"></i> Publish Drama';
-            document.getElementById('cms-cancel').style.display = 'none';
-        }
-        document.getElementById('cms-cancel').addEventListener('click', resetCMSForm);
+        document.getElementById('cms-cancel').addEventListener('click', () => { 
+            document.getElementById('cms-form').reset(); 
+            editingDramaId = null; 
+            document.getElementById('form-title').innerText = "Upload New Drama"; 
+            document.getElementById('cms-submit').innerHTML = '<i class="fas fa-rocket"></i> Publish Drama'; 
+            document.getElementById('cms-submit').style.background = 'var(--primary)';
+            document.getElementById('cms-cancel').style.display = 'none'; 
+        });
 
-
-        // --- MAIN CMS SUBMIT LOGIC (HANDLES BOTH PUBLISH & UPDATE) ---
         document.getElementById('cms-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('cms-submit');
-            const isEditing = editingDramaId !== null;
-            
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (isEditing ? 'Updating...' : 'Publishing...');
-            btn.disabled = true;
-
+            const btn = document.getElementById('cms-submit'); const isEditing = editingDramaId !== null;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...'; btn.disabled = true;
             try {
-                // Parse Seasons Array
-                const epsInput = document.getElementById('cms-eps').value.trim();
-                const seasonsArray = epsInput.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
-                const totalCalculatedEps = seasonsArray.reduce((a, b) => a + b, 0);
-
-                // Set Target Database Location
-                let targetDocRef;
-                let smartLink;
-                
-                if (isEditing) {
-                    targetDocRef = doc(db, "dramas", editingDramaId);
-                    smartLink = `watch.html?id=${editingDramaId}`;
-                } else {
-                    targetDocRef = doc(collection(db, "dramas"));
-                    smartLink = `watch.html?id=${targetDocRef.id}`;
-                }
-
-                const dramaData = {
-                    title: document.getElementById('cms-title').value.trim(),
-                    img: document.getElementById('cms-img').value.trim(),
-                    link: smartLink, 
-                    synopsis: document.getElementById('cms-synopsis').value.trim(),
-                    imdbId: document.getElementById('cms-imdb-id').value.trim(),
-                    seasons: seasonsArray, 
-                    totalEps: totalCalculatedEps, 
-                    type: document.getElementById('cms-type').value,
-                    status: document.getElementById('cms-status').value,
-                    year: parseInt(document.getElementById('cms-year').value),
-                    imdb: document.getElementById('cms-score').value.trim(),
-                    genre: document.getElementById('cms-genre').value.trim(),
-                    Trend: document.getElementById('cms-trend').value,
-                    actor1: document.getElementById('cms-actor1').value.trim(),
-                    actor1Img: document.getElementById('cms-actor1-img').value.trim(),
-                    actor2: document.getElementById('cms-actor2').value.trim(),
-                    actor2Img: document.getElementById('cms-actor2-img').value.trim()
+                const epsArr = document.getElementById('cms-eps').value.trim().split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+                let targetRef = isEditing ? doc(db, "dramas", editingDramaId) : doc(collection(db, "dramas"));
+                const dramaData = { 
+                    title: document.getElementById('cms-title').value.trim(), 
+                    img: document.getElementById('cms-img').value.trim(), 
+                    link: `watch.html?id=${targetRef.id}`, 
+                    synopsis: document.getElementById('cms-synopsis').value.trim(), 
+                    imdbId: document.getElementById('cms-imdb-id').value.trim(), 
+                    seasons: epsArr, 
+                    totalEps: epsArr.reduce((a, b) => a + b, 0), 
+                    type: document.getElementById('cms-type').value, 
+                    status: document.getElementById('cms-status').value, 
+                    year: parseInt(document.getElementById('cms-year').value), 
+                    imdb: document.getElementById('cms-score').value.trim(), 
+                    genre: document.getElementById('cms-genre').value.trim(), 
+                    Trend: document.getElementById('cms-trend').value, 
+                    actor1: document.getElementById('cms-actor1').value.trim(), 
+                    actor1Img: document.getElementById('cms-actor1-img').value.trim(), 
+                    actor2: document.getElementById('cms-actor2').value.trim(), 
+                    actor2Img: document.getElementById('cms-actor2-img').value.trim() 
                 };
-
-                // Save to Database
-                if (isEditing) {
-                    await updateDoc(targetDocRef, dramaData);
-                    alert("Success! Drama updated on the live website.");
-                } else {
-                    dramaData.createdAt = new Date().getTime(); // Only add timestamp to new dramas
-                    await setDoc(targetDocRef, dramaData);
-                    alert("Success! Drama published and Player Page created.");
+                
+                if (isEditing) { 
+                    await updateDoc(targetRef, dramaData); 
+                } else { 
+                    dramaData.createdAt = new Date().getTime(); 
+                    await setDoc(targetRef, dramaData); 
                 }
                 
-                resetCMSForm();
-                loadDramas(); // Refresh the table below
-            } catch (error) {
-                console.error(error);
-                alert("Error saving drama.");
-            } finally {
-                btn.innerHTML = isEditing ? '<i class="fas fa-save"></i> Update Drama' : '<i class="fas fa-rocket"></i> Publish Drama';
-                btn.disabled = false;
+                document.getElementById('cms-cancel').click(); 
+                loadDramas();
+            } catch (error) { 
+                alert("Error saving drama."); 
+            } finally { 
+                btn.disabled = false; 
             }
         });
+
+
+        // =====================================
+        // VIEWER REQUESTS SYSTEM
+        // =====================================
+        async function loadRequests() {
+            const tbody = document.getElementById('requests-table-body');
+            try {
+                const snap = await getDocs(query(collection(db, "requests"), orderBy("createdAt", "desc"))); 
+                tbody.innerHTML = '';
+                if(snap.empty) {
+                    return tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 40px; color:var(--text-muted);"><i class="fas fa-check-circle" style="font-size:2rem; display:block; margin-bottom:10px; color:var(--success);"></i> Inbox Zero! No pending requests.</td></tr>';
+                }
+                
+                snap.forEach(docSnap => {
+                    const d = docSnap.data();
+                    const isUploaded = d.status === "Uploaded";
+                    const statusClass = isUploaded ? "status-ready" : "status-pending";
+                    const icon = isUploaded ? "fa-check-circle" : "fa-clock";
+                    
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><span style="color:#a1a1aa; font-size:0.85rem;">${d.userEmail}</span></td>
+                        <td><strong style="color:#fff; font-size:1.05rem;">${d.dramaName}</strong></td>
+                        <td>${new Date(d.createdAt).toLocaleDateString()}</td>
+                        <td><span class="status-badge ${statusClass}"><i class="fas ${icon}"></i> ${d.status}</span></td>
+                        <td class="action-buttons-cell">
+                            <button class="icon-btn done" onclick="markRequestUploaded('${docSnap.id}')" title="Mark as Uploaded" ${isUploaded ? 'disabled' : ''}>
+                                ${isUploaded ? 'Done' : '<i class="fas fa-check"></i> Upload'}
+                            </button>
+                            <button class="icon-btn delete" onclick="deleteRequest('${docSnap.id}')" title="Delete Request">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                loadGlobalStats(); // Refresh count
+            } catch(e) {
+                console.error("Requests Error:", e);
+            }
+        }
+        
+       window.markRequestUploaded = async function(id) {
+            const dramaLink = prompt("Enter the local link for this drama (e.g., watch.html?id=mydemon):");
+            if (dramaLink === null) return; 
+
+            await updateDoc(doc(db, "requests", id), { 
+                status: "Uploaded", 
+                notified: false,
+                link: dramaLink 
+            });
+            
+            loadRequests();
+        };
+
+        window.deleteRequest = async function(id) {
+            if (confirm("Delete this request permanently from the database?")) {
+                await deleteDoc(doc(db, "requests", id));
+                loadRequests();
+            }
+        };
+
+        // =====================================
+        // PARTNERS & AFFILIATES SYSTEM
+        // =====================================
+        async function loadCreators() {
+            const tableBody = document.getElementById('creators-table-body');
+            try {
+                const snap = await getDocs(collection(db, "creators"));
+                tableBody.innerHTML = ''; 
+                let globalDebt = 0; let activeCount = 0; const arr = [];
+                snap.forEach(doc => { 
+                    const d = doc.data(); 
+                    globalDebt += (d.unpaidClicks || 0) * 0.05; 
+                    arr.push({ id: doc.id, ...d }); 
+                    activeCount++;
+                });
+                document.getElementById('ui-total-creators').textContent = activeCount; 
+                document.getElementById('ui-total-owed').textContent = "$" + globalDebt.toFixed(2);
+                
+                arr.sort((a, b) => (b.payoutRequested === true) - (a.payoutRequested === true));
+                
+                if (arr.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color:var(--text-muted);"><i class="fas fa-users-slash" style="font-size:2rem; display:block; margin-bottom:10px;"></i> No partners registered yet.</td></tr>';
+                    return;
+                }
+
+                arr.forEach((data) => {
+                    const owedAmount = ((data.unpaidClicks || 0) * 0.05).toFixed(2);
+                    let statusHtml = data.payoutRequested 
+                        ? `<span class="status-badge status-pending">Requested</span><br><span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:4px;">${data.payoutDetails}</span>` 
+                        : owedAmount >= 100 ? `<span class="status-badge status-ready">Hit $100</span>` : `<span class="status-badge" style="background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid var(--border-subtle);">Earning...</span>`;
+                    
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>@${data.creatorId || 'Unknown'}</strong></td>
+                        <td>${data.totalClicks || 0} Clicks</td>
+                        <td style="color:var(--success); font-weight:600; font-size:1.1rem;">$${owedAmount}</td>
+                        <td>${statusHtml}</td>
+                        <td class="action-buttons-cell">
+                            <button class="icon-btn done" onclick="markAsPaid('${data.id}', '${data.creatorId}', ${owedAmount})" title="Mark Paid" ${data.unpaidClicks===0 && !data.payoutRequested ? 'disabled':''}>
+                                <i class="fas fa-check-double"></i>
+                            </button>
+                            <button class="icon-btn warn" onclick="notifyCreator('${data.id}', '${data.creatorId}')" title="Send Warning/Notification">
+                                <i class="fas fa-bell"></i>
+                            </button>
+                            <button class="icon-btn delete" onclick="deleteCreator('${data.id}', '${data.creatorId}')" title="Remove Creator">
+                                <i class="fas fa-user-times"></i>
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        window.markAsPaid = async function(id, name, amount) { 
+            if (confirm(`MARK AS PAID: Did you send $${amount} to @${name}?`)) { 
+                await updateDoc(doc(db, "creators", id), { unpaidClicks: 0, payoutRequested: false, payoutDetails: "" }); 
+                loadCreators(); 
+            } 
+        };
+
+        window.notifyCreator = async function(id, name) {
+            const msg = prompt(`SEND WARNING TO @${name}:\nType the error they need to fix on their Reels/TikToks. It will be sent directly to their database file:`);
+            if (msg !== null && msg.trim() !== "") {
+                await updateDoc(doc(db, "creators", id), { adminMessage: msg.trim() });
+                alert(`Notification successfully sent to @${name}.`);
+            }
+        };
+
+        window.deleteCreator = async function(id, name) {
+            if (confirm(`CRITICAL WARNING: Are you sure you want to permanently delete the affiliate @${name}? They will lose all earnings and tracking data.`)) {
+                await deleteDoc(doc(db, "creators", id));
+                loadCreators();
+            }
+        };
+
     </script>
 </body>
 </html>

@@ -7,151 +7,164 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
     <link rel="stylesheet" href="indexstyle.css">
     <link rel="stylesheet" href="bottom-bar.css"> 
 
     <style>
-        body { padding-bottom: 80px; }
+        body { padding-bottom: 90px; background-color: var(--background-color); }
+        .profile-container { max-width: 1000px; margin: 40px auto; padding: 0 4%; animation: fadeIn 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); }
         
-        .profile-container { max-width: 1000px; margin: 40px auto; padding: 0 4%; animation: fadeIn 0.5s ease; }
-        
-        /* THE HEADER */
+        /* PREMIUM HEADER */
         .profile-header-card {
-            background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border-light);
-            border-radius: 30px; padding: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.3), inset 0 0 60px rgba(138, 43, 226, 0.05);
-            margin-bottom: 40px; position: relative; overflow: hidden; display: flex; align-items: center; gap: 35px;
+            background: rgba(26, 26, 29, 0.6); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 30px; padding: 45px 40px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 80px rgba(138, 43, 226, 0.08);
+            margin-bottom: 40px; position: relative; overflow: hidden; display: flex; align-items: center; gap: 40px;
         }
-        .profile-header-card::before {
-            content: ''; position: absolute; top: -50px; left: -50px; width: 200px; height: 200px; 
-            background: rgba(138, 43, 226, 0.3); border-radius: 50%; filter: blur(60px); z-index: -1;
-        }
+        .profile-header-card::before { content: ''; position: absolute; top: -80px; left: -80px; width: 250px; height: 250px; background: rgba(138, 43, 226, 0.35); border-radius: 50%; filter: blur(70px); z-index: -1; }
+        .profile-header-card::after { content: ''; position: absolute; bottom: -50px; right: -50px; width: 150px; height: 150px; background: rgba(229, 9, 20, 0.15); border-radius: 50%; filter: blur(60px); z-index: -1; }
 
-        /* Avatar Styling */
-        .avatar-section { position: relative; flex-shrink: 0; }
-        .profile-avatar-wrapper {
-            width: 140px; height: 140px; border-radius: 50%; background: rgba(0,0,0,0.2); padding: 6px;
-            border: 2px solid var(--primary-color); box-shadow: 0 0 25px var(--primary-glow); transition: 0.3s ease;
-        }
+        .avatar-section { position: relative; flex-shrink: 0; z-index: 2; }
+        .profile-avatar-wrapper { width: 145px; height: 145px; border-radius: 50%; background: rgba(0,0,0,0.3); padding: 6px; border: 2px solid var(--primary-color); box-shadow: 0 0 30px rgba(138, 43, 226, 0.4); transition: transform 0.4s ease; }
+        .profile-avatar-wrapper:hover { transform: scale(1.05); }
         .profile-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #fff; }
         
-        .avatar-upload-btn {
-            position: absolute; bottom: 5px; right: 5px; background: var(--primary-color); color: white;
-            width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            cursor: pointer; border: 3px solid #1A1A1D; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: 0.3s ease;
-        }
-        .avatar-upload-btn:hover { transform: scale(1.1); background: #9d4edd; }
+        .avatar-upload-btn { position: absolute; bottom: 5px; right: 5px; background: var(--primary-color); color: white; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: 3px solid #151518; box-shadow: 0 5px 15px rgba(0,0,0,0.6); transition: 0.3s ease; font-size: 1.1rem; }
+        .avatar-upload-btn:hover { transform: scale(1.15) rotate(10deg); background: #9d4edd; }
         #avatar-input { display: none; }
 
-        /* Profile Info */
-        .profile-info { flex-grow: 1; }
-        .profile-name { font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 5px; letter-spacing: 0.5px; }
-        .profile-email { color: var(--text-muted-color); font-size: 1rem; margin-bottom: 15px; }
-        .badge-viewer {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(138, 43, 226, 0.1));
-            color: #e0b3ff; padding: 6px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
-            border: 1px solid rgba(138, 43, 226, 0.4); display: inline-flex; align-items: center; gap: 6px;
-        }
+        .profile-info { flex-grow: 1; z-index: 2; }
+        .profile-name { font-size: 2.4rem; font-weight: 700; color: #fff; margin-bottom: 5px; letter-spacing: 0.5px; line-height: 1.2; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .profile-email { color: #a1a1aa; font-size: 1.05rem; margin-bottom: 18px; font-weight: 300; }
+        .badge-viewer { background: linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(138, 43, 226, 0.1)); color: #e0b3ff; padding: 6px 20px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(138, 43, 226, 0.4); display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(138, 43, 226, 0.2); }
 
-        .btn-logout {
-            position: absolute; top: 30px; right: 30px; background: rgba(255, 77, 77, 0.1); color: #ff4d4d;
-            border: 1px solid rgba(255, 77, 77, 0.3); padding: 8px 18px; border-radius: 12px; cursor: pointer; 
-            transition: 0.3s; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; justify-content: center;
-        }
-        .btn-logout:hover { background: #ff4d4d; color: #fff; box-shadow: 0 4px 15px rgba(255, 77, 77, 0.3); }
+        .btn-logout { position: absolute; top: 30px; right: 35px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 10px 22px; border-radius: 50px; cursor: pointer; transition: 0.3s; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; justify-content: center; z-index: 2; backdrop-filter: blur(5px); }
+        .btn-logout:hover { background: #ef4444; color: #fff; box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4); transform: translateY(-2px); }
 
         /* TABS */
-        .profile-tabs { 
-            display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid rgba(255,255,255,0.05); 
-            padding-bottom: 10px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; 
-        }
-        .profile-tabs::-webkit-scrollbar { display: none; } /* Hide scrollbar for smooth mobile swiping */
-        
-        .tab-btn { background: transparent; border: none; color: var(--text-muted-color); font-size: 1rem; font-weight: 600; cursor: pointer; padding: 12px 24px; border-radius: 16px; transition: 0.3s; white-space: nowrap; }
-        .tab-btn:hover { background: rgba(255,255,255,0.03); color: #fff; }
-        .tab-btn.active { background: var(--primary-color); color: #fff; box-shadow: 0 4px 15px var(--primary-glow); }
-        .tab-content { display: none; animation: slideUp 0.4s ease-out forwards; opacity: 0; }
+        .profile-tabs { display: flex; gap: 12px; margin-bottom: 35px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth; }
+        .profile-tabs::-webkit-scrollbar { display: none; }
+        .tab-btn { background: rgba(255,255,255,0.03); border: 1px solid transparent; color: var(--text-muted-color); font-size: 1rem; font-weight: 500; cursor: pointer; padding: 12px 24px; border-radius: 50px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+        .tab-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .tab-btn.active { background: var(--primary-color); color: #fff; box-shadow: 0 6px 20px var(--primary-glow); border-color: rgba(255,255,255,0.1); font-weight: 600; }
+        .tab-content { display: none; animation: slideUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; opacity: 0; }
         .tab-content.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .continue-watching-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-
-        /* Settings Form */
-        .settings-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border-light); border-radius: 24px; padding: 35px; max-width: 500px; margin: 0 auto; }
-        .input-group { margin-bottom: 20px; position: relative; }
-        .input-group label { display: block; font-size: 0.9rem; color: var(--text-muted-color); margin-bottom: 8px; font-weight: 500; }
-        .profile-input { width: 100%; padding: 15px 18px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 14px; color: #fff; font-family: 'Poppins'; transition: 0.3s; font-size: 1rem; }
-        .profile-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 15px var(--primary-glow); background: rgba(0,0,0,0.5); }
-        .btn-save { width: 100%; background: var(--primary-color); color: #fff; border: none; padding: 15px; border-radius: 14px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 1rem; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .btn-save:hover { background: #9d4edd; transform: translateY(-2px); box-shadow: 0 5px 15px var(--primary-glow); }
-        #msg-box { margin-top: 15px; padding: 12px; border-radius: 12px; text-align: center; font-size: 0.9rem; display: none; font-weight: 500; }
+        /* GRIDS & CARDS OVERRIDE FOR PROFILE PAGE */
+        .drama-grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; }
+        .item-wrapper { position: relative; transition: transform 0.3s; height: 100%; display: flex; }
+        .item-wrapper:hover { transform: translateY(-5px); z-index: 5; }
         
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted-color); background: var(--glass-bg); border-radius: 24px; border: 1px dashed var(--glass-border); }
-        .empty-state i { font-size: 3.5rem; margin-bottom: 15px; color: rgba(138, 43, 226, 0.4); }
+        /* Overriding the rigid indexstyle.css card rules for grids */
+        .drama-grid-container .drama-card {
+            min-width: 100% !important;
+            max-width: 100% !important;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin: 0;
+            background: rgba(26, 26, 29, 0.6);
+        }
+        .drama-grid-container .drama-card-img {
+            width: 100%;
+            aspect-ratio: 2.7 / 4; /* Perfect poster ratio */
+            border-radius: 16px 16px 0 0;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .drama-grid-container .drama-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .drama-grid-container .drama-card-info {
+            padding: 16px;
+            background: rgba(15, 15, 18, 0.95);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .drama-grid-container .drama-card-title {
+            font-size: 1rem;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* FLOATING REMOVE BUTTONS (GLASS RED) */
+        .remove-btn { 
+            position: absolute; top: 10px; right: 10px; z-index: 10; 
+            background: rgba(239, 68, 68, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 50%; 
+            width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; 
+            cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5); opacity: 0; transform: scale(0.8); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .item-wrapper:hover .remove-btn { opacity: 1; transform: scale(1); }
+        .remove-btn:hover { background: #ef4444; transform: scale(1.15) !important; }
 
-        /* INTEGRATED PARTNER DASHBOARD STYLES */
-        #tab-btn-partner.active { background: #d4af37; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4); color: #000; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 25px; border-radius: 20px; text-align: center; }
-        .stat-card i { font-size: 1.8rem; color: #d4af37; margin-bottom: 12px; }
-        .stat-value { font-size: 2.2rem; font-weight: 700; color: #fff; }
-        .stat-desc { font-size: 0.85rem; color: var(--text-muted-color); }
-        .progress-container { width: 100%; background: rgba(0,0,0,0.5); border-radius: 10px; height: 12px; overflow: hidden; margin-top: 15px; border: 1px solid var(--glass-border); }
-        .progress-bar { height: 100%; background: linear-gradient(90deg, #d4af37, #f1c40f); width: 0%; transition: width 1s ease-in-out; }
-        .link-box { display: flex; gap: 10px; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); margin-top: 15px; }
-        .link-input { flex: 1; background: transparent; border: none; color: #d4af37; font-family: monospace; outline: none; font-size: 1rem; }
-        .btn-copy { background: #d4af37; color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; }
-        .btn-copy:hover { background: #f1c40f; }
-        .btn-claim { background: #10b981; color: #fff; border: none; padding: 14px 20px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 15px; transition: 0.3s;}
-        .btn-claim:hover { background: #059669; }
+        /* SETTINGS & FORMS */
+        .settings-card { background: rgba(26, 26, 29, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 40px; max-width: 550px; margin: 0 auto; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+        .input-group { margin-bottom: 24px; position: relative; }
+        .input-group label { display: block; font-size: 0.95rem; color: #d4d4d8; margin-bottom: 10px; font-weight: 500; }
+        .profile-input { width: 100%; padding: 16px 20px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; color: #fff; font-family: 'Poppins'; transition: 0.3s; font-size: 1.05rem; }
+        .profile-input:focus { outline: none; border-color: var(--primary-color); box-shadow: inset 0 0 0 1px var(--primary-color), 0 0 20px rgba(138, 43, 226, 0.2); background: rgba(0,0,0,0.6); }
+        .btn-save { width: 100%; background: var(--primary-color); color: #fff; border: none; padding: 16px; border-radius: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 1.05rem; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 15px var(--primary-glow); }
+        .btn-save:hover { background: #9d4edd; transform: translateY(-3px); box-shadow: 0 8px 25px rgba(157, 78, 221, 0.5); }
+        
+        .danger-zone { margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .btn-clear-history { width: 100%; background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 14px; border-radius: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-clear-history:hover { background: rgba(239, 68, 68, 0.1); box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
 
-        /* =========================================
-           MOBILE OPTIMIZATION (THE IMMERSION FIX)
-        ========================================= */
+        .empty-state { text-align: center; padding: 80px 20px; color: var(--text-muted-color); background: rgba(26, 26, 29, 0.4); border-radius: 24px; border: 1px dashed rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+        .empty-state i { font-size: 4rem; margin-bottom: 20px; color: rgba(138, 43, 226, 0.3); }
+        .empty-state h3 { font-weight: 500; font-size: 1.2rem; color: #e4e4e7; }
+
+        /* REQUESTS TAB (GLASS CARDS) */
+        .request-item { background: rgba(26, 26, 29, 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); padding: 20px 25px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; transition: 0.3s; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .request-item:hover { border-color: rgba(138, 43, 226, 0.3); transform: translateX(5px); }
+        .req-info { display: flex; flex-direction: column; gap: 6px; }
+        .req-title { font-weight: 600; color: #fff; font-size: 1.15rem; }
+        .req-date { font-size: 0.85rem; color: #a1a1aa; }
+        .req-status-box { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+        .req-status { padding: 6px 16px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-pending { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .status-uploaded { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .req-link-btn { background: var(--primary-color); color: white; padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; transition: 0.3s; box-shadow: 0 4px 10px var(--primary-glow); }
+        .req-link-btn:hover { background: #9d4edd; transform: translateY(-2px); }
+
+        /* PARTNER DASHBOARD */
+        #tab-btn-partner.active { background: linear-gradient(135deg, #d4af37, #f1c40f); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4); color: #000; border: none; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(212, 175, 55, 0.2); padding: 30px; border-radius: 24px; text-align: center; box-shadow: inset 0 0 30px rgba(212, 175, 55, 0.05); }
+        .stat-card i { font-size: 2rem; color: #d4af37; margin-bottom: 15px; }
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: #fff; }
+        .progress-container { width: 100%; background: rgba(0,0,0,0.6); border-radius: 50px; height: 14px; overflow: hidden; margin-top: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #d4af37, #f1c40f, #fff); width: 0%; transition: width 1.5s cubic-bezier(0.25, 0.8, 0.25, 1); border-radius: 50px; box-shadow: 0 0 10px #d4af37; }
+        .link-box { display: flex; gap: 10px; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); margin-top: 15px; }
+        .link-input { flex: 1; background: transparent; border: none; color: #d4af37; font-family: monospace; outline: none; font-size: 1.05rem; }
+        .btn-copy { background: linear-gradient(135deg, #d4af37, #f1c40f); color: #000; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 700; transition: 0.3s; }
+        .btn-copy:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4); }
+        .btn-claim { background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; padding: 16px 20px; border-radius: 16px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 20px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); transition: 0.3s; }
+        .btn-claim:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5); }
+
+        /* MOBILE OPTIMIZATION */
         @media (max-width: 768px) {
             .profile-container { margin: 20px auto; padding: 0 5%; }
-            
-            /* Profile Header Overhaul */
-            .profile-header-card { 
-                flex-direction: column; 
-                text-align: center; 
-                padding: 35px 20px; 
-                gap: 15px; 
-                border-radius: 24px; 
-            }
-            .profile-avatar-wrapper { width: 115px; height: 115px; margin: 0 auto; }
-            .avatar-upload-btn { width: 36px; height: 36px; font-size: 0.95rem; right: 2px; bottom: 2px; }
-            .profile-name { font-size: 1.7rem; margin-bottom: 2px; }
-            .profile-email { font-size: 0.9rem; margin-bottom: 10px; }
-            
-            /* Snap Logout to Full Width Bottom */
-            .btn-logout { 
-                position: static; 
-                width: 100%; 
-                margin-top: 15px; 
-                padding: 14px; 
-                border-radius: 14px; 
-            }
-
-            /* Responsive Tabs */
-            .profile-tabs { margin-bottom: 20px; padding-bottom: 5px; }
-            .tab-btn { font-size: 0.9rem; padding: 10px 18px; border-radius: 12px; }
-            
-            /* Forms & Grids */
-            .settings-card { padding: 25px 20px; border-radius: 20px; }
-            .stat-card { padding: 20px 15px; }
-            .stat-value { font-size: 1.8rem; }
-            .link-box { flex-direction: column; }
-            .btn-copy { width: 100%; text-align: center; }
-            
-            /* Forces 2-column layout for Drama Cards on Mobile */
-            .continue-watching-grid { 
-                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
-                gap: 15px; 
-            }
-            
-            .empty-state { padding: 40px 15px; }
-            .empty-state i { font-size: 2.5rem; }
+            .profile-header-card { flex-direction: column; text-align: center; padding: 40px 20px; gap: 20px; border-radius: 28px; }
+            .profile-avatar-wrapper { width: 130px; height: 130px; margin: 0 auto; }
+            .btn-logout { position: static; width: 100%; margin-top: 10px; }
+            .drama-grid-container { grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 15px; }
+            .remove-btn { opacity: 1; transform: scale(1); top: 8px; right: 8px; width: 30px; height: 30px; font-size: 0.85rem; }
+            .request-item { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .req-status-box { width: 100%; flex-direction: row; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; }
+            .profile-tabs { margin-inline: -5%; padding-inline: 5%; width: 110%; } /* Edge to edge scroll on mobile */
         }
     </style>
 </head>
@@ -160,7 +173,7 @@
     <header class="main-header">
         <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
             <a href="index.html" class="logo">Drama<span>Kan</span></a>
-            <a href="index.html" style="color: var(--text-muted-color); font-weight: 500; text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-muted-color)'"><i class="fas fa-arrow-left"></i> Home</a>
+            <a href="index.html" style="color: var(--text-muted-color); font-weight: 500; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: 0.3s;"><i class="fas fa-arrow-left"></i> Home</a>
         </div>
     </header>
 
@@ -168,86 +181,76 @@
         
         <div class="profile-header-card">
             <div class="avatar-section">
-                <div class="profile-avatar-wrapper">
-                    <img id="ui-avatar" class="profile-avatar" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Loading" alt="Avatar">
-                </div>
-                <label for="avatar-input" class="avatar-upload-btn" title="Change Profile Picture">
-                    <i class="fas fa-camera"></i>
-                </label>
+                <div class="profile-avatar-wrapper"><img id="ui-avatar" class="profile-avatar" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Loading" alt="Avatar"></div>
+                <label for="avatar-input" class="avatar-upload-btn" title="Change Profile Picture"><i class="fas fa-camera"></i></label>
                 <input type="file" id="avatar-input" accept="image/png, image/jpeg, image/webp">
             </div>
-
             <div class="profile-info">
                 <h1 class="profile-name" id="ui-username">Loading...</h1>
                 <p class="profile-email" id="ui-email">Fetching details...</p>
-                <div class="badge-viewer" id="ui-badge"><i class="fas fa-gem"></i> VIP Member</div>
+                <div class="badge-viewer" id="ui-badge"><i class="fas fa-gem"></i> Premium Viewer</div>
             </div>
-
             <button class="btn-logout" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
 
         <div class="profile-tabs">
             <button class="tab-btn active" data-target="watching-tab"><i class="fas fa-play"></i> Continue Watching</button>
-            <button class="tab-btn" data-target="settings-tab"><i class="fas fa-sliders-h"></i> Edit Profile</button>
-            <button class="tab-btn" id="tab-btn-partner" data-target="partner-tab" style="display: none;"><i class="fas fa-hand-holding-dollar"></i> Partner Dashboard</button>
+            <button class="tab-btn" data-target="mylist-tab"><i class="fas fa-bookmark"></i> My List</button>
+            <button class="tab-btn" data-target="requests-tab"><i class="fas fa-envelope-open-text"></i> Requests</button>
+            <button class="tab-btn" data-target="settings-tab"><i class="fas fa-sliders-h"></i> Settings</button>
+            <button class="tab-btn" id="tab-btn-partner" data-target="partner-tab" style="display: none;"><i class="fas fa-crown"></i> Partner Dashboard</button>
         </div>
 
         <div id="watching-tab" class="tab-content active">
-            <div class="continue-watching-grid" id="history-grid"></div>
+            <div class="drama-grid-container" id="history-grid"></div>
+        </div>
+
+        <div id="mylist-tab" class="tab-content">
+            <div class="drama-grid-container" id="mylist-grid-container"></div>
+        </div>
+
+        <div id="requests-tab" class="tab-content">
+            <div id="requests-list-container"></div>
         </div>
 
         <div id="settings-tab" class="tab-content">
             <div class="settings-card">
-                <h3 style="margin-bottom: 25px; color: #fff; font-size: 1.4rem;">Profile Settings</h3>
+                <h2 style="margin-bottom: 25px; color: #fff; font-weight: 600;"><i class="fas fa-user-edit" style="color: var(--primary-color);"></i> Edit Profile</h2>
                 <form id="update-profile-form">
-                    <div class="input-group">
-                        <label>Unique Username</label>
-                        <input type="text" id="edit-username" class="profile-input" required maxlength="20">
-                    </div>
-                    <div class="input-group">
-                        <label>Email Address</label>
-                        <input type="email" id="edit-email" class="profile-input" disabled style="opacity: 0.5; cursor: not-allowed; background: rgba(0,0,0,0.6);">
-                    </div>
+                    <div class="input-group"><label>Display Name</label><input type="text" id="edit-username" class="profile-input" required maxlength="20"></div>
+                    <div class="input-group"><label>Registered Email</label><input type="email" id="edit-email" class="profile-input" disabled style="opacity: 0.5; cursor: not-allowed;" title="Email cannot be changed"></div>
                     <button type="submit" class="btn-save" id="btn-save"><i class="fas fa-check-circle"></i> Save Changes</button>
-                    <div id="msg-box"></div>
                 </form>
+
+                <div class="danger-zone">
+                    <h3 style="color: #ef4444; font-size: 1.1rem; margin-bottom: 15px;"><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+                    <button class="btn-clear-history" onclick="clearAllHistory()"><i class="fas fa-trash-alt"></i> Clear Entire Watch History</button>
+                </div>
             </div>
         </div>
 
         <div id="partner-tab" class="tab-content">
             <div class="settings-card" style="max-width: 100%;">
-                <h3 style="margin-bottom: 25px; color: #fff; font-size: 1.4rem;"><i class="fas fa-hand-holding-dollar" style="color:#d4af37;"></i> Partner Overview</h3>
-
+                <h2 style="margin-bottom: 30px; color: #fff;"><i class="fas fa-hand-holding-dollar" style="color:#d4af37;"></i> Affiliate Overview</h2>
                 <div class="stats-grid">
-                    <div class="stat-card"><i class="fas fa-mouse-pointer"></i><div class="stat-value" id="ui-total-clicks">0</div><div class="stat-desc">Total Clicks</div></div>
-                    <div class="stat-card"><i class="fas fa-chart-line"></i><div class="stat-value" id="ui-unpaid-clicks">0</div><div class="stat-desc">Unpaid Clicks</div></div>
-                    <div class="stat-card"><i class="fas fa-wallet"></i><div class="stat-value" id="ui-earnings">$0.00</div><div class="stat-desc">Available Balance</div></div>
+                    <div class="stat-card"><i class="fas fa-mouse-pointer"></i><div class="stat-value" id="ui-total-clicks">0</div><div style="color: #a1a1aa; margin-top: 5px;">Total Valid Clicks</div></div>
+                    <div class="stat-card"><i class="fas fa-wallet"></i><div class="stat-value" id="ui-earnings">$0.00</div><div style="color: #a1a1aa; margin-top: 5px;">Available Balance</div></div>
                 </div>
-
-                <div style="background: rgba(0,0,0,0.2); padding: 25px; border-radius: 16px; border: 1px solid var(--glass-border); margin-bottom: 25px;">
+                <div style="background: rgba(0,0,0,0.4); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 30px;">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <strong>Payout Threshold</strong>
-                        <span id="progress-text" style="color: #d4af37; font-size: 0.9rem; font-weight: 600;">$0.00 / $100.00</span>
+                        <strong style="font-size: 1.1rem;">Payout Threshold</strong><span id="progress-text" style="color: #d4af37; font-size: 1rem; font-weight: 700;">$0.00 / $100.00</span>
                     </div>
                     <div class="progress-container"><div class="progress-bar" id="ui-progress-bar"></div></div>
-                    
-                    <div id="ui-payout-lock" style="text-align: center; color: var(--text-muted-color); margin-top: 15px; font-size: 0.85rem;">
-                        <i class="fas fa-lock"></i> Reach $100.00 to request payout.
-                    </div>
-                    
-                    <div id="ui-payout-form" style="display: none; margin-top: 15px;">
-                        <input type="text" class="profile-input" placeholder="Enter UPI ID or PayPal Email" id="payout-details">
-                        <button class="btn-claim" id="btn-request-payout">Request Payout</button>
+                    <div id="ui-payout-lock" style="text-align: center; color: #a1a1aa; margin-top: 20px; font-size: 0.95rem;"><i class="fas fa-lock"></i> Reach $100.00 to request your payout.</div>
+                    <div id="ui-payout-form" style="display: none; margin-top: 20px;">
+                        <input type="text" class="profile-input" placeholder="Enter UPI ID, Bank Acct, or PayPal Email" id="payout-details">
+                        <button class="btn-claim" id="btn-request-payout"><i class="fas fa-paper-plane"></i> Request Secure Payout</button>
                     </div>
                 </div>
-
-                <div style="background: rgba(0,0,0,0.2); padding: 25px; border-radius: 16px; border: 1px solid var(--glass-border);">
-                    <strong>Your Tracking Link</strong>
-                    <p style="color: var(--text-muted-color); font-size: 0.85rem; margin-top: 5px;">Share this link to earn. Traffic is tracked automatically.</p>
-                    <div class="link-box">
-                        <input type="text" id="ui-tracking-link" class="link-input" readonly>
-                        <button class="btn-copy" id="copy-btn"><i class="fas fa-copy"></i> Copy</button>
-                    </div>
+                <div style="background: rgba(0,0,0,0.4); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                    <strong style="font-size: 1.1rem; display: block; margin-bottom: 5px;">Your Unique Affiliate Link</strong>
+                    <p style="color: #a1a1aa; font-size: 0.9rem; margin-bottom: 15px;">Share this on TikTok/IG. You earn $0.05 per valid click.</p>
+                    <div class="link-box"><input type="text" id="ui-tracking-link" class="link-input" readonly><button class="btn-copy" id="copy-btn"><i class="fas fa-copy"></i> Copy</button></div>
                 </div>
             </div>
         </div>
@@ -262,273 +265,266 @@
     </nav>
 
     <script type="module" src="/js/bottom-bar.js"></script>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, deleteField, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
-            authDomain: "dramakan007.firebaseapp.com",
-            projectId: "dramakan007",
-            storageBucket: "dramakan007.firebasestorage.app",
-            messagingSenderId: "1069933586213",
-            appId: "1:1069933586213:web:b28ab37436679a4906dccc"
+        const firebaseConfig = { apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", authDomain: "dramakan007.firebaseapp.com", projectId: "dramakan007" };
+        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+
+        let currentUserDocRef = null; let creatorDocRef = null; let currentUsername = ""; let hasCustomAvatar = false;
+
+        // UI Tabs Logic
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active'); document.getElementById(btn.dataset.target).classList.add('active');
+            });
+        });
+
+        // 1. RENDER MY LIST WITH REMOVE BUTTONS (Clean Grid Classes Added)
+        window.renderMyList = function(listArray) {
+            const myListGrid = document.getElementById('mylist-grid-container');
+            if (listArray && listArray.length > 0) {
+                myListGrid.innerHTML = listArray.reverse().map(item => `
+                    <div class="item-wrapper">
+                        <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
+                            <div class="drama-card-img"><img src="${item.img}"></div>
+                            <div class="drama-card-info">
+                                <h3 class="drama-card-title">${item.title}</h3>
+                            </div>
+                        </a>
+                        <button class="remove-btn" onclick="removeFromMyList('${item.title}')" title="Remove from My List"><i class="fas fa-times"></i></button>
+                    </div>
+                `).join('');
+            } else {
+                myListGrid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><i class="fas fa-bookmark"></i><h3>Your list is empty</h3><p style="font-size:0.9rem; margin-top:10px;">Find dramas you like and tap the + button to save them here.</p></div>`;
+            }
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        // 2. RENDER HISTORY WITH REMOVE BUTTONS (Clean Grid Classes Added)
+        window.loadHistory = function() {
+            const historyGrid = document.getElementById('history-grid');
+            const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+            const historyArr = Object.entries(historyObj).filter(([k, i]) => i.link && !i.link.includes('index.html')).sort((a, b) => b[1].timestamp - a[1].timestamp);
+            
+            if (historyArr.length === 0) return historyGrid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><i class="fas fa-tv"></i><h3>No watch history found</h3><p style="font-size:0.9rem; margin-top:10px;">Dramas you start watching will appear here.</p></div>`;
+            
+            historyGrid.innerHTML = historyArr.map(([id, item]) => `
+                <div class="item-wrapper">
+                    <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
+                        <div class="drama-card-img"><img src="${item.img}"></div>
+                        <div class="drama-card-info">
+                            <h3 class="drama-card-title">${item.title}</h3>
+                            <p class="drama-card-meta" style="color: var(--primary-color); font-weight:600;"><i class="fas fa-play"></i> Ep ${item.epIndex === "0" ? "1" : item.epIndex}</p>
+                        </div>
+                    </a>
+                    <button class="remove-btn" onclick="removeFromHistory('${id}')" title="Remove from History"><i class="fas fa-times"></i></button>
+                </div>
+            `).join('');
+        };
 
-        let currentUserDocRef = null;
-        let creatorDocRef = null;
-        let currentUsername = "";
-        let hasCustomAvatar = false;
+        // 3. REMOVE SPECIFIC HISTORY ITEM (Local + Cloud)
+        window.removeFromHistory = async function(id) {
+            let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+            delete localHistory[id];
+            localStorage.setItem('dramakan_history', JSON.stringify(localHistory));
+            loadHistory(); 
+            
+            if (currentUserDocRef) {
+                const updateObj = {};
+                updateObj[`watchHistory.${id}`] = deleteField();
+                await updateDoc(currentUserDocRef, updateObj).catch(()=>{});
+            }
+        };
 
-        // --- 1. AUTHENTICATION & DATA LOAD ---
+        // 4. REMOVE SPECIFIC MY LIST ITEM
+        window.removeFromMyList = async function(title) {
+            if (currentUserDocRef) {
+                const docSnap = await getDoc(currentUserDocRef);
+                if (docSnap.exists()) {
+                    let list = docSnap.data().myList || [];
+                    list = list.filter(item => item.title !== title);
+                    await updateDoc(currentUserDocRef, { myList: list });
+                    renderMyList(list);
+                }
+            }
+        };
+
+        // 5. CLEAR ALL HISTORY (Danger Zone)
+        window.clearAllHistory = async function() {
+            if(confirm("Are you sure you want to clear your entire watch history? This cannot be undone.")) {
+                localStorage.removeItem('dramakan_history');
+                loadHistory();
+                if(currentUserDocRef) {
+                    await updateDoc(currentUserDocRef, { watchHistory: {} }).catch(()=>{});
+                }
+                alert("Watch history cleared.");
+            }
+        };
+
+        // Initialize App & Fetch Cloud Data
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
                     currentUserDocRef = doc(db, "users", user.uid);
                     const docSnap = await getDoc(currentUserDocRef);
 
-                    // Load Viewer Data
                     if (docSnap.exists()) {
                         const data = docSnap.data();
                         currentUsername = data.username;
-                        
                         document.getElementById('ui-username').textContent = currentUsername;
-                        document.getElementById('ui-email').textContent = data.email;
                         document.getElementById('edit-username').value = currentUsername;
+                        document.getElementById('ui-email').textContent = data.email;
                         document.getElementById('edit-email').value = data.email;
                         
-                        if (data.avatarUrl) {
-                            document.getElementById('ui-avatar').src = data.avatarUrl;
-                            hasCustomAvatar = true;
-                        } else {
-                            document.getElementById('ui-avatar').src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(currentUsername)}`;
-                        }
-                    } else {
-                        // Create profile if missing
-                        let defaultName = user.displayName ? user.displayName.replace(/\s+/g, '') : "DramaFan" + Math.floor(Math.random() * 10000);
-                        await setDoc(currentUserDocRef, { username: defaultName, email: user.email, role: "viewer", createdAt: new Date() });
-                        window.location.reload(); 
+                        if (data.avatarUrl) { document.getElementById('ui-avatar').src = data.avatarUrl; hasCustomAvatar = true; } 
+                        else { document.getElementById('ui-avatar').src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(currentUsername)}`; }
+
+                        renderMyList(data.myList || []);
                     }
 
-                    // --- NEW: CHECK IF USER IS A PARTNER ---
+                    // Fetch Requests & Embed Watch Links
+                    const reqContainer = document.getElementById('requests-list-container');
+                    const reqQuery = query(collection(db, "requests"), where("userId", "==", user.uid));
+                    const reqSnap = await getDocs(reqQuery);
+                    
+                    if (!reqSnap.empty) {
+                        // Sort by latest first
+                        const sortedReqs = [];
+                        reqSnap.forEach(r => sortedReqs.push(r.data()));
+                        sortedReqs.sort((a,b) => b.createdAt - a.createdAt);
+
+                        let reqHtml = '';
+                        sortedReqs.forEach(rd => {
+                            const isUploaded = rd.status === "Uploaded";
+                            const statusClass = isUploaded ? "status-uploaded" : "status-pending";
+                            const icon = isUploaded ? "fa-check-circle" : "fa-clock";
+                            
+                            // MAGIC: Show the Direct Link if Uploaded
+                            const watchBtnHtml = (isUploaded && rd.link) 
+                                ? `<a href="${rd.link}" class="req-link-btn"><i class="fas fa-play"></i> Watch Now</a>` 
+                                : ``;
+
+                            reqHtml += `
+                                <div class="request-item">
+                                    <div class="req-info">
+                                        <div class="req-title">${rd.dramaName}</div>
+                                        <div class="req-date"><i class="fas fa-calendar-alt"></i> ${new Date(rd.createdAt).toLocaleDateString()}</div>
+                                    </div>
+                                    <div class="req-status-box">
+                                        <div class="req-status ${statusClass}"><i class="fas ${icon}"></i> ${rd.status}</div>
+                                        ${watchBtnHtml}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        reqContainer.innerHTML = reqHtml;
+                    } else {
+                        reqContainer.innerHTML = `<div class="empty-state"><i class="fas fa-envelope-open-text"></i><h3>No requests made</h3><p style="font-size:0.9rem; margin-top:10px;">Use the button on the homepage if you can't find a drama.</p></div>`;
+                    }
+
+                    // Partner Setup
                     creatorDocRef = doc(db, "creators", user.uid);
                     const creatorSnap = await getDoc(creatorDocRef);
-                    
                     if (creatorSnap.exists()) {
                         const creatorData = creatorSnap.data();
-                        
-                        // Show the Partner Tab & Update Badge
-                        document.getElementById('tab-btn-partner').style.display = 'inline-block';
+                        document.getElementById('tab-btn-partner').style.display = 'inline-flex';
                         document.getElementById('ui-badge').innerHTML = '<i class="fas fa-crown" style="color: #d4af37;"></i> Official Partner';
-                        document.getElementById('ui-badge').style.background = 'linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.05))';
-                        document.getElementById('ui-badge').style.border = '1px solid rgba(212, 175, 55, 0.4)';
+                        document.getElementById('ui-badge').style.background = 'linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(0,0,0,0))';
+                        document.getElementById('ui-badge').style.borderColor = 'rgba(212, 175, 55, 0.4)';
                         document.getElementById('ui-badge').style.color = '#f1c40f';
-
-                        // Populate Stats
-                        document.getElementById('ui-total-clicks').textContent = creatorData.totalClicks || 0;
-                        document.getElementById('ui-unpaid-clicks').textContent = creatorData.unpaidClicks || 0;
-                        document.getElementById('ui-tracking-link').value = creatorData.trackingUrl || '';
+                        document.getElementById('ui-badge').style.boxShadow = '0 4px 15px rgba(212, 175, 55, 0.15)';
                         
-                        // Calculate Earnings
+                        document.getElementById('ui-total-clicks').textContent = creatorData.totalClicks || 0;
+                        document.getElementById('ui-tracking-link').value = creatorData.trackingUrl || '';
                         const earnings = (creatorData.unpaidClicks || 0) * 0.05;
                         document.getElementById('ui-earnings').textContent = "$" + earnings.toFixed(2);
                         document.getElementById('progress-text').textContent = `$${earnings.toFixed(2)} / $100.00`;
+                        document.getElementById('ui-progress-bar').style.width = Math.min((earnings / 100) * 100, 100) + "%";
                         
-                        let progressPercent = (earnings / 100) * 100;
-                        if(progressPercent > 100) progressPercent = 100;
-                        document.getElementById('ui-progress-bar').style.width = progressPercent + "%";
-                        
-                        // Payout Logic
                         if (creatorData.payoutRequested) {
                             document.getElementById('ui-payout-lock').style.display = 'none';
                             document.getElementById('ui-payout-form').style.display = 'block';
-                            document.getElementById('ui-payout-form').innerHTML = `<div style="text-align:center; padding: 15px; border-radius: 8px; background: rgba(16, 185, 129, 0.1); border: 1px dashed #10b981; color: #10b981;"><i class="fas fa-clock" style="font-size: 1.5rem; margin-bottom: 5px; display: block;"></i> Payout Request for <strong>$${earnings.toFixed(2)}</strong> Pending!</div>`;
+                            document.getElementById('ui-payout-form').innerHTML = `<div style="text-align:center; padding: 20px; border-radius: 16px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; font-weight:600;"><i class="fas fa-check-circle" style="font-size:1.5rem; display:block; margin-bottom:10px;"></i> Payout Request Submitted Successfully!</div>`;
                         } else if (earnings >= 100) {
                             document.getElementById('ui-payout-lock').style.display = 'none';
                             document.getElementById('ui-payout-form').style.display = 'block';
                         }
                     }
 
-                } catch (error) {
-                    console.error("Error loading profile:", error);
-                }
-            } else {
-                window.location.replace('login.html');
-            }
+                } catch (error) { console.error(error); }
+            } else { window.location.replace('login.html'); }
         });
 
-        // --- 2. AVATAR UPLOADER ---
-        const avatarInput = document.getElementById('avatar-input');
-        const avatarImg = document.getElementById('ui-avatar');
+        // Trigger Local History Load immediately
+        loadHistory(); 
+        window.addEventListener('historySynced', loadHistory);
 
-        avatarInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            avatarImg.style.opacity = '0.5';
-
+        // Avatar Upload Logic
+        document.getElementById('avatar-input').addEventListener('change', function(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const imgUI = document.getElementById('ui-avatar'); imgUI.style.opacity = '0.5';
             const reader = new FileReader();
             reader.onload = function(event) {
                 const img = new Image();
                 img.onload = async function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const MAX_SIZE = 250;
-                    let width = img.width; let height = img.height;
-
-                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
-                    else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-
-                    canvas.width = width; canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
-                    avatarImg.src = compressedBase64;
-                    avatarImg.style.opacity = '1';
-                    hasCustomAvatar = true;
-
-                    try {
-                        await updateDoc(currentUserDocRef, { avatarUrl: compressedBase64 });
-                    } catch (err) {
-                        alert("Error saving picture. Please try a smaller image.");
-                    }
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
+                    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+                    let w = img.width; let h = img.height; if(w>h){if(w>250){h*=250/w;w=250;}}else{if(h>250){w*=250/h;h=250;}}
+                    canvas.width = w; canvas.height = h; ctx.drawImage(img, 0, 0, w, h);
+                    const b64 = canvas.toDataURL('image/jpeg', 0.8);
+                    imgUI.src = b64; imgUI.style.opacity = '1'; hasCustomAvatar = true;
+                    await updateDoc(currentUserDocRef, { avatarUrl: b64 });
+                }; img.src = event.target.result;
+            }; reader.readAsDataURL(file);
         });
 
-        // --- 3. TABS LOGIC ---
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById(btn.dataset.target).classList.add('active');
-            });
-        });
-
-        // --- 4. CONTINUE WATCHING LOGIC ---
-        // --- 4. CONTINUE WATCHING LOGIC ---
-        function loadHistory() {
-            const historyGrid = document.getElementById('history-grid');
-            const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-            
-            // FILTER: Instantly ignores any corrupt data caused by the old homepage bug
-            const historyArr = Object.values(historyObj)
-                .filter(item => item.link && !item.link.toLowerCase().includes('index.html') && item.img && item.img.length > 5)
-                .sort((a, b) => b.timestamp - a.timestamp);
-
-            if (historyArr.length === 0) {
-                historyGrid.style.display = "block";
-                historyGrid.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-tv"></i>
-                        <h3 style="color:#fff; margin-bottom: 5px;">Your watchlist is empty</h3>
-                        <p>Go explore the homepage and find your next binge!</p>
-                        <a href="index.html" class="btn-save" style="display:inline-block; width:auto; margin-top: 20px; text-decoration:none; padding: 12px 30px;">Explore Dramas</a>
-                    </div>`;
-                return;
-            }
-
-            historyGrid.innerHTML = historyArr.map(item => `
-                <a href="${item.link}" class="drama-card" style="min-width: 100%; border-color: rgba(138, 43, 226, 0.4); box-shadow: 0 5px 15px rgba(0,0,0,0.3); border-radius: 16px; overflow: hidden;">
-                    <div class="drama-card-img" style="border-radius: 0;"><img src="${item.img}" alt="${item.title}" style="aspect-ratio: 3/4; object-fit: cover; width: 100%;"></div>
-                    <div class="drama-card-info" style="padding: 12px;">
-                        <h3 class="drama-card-title" style="font-size: 0.95rem; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.title}</h3>
-                        <p class="drama-card-meta" style="color: var(--primary-color); font-size: 0.8rem; font-weight: 600;"><i class="fas fa-play"></i> Resume</p>
-                    </div>
-                </a>
-            `).join('');
-        }
-        loadHistory();
-        window.addEventListener('historySynced', loadHistory);
-
-        // --- 5. UPDATE USERNAME LOGIC ---
+        // Save Settings Logic
         document.getElementById('update-profile-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btnSave = document.getElementById('btn-save');
-            const msgBox = document.getElementById('msg-box');
-            btnSave.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            btnSave.disabled = true;
-            msgBox.style.display = 'none';
-
-            const newUsername = document.getElementById('edit-username').value.trim();
-            if (newUsername === currentUsername) {
-                msgBox.textContent = "Profile updated!"; msgBox.style.background = "rgba(76, 175, 80, 0.1)"; msgBox.style.color = "#4CAF50"; msgBox.style.display = "block";
-                btnSave.innerHTML = '<i class="fas fa-check-circle"></i> Save Changes'; btnSave.disabled = false; return;
-            }
-
-            try {
-                const q = query(collection(db, "users"), where("username", "==", newUsername));
-                const querySnapshot = await getDocs(q);
-                
-                if (!querySnapshot.empty) {
-                    msgBox.textContent = "That Username is already taken by another user!"; msgBox.style.background = "rgba(255, 77, 77, 0.1)"; msgBox.style.color = "#ff4d4d"; msgBox.style.display = "block";
-                } else {
-                    await updateDoc(currentUserDocRef, { username: newUsername });
-                    currentUsername = newUsername;
-                    document.getElementById('ui-username').textContent = currentUsername;
-                    
-                    if(!hasCustomAvatar) {
-                        document.getElementById('ui-avatar').src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(currentUsername)}`;
-                    }
-
-                    msgBox.textContent = "Username successfully updated!"; msgBox.style.background = "rgba(76, 175, 80, 0.1)"; msgBox.style.color = "#4CAF50"; msgBox.style.display = "block";
-                }
-            } catch (error) {
-                msgBox.textContent = "Error saving profile. Try again."; msgBox.style.background = "rgba(255, 77, 77, 0.1)"; msgBox.style.color = "#ff4d4d"; msgBox.style.display = "block";
-            } finally {
-                btnSave.innerHTML = '<i class="fas fa-check-circle"></i> Save Changes'; btnSave.disabled = false;
-            }
-        });
-
-        // --- 6. PARTNER DASHBOARD LOGIC ---
-        document.getElementById('copy-btn').addEventListener('click', (e) => {
-            const linkInput = document.getElementById('ui-tracking-link');
-            linkInput.select();
-            document.execCommand('copy');
-            const btn = e.target.closest('button');
-            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-            setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy', 2000);
-        });
-
-        document.getElementById('btn-request-payout').addEventListener('click', async () => {
-            const detailsInput = document.getElementById('payout-details');
-            const btn = document.getElementById('btn-request-payout');
+            e.preventDefault(); const newName = document.getElementById('edit-username').value.trim();
+            const btn = document.getElementById('btn-save');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             
-            if(!detailsInput.value.trim()) {
-                return alert("Please enter your exact UPI ID or PayPal Email to receive funds.");
-            }
-
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-            btn.disabled = true;
-
-            try {
-                await updateDoc(creatorDocRef, {
-                    payoutRequested: true,
-                    payoutDetails: detailsInput.value.trim()
-                });
+            if (newName !== currentUsername) {
+                const snap = await getDocs(query(collection(db, "users"), where("username", "==", newName)));
+                if (!snap.empty) {
+                    btn.innerHTML = '<i class="fas fa-times-circle"></i> Username Taken';
+                    setTimeout(() => btn.innerHTML = '<i class="fas fa-check-circle"></i> Save Changes', 2000);
+                    return;
+                }
+                await updateDoc(currentUserDocRef, { username: newName });
+                currentUsername = newName; document.getElementById('ui-username').textContent = newName;
+                if(!hasCustomAvatar) document.getElementById('ui-avatar').src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(newName)}`;
                 
-                alert("Success! Your payout request has been securely sent to DramaKan Admin.");
-                window.location.reload(); 
-            } catch (error) {
-                console.error(error);
-                alert("Error submitting request. Please try again.");
-                btn.innerHTML = 'Request Payout';
-                btn.disabled = false;
+                btn.style.background = '#10b981';
+                btn.innerHTML = '<i class="fas fa-check-double"></i> Profile Updated!';
+                setTimeout(() => { btn.style.background = 'var(--primary-color)'; btn.innerHTML = '<i class="fas fa-check-circle"></i> Save Changes'; }, 2500);
+            } else {
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> Save Changes';
             }
         });
 
-        // --- 7. LOGOUT ---
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            signOut(auth).then(() => window.location.replace('login.html'));
+        // Partner Tools
+        document.getElementById('copy-btn').addEventListener('click', () => { 
+            document.getElementById('ui-tracking-link').select(); 
+            document.execCommand('copy'); 
+            const copyBtn = document.getElementById('copy-btn');
+            copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied';
+            setTimeout(() => copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy', 2000);
         });
+        
+        document.getElementById('btn-request-payout').addEventListener('click', async () => {
+            const val = document.getElementById('payout-details').value.trim();
+            if(!val) return alert("Please enter your payout details to proceed.");
+            document.getElementById('btn-request-payout').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            await updateDoc(creatorDocRef, { payoutRequested: true, payoutDetails: val });
+            window.location.reload(); 
+        });
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => signOut(auth).then(()=>window.location.replace('login.html')));
     </script>
 </body>
 </html>
