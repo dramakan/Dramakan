@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Now Playing - Audio Diaries</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #8A2BE2;
+            --accent: #00d2ff;
+            --premium-gold: #f1c40f;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg-dark: #050505;
+        }
+
+        body { 
+            background: var(--bg-dark); 
+            color: white; 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        
+        /* Premium Ambient Background */
+        .ambient-bg { 
+            position: fixed; inset: 0; z-index: -1; 
+            width: 100vw; height: 100vh; object-fit: cover; 
+            filter: blur(80px) brightness(0.25); 
+            transform: scale(1.1); 
+            opacity: 0; transition: opacity 2s ease; 
+        }
+        
+        header { 
+            padding: 20px 5%; 
+            display: flex; align-items: center; justify-content: space-between;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+        }
+
+        .back-btn { 
+            display: flex; align-items: center; gap: 10px; 
+            color: white; text-decoration: none; font-weight: 500;
+            background: var(--glass); padding: 12px 20px; 
+            border-radius: 16px; backdrop-filter: blur(15px); 
+            border: 1px solid var(--glass-border); transition: 0.4s;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); }
+
+        .track-container { max-width: 1200px; margin: 40px auto; padding: 0 5%; }
+        
+        /* Media Section */
+        .media-wrapper { 
+            width: 100%; border-radius: 32px; overflow: hidden; 
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+            background: #000; position: relative;
+        }
+        .youtube-mode { aspect-ratio: 16/9; }
+        .audio-mode { padding: 80px 20px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Rotating Vinyl for Audio */
+        .audio-cover { 
+            width: 250px; height: 250px; border-radius: 50%; 
+            object-fit: cover; border: 8px solid rgba(255,255,255,0.05);
+            animation: spin 15s linear infinite paused;
+            box-shadow: 0 0 60px rgba(138, 43, 226, 0.3);
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Track Info & Action Grid */
+        .main-grid { display: grid; grid-template-columns: 1fr 350px; gap: 30px; margin-top: 40px; }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 40px;
+        }
+
+        .track-title { font-size: 3.5rem; margin: 0; font-weight: 800; letter-spacing: -2px; }
+        .track-artist { color: var(--accent); font-size: 1.2rem; margin-top: 10px; display: flex; align-items: center; gap: 10px; opacity: 0.8; }
+
+        /* Multi-Download System */
+        .download-section h3 { margin-bottom: 20px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: #aaa; }
+        .download-grid { display: flex; flex-direction: column; gap: 12px; }
+        
+        .dl-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 20px; background: rgba(255,255,255,0.03);
+            border-radius: 18px; border: 1px solid transparent;
+            text-decoration: none; color: white; transition: 0.3s;
+        }
+        .dl-item:hover { border-color: var(--primary); background: rgba(138, 43, 226, 0.1); transform: scale(1.02); }
+        .dl-item i { font-size: 1.2rem; color: var(--primary); }
+
+        /* Suggestions Section */
+        .suggestions-header { margin: 80px 0 30px; display: flex; align-items: center; justify-content: space-between; }
+        .suggestions-grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+            gap: 25px; margin-bottom: 100px;
+        }
+        .suggest-card {
+            background: var(--glass); border-radius: 20px; padding: 15px;
+            text-decoration: none; color: white; border: 1px solid var(--glass-border);
+            transition: 0.3s;
+        }
+        .suggest-card:hover { transform: translateY(-10px); background: rgba(255,255,255,0.08); }
+        .suggest-img { width: 100%; aspect-ratio: 1/1; border-radius: 12px; object-fit: cover; margin-bottom: 12px; }
+        .suggest-card h4 { margin: 5px 0; font-size: 1rem; }
+
+        @media(max-width: 900px){
+            .main-grid { grid-template-columns: 1fr; }
+            .track-title { font-size: 2.2rem; }
+        }
+        /* Media Section */
+.media-wrapper { 
+    width: 100%; border-radius: 32px; overflow: hidden; 
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+    background: #000; position: relative;
+}
+.youtube-mode { aspect-ratio: 16/9; }
+
+/* ADD THESE TWO RULES BELOW */
+.youtube-mode iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+    </style>
+</head>
+<body>
+
+    <img src="" id="ambientBg" class="ambient-bg" alt="">
+
+    <header>
+        <a href="audiodiaries.html" class="back-btn"><i class="fas fa-chevron-left"></i> Gallery</a>
+        <div class="logo">Audio<span>Diaries</span></div>
+    </header>
+
+    <main class="track-container" id="mainContent">
+        
+        <div class="media-wrapper" id="mediaContainer">
+            </div>
+
+        <div class="main-grid">
+            <div class="glass-card">
+                <h1 class="track-title" id="trackTitle">...</h1>
+                <div class="track-artist" id="trackArtist">...</div>
+                
+                <p style="margin-top: 30px; color: #ccc; line-height: 1.6;">
+                    Experience high-fidelity audio production from AudioDiaries. All tracks are mixed and mastered for premium playback.
+                </p>
+            </div>
+
+            <div class="glass-card download-section">
+                <h3>The Audio Vault</h3>
+                <div class="download-grid" id="actionContainer">
+                    </div>
+            </div>
+        </div>
+
+        <section>
+            <div class="suggestions-header">
+                <h2 style="font-weight: 700;">More for you</h2>
+                <a href="audiodiaries.html" style="color: var(--accent); text-decoration: none; font-size: 0.9rem;">View All</a>
+            </div>
+            <div class="suggestions-grid" id="suggestionsGrid">
+                </div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, query, limit, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", 
+            authDomain: "dramakan007.firebaseapp.com", 
+            projectId: "dramakan007" 
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Utility: Drive link fix
+        function getPlayableDriveUrl(url) {
+            if (url?.includes('drive.google.com/file/d/')) {
+                const fileId = url.split('/d/')[1].split('/')[0];
+                return `https://drive.google.com/uc?export=download&id=${fileId}`;
+            }
+            return url; 
+        }
+
+        async function loadTrack() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const trackId = urlParams.get('id');
+            if (!trackId) return;
+
+            try {
+                const trackRef = doc(db, "audio_diaries", trackId);
+                const trackSnap = await getDoc(trackRef);
+
+                if (trackSnap.exists()) {
+                    const data = trackSnap.data();
+                    document.getElementById('trackTitle').innerText = data.title;
+                    document.getElementById('trackArtist').innerHTML = `<i class="fas fa-certificate"></i> ${data.artist}`;
+                    
+                    const bg = document.getElementById('ambientBg');
+                    bg.src = data.thumbnailUrl;
+                    bg.style.opacity = '1';
+
+                    // 1. Render Media
+                    const mediaContainer = document.getElementById('mediaContainer');
+                    if (data.youtubeUrl) {
+                        mediaContainer.classList.add('youtube-mode');
+                        const ytId = data.youtubeUrl.split('v=')[1]?.split('&')[0] || data.youtubeUrl.split('/').pop();
+                        mediaContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}" frameborder="0" allowfullscreen></iframe>`;
+                    } else {
+                        mediaContainer.classList.add('audio-mode');
+                        mediaContainer.innerHTML = `
+                            <img src="${data.thumbnailUrl}" class="audio-cover" id="spinCover">
+                            <audio src="${getPlayableDriveUrl(data.downloadUrl)}" controls style="margin-top:40px; width:80%; max-width:500px;"></audio>
+                        `;
+                    }
+
+                    // 2. Render Premium Downloads
+                    const actionContainer = document.getElementById('actionContainer');
+                    if (data.type === 'Free') {
+                        actionContainer.innerHTML = `
+                            <a href="${data.downloadUrl}" target="_blank" class="dl-item"><span><i class="fas fa-file-audio"></i> HQ MP3 (320kbps)</span> <i class="fas fa-download"></i></a>
+                            <a href="${data.downloadUrl}" target="_blank" class="dl-item"><span><i class="fas fa-file-wave"></i> Lossless WAV</span> <i class="fas fa-crown" style="color:var(--premium-gold)"></i></a>
+                        `;
+                    } else {
+                        actionContainer.innerHTML = `
+                            <button class="dl-item" style="width:100%; cursor:pointer; background:var(--premium-gold); color:black; font-weight:700;">
+                                <span>UNLOACK FULL VERSION</span> <span>${data.price || 'Premium'}</span>
+                            </button>
+                        `;
+                    }
+
+                    fetchSuggestions(trackId);
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function fetchSuggestions(currentId) {
+            const q = query(collection(db, "audio_diaries"), limit(5));
+            const querySnapshot = await getDocs(q);
+            const grid = document.getElementById('suggestionsGrid');
+            
+            querySnapshot.forEach((doc) => {
+                if(doc.id !== currentId) {
+                    const d = doc.data();
+                    grid.innerHTML += `
+                        <a href="track.html?id=${doc.id}" class="suggest-card">
+                            <img src="${d.thumbnailUrl}" class="suggest-img">
+                            <h4>${d.title}</h4>
+                            <p style="font-size:0.8rem; color:#aaa;">${d.artist}</p>
+                        </a>
+                    `;
+                }
+            });
+        }
+
+        loadTrack();
+    </script>
+</body>
+</html>

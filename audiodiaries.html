@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Diaries | Premium Music Gallery</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #8A2BE2; /* Original Purple */
+            --primary-glow: rgba(138, 43, 226, 0.3);
+            --bg-black: #000000; /* Pure OLED Black */
+            --surface: #0a0a0a;
+            --border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-dim: #888888;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: var(--bg-black);
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* --- REFINED HEADER --- */
+        header {
+            padding: 40px 5% 20px;
+            background: linear-gradient(to bottom, rgba(138, 43, 226, 0.05) 0%, transparent 100%);
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .brand-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .status-dot {
+            height: 8px;
+            width: 8px;
+            background: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff88;
+        }
+
+        .brand-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .hero-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .hero-title span {
+            color: var(--text-dim);
+            font-weight: 300;
+        }
+
+        /* --- FILTERS & CONTROLS --- */
+        .controls-row {
+            padding: 0 5% 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .controls-row { flex-direction: row; justify-content: space-between; align-items: center; }
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            scrollbar-width: none;
+        }
+        .filter-group::-webkit-scrollbar { display: none; }
+
+        .filter-chip {
+            padding: 8px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .filter-chip.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .view-switch {
+            display: flex;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 4px;
+            border-radius: 12px;
+        }
+
+        .view-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .view-btn.active {
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
+
+        /* --- GALLERY GRID --- */
+        .audio-container {
+            padding: 0 5% 100px;
+            display: grid;
+            gap: 30px;
+            transition: opacity 0.3s ease;
+        }
+
+        /* YouTube Grid Logic */
+        .audio-container.grid-view { grid-template-columns: 1fr; }
+
+        @media (min-width: 1024px) {
+            .audio-container.grid-view { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* Spotify List Logic */
+        .audio-container.list-view { grid-template-columns: 1fr; gap: 15px; }
+
+        /* --- PREMIUM CARDS --- */
+        .track-card {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            transition: 0.3s transform ease;
+        }
+
+        .artwork-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #111;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .artwork-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s transform;
+        }
+
+        .track-card:hover { transform: translateY(-5px); }
+        .track-card:hover img { transform: scale(1.08); }
+
+        .premium-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--primary-color);
+        }
+
+        .track-info {
+            padding: 15px 5px;
+        }
+
+        .track-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .track-sub {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* List View Modifier */
+        .list-view .track-card {
+            flex-direction: row;
+            background: var(--surface);
+            padding: 12px;
+            border-radius: 12px;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+
+        .list-view .artwork-wrapper {
+            width: 80px;
+            aspect-ratio: 1/1;
+            border-radius: 8px;
+        }
+
+        .list-view .premium-tag { display: none; }
+
+        .loader {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 100px 0;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-meta">
+            <div class="status-dot"></div>
+            <span class="brand-tag">Premium Collection</span>
+        </div>
+        <h1 class="hero-title">Audio <span>Diaries</span></h1>
+    </header>
+
+    <div class="controls-row">
+        <div class="filter-group" id="filterGroup">
+            <div class="filter-chip active" onclick="filterTracks('All', this)">All Tracks</div>
+            <div class="filter-chip" onclick="filterTracks('Premium', this)">Premium</div>
+            <div class="filter-chip" onclick="filterTracks('Free', this)">Free Only</div>
+        </div>
+
+        <div class="view-switch">
+            <button class="view-btn active" onclick="setView('grid', this)"><i class="fas fa-grid-2"></i> Grid</button>
+            <button class="view-btn" onclick="setView('list', this)"><i class="fas fa-list"></i> List</button>
+        </div>
+    </div>
+
+    <main class="audio-container grid-view" id="audioGrid">
+        <div class="loader">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", 
+            authDomain: "dramakan007.firebaseapp.com", 
+            projectId: "dramakan007" 
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let allTracks = [];
+
+        // View Toggler
+        window.setView = (mode, btn) => {
+            const grid = document.getElementById('audioGrid');
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            grid.className = mode === 'list' ? 'audio-container list-view' : 'audio-container grid-view';
+        };
+
+        // Filter Logic
+        window.filterTracks = (type, btn) => {
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const filtered = type === 'All' ? allTracks : allTracks.filter(t => t.type === type);
+            renderTracks(filtered);
+        };
+
+        async function loadVault() {
+            const grid = document.getElementById('audioGrid');
+            try {
+                const q = query(collection(db, "audio_diaries"), orderBy("timestamp", "desc"));
+                const snap = await getDocs(q);
+                allTracks = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderTracks(allTracks);
+            } catch (e) {
+                grid.innerHTML = `<div class="loader">Access Denied: Connection Error</div>`;
+            }
+        }
+
+        function renderTracks(data) {
+            const grid = document.getElementById('audioGrid');
+            if (data.length === 0) {
+                grid.innerHTML = `<div class="loader">No tracks found in this category.</div>`;
+                return;
+            }
+
+            grid.innerHTML = data.map(track => `
+                <a href="track.html?id=${track.id}" class="track-card">
+                    <div class="artwork-wrapper">
+                        <img src="${track.thumbnailUrl}" alt="${track.title}">
+                        ${track.type === 'Premium' ? `<div class="premium-tag"><i class="fas fa-crown"></i> PREMIUM</div>` : ''}
+                    </div>
+                    <div class="track-info">
+                        <h3 class="track-title">${track.title}</h3>
+                        <div class="track-sub">
+                            <span>${track.artist}</span>
+                            <span>•</span>
+                            <span>${track.duration || 'HQ'}</span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', loadVault);
+    </script>
+</body>
+</html>
