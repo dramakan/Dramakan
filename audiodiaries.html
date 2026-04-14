@@ -10,29 +10,41 @@
     
     <style>
         :root {
-            --primary-color: #8A2BE2; /* Original Purple */
-            --primary-glow: rgba(138, 43, 226, 0.3);
-            --bg-black: #000000; /* Pure OLED Black */
-            --surface: #0a0a0a;
-            --border: rgba(255, 255, 255, 0.08);
+            --primary: #8A2BE2;
+            --primary-glow: rgba(138, 43, 226, 0.4);
+            --premium-gold: #f1c40f;
+            --bg-dark: #050505;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-hover: rgba(255, 255, 255, 0.06);
             --text-main: #ffffff;
-            --text-dim: #888888;
+            --text-dim: #a0a0a0;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
-            background-color: var(--bg-black);
+            background-color: var(--bg-dark);
             font-family: 'Poppins', sans-serif;
             color: var(--text-main);
             overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Background Glow for Glassmorphism Context */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 30%, rgba(138, 43, 226, 0.12) 0%, transparent 60%);
+            z-index: -1;
+            pointer-events: none;
         }
 
         /* --- REFINED HEADER --- */
         header {
             padding: 40px 5% 20px;
-            background: linear-gradient(to bottom, rgba(138, 43, 226, 0.05) 0%, transparent 100%);
-            border-bottom: 1px solid var(--border);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
             margin-bottom: 20px;
         }
 
@@ -48,21 +60,22 @@
             width: 8px;
             background: #00ff88;
             border-radius: 50%;
-            box-shadow: 0 0 10px #00ff88;
+            box-shadow: 0 0 12px #00ff88;
         }
 
         .brand-tag {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--primary-color);
+            letter-spacing: 3px;
+            color: var(--primary);
             font-weight: 700;
         }
 
         .hero-title {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: 700;
             letter-spacing: -1px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .hero-title span {
@@ -84,7 +97,7 @@
 
         .filter-group {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             overflow-x: auto;
             padding-bottom: 5px;
             scrollbar-width: none;
@@ -92,45 +105,65 @@
         .filter-group::-webkit-scrollbar { display: none; }
 
         .filter-chip {
-            padding: 8px 20px;
-            background: var(--surface);
-            border: 1px solid var(--border);
+            padding: 10px 24px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
             border-radius: 50px;
             color: var(--text-dim);
             font-size: 0.85rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
         }
 
+        .filter-chip:hover {
+            background: var(--glass-hover);
+            color: var(--text-main);
+            border-color: rgba(255,255,255,0.15);
+        }
+
         .filter-chip.active {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
+            background: var(--primary);
+            border-color: var(--primary);
             color: white;
-            box-shadow: 0 4px 15px var(--primary-glow);
+            box-shadow: 0 8px 25px var(--primary-glow);
         }
 
         .view-switch {
             display: flex;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 4px;
-            border-radius: 12px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 6px;
+            border-radius: 16px;
         }
 
         .view-btn {
             background: transparent;
             border: none;
             color: var(--text-dim);
-            padding: 8px 15px;
-            border-radius: 8px;
+            padding: 10px 18px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.3s;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
+        .view-btn:hover { color: var(--text-main); }
+
         .view-btn.active {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.08);
             color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         /* --- GALLERY GRID --- */
@@ -149,15 +182,29 @@
         }
 
         /* Spotify List Logic */
-        .audio-container.list-view { grid-template-columns: 1fr; gap: 15px; }
+        .audio-container.list-view { grid-template-columns: 1fr; gap: 18px; }
 
-        /* --- PREMIUM CARDS --- */
+        /* --- PREMIUM GLASS CARDS --- */
         .track-card {
             text-decoration: none;
             color: inherit;
             display: flex;
             flex-direction: column;
-            transition: 0.3s transform ease;
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 15px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .track-card:hover { 
+            transform: translateY(-8px); 
+            background: var(--glass-hover);
+            border-color: rgba(255,255,255,0.15);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 40px var(--primary-glow);
         }
 
         .artwork-wrapper {
@@ -167,41 +214,48 @@
             background: #111;
             border-radius: 16px;
             overflow: hidden;
-            border: 1px solid var(--border);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
         .artwork-wrapper img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: 0.5s transform;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .track-card:hover { transform: translateY(-5px); }
         .track-card:hover img { transform: scale(1.08); }
 
         .premium-tag {
             position: absolute;
             top: 12px;
             left: 12px;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(10px);
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 0.65rem;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.7rem;
             font-weight: 700;
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--primary-color);
+            border: 1px solid rgba(241, 196, 15, 0.3);
+            color: var(--premium-gold);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .track-info {
-            padding: 15px 5px;
+            padding: 18px 8px 5px;
         }
 
         .track-title {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .track-sub {
@@ -209,23 +263,28 @@
             font-size: 0.85rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            font-weight: 400;
         }
 
-        /* List View Modifier */
+        /* List View Modifier (Glass adaptation) */
         .list-view .track-card {
             flex-direction: row;
-            background: var(--surface);
-            padding: 12px;
-            border-radius: 12px;
+            padding: 12px 18px 12px 12px;
+            border-radius: 20px;
             align-items: center;
-            border: 1px solid var(--border);
         }
 
         .list-view .artwork-wrapper {
-            width: 80px;
-            aspect-ratio: 1/1;
-            border-radius: 8px;
+            width: 90px;
+            aspect-ratio: 16/9; /* Or 1/1 if you prefer square in list */
+            border-radius: 12px;
+            margin-right: 20px;
+        }
+
+        .list-view .track-info {
+            padding: 0;
+            flex-grow: 1;
         }
 
         .list-view .premium-tag { display: none; }
@@ -234,7 +293,7 @@
             grid-column: 1/-1;
             text-align: center;
             padding: 100px 0;
-            color: var(--primary-color);
+            color: var(--primary);
         }
     </style>
 </head>
@@ -329,7 +388,7 @@
                         <div class="track-sub">
                             <span>${track.artist}</span>
                             <span>•</span>
-                            <span>${track.duration || 'HQ'}</span>
+                            <span>${track.price || 'Free'}</span>
                         </div>
                     </div>
                 </a>

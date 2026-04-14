@@ -13,6 +13,7 @@
             --primary: #8A2BE2;
             --accent: #00d2ff;
             --premium-gold: #f1c40f;
+            --success: #10b981;
             --glass: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.1);
             --bg-dark: #050505;
@@ -50,91 +51,87 @@
         }
         .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); }
 
-        .track-container { max-width: 1200px; margin: 40px auto; padding: 0 5%; }
+        .track-container { max-width: 1300px; margin: 40px auto; padding: 0 5%; }
         
-        /* Media Section */
-        .media-wrapper { 
-            width: 100%; border-radius: 32px; overflow: hidden; 
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
-            background: #000; position: relative;
+        /* New PC Layout - Grid Setup */
+        .main-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 400px; /* Left: Video/Info | Right: Downloads & Suggestions */
+            gap: 30px; 
+            align-items: start;
         }
-        .youtube-mode { aspect-ratio: 16/9; }
-        .audio-mode { padding: 80px 20px; display: flex; flex-direction: column; align-items: center; }
-        
-        /* Rotating Vinyl for Audio */
-        .audio-cover { 
-            width: 250px; height: 250px; border-radius: 50%; 
-            object-fit: cover; border: 8px solid rgba(255,255,255,0.05);
-            animation: spin 15s linear infinite paused;
-            box-shadow: 0 0 60px rgba(138, 43, 226, 0.3);
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* Track Info & Action Grid */
-        .main-grid { display: grid; grid-template-columns: 1fr 350px; gap: 30px; margin-top: 40px; }
 
         .glass-card {
             background: var(--glass);
             backdrop-filter: blur(40px);
             border: 1px solid var(--glass-border);
             border-radius: 28px;
-            padding: 40px;
+            padding: 30px;
         }
 
-        .track-title { font-size: 3.5rem; margin: 0; font-weight: 800; letter-spacing: -2px; }
-        .track-artist { color: var(--accent); font-size: 1.2rem; margin-top: 10px; display: flex; align-items: center; gap: 10px; opacity: 0.8; }
+        .track-title { font-size: 3rem; margin: 0; font-weight: 800; letter-spacing: -1px; }
+        .track-artist { color: var(--accent); font-size: 1.1rem; margin-top: 10px; display: flex; align-items: center; gap: 10px; font-weight: 600; opacity: 0.9; }
+
+        /* Media Section */
+        .media-wrapper { 
+            width: 100%; border-radius: 28px; overflow: hidden; 
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            background: #000; position: relative;
+        }
+        .youtube-mode { aspect-ratio: 16/9; }
+        .youtube-mode iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .audio-mode { padding: 60px 20px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Rotating Vinyl for Audio */
+        .audio-cover { 
+            width: 220px; height: 220px; border-radius: 50%; 
+            object-fit: cover; border: 6px solid rgba(255,255,255,0.05);
+            animation: spin 15s linear infinite paused;
+            box-shadow: 0 0 60px rgba(138, 43, 226, 0.3);
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
         /* Multi-Download System */
-        .download-section h3 { margin-bottom: 20px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: #aaa; }
+        .download-section { position: sticky; top: 30px; }
+        .download-section h3 { margin-bottom: 20px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: #aaa; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
         .download-grid { display: flex; flex-direction: column; gap: 12px; }
         
         .dl-item {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 15px 20px; background: rgba(255,255,255,0.03);
-            border-radius: 18px; border: 1px solid transparent;
-            text-decoration: none; color: white; transition: 0.3s;
+            padding: 18px 20px; background: rgba(255,255,255,0.03);
+            border-radius: 18px; border: 1px solid var(--glass-border);
+            text-decoration: none; color: white; transition: 0.3s; font-size: 0.95rem;
         }
         .dl-item:hover { border-color: var(--primary); background: rgba(138, 43, 226, 0.1); transform: scale(1.02); }
         .dl-item i { font-size: 1.2rem; color: var(--primary); }
+        
+        /* Premium Flow Details */
+        .premium-btn { background: rgba(241, 196, 15, 0.05); border-color: rgba(241, 196, 15, 0.3); cursor: pointer; }
+        .premium-btn:hover { background: rgba(241, 196, 15, 0.15); border-color: var(--premium-gold); }
 
-        /* Suggestions Section */
-        .suggestions-header { margin: 80px 0 30px; display: flex; align-items: center; justify-content: space-between; }
-        .suggestions-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
-            gap: 25px; margin-bottom: 100px;
-        }
+        /* Suggestions Section (Sidebar) */
+        .suggestions-container { margin-top: 30px; }
+        .suggestions-header { margin: 0 0 15px; display: flex; align-items: center; justify-content: space-between; }
+        .suggestions-header h3 { font-weight: 700; font-size: 1.1rem; margin: 0; }
+        .suggestions-header a { color: var(--accent); text-decoration: none; font-size: 0.8rem; }
+        
+        .suggestions-grid { display: flex; flex-direction: column; gap: 15px; }
         .suggest-card {
-            background: var(--glass); border-radius: 20px; padding: 15px;
+            background: var(--glass); border-radius: 16px; padding: 12px;
             text-decoration: none; color: white; border: 1px solid var(--glass-border);
-            transition: 0.3s;
+            transition: 0.3s; display: block;
         }
-        .suggest-card:hover { transform: translateY(-10px); background: rgba(255,255,255,0.08); }
-        .suggest-img { width: 100%; aspect-ratio: 1/1; border-radius: 12px; object-fit: cover; margin-bottom: 12px; }
-        .suggest-card h4 { margin: 5px 0; font-size: 1rem; }
+        .suggest-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+        .suggest-img { width: 100%; aspect-ratio: 16/9; border-radius: 10px; object-fit: cover; margin-bottom: 10px; }
+        .suggest-card h4 { margin: 0 0 4px 0; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .suggest-card p { font-size: 0.8rem; color: #aaa; margin: 0; }
 
-        @media(max-width: 900px){
+        @media(max-width: 1000px){
             .main-grid { grid-template-columns: 1fr; }
             .track-title { font-size: 2.2rem; }
+            .download-section { position: relative; top: 0; }
         }
-        /* Media Section */
-.media-wrapper { 
-    width: 100%; border-radius: 32px; overflow: hidden; 
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 50px 100px rgba(0,0,0,0.8);
-    background: #000; position: relative;
-}
-.youtube-mode { aspect-ratio: 16/9; }
-
-/* ADD THESE TWO RULES BELOW */
-.youtube-mode iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-}
     </style>
 </head>
 <body>
@@ -143,44 +140,78 @@
 
     <header>
         <a href="audiodiaries.html" class="back-btn"><i class="fas fa-chevron-left"></i> Gallery</a>
-        <div class="logo">Audio<span>Diaries</span></div>
+        <div class="logo" style="font-weight: 700; font-size: 1.2rem;">Audio<span style="color:var(--primary);">Diaries</span></div>
     </header>
 
     <main class="track-container" id="mainContent">
         
-        <div class="media-wrapper" id="mediaContainer">
-            </div>
-
         <div class="main-grid">
-            <div class="glass-card">
-                <h1 class="track-title" id="trackTitle">...</h1>
-                <div class="track-artist" id="trackArtist">...</div>
-                
-                <p style="margin-top: 30px; color: #ccc; line-height: 1.6;">
-                    Experience high-fidelity audio production from AudioDiaries. All tracks are mixed and mastered for premium playback.
-                </p>
-            </div>
+            
+            <div class="left-col" style="display: flex; flex-direction: column; gap: 25px;">
+                <div class="glass-card">
+                    <h1 class="track-title" id="trackTitle">...</h1>
+                    <div class="track-artist" id="trackArtist">...</div>
+                </div>
 
-            <div class="glass-card download-section">
-                <h3>The Audio Vault</h3>
-                <div class="download-grid" id="actionContainer">
+                <div class="media-wrapper" id="mediaContainer">
                     </div>
             </div>
-        </div>
 
-        <section>
-            <div class="suggestions-header">
-                <h2 style="font-weight: 700;">More for you</h2>
-                <a href="audiodiaries.html" style="color: var(--accent); text-decoration: none; font-size: 0.9rem;">View All</a>
-            </div>
-            <div class="suggestions-grid" id="suggestionsGrid">
+            <div class="right-col">
+                <div class="glass-card download-section">
+                    <h3><i class="fas fa-compact-disc"></i> The Audio Vault</h3>
+                    
+                    <div class="download-grid" id="actionContainer">
+                        </div>
+
+                    <div id="premiumPaymentSection" style="display: none; margin-top: 25px; border-top: 1px dashed var(--glass-border); padding-top: 25px;">
+                        <h4 style="color: var(--premium-gold); margin-bottom: 15px; text-align: center; font-size: 1.1rem;">
+                            <i class="fas fa-qrcode"></i> Scan to Unlock Premium
+                        </h4>
+                        
+                        <div style="background: white; padding: 15px; border-radius: 16px; margin-bottom: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                            <img src="https://i.ibb.co/WNV0NTRP/Screenshot-20260414-093008-Fam-App.jpg" alt="Owner QR Code" style="width: 100%; max-width: 180px; height: auto; border-radius: 8px;">
+                            <p style="color: black; font-size: 0.8rem; margin-top: 10px; font-weight: 700; opacity: 0.8;">Scan using any UPI App</p>
+                        </div>
+
+                        <div style="margin-bottom: 15px; position: relative;">
+                            <i class="fas fa-envelope" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--premium-gold);"></i>
+                            <input type="email" id="userEmailForPremium" placeholder="Enter Gmail to receive audio..." style="width: 100%; box-sizing: border-box; padding: 15px 15px 15px 45px; border-radius: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: white; font-family: inherit; outline: none; transition: 0.3s;">
+                        </div>
+                        
+                        <div style="margin-bottom: 15px; position: relative;">
+                            <i class="fas fa-hashtag" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--premium-gold);"></i>
+                            <input type="text" id="upiTransactionId" placeholder="Enter UPI Transaction ID..." style="width: 100%; box-sizing: border-box; padding: 15px 15px 15px 45px; border-radius: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: white; font-family: inherit; outline: none; transition: 0.3s;">
+                        </div>
+
+                        <button id="confirmPaymentBtn" style="width: 100%; padding: 16px; background: linear-gradient(135deg, var(--premium-gold), #d4ac0d); color: black; font-weight: 800; border: none; border-radius: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; box-shadow: 0 5px 15px rgba(241, 196, 15, 0.2);">
+                            Verify & Send File
+                        </button>
+                        
+                        <div id="paymentNotification" style="display:none; color: var(--success); font-size: 0.85rem; margin-top: 20px; text-align: center; background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3); line-height: 1.6;">
+                            <i class="fas fa-check-circle" style="margin-bottom: 8px; font-size: 1.5rem; display: block;"></i>
+                            Success! You will get the premium audio edit through your Gmail once the payment is confirmed by the owner.
+                        </div>
+                    </div>
                 </div>
-        </section>
+
+                <div class="suggestions-container">
+                    <div class="suggestions-header">
+                        <h3>More for you</h3>
+                        <a href="audiodiaries.html">View All</a>
+                    </div>
+                    <div class="suggestions-grid" id="suggestionsGrid">
+                        </div>
+                </div>
+
+            </div>
+        </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, query, limit, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // Added addDoc to imports for writing the payment request
+        import { getFirestore, doc, getDoc, collection, query, limit, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", 
@@ -190,7 +221,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Utility: Drive link fix
         function getPlayableDriveUrl(url) {
             if (url?.includes('drive.google.com/file/d/')) {
                 const fileId = url.split('/d/')[1].split('/')[0];
@@ -217,7 +247,6 @@
                     bg.src = data.thumbnailUrl;
                     bg.style.opacity = '1';
 
-                    // 1. Render Media
                     const mediaContainer = document.getElementById('mediaContainer');
                     if (data.youtubeUrl) {
                         mediaContainer.classList.add('youtube-mode');
@@ -225,26 +254,86 @@
                         mediaContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}" frameborder="0" allowfullscreen></iframe>`;
                     } else {
                         mediaContainer.classList.add('audio-mode');
+                        const playableAudio = data.linkFree || data.linkPremium || data.linkMaster;
                         mediaContainer.innerHTML = `
                             <img src="${data.thumbnailUrl}" class="audio-cover" id="spinCover">
-                            <audio src="${getPlayableDriveUrl(data.downloadUrl)}" controls style="margin-top:40px; width:80%; max-width:500px;"></audio>
+                            <audio src="${getPlayableDriveUrl(playableAudio)}" controls style="margin-top:40px; width:80%; max-width:500px;"></audio>
                         `;
                     }
 
-                    // 2. Render Premium Downloads
                     const actionContainer = document.getElementById('actionContainer');
-                    if (data.type === 'Free') {
-                        actionContainer.innerHTML = `
-                            <a href="${data.downloadUrl}" target="_blank" class="dl-item"><span><i class="fas fa-file-audio"></i> HQ MP3 (320kbps)</span> <i class="fas fa-download"></i></a>
-                            <a href="${data.downloadUrl}" target="_blank" class="dl-item"><span><i class="fas fa-file-wave"></i> Lossless WAV</span> <i class="fas fa-crown" style="color:var(--premium-gold)"></i></a>
-                        `;
-                    } else {
-                        actionContainer.innerHTML = `
-                            <button class="dl-item" style="width:100%; cursor:pointer; background:var(--premium-gold); color:black; font-weight:700;">
-                                <span>UNLOACK FULL VERSION</span> <span>${data.price || 'Premium'}</span>
-                            </button>
+                    let dlHTML = '';
+
+                    if (data.linkFree) {
+                        dlHTML += `
+                            <a href="${data.linkFree}" target="_blank" class="dl-item">
+                                <span><i class="fas fa-file-audio" style="margin-right:8px;"></i> Free Version (MP3)</span> 
+                                <i class="fas fa-download"></i>
+                            </a>
                         `;
                     }
+
+                    dlHTML += `
+                        <button class="dl-item premium-btn" id="btnUnlockPremium" style="width:100%; border-width: 1px;">
+                            <span><i class="fas fa-crown" style="color:var(--premium-gold); margin-right:8px;"></i> Get Premium Quality</span> 
+                            <span style="color:var(--premium-gold); font-weight:700;">${data.price || 'Paid'}</span>
+                        </button>
+                    `;
+                    
+                    actionContainer.innerHTML = dlHTML;
+
+                    document.getElementById('btnUnlockPremium').addEventListener('click', () => {
+                        const qrSection = document.getElementById('premiumPaymentSection');
+                        qrSection.style.display = 'block';
+                        if(window.innerWidth <= 1000) {
+                            qrSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+                    });
+
+                    // Updated Payment Confirmation Logic
+                    document.getElementById('confirmPaymentBtn').addEventListener('click', async function() {
+                        const emailInput = document.getElementById('userEmailForPremium');
+                        const upiInput = document.getElementById('upiTransactionId');
+
+                        if(!emailInput.value || !emailInput.value.includes('@')) {
+                            alert("Please enter a valid Gmail address to receive the files.");
+                            emailInput.focus();
+                            return;
+                        }
+
+                        if(!upiInput.value || upiInput.value.trim() === '') {
+                            alert("Please enter your UPI Transaction ID to verify the payment.");
+                            upiInput.focus();
+                            return;
+                        }
+
+                        // Loading State
+                        const originalText = this.innerText;
+                        this.innerText = "Submitting...";
+                        this.disabled = true;
+
+                        try {
+                            // Send request to Firebase
+                            await addDoc(collection(db, "payment_requests"), {
+                                trackId: trackId,
+                                trackTitle: data.title,
+                                userEmail: emailInput.value,
+                                upiTransactionId: upiInput.value,
+                                timestamp: Date.now(),
+                                status: "Pending"
+                            });
+
+                            // Success State
+                            this.innerText = "Confirmed";
+                            this.style.background = "var(--success)";
+                            document.getElementById('paymentNotification').style.display = 'block';
+                        } catch (error) {
+                            console.error("Error submitting request:", error);
+                            alert("An error occurred. Please try again.");
+                            this.innerText = originalText;
+                            this.disabled = false;
+                        }
+                    });
 
                     fetchSuggestions(trackId);
                 }
@@ -252,20 +341,22 @@
         }
 
         async function fetchSuggestions(currentId) {
-            const q = query(collection(db, "audio_diaries"), limit(5));
+            const q = query(collection(db, "audio_diaries"), limit(3));
             const querySnapshot = await getDocs(q);
             const grid = document.getElementById('suggestionsGrid');
             
+            let count = 0;
             querySnapshot.forEach((doc) => {
-                if(doc.id !== currentId) {
+                if(doc.id !== currentId && count < 2) {
                     const d = doc.data();
                     grid.innerHTML += `
                         <a href="track.html?id=${doc.id}" class="suggest-card">
                             <img src="${d.thumbnailUrl}" class="suggest-img">
                             <h4>${d.title}</h4>
-                            <p style="font-size:0.8rem; color:#aaa;">${d.artist}</p>
+                            <p>${d.artist}</p>
                         </a>
                     `;
+                    count++;
                 }
             });
         }

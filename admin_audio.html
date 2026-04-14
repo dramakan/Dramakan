@@ -134,11 +134,13 @@
         .indicator.active { color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
 
         #loginSection { max-width: 400px; margin: 100px auto; }
-        .hidden { display: none; }
+        .hidden { display: none !important; }
 
         @media (max-width: 600px) {
             .track-item { flex-direction: column; align-items: flex-start; gap: 15px; }
             .actions { width: 100%; display: flex; justify-content: flex-end; }
+            .tab-nav { flex-wrap: wrap; }
+            .tab-btn { flex: 1 1 100%; margin-bottom: 5px; }
         }
     </style>
 </head>
@@ -166,6 +168,7 @@
         <nav class="tab-nav">
             <button class="tab-btn active" onclick="switchTab('upload')">Publish</button>
             <button class="tab-btn" onclick="switchTab('manage'); fetchAll();">Manage Vault</button>
+            <button class="tab-btn" onclick="switchTab('requests'); fetchRequests();">Payment Requests</button>
         </nav>
 
         <div id="tab-upload" class="glass-card">
@@ -215,6 +218,12 @@
                 <p style="text-align: center; color: var(--text-dim);">Scanning database...</p>
             </div>
         </div>
+
+        <div id="tab-requests" class="hidden">
+            <div id="requestList">
+                <p style="text-align: center; color: var(--text-dim);">Scanning requests...</p>
+            </div>
+        </div>
     </div>
 
     <script type="module">
@@ -229,11 +238,12 @@
 
         let vaultData = {};
 
-        // UI Toggles
+        // UI Toggles updated for the new tab
         window.switchTab = (tab) => {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-upload').classList.add('hidden');
             document.getElementById('tab-manage').classList.add('hidden');
+            document.getElementById('tab-requests').classList.add('hidden');
             
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
             event.currentTarget.classList.add('active');
@@ -255,7 +265,7 @@
         };
         document.getElementById('btnLogout').onclick = () => signOut(auth);
 
-        // CRUD Logic
+        // CRUD Logic (Upload)
         document.getElementById('vaultForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSubmit');
@@ -286,6 +296,7 @@
             } catch(err) { alert(err.message); }
         };
 
+        // Manage Vault Tracks
         window.fetchAll = async () => {
             const list = document.getElementById('vaultList');
             const q = query(collection(db, "audio_diaries"), orderBy("timestamp", "desc"));
@@ -317,6 +328,7 @@
             });
         };
 
+        // Edit/Delete Vault Tracks
         window.editTrack = (id) => {
             const t = vaultData[id];
             document.getElementById('editId').value = id;
@@ -337,6 +349,53 @@
             if(confirm("Erase from Vault?")) {
                 await deleteDoc(doc(db, "audio_diaries", id));
                 fetchAll();
+            }
+        };
+
+        // NEW: Fetch Payment Requests
+        window.fetchRequests = async () => {
+            const list = document.getElementById('requestList');
+            // Fetching from the new collection we created in track.html
+            const q = query(collection(db, "payment_requests"), orderBy("timestamp", "desc"));
+            const snap = await getDocs(q);
+            list.innerHTML = "";
+
+            if(snap.empty) {
+                list.innerHTML = "<p style='text-align: center; color: var(--text-dim);'>No pending payment requests found.</p>";
+                return;
+            }
+            
+            snap.forEach(d => {
+                const req = d.data();
+                const reqDate = new Date(req.timestamp).toLocaleString();
+                
+                list.innerHTML += `
+                    <div class="track-item" style="border-left: 4px solid var(--premium-gold, #f1c40f);">
+                        <div class="track-meta" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                            <strong style="color: var(--premium-gold, #f1c40f); font-size: 1.1rem;">
+                                <i class="fas fa-music" style="margin-right: 5px;"></i> ${req.trackTitle}
+                            </strong>
+                            <div style="font-size: 0.9rem; color: #ddd; line-height: 1.6;">
+                                <div><i class="fas fa-envelope" style="width: 20px;"></i> <a href="mailto:${req.userEmail}" style="color:var(--accent); text-decoration:none;">${req.userEmail}</a></div>
+                                <div><i class="fas fa-hashtag" style="width: 20px;"></i> <strong>UPI ID:</strong> ${req.upiTransactionId}</div>
+                                <div style="color: var(--text-dim); font-size: 0.8rem; margin-top: 4px;"><i class="far fa-clock" style="width: 20px;"></i> Requested on: ${reqDate}</div>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button onclick="resolveRequest('${d.id}')" style="background: var(--success); color: black; border: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-check-double"></i> Mark Done
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        };
+
+        // NEW: Resolve Request (Deletes it from queue once email is manually sent)
+        window.resolveRequest = async (id) => {
+            if(confirm("Did you verify the UPI ID and email the files to the user? This will remove the request from this list forever.")) {
+                await deleteDoc(doc(db, "payment_requests", id));
+                fetchRequests();
             }
         };
     </script>
