@@ -209,7 +209,15 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .view-all-link:hover { background: var(--primary-color); border-color: var(--primary-color); box-shadow: 0 4px 15px var(--primary-glow); }
 
-.drama-grid.carousel-mode { display: flex; overflow-x: auto; overflow-y: hidden; gap: 20px; padding: 0 4% 30px 4%; scroll-behavior: smooth; }
+.drama-grid.carousel-mode { 
+  display: flex; 
+  overflow-x: auto; 
+  overflow-y: hidden; 
+  gap: 20px; 
+  padding: 0 4% 30px 4%; 
+  scroll-behavior: smooth; 
+  min-height: 260px; /* NEW: Prevents Cumulative Layout Shift */
+}
 .drama-grid.carousel-mode::-webkit-scrollbar { height: 6px; opacity: 0; transition: 0.3s; }
 .drama-grid.carousel-mode:hover::-webkit-scrollbar { opacity: 1; }
 .drama-grid.carousel-mode::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 10px; margin: 0 4%; }
@@ -225,6 +233,7 @@ img { max-width: 100%; height: auto; display: block; }
   border-radius: 16px;
   overflow: hidden; flex-shrink: 0;
   transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  animation: cardPopIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards; /* NEW: App-like pop in */
 }
 @media (min-width: 1200px) { .drama-card { min-width: 185px; max-width: 185px; } }
 
@@ -419,7 +428,7 @@ img { max-width: 100%; height: auto; display: block; }
   .bottom-nav-item.active .nav-label {
       font-weight: 700;
   }
-} /* <-- THIS IS THE MISSING BRACKET THAT FIXED THE DESKTOP LAYOUT! */
+} 
 
 /* Hide Bottom Nav on Desktop */
 @media (min-width: 993px) {
@@ -576,6 +585,12 @@ img { max-width: 100%; height: auto; display: block; }
 .fade-in-section.is-visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* NEW: Keyframes for the app-like card load */
+@keyframes cardPopIn {
+  0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* =====================================================
