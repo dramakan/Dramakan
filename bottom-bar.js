@@ -1,4 +1,24 @@
 // ==========================================
+// OPTIMISTIC UI: INSTANT AUTH RENDER
+// ==========================================
+// This runs instantly to stop the UI from flashing "Login" on every page load
+document.addEventListener('DOMContentLoaded', () => {
+    const cachedAuth = localStorage.getItem('dk_auth_cache');
+    if (cachedAuth) {
+        try {
+            const { avatarSrc } = JSON.parse(cachedAuth);
+            const pcAvatarHtml = `<img src="${avatarSrc}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.8);">`;
+            const mobileAvatarHtml = `<img src="${avatarSrc}" alt="Profile" class="nav-icon" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); margin-bottom: 4px;">`;
+
+            const bottomAuth = document.getElementById('bottomAuthBtn');
+            if(bottomAuth) { bottomAuth.href = 'profile.html'; bottomAuth.innerHTML = `${mobileAvatarHtml}<span class="nav-label">Profile</span>`; }
+            const topAuthBtn = document.getElementById('topAuthBtn');
+            if(topAuthBtn) { topAuthBtn.href = 'profile.html'; topAuthBtn.innerHTML = `${pcAvatarHtml} Profile`; }
+        } catch(e) { console.error("Auth cache error"); }
+    }
+});
+
+// ==========================================
 // GLOBAL FUNCTION: MY LIST / BOOKMARKS
 // ==========================================
 window.toggleMyList = async function(btn, title, img, link) {
@@ -97,6 +117,9 @@ Promise.all([
                 }
             } catch (error) { }
 
+            // Save the verified data to the local cache so the NEXT page load is instant
+            localStorage.setItem('dk_auth_cache', JSON.stringify({ avatarSrc: avatarSrc }));
+
             const pcAvatarHtml = `<img src="${avatarSrc}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.8);">`;
             const mobileAvatarHtml = `<img src="${avatarSrc}" alt="Profile" class="nav-icon" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); margin-bottom: 4px;">`;
 
@@ -140,6 +163,14 @@ Promise.all([
                     }
                 }
             } catch (err) {}
+        } else {
+            // User is explicitly logged out - destroy the cache and revert UI to Login
+            localStorage.removeItem('dk_auth_cache');
+            
+            const bottomAuth = document.getElementById('bottomAuthBtn');
+            if(bottomAuth) { bottomAuth.href = 'login.html'; bottomAuth.innerHTML = `<i class="fa-solid fa-user nav-icon"></i><span class="nav-label">Login</span>`; }
+            const topAuthBtn = document.getElementById('topAuthBtn');
+            if(topAuthBtn) { topAuthBtn.href = 'login.html'; topAuthBtn.innerHTML = `<i class="fa-solid fa-user-plus"></i> Login`; }
         }
     });
 
@@ -163,6 +194,46 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.style.transition = "filter 0.5s ease";
             document.body.style.filter = "invert(1) hue-rotate(180deg)";
             setTimeout(() => window.location.href = 'admin-dashboard.html', 500);
+        }
+    });
+});
+// ==========================================
+// GLOBAL NATIVE-APP SCROLL MEMORY
+// ==========================================
+// This makes every page remember where the user left off
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Disable the browser's clunky default jump
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
+    // 2. Create a unique memory key for whichever page they are currently on
+    // Example: "scroll_/profile.html" or "scroll_/mylist.html"
+    const pageKey = 'dk_scroll_' + window.location.pathname;
+
+    // 3. Save the exact pixel coordinate right before they leave the page
+    window.addEventListener('beforeunload', () => {
+        sessionStorage.setItem(pageKey, window.scrollY);
+    });
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            sessionStorage.setItem(pageKey, window.scrollY);
+        }
+    });
+
+    // 4. Restore the scroll position when they come back
+    window.addEventListener('load', () => {
+        const savedScroll = sessionStorage.getItem(pageKey);
+        if (savedScroll) {
+            // First attempt: Snap instantly for static pages
+            window.scrollTo({ top: parseInt(savedScroll), behavior: 'instant' });
+            
+            // Second attempt: Wait 500ms for Firebase dynamic grids to finish building
+            // then snap them perfectly into place
+            setTimeout(() => {
+                window.scrollTo({ top: parseInt(savedScroll), behavior: 'instant' });
+            }, 500); 
         }
     });
 });

@@ -9,130 +9,28 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <link rel="stylesheet" href="indexstyle.css">
-    <link rel="stylesheet" href="bottom-bar.css"> 
+    <script src="bottom-bar.js" defer></script> 
 
     <style>
-        /* =====================================================
-           COMMUNITY PAGE SPECIFIC STYLES (APP-LIKE ARCHITECTURE)
-        ===================================================== */
-        body { 
-            background-color: var(--background-color); 
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            height: 100dvh; /* Adapts to mobile browser toolbars */
-            overflow: hidden; /* Locks body scroll for native app feel */
-            margin: 0;
-        }
-        
+        body { background-color: var(--background-color); display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; margin: 0;}
         .main-header { flex-shrink: 0; }
         .bottom-nav { flex-shrink: 0; z-index: 10000; }
 
-        .community-container {
-            flex-grow: 1;
-            max-width: 1400px;
-            margin: 20px auto;
-            padding: 0 4%;
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 30px;
-            width: 100%;
-            overflow: hidden;
-            animation: fadeIn 0.5s ease;
-        }
+        .community-container { flex-grow: 1; max-width: 1400px; margin: 20px auto; padding: 0 4%; display: grid; grid-template-columns: 280px 1fr; gap: 30px; width: 100%; overflow: hidden; animation: fadeIn 0.5s ease; }
 
-        /* --- SIDEBAR: CHANNELS --- */
-        .community-sidebar {
-            background: rgba(26, 26, 29, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
-            padding: 25px 20px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            height: 100%;
-            overflow-y: auto;
-        }
-
-        .sidebar-title {
-            color: #fff;
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .community-sidebar { background: rgba(26, 26, 29, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 25px 20px; display: flex; flex-direction: column; box-shadow: 0 15px 35px rgba(0,0,0,0.4); height: 100%; overflow-y: auto; }
+        .sidebar-title { color: #fff; font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 10px; }
         .sidebar-title i { color: var(--primary-color); }
-
-        .channel-category {
-            font-size: 0.8rem;
-            color: var(--text-muted-color);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 15px 0 10px 10px;
-            font-weight: 600;
-        }
-
-        .channel-btn {
-            background: transparent;
-            border: none;
-            width: 100%;
-            text-align: left;
-            padding: 12px 15px;
-            color: #d4d4d8;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.95rem;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-
+        .channel-category { font-size: 0.8rem; color: var(--text-muted-color); text-transform: uppercase; letter-spacing: 1px; margin: 15px 0 10px 10px; font-weight: 600; }
+        .channel-btn { background: transparent; border: none; width: 100%; text-align: left; padding: 12px 15px; color: #d4d4d8; font-family: 'Poppins', sans-serif; font-size: 0.95rem; border-radius: 12px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; font-weight: 500; }
         .channel-btn i { font-size: 1.1rem; color: #a1a1aa; transition: 0.3s; width: 20px; text-align: center;}
-        
         .channel-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
         .channel-btn:hover i { color: #fff; transform: scale(1.1); }
-        
-        .channel-btn.active {
-            background: linear-gradient(90deg, rgba(138, 43, 226, 0.2), transparent);
-            color: #fff;
-            border-left: 3px solid var(--primary-color);
-            font-weight: 600;
-        }
+        .channel-btn.active { background: linear-gradient(90deg, rgba(138, 43, 226, 0.2), transparent); color: #fff; border-left: 3px solid var(--primary-color); font-weight: 600; }
         .channel-btn.active i { color: var(--primary-color); text-shadow: 0 0 10px var(--primary-glow); }
 
-        /* --- MAIN CHAT AREA --- */
-        .chat-area {
-            background: rgba(20, 20, 23, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 24px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            position: relative;
-        }
-
-        .chat-header {
-            padding: 20px 30px;
-            background: rgba(11, 12, 16, 0.9);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
+        .chat-area { background: rgba(20, 20, 23, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; }
+        .chat-header { padding: 20px 30px; background: rgba(11, 12, 16, 0.9); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         .chat-header-title { color: #fff; font-size: 1.3rem; font-weight: 600; display: flex; align-items: center; gap: 10px;}
         .chat-header-title i { color: var(--primary-color); }
         .chat-header-desc { color: var(--text-muted-color); font-size: 0.85rem; margin-top: 4px; }
@@ -141,160 +39,48 @@
 
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
-        /* Messages Feed */
-        .chat-feed {
-            flex-grow: 1;
-            padding: 30px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            scroll-behavior: smooth;
-        }
+        .chat-feed { flex-grow: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
         .chat-feed::-webkit-scrollbar { width: 6px; }
         .chat-feed::-webkit-scrollbar-thumb { background: rgba(138, 43, 226, 0.5); border-radius: 10px; }
-
         .message-wrapper { display: flex; gap: 15px; animation: slideUp 0.3s ease; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .message-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.1); background: #1A1A1D; flex-shrink: 0; }
         .message-content { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255,255,255,0.05); padding: 15px 20px; border-radius: 0 16px 16px 16px; max-width: 85%; }
-        
         .message-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 5px; }
         .message-author { color: #fff; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: 0.2s; }
         .message-time { color: var(--text-muted-color); font-size: 0.75rem; }
-        .author-badge { background: var(--primary-color); color: #fff; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
-        
         .message-text { color: #d4d4d8; font-size: 0.95rem; line-height: 1.5; word-wrap: break-word; }
         
-        /* Own Message Styling */
         .message-wrapper.own-message { flex-direction: row-reverse; }
         .message-wrapper.own-message .message-content { border-radius: 16px 0 16px 16px; background: rgba(138, 43, 226, 0.15); border-color: rgba(138, 43, 226, 0.3); box-shadow: inset 0 0 20px rgba(138, 43, 226, 0.05); }
         .message-wrapper.own-message .message-header { flex-direction: row-reverse; }
         .message-wrapper.own-message .message-text { text-align: right; color: #fff;}
 
-        /* --- INPUT AREA --- */
-        .chat-input-wrapper {
-            padding: 20px 30px;
-            background: rgba(11, 12, 16, 0.95);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            gap: 15px;
-            align-items: flex-end;
-            flex-shrink: 0;
-        }
-        
-        .input-box-container {
-            flex-grow: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            padding: 5px 15px;
-            transition: 0.3s;
-        }
+        .chat-input-wrapper { padding: 20px 30px; background: rgba(11, 12, 16, 0.95); border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 15px; align-items: flex-end; flex-shrink: 0; }
+        .input-box-container { flex-grow: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; display: flex; align-items: center; padding: 5px 15px; transition: 0.3s; }
         .input-box-container:focus-within { border-color: var(--primary-color); background: rgba(0,0,0,0.5); box-shadow: 0 0 15px rgba(138,43,226,0.15); }
-
-        .chat-input {
-            flex-grow: 1;
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.95rem;
-            padding: 12px;
-            outline: none;
-            resize: none;
-            max-height: 120px;
-            min-height: 45px;
-        }
-        
-        .send-btn {
-            background: var(--primary-color);
-            color: #fff;
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px var(--primary-glow);
-            flex-shrink: 0;
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
+        .chat-input { flex-grow: 1; background: transparent; border: none; color: #fff; font-family: 'Poppins', sans-serif; font-size: 0.95rem; padding: 12px; outline: none; resize: none; max-height: 120px; min-height: 45px; }
+        .send-btn { background: var(--primary-color); color: #fff; border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--primary-glow); flex-shrink: 0; font-size: 1.1rem; margin-bottom: 5px; }
         .send-btn:hover:not(:disabled) { background: #9d4edd; transform: translateY(-2px); }
         .send-btn:disabled { background: #3f3f46; cursor: not-allowed; box-shadow: none; opacity: 0.5;}
 
-        /* =====================================================
-           PERFECT NATIVE MOBILE OPTIMIZATION
-        ===================================================== */
         @media (max-width: 992px) {
-            .community-container { 
-                grid-template-columns: 1fr; 
-                margin: 0; 
-                padding: 0; 
-                gap: 0; 
-            }
-            
-            /* Sidebar turns into a scrollable horizontal nav on mobile */
-            .community-sidebar { 
-                border-radius: 0; 
-                padding: 10px 15px; 
-                height: auto; 
-                box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
-                border-left: none; border-right: none; border-top: none;
-                z-index: 10;
-                flex-shrink: 0;
-            }
+            .community-container { grid-template-columns: 1fr; margin: 0; padding: 0; gap: 0; }
+            .community-sidebar { border-radius: 0; padding: 10px 15px; height: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.3); border-left: none; border-right: none; border-top: none; z-index: 10; flex-shrink: 0; }
             .sidebar-title, .channel-category { display: none; }
-            
-            .mobile-channel-scroll {
-                display: flex;
-                gap: 10px;
-                overflow-x: auto;
-                scrollbar-width: none;
-                -webkit-overflow-scrolling: touch;
-            }
+            .mobile-channel-scroll { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
             .mobile-channel-scroll::-webkit-scrollbar { display: none; }
-            
-            .channel-btn { 
-                white-space: nowrap; 
-                width: auto; 
-                padding: 8px 18px; 
-                background: rgba(255,255,255,0.05); 
-                border-radius: 50px; 
-                margin: 0;
-                font-size: 0.9rem;
-            }
-            .channel-btn.active { 
-                background: var(--primary-color); 
-                border-left: none; 
-            }
-
-            .chat-area { 
-                border-radius: 0; 
-                border: none; 
-                box-shadow: none; 
-                flex-grow: 1; /* Automatically takes all remaining space */
-            }
+            .channel-btn { white-space: nowrap; width: auto; padding: 8px 18px; background: rgba(255,255,255,0.05); border-radius: 50px; margin: 0; font-size: 0.9rem; }
+            .channel-btn.active { background: var(--primary-color); border-left: none; }
+            .chat-area { border-radius: 0; border: none; box-shadow: none; flex-grow: 1; }
             .chat-header { padding: 12px 20px; }
             .chat-header-title { font-size: 1.1rem; }
-            .chat-header-desc { display: none; } /* Hide description to save space on phones */
-            
+            .chat-header-desc { display: none; } 
             .chat-feed { padding: 15px; gap: 15px;}
             .message-content { max-width: 90%; padding: 12px 16px;}
             .message-text { font-size: 0.9rem; }
-            
-            /* Add padding to the bottom so the input isn't hidden by the app's bottom nav */
-            .chat-input-wrapper { 
-                padding: 12px 15px; 
-                padding-bottom: calc(15px + 70px); /* 70px accounts for the bottom nav bar */
-            }
+            .chat-input-wrapper { padding: 12px 15px; padding-bottom: calc(15px + 70px); }
         }
     </style>
 </head>
@@ -383,13 +169,14 @@
     </nav>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // MASTER FIREBASE CONFIG
         const firebaseConfig = { apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", authDomain: "dramakan007.firebaseapp.com", projectId: "dramakan007" };
-        const app = initializeApp(firebaseConfig); 
+        
+        // Safety check to prevent dual-loading crashes
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp(); 
         const auth = getAuth(app); 
         const db = getFirestore(app);
 
@@ -402,7 +189,6 @@
         const inputField = document.getElementById('chat-input');
         const sendBtn = document.getElementById('send-btn');
 
-        // 1. AUTHENTICATION & PROFILE FETCHING
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 isLoggedIn = true;
@@ -420,11 +206,8 @@
                     }
                 } catch(e) { console.error("Profile fetch error", e); }
                 
-                // Initialize Chat Listener for Default Room
                 listenToRoom(currentRoom);
-
             } else {
-                // Lock out guests
                 inputField.placeholder = "Please log in to chat...";
                 inputField.disabled = true;
                 sendBtn.disabled = true;
@@ -433,20 +216,14 @@
                     alert("You must be logged in to participate in the community.");
                     window.location.href = "login.html";
                 });
-                
-                // Still allow them to read the chat
                 listenToRoom(currentRoom);
             }
         });
 
-        // 2. REAL-TIME FIREBASE LISTENER
         function listenToRoom(roomName) {
-            // Kill previous listener to save bandwidth and prevent mixing messages
             if (unsubscribeListener) unsubscribeListener();
-            
             if(isLoggedIn) inputField.placeholder = `Message #${roomName}...`;
             
-            // Generate System Intro Message
             const roomDesc = document.querySelector(`.channel-btn[data-room="${roomName}"]`).getAttribute('data-desc');
             const roomTitle = document.querySelector(`.channel-btn[data-room="${roomName}"]`).innerText.trim();
             
@@ -458,9 +235,7 @@
                 </div>
             `;
 
-            // Query Firebase (Last 50 messages, ordered by time)
             const q = query(collection(db, `chat_${roomName}`), orderBy("timestamp", "asc"), limit(50));
-            
             unsubscribeListener = onSnapshot(q, (snapshot) => {
                 snapshot.docChanges().forEach((change) => {
                     if (change.type === "added") {
@@ -468,26 +243,19 @@
                         appendMessageToDOM(msg, change.doc.id);
                     }
                 });
-                // Auto scroll to bottom
                 chatFeed.scrollTo({ top: chatFeed.scrollHeight, behavior: 'smooth' });
             });
         }
 
-        // 3. UI: APPENDING MESSAGES
         function appendMessageToDOM(msg, docId) {
             const isOwnMessage = (msg.userId === currentUserProfile.uid);
             const wrapperClass = isOwnMessage ? "message-wrapper own-message" : "message-wrapper";
-            
-            // Format Firebase Timestamp
             let timeString = "Just now";
             if (msg.timestamp) {
                 const date = msg.timestamp.toDate();
                 timeString = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             }
-
-            // Secure the text against HTML injection
             const safeText = msg.text ? msg.text.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
-
             const msgHTML = `
                 <div class="${wrapperClass}" id="msg-${docId}">
                     <img src="${msg.userAvatar}" alt="${msg.userName}" class="message-avatar">
@@ -500,45 +268,28 @@
                     </div>
                 </div>
             `;
-            
             chatFeed.insertAdjacentHTML('beforeend', msgHTML);
         }
 
-        // 4. SEND MESSAGE TO FIREBASE
         async function sendMessage() {
             const text = inputField.value.trim();
             if (!text || !isLoggedIn) return;
-
-            // Instantly clear UI for snappy feel
             inputField.value = '';
             inputField.style.height = '45px';
             inputField.focus();
-
             try {
                 await addDoc(collection(db, `chat_${currentRoom}`), {
-                    text: text,
-                    userId: currentUserProfile.uid,
-                    userName: currentUserProfile.name,
-                    userAvatar: currentUserProfile.avatar,
-                    timestamp: serverTimestamp()
+                    text: text, userId: currentUserProfile.uid, userName: currentUserProfile.name,
+                    userAvatar: currentUserProfile.avatar, timestamp: serverTimestamp()
                 });
-            } catch(e) {
-                console.error("Error sending message", e);
-                alert("Failed to send message. Please try again.");
-            }
+            } catch(e) { console.error("Error sending message", e); alert("Failed to send message. Please try again."); }
         }
 
-        // 5. EVENT LISTENERS
         sendBtn.addEventListener('click', sendMessage);
-
         inputField.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
         });
 
-        // Room Switcher UI Logic
         const buttons = document.querySelectorAll('.channel-btn');
         const headerTitle = document.getElementById('current-room-title');
         const headerDesc = document.getElementById('current-room-desc');
@@ -546,27 +297,17 @@
 
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {
-                // Ignore if clicking the same room
                 const newRoom = btn.getAttribute('data-room');
                 if(newRoom === currentRoom) return;
-
                 buttons.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                
                 currentRoom = newRoom;
-                
-                // Update UI Headers
                 headerTitle.innerHTML = `<i class="fas ${btn.querySelector('i').className.split(' ')[1]}"></i> ${btn.innerText.trim()}`;
                 headerDesc.innerText = btn.getAttribute('data-desc');
-                
-                // Fake dynamic online count for immersion
                 onlineCount.innerText = Math.floor(Math.random() * (250 - 40 + 1) + 40) + " Online";
-
-                // Re-trigger listener for new room
                 listenToRoom(currentRoom);
             });
         });
-
     </script>
 </body>
 </html>
