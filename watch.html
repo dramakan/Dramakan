@@ -115,7 +115,7 @@
         }
         .episode-item:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
         .episode-item.current { background: #fff(--primary); border-color: var(--primary); box-shadow: 0 4px 15px var(--primary-glow); color: #fff; }
-        .ep-number { color: #fff ;font-weight: 600; margin: 0 0 4px 0; font-size: 1.1rem; }
+        .ep-number { color: #fff; font-weight: 600; margin: 0 0 4px 0; font-size: 1.1rem; }
         .ep-desc { font-size: 0.75rem; opacity: 0.8; margin: 0; }
 
         /* Tables & Downloads */
@@ -144,7 +144,19 @@
         .comment-form button:hover { background: #9d4edd; transform: scale(1.1); }
 
         /* Sidebar Info */
+        .info-poster { position: relative; }
         .info-poster img { width: 100%; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--glass-border); }
+        
+        /* Add to My List Button (Kept for CSS consistency but used with Action Btn instead) */
+        .bookmark-btn {
+            position: absolute; top: 10px; right: 10px; z-index: 10;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            border: 1px solid var(--glass-border); border-radius: 50%;
+            width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+            color: white; cursor: pointer; transition: 0.3s; font-size: 1.1rem;
+        }
+        .bookmark-btn:hover { background: var(--primary); transform: scale(1.1); border-color: var(--primary); box-shadow: 0 4px 10px var(--primary-glow);}
+        
         .info-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 10px; line-height: 1.2; color: #fff;}
         .info-synopsis { font-size: 0.95rem; color: #d4d4d8; margin-bottom: 10px; line-height: 1.6; }
         .info-synopsis.truncated { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
@@ -240,6 +252,9 @@
                 <div class="episode-meta">
                     <h1 class="episode-title" id="current-episode-title">Select an Episode</h1>
                     <div class="episode-actions">
+                        <button class="action-btn" id="add-to-list-btn" title="Add to My List">
+                            <i class="fas fa-plus"></i> My List
+                        </button>
                         <button class="action-btn" id="prev-ep-btn"><i class="fas fa-arrow-left"></i>Prev</button>
                         <button class="action-btn" id="next-ep-btn">Next<i class="fas fa-arrow-right"></i></button>
                     </div>
@@ -293,7 +308,9 @@
 
             <div class="sidebar-col">
                 <div class="widget drama-info-widget">
-                    <div class="info-poster"><img id="ui-poster" src="" alt="Poster"></div>
+                    <div class="info-poster">
+                        <img id="ui-poster" src="" alt="Poster">
+                    </div>
                     <h2 class="info-title" id="ui-title">Loading...</h2>
                     <p class="info-synopsis truncated" id="synopsis-text">Loading synopsis...</p>
                     <a id="read-more-btn" class="read-more-btn">Read More</a>
@@ -344,7 +361,6 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        // Added collection and getDocs to query database for suggestions
         import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -391,6 +407,52 @@
 
                     // Fetch Dynamic Recommendations 
                     loadRecommendations(dramaId);
+
+                    // ==========================================
+                    // ADD TO MY LIST LOGIC
+                    // ==========================================
+                    const bookmarkBtn = document.getElementById('add-to-list-btn');
+                    const safeTitle = data.title;
+                    const safeImg = data.img;
+                    const safeLink = window.location.pathname + window.location.search;
+
+                    // Initialize button state
+                    let myList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
+                    if (myList.some(item => item.link === safeLink)) {
+                        bookmarkBtn.innerHTML = '<i class="fas fa-check"></i> Added';
+                        bookmarkBtn.style.color = 'var(--primary)';
+                        bookmarkBtn.style.borderColor = 'var(--primary)';
+                    }
+
+                    bookmarkBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Try calling global toggleMyList if it exists from other scripts
+                        if (typeof window.toggleMyList === 'function') {
+                            window.toggleMyList(this, encodeURIComponent(safeTitle), encodeURIComponent(safeImg), encodeURIComponent(safeLink));
+                        } else {
+                            // Fallback standalone local storage handler
+                            let currentList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
+                            const dramaObj = { title: safeTitle, img: safeImg, link: safeLink };
+                            const existsIndex = currentList.findIndex(item => item.link === dramaObj.link);
+                            
+                            if (existsIndex > -1) {
+                                currentList.splice(existsIndex, 1); // Remove
+                                this.innerHTML = '<i class="fas fa-plus"></i> My List';
+                                this.style.color = '#fff';
+                                this.style.borderColor = 'var(--glass-border)';
+                            } else {
+                                currentList.push(dramaObj); // Add
+                                this.innerHTML = '<i class="fas fa-check"></i> Added';
+                                this.style.color = 'var(--primary)';
+                                this.style.borderColor = 'var(--primary)';
+                            }
+                            
+                            localStorage.setItem('dramakan_mylist', JSON.stringify(currentList));
+                            window.dispatchEvent(new Event('myListUpdated'));
+                        }
+                    });
+
 
                     let seasonsArr = data.seasons || [data.totalEps || 1];
                     let currentSeason = 1;
