@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const safeLink = encodeURIComponent(drama.link);
             return `
             <a href="${drama.link}" class="drama-card">
-                <div class="drama-card-img"><img src="${drama.img}" alt="${drama.title}" loading="lazy"></div>
+                <div class="drama-card-img"><img src="${drama.img}" alt="${drama.title}" loading="lazy" decoding="async"></div>
                 <div class="drama-card-info">
                     <h3 class="drama-card-title">${drama.title}</h3>
                     <p class="drama-card-meta">${drama.type}</p>
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             cwSection.style.display = 'block';
                             cwGrid.innerHTML = historyArr.map(item => `
                                 <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
-                                    <div class="drama-card-img"><img src="${item.img}" alt="${item.title}" loading="lazy"></div>
+                                    <div class="drama-card-img"><img src="${item.img}" alt="${item.title}" loading="lazy" decoding="async"></div>
                                     <div class="drama-card-info">
                                         <h3 class="drama-card-title">${item.title}</h3>
                                         <p class="drama-card-meta" style="color: var(--primary-color);"><i class="fas fa-play"></i> Resume</p>
@@ -160,8 +160,8 @@ document.addEventListener('DOMContentLoaded', function () {
             renderContinueWatching(); 
             window.addEventListener('historySynced', renderContinueWatching);
 
+            // RENDER TRENDING (Immediate render because it's near the top)
             try {
-                // Fetch top 15 trending from stats
                 const q = query(collection(db, "drama_stats"), orderBy("views", "desc"), limit(15));
                 const querySnapshot = await getDocs(q);
                 let dynamicTrending = [];
@@ -175,16 +175,47 @@ document.addEventListener('DOMContentLoaded', function () {
                 populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15)); 
             }
 
-            // STAGGERED RENDERING TO PREVENT MAIN THREAD BLOCKING
-            setTimeout(() => populateGrid('kdrama-grid', shuffleArray(data.filter(d => d.type === "K-Drama")).slice(0, 15)), 0);
-            setTimeout(() => populateGrid('cdrama-grid', shuffleArray(data.filter(d => d.type === "C-Drama")).slice(0, 15)), 50);
-            setTimeout(() => populateGrid('jdrama-grid', shuffleArray(data.filter(d => d.type === "J-Drama")).slice(0, 15)), 100);
-            setTimeout(() => populateGrid('pdrama-grid', shuffleArray(data.filter(d => d.type === "P-Drama")).slice(0, 15)), 150);
-            setTimeout(() => populateGrid('tdrama-grid', shuffleArray(data.filter(d => d.type === "T-Drama")).slice(0, 15)), 200);
-            setTimeout(() => populateGrid('upcoming-grid', shuffleArray(data.filter(d => d.release_date === "Upcoming")).slice(0, 15)), 250);
-            setTimeout(() => populateGrid('turkishdrama-grid', shuffleArray(data.filter(d => d.type === "Turkish-Drama")).slice(0, 15)), 300);
-            setTimeout(() => populateGrid('usdrama-grid', shuffleArray(data.filter(d => d.type === "US-Drama")).slice(0, 15)), 350);
-            setTimeout(() => populateGrid('Movie-grid', shuffleArray(data.filter(d => d.type === "Movie")).slice(0, 15)), 400);
+            // ==========================================
+            // PERFORMANCE FIX: TRUE LAZY DOM RENDERING
+            // ==========================================
+            const gridConfigs = [
+                { id: 'kdrama-grid', filterType: "K-Drama" },
+                { id: 'cdrama-grid', filterType: "C-Drama" },
+                { id: 'jdrama-grid', filterType: "J-Drama" },
+                { id: 'pdrama-grid', filterType: "P-Drama" },
+                { id: 'tdrama-grid', filterType: "T-Drama" },
+                { id: 'turkishdrama-grid', filterType: "Turkish-Drama" },
+                { id: 'usdrama-grid', filterType: "US-Drama" },
+                { id: 'Movie-grid', filterType: "Movie" },
+                { id: 'upcoming-grid', isUpcoming: true }
+            ];
+
+            const gridObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const targetId = entry.target.id;
+                        const config = gridConfigs.find(c => c.id === targetId);
+
+                        if (config) {
+                            let sectionData = [];
+                            if (config.isUpcoming) {
+                                sectionData = shuffleArray(data.filter(d => d.release_date === "Upcoming")).slice(0, 15);
+                            } else {
+                                sectionData = shuffleArray(data.filter(d => d.type === config.filterType)).slice(0, 15);
+                            }
+                            
+                            // Only build the HTML when the user scrolls near it!
+                            populateGrid(targetId, sectionData);
+                            observer.unobserve(entry.target);
+                        }
+                    }
+                });
+            }, { rootMargin: '300px' }); // Trigger rendering 300px before it comes onto the screen
+
+            gridConfigs.forEach(config => {
+                const el = document.getElementById(config.id);
+                if (el) gridObserver.observe(el);
+            });
 
         } catch (err) { console.error("Firebase Database Load Error:", err); }
     }
