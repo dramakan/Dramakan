@@ -1,12 +1,19 @@
 // ==========================================
-// OPTIMISTIC UI: INSTANT AUTH RENDER
+// 1. GLOBAL OPTIMISTIC UI (ZERO-LAG RENDER)
 // ==========================================
-// This runs instantly to stop the UI from flashing "Login" on every page load
+// This runs instantly to stop the UI from flashing blank sections or "Loading" states
 document.addEventListener('DOMContentLoaded', () => {
-    const cachedAuth = localStorage.getItem('dk_auth_cache');
-    if (cachedAuth) {
+    const cachedUser = localStorage.getItem('dk_user_cache');
+    
+    if (cachedUser) {
         try {
-            const { avatarSrc } = JSON.parse(cachedAuth);
+            const userData = JSON.parse(cachedUser);
+            
+            // --- A. Instant Header Auth Icons ---
+            let avatarSrc = 'https://api.dicebear.com/7.x/adventurer/svg?seed=DramaKan';
+            if(userData.avatarUrl) avatarSrc = userData.avatarUrl;
+            else if(userData.username) avatarSrc = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(userData.username)}`;
+            
             const pcAvatarHtml = `<img src="${avatarSrc}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.8);">`;
             const mobileAvatarHtml = `<img src="${avatarSrc}" alt="Profile" class="nav-icon" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); margin-bottom: 4px;">`;
 
@@ -14,12 +21,52 @@ document.addEventListener('DOMContentLoaded', () => {
             if(bottomAuth) { bottomAuth.href = 'profile.html'; bottomAuth.innerHTML = `${mobileAvatarHtml}<span class="nav-label">Profile</span>`; }
             const topAuthBtn = document.getElementById('topAuthBtn');
             if(topAuthBtn) { topAuthBtn.href = 'profile.html'; topAuthBtn.innerHTML = `${pcAvatarHtml} Profile`; }
-        } catch(e) { console.error("Auth cache error"); }
+
+            // --- B. Instant Profile Page Data ---
+            const uiUser = document.getElementById('ui-username');
+            if(uiUser) uiUser.textContent = userData.username || "DramaFan";
+            
+            const editUser = document.getElementById('edit-username');
+            if(editUser) editUser.value = userData.username || "";
+            
+            const uiEmail = document.getElementById('ui-email');
+            if(uiEmail) uiEmail.textContent = userData.email || "";
+            
+            const editEmail = document.getElementById('edit-email');
+            if(editEmail) editEmail.value = userData.email || "";
+            
+            const uiAvatar = document.getElementById('ui-avatar');
+            if(uiAvatar) uiAvatar.src = avatarSrc;
+
+            // --- C. Instant My List Grid (Profile & MyList pages) ---
+            const myListGrid = document.getElementById('mylist-grid-container');
+            if(myListGrid && userData.myList) {
+                const listArray = userData.myList;
+                if (listArray.length > 0) {
+                    // Create a copy of array with slice() before reversing to avoid mutating the cache
+                    myListGrid.innerHTML = listArray.slice().reverse().map(item => `
+                        <div class="item-wrapper">
+                            <a href="${item.link}" class="drama-card">
+                                <div class="drama-card-img"><img src="${item.img}" alt="${item.title}"></div>
+                                <div class="drama-card-info">
+                                    <h3 class="drama-card-title">${item.title}</h3>
+                                </div>
+                            </a>
+                            <button class="remove-btn" onclick="removeFromMyList('${item.title.replace(/'/g, "\\'")}')" title="Remove from My List">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `).join('');
+                } else {
+                    myListGrid.innerHTML = `<div class="empty-state"><i class="fas fa-bookmark"></i><h3>Your list is empty</h3><p style="font-size:0.9rem; margin-top:10px;">Find dramas you like and tap the + button to save them here.</p><a href="index.html" style="display:inline-block; margin-top:20px; padding: 10px 24px; background:var(--primary-color); color:#fff; border-radius:50px; text-decoration:none; font-weight:500;">Browse Dramas</a></div>`;
+                }
+            }
+        } catch(e) { console.error("Cache read error"); }
     }
 });
 
 // ==========================================
-// GLOBAL FUNCTION: MY LIST / BOOKMARKS
+// 2. GLOBAL FUNCTION: MY LIST / BOOKMARKS
 // ==========================================
 window.toggleMyList = async function(btn, title, img, link) {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -65,7 +112,7 @@ const dramaIdFromUrl = urlParams.get('id');
 const creatorRef = urlParams.get('ref');
 
 // ==========================================
-// ASYNCHRONOUS FIREBASE SYNC & USER PROFILES
+// 3. ASYNCHRONOUS FIREBASE SYNC (SILENT UPDATER)
 // ==========================================
 Promise.all([
     import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"),
@@ -107,31 +154,28 @@ Promise.all([
         if (user) {
             const userDocRef = doc(db, "users", user.uid);
             
-            let avatarSrc = 'https://api.dicebear.com/7.x/adventurer/svg?seed=DramaKan'; 
             try {
                 const userDoc = await getDoc(userDocRef);
                 if (userDoc.exists()) {
                     const data = userDoc.data();
+                    
+                    // SAVE THE ENTIRE FRESH FIREBASE DOC TO CACHE FOR ZERO-LAG ON NEXT PAGE LOAD
+                    localStorage.setItem('dk_user_cache', JSON.stringify(data));
+                    
+                    // Update Auth Buttons if needed
+                    let avatarSrc = 'https://api.dicebear.com/7.x/adventurer/svg?seed=DramaKan'; 
                     if (data.avatarUrl) avatarSrc = data.avatarUrl; 
                     else if (data.username) avatarSrc = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(data.username)}`;
-                }
-            } catch (error) { }
 
-            // Save the verified data to the local cache so the NEXT page load is instant
-            localStorage.setItem('dk_auth_cache', JSON.stringify({ avatarSrc: avatarSrc }));
+                    const pcAvatarHtml = `<img src="${avatarSrc}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.8);">`;
+                    const mobileAvatarHtml = `<img src="${avatarSrc}" alt="Profile" class="nav-icon" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); margin-bottom: 4px;">`;
 
-            const pcAvatarHtml = `<img src="${avatarSrc}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.8);">`;
-            const mobileAvatarHtml = `<img src="${avatarSrc}" alt="Profile" class="nav-icon" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); margin-bottom: 4px;">`;
+                    const bottomAuth = document.getElementById('bottomAuthBtn');
+                    if(bottomAuth) { bottomAuth.href = 'profile.html'; bottomAuth.innerHTML = `${mobileAvatarHtml}<span class="nav-label">Profile</span>`; }
+                    const topAuthBtn = document.getElementById('topAuthBtn');
+                    if(topAuthBtn) { topAuthBtn.href = 'profile.html'; topAuthBtn.innerHTML = `${pcAvatarHtml} Profile`; }
 
-            const bottomAuth = document.getElementById('bottomAuthBtn');
-            if(bottomAuth) { bottomAuth.href = 'profile.html'; bottomAuth.innerHTML = `${mobileAvatarHtml}<span class="nav-label">Profile</span>`; }
-            const topAuthBtn = document.getElementById('topAuthBtn');
-            if(topAuthBtn) { topAuthBtn.href = 'profile.html'; topAuthBtn.innerHTML = `${pcAvatarHtml} Profile`; }
-
-            try {
-                const userDoc = await getDoc(userDocRef);
-                if (userDoc.exists()) {
-                    const data = userDoc.data();
+                    // Sync History quietly
                     let cloudHistory = data.watchHistory || {};
                     let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
                     let changed = false;
@@ -165,7 +209,7 @@ Promise.all([
             } catch (err) {}
         } else {
             // User is explicitly logged out - destroy the cache and revert UI to Login
-            localStorage.removeItem('dk_auth_cache');
+            localStorage.removeItem('dk_user_cache');
             
             const bottomAuth = document.getElementById('bottomAuthBtn');
             if(bottomAuth) { bottomAuth.href = 'login.html'; bottomAuth.innerHTML = `<i class="fa-solid fa-user nav-icon"></i><span class="nav-label">Login</span>`; }
@@ -183,35 +227,15 @@ Promise.all([
 }).catch(err => console.warn("Firebase scripts delayed."));
 
 // ==========================================
-// ADMIN EASTER EGG
+// 4. GLOBAL NATIVE-APP SCROLL MEMORY
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    let secretKeys = '';
-    document.addEventListener('keydown', (e) => {
-        secretKeys += e.key.toLowerCase();
-        if (secretKeys.length > 5) secretKeys = secretKeys.substring(secretKeys.length - 5);
-        if (secretKeys === 'admin') {
-            document.body.style.transition = "filter 0.5s ease";
-            document.body.style.filter = "invert(1) hue-rotate(180deg)";
-            setTimeout(() => window.location.href = 'admin-dashboard.html', 500);
-        }
-    });
-});
-// ==========================================
-// GLOBAL NATIVE-APP SCROLL MEMORY
-// ==========================================
-// This makes every page remember where the user left off
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Disable the browser's clunky default jump
     if ('scrollRestoration' in history) {
         history.scrollRestoration = 'manual';
     }
 
-    // 2. Create a unique memory key for whichever page they are currently on
-    // Example: "scroll_/profile.html" or "scroll_/mylist.html"
     const pageKey = 'dk_scroll_' + window.location.pathname;
 
-    // 3. Save the exact pixel coordinate right before they leave the page
     window.addEventListener('beforeunload', () => {
         sessionStorage.setItem(pageKey, window.scrollY);
     });
@@ -222,18 +246,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 4. Restore the scroll position when they come back
     window.addEventListener('load', () => {
         const savedScroll = sessionStorage.getItem(pageKey);
         if (savedScroll) {
-            // First attempt: Snap instantly for static pages
             window.scrollTo({ top: parseInt(savedScroll), behavior: 'instant' });
-            
-            // Second attempt: Wait 500ms for Firebase dynamic grids to finish building
-            // then snap them perfectly into place
             setTimeout(() => {
                 window.scrollTo({ top: parseInt(savedScroll), behavior: 'instant' });
             }, 500); 
+        }
+    });
+});
+
+// ==========================================
+// 5. ADMIN EASTER EGG
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    let secretKeys = '';
+    document.addEventListener('keydown', (e) => {
+        secretKeys += e.key.toLowerCase();
+        if (secretKeys.length > 5) secretKeys = secretKeys.substring(secretKeys.length - 5);
+        if (secretKeys === 'admin') {
+            document.body.style.transition = "filter 0.5s ease";
+            document.body.style.filter = "invert(1) hue-rotate(180deg)";
+            setTimeout(() => window.location.href = 'admin-dashboard.html', 500);
         }
     });
 });
