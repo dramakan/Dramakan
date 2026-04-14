@@ -1,0 +1,79 @@
+/* =========================================================
+   GLOBAL THEME & HARDWARE STYLES (lightmode.css)
+========================================================= */
+
+/* --- LIGHT MODE VARIABLES --- */
+:root.light-mode {
+  /* Dynamic RGB overrides */
+  --bg-rgb: 248, 249, 250;
+  --text-rgb: 26, 26, 29;
+
+  /* Color Palette overrides */
+  --background-color: rgb(var(--bg-rgb));
+  --surface-color: #FFFFFF;
+  --text-color: rgb(var(--text-rgb));
+  --text-muted-color: #6B7280;
+  
+  /* Glassmorphism Overrides */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-bg-hover: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-border-light: rgba(0, 0, 0, 0.15);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+
+  /* Bottom Nav Overrides */
+  --bottom-nav-bg: rgba(255, 255, 255, 0.75);
+  --bottom-nav-border: rgba(0, 0, 0, 0.1);
+  --bottom-nav-item: rgba(0, 0, 0, 0.5);
+  --bottom-nav-item-active: var(--primary-color);
+}
+
+/* Specific Element Overrides for Light Mode */
+:root.light-mode .platform-link img { filter: none; opacity: 0.8; }
+:root.light-mode .platform-link:hover img { filter: none; opacity: 1; }
+:root.light-mode .drama-tg-link { color: var(--primary-color); }
+:root.light-mode .community-sidebar .sidebar-title { color: var(--text-color); }
+
+/* Smooth Global Transition */
+body {
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+
+/* =====================================================
+   LITE MODE UI (Hardware Performance Fallback)
+   Applies to budget phones regardless of Dark/Light theme
+===================================================== */
+.lite-mode {
+  /* Replace transparent variables with solid, fast-rendering colors */
+  --glass-bg: var(--surface-color);
+  --glass-bg-hover: rgba(var(--text-rgb), 0.05); 
+  --glass-blur: blur(0px); 
+  --glass-border: rgba(var(--text-rgb), 0.05); 
+  --glass-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); 
+}
+
+/* Strip heavy backdrop-filters globally */
+.lite-mode .drama-card,
+.lite-mode .main-header,
+.lite-mode .community-sidebar,
+.lite-mode .chat-area,
+.lite-mode .bottom-nav,
+.lite-mode .input-glass-container {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  background-color: var(--glass-bg) !important;
+}
+
+/* Simplify gradients */
+.lite-mode .slide::after {
+  background: rgb(var(--bg-rgb)) !important; 
+  opacity: 0.8; 
+}
+
+/* Disable heavy CSS animations on low-end devices */
+.lite-mode * {
+  transition-duration: 0.1s !important; 
+  animation-duration: 0.01ms !important; 
+}

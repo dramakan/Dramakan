@@ -1,3 +1,26 @@
+// --- 0. THEME & HARDWARE DETECTION (RUNS IMMEDIATELY) ---
+(function initUI() {
+    // A. Theme Setup
+    const savedTheme = localStorage.getItem('dramakan_theme');
+    const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    
+    // Automatically apply light mode if user prefers it or previously saved it
+    if (savedTheme === 'light' || (!savedTheme && prefersLight)) {
+        document.documentElement.classList.add('light-mode');
+    }
+
+    // B. Hardware Power Setup (Lite Mode Fallback)
+    let isLowEnd = false;
+    if ('deviceMemory' in navigator && navigator.deviceMemory < 4) isLowEnd = true;
+    if ('hardwareConcurrency' in navigator && navigator.hardwareConcurrency <= 4) isLowEnd = true;
+    if ('connection' in navigator && (navigator.connection.effectiveType === '3g' || navigator.connection.effectiveType === '2g')) isLowEnd = true;
+
+    if (isLowEnd) {
+        document.documentElement.classList.add('lite-mode');
+        console.log("Budget device detected: Lite UI activated.");
+    }
+})();
+
 // --- UNIFIED MASTER FIREBASE CONFIGURATION ---
 const firebaseConfig = {
     apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
@@ -6,7 +29,6 @@ const firebaseConfig = {
 };
 
 // --- SINGLETON FIREBASE LOADER ---
-// This ensures Firebase is only downloaded and initialized exactly once.
 let firebaseInstance = null;
 async function getFirebase() {
     if (firebaseInstance) return firebaseInstance;
@@ -26,6 +48,21 @@ async function getFirebase() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    // --- 0. THEME TOGGLE LISTENER ---
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        const icon = themeToggle.querySelector('i');
+        if (document.documentElement.classList.contains('light-mode')) icon.className = 'fas fa-moon';
+        else icon.className = 'fas fa-sun';
+
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('light-mode');
+            const isLight = document.documentElement.classList.contains('light-mode');
+            localStorage.setItem('dramakan_theme', isLight ? 'light' : 'dark');
+            icon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        });
+    }
 
     // --- 1. MOBILE MENU LOGIC ---
     const menuToggle = document.getElementById('mobileMenuToggle');
@@ -220,19 +257,28 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (err) { console.error("Firebase Database Load Error:", err); }
     }
 
+    // --- SEARCH DEBOUNCE LOGIC (CPU SAVER) ---
     if (searchInput) {
+        let debounceTimer; // Create a timer variable
+        
         searchInput.addEventListener('input', () => {
-            const query = searchInput.value.trim();
-            if (query.length < 1 || !fuse) { searchResults.style.display = 'none'; return; }
-            const results = fuse.search(query, { limit: 10 });
-            searchResults.innerHTML = results.map(({ item }) => {
-                return `
-                <a href="${item.link}" class="search-result-item">
-                    <img src="${item.img}" width="45" height="60" loading="lazy">
-                    <div><div style="color:#fff; font-weight:600; font-size: 0.95rem;">${item.title}</div><small style="color:var(--primary-color);">${item.type}</small></div>
-                </a>`;
-            }).join('');
-            searchResults.style.display = 'block';
+            clearTimeout(debounceTimer); // Clear the timer on every keystroke
+            
+            // Set a new timer to run the search after 300ms of no typing
+            debounceTimer = setTimeout(() => {
+                const query = searchInput.value.trim();
+                if (query.length < 1 || !fuse) { searchResults.style.display = 'none'; return; }
+                
+                const results = fuse.search(query, { limit: 10 });
+                searchResults.innerHTML = results.map(({ item }) => {
+                    return `
+                    <a href="${item.link}" class="search-result-item">
+                        <img src="${item.img}" width="45" height="60" loading="lazy" decoding="async">
+                        <div><div class="search-result-title">${item.title}</div><small style="color:var(--primary-color);">${item.type}</small></div>
+                    </a>`;
+                }).join('');
+                searchResults.style.display = 'block';
+            }, 300); // 300ms delay feels instant but saves massive CPU
         });
     }
 
@@ -262,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
             isAnimating = true;
 
             if (window.innerWidth <= 992 && heroSlides.length > 1) {
-                sliderWrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                sliderWrapper.style.transition = 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1)';
                 sliderWrapper.style.transform = `translateX(-200%)`;
                 sliderWrapper.children[1].classList.remove('active');
                 sliderWrapper.children[2].classList.add('active');
@@ -272,12 +318,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     sliderWrapper.appendChild(sliderWrapper.firstElementChild);
                     sliderWrapper.style.transform = `translateX(-100%)`;
                     isAnimating = false;
-                }, 400);
+                }, 700);
             } else {
                 slideIndex = (slideIndex + 1) % heroSlides.length;
-                sliderWrapper.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+                sliderWrapper.style.transition = 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1)';
                 sliderWrapper.style.transform = `translateX(-${slideIndex * 100}%)`;
-                setTimeout(() => { isAnimating = false; }, 500);
+                setTimeout(() => { isAnimating = false; }, 700);
             }
         }
 
@@ -286,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function () {
             isAnimating = true;
 
             if (window.innerWidth <= 992 && heroSlides.length > 1) {
-                sliderWrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                sliderWrapper.style.transition = 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1)';
                 sliderWrapper.style.transform = `translateX(0%)`;
                 sliderWrapper.children[1].classList.remove('active');
                 sliderWrapper.children[0].classList.add('active');
@@ -296,12 +342,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     sliderWrapper.prepend(sliderWrapper.lastElementChild);
                     sliderWrapper.style.transform = `translateX(-100%)`;
                     isAnimating = false;
-                }, 400);
+                }, 700);
             } else {
                 slideIndex = (slideIndex - 1 + heroSlides.length) % heroSlides.length;
-                sliderWrapper.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+                sliderWrapper.style.transition = 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1)';
                 sliderWrapper.style.transform = `translateX(-${slideIndex * 100}%)`;
-                setTimeout(() => { isAnimating = false; }, 500);
+                setTimeout(() => { isAnimating = false; }, 700);
             }
         }
 

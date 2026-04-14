@@ -1,47 +1,60 @@
 // ==========================================
-// 1. PREMIUM PAGE TRANSITION ENGINE (SMOOTH MASK)
+// 1. PREMIUM PAGE TRANSITION ENGINE (LIQUID GLASS)
 // ==========================================
 (function initPageTransitions() {
-    // 1. Inject the premium loader styles dynamically
+    // 1. Inject the premium liquid glass loader styles dynamically
     if (!document.getElementById('dk-transition-styles')) {
         const style = document.createElement('style');
         style.id = 'dk-transition-styles';
         style.innerHTML = `
             #dk-global-loader {
                 position: fixed; inset: 0; z-index: 999999;
-                background: var(--background-color, #0B0C10);
+                background: rgba(var(--bg-rgb, 11, 12, 16), 0.35);
+                backdrop-filter: blur(24px) saturate(180%);
+                -webkit-backdrop-filter: blur(24px) saturate(180%);
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
                 opacity: 1; visibility: visible;
-                transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.4s;
+                transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.5s;
             }
             #dk-global-loader.hidden {
                 opacity: 0; visibility: hidden; pointer-events: none;
             }
-            .dk-loader-content {
-                display: flex; flex-direction: column; align-items: center; gap: 15px;
-                transform: scale(0.95); transition: transform 0.4s ease-out;
+            .dk-glass-pill {
+                display: flex; align-items: center; gap: 16px;
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+                border-radius: 50px;
+                padding: 12px 28px 12px 14px;
+                transform: translateY(0) scale(1);
+                transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
             }
-            #dk-global-loader:not(.hidden) .dk-loader-content {
-                transform: scale(1);
+            #dk-global-loader.hidden .dk-glass-pill {
+                transform: translateY(15px) scale(0.95);
             }
-            .dk-spinner {
-                width: 45px; height: 45px;
-                border: 3px solid rgba(138, 43, 226, 0.15);
-                border-top-color: var(--primary-color, #8A2BE2);
-                border-radius: 50%;
-                animation: dk-spin 0.8s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
-                box-shadow: 0 0 15px rgba(138, 43, 226, 0.2);
+            .dk-liquid-blob {
+                width: 32px; height: 32px;
+                background: linear-gradient(135deg, var(--primary-color, #8A2BE2), #c488ff);
+                box-shadow: 0 0 20px rgba(138, 43, 226, 0.4);
+                animation: dk-liquid-morph 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
             }
             .dk-loader-text {
-                color: var(--text-color, #F5F5F5); font-weight: 600; font-family: 'Poppins', sans-serif;
-                letter-spacing: 2px; font-size: 0.9rem; opacity: 0.8;
-                text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+                color: var(--text-color, #F5F5F5); 
+                font-weight: 600; font-family: 'Poppins', sans-serif;
+                letter-spacing: 1.5px; font-size: 0.95rem; 
+                opacity: 0.9;
             }
-            @keyframes dk-spin { to { transform: rotate(360deg); } }
-            
-            /* Add a subtle fade-in to the whole page body for extra smoothness */
-            body { animation: dk-body-fade 0.5s ease-out forwards; }
-            @keyframes dk-body-fade { from { opacity: 0.8; } to { opacity: 1; } }
+            @keyframes dk-liquid-morph {
+                0%, 100% { border-radius: 40% 60% 70% 30% / 40% 40% 60% 50%; transform: rotate(0deg) scale(1); }
+                34% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; transform: rotate(120deg) scale(1.05); }
+                67% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; transform: rotate(240deg) scale(0.95); }
+            }
+            /* Premium body fade in (no filter to avoid fixed position breaking) */
+            body { animation: dk-body-fade 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+            @keyframes dk-body-fade { 
+                from { opacity: 0.5; } 
+                to { opacity: 1; } 
+            }
         `;
         document.head.appendChild(style);
     }
@@ -52,8 +65,8 @@
         loader = document.createElement('div');
         loader.id = 'dk-global-loader';
         loader.innerHTML = `
-            <div class="dk-loader-content">
-                <div class="dk-spinner"></div>
+            <div class="dk-glass-pill">
+                <div class="dk-liquid-blob"></div>
                 <div class="dk-loader-text">DRAMAKAN</div>
             </div>
         `;
@@ -96,10 +109,10 @@
             // Show the loader immediately
             loader.classList.remove('hidden');
             
-            // Wait for the fade-in animation to start, then navigate
+            // Wait for the liquid glass fade-in animation to start, then navigate
             setTimeout(() => {
                 window.location.href = link.href;
-            }, 250); 
+            }, 300); 
         }
     });
 })();
@@ -317,3 +330,132 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+// ==========================================
+// 6. HIDDEN ADMIN EASTER EGG (Premium Transition)
+// ==========================================
+(function initAdminEasterEgg() {
+    // 1. Inject Premium Admin Transition Styles Dynamically
+    if (!document.getElementById('dk-admin-transition-styles')) {
+        const style = document.createElement('style');
+        style.id = 'dk-admin-transition-styles';
+        style.innerHTML = `
+            #admin-secret-overlay {
+                position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+                z-index: 9999999; pointer-events: none; display: flex; 
+                justify-content: center; align-items: center; overflow: hidden;
+            }
+            .admin-iris {
+                width: 10px; height: 10px; border-radius: 50%;
+                background: rgba(138, 43, 226, 0.95);
+                box-shadow: 0 0 80px rgba(138, 43, 226, 1), inset 0 0 30px rgba(255,255,255,0.4);
+                backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+                transform: scale(0); opacity: 0;
+                transition: transform 1s cubic-bezier(0.7, 0, 0.2, 1), opacity 0.3s ease;
+            }
+            .admin-iris.expand {
+                opacity: 1; transform: scale(400); /* Expands to swallow any screen size */
+            }
+            .admin-auth-wrapper {
+                position: absolute; display: flex; flex-direction: column; align-items: center;
+                opacity: 0; transform: translateY(20px) scale(0.95);
+                transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s;
+            }
+            .admin-auth-wrapper.show {
+                opacity: 1; transform: translateY(0) scale(1);
+            }
+            .admin-auth-icon { 
+                font-size: 3rem; color: #fff; margin-bottom: 15px;
+                filter: drop-shadow(0 0 15px rgba(255,255,255,0.6));
+            }
+            .admin-auth-text {
+                color: white; font-family: 'Poppins', sans-serif;
+                font-size: 1.5rem; font-weight: 700; letter-spacing: 4px;
+                text-transform: uppercase; text-shadow: 0 0 20px rgba(255,255,255,0.8);
+                text-align: center;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // 2. Create the overlay elements in the DOM
+    const overlay = document.createElement('div');
+    overlay.id = 'admin-secret-overlay';
+    
+    const iris = document.createElement('div');
+    iris.className = 'admin-iris';
+    
+    const authWrapper = document.createElement('div');
+    authWrapper.className = 'admin-auth-wrapper';
+    authWrapper.innerHTML = `
+        <i class="fas fa-fingerprint admin-auth-icon"></i>
+        <div class="admin-auth-text">System Unlocked</div>
+    `;
+
+    overlay.appendChild(iris);
+    overlay.appendChild(authWrapper);
+    document.body.appendChild(overlay);
+
+    // 3. The Cinematic Transition Function
+    function triggerAdminTransition() {
+        // Prevent multiple triggers if someone spams the button
+        if (iris.classList.contains('expand')) return;
+        
+        // Hide the standard page loader so they don't overlap
+        const standardLoader = document.getElementById('dk-global-loader');
+        if (standardLoader) standardLoader.style.display = 'none';
+
+        // Fire the animation
+        iris.classList.add('expand');
+        authWrapper.classList.add('show');
+        
+        // Wait for the visual effect to peak, then navigate
+        setTimeout(() => {
+            window.location.href = 'admin-dashboard.html';
+        }, 1300); 
+    }
+
+    // --- TRIGGER 1: PC Keyboard Secret Word ---
+    const secretCode = ['a', 'd', 'm', 'i', 'n'];
+    let codeIndex = 0;
+    
+    document.addEventListener('keydown', (e) => {
+        // Ignore typing if the user is inside a search bar or form
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        if (e.key.toLowerCase() === secretCode[codeIndex]) {
+            codeIndex++;
+            if (codeIndex === secretCode.length) {
+                triggerAdminTransition();
+                codeIndex = 0;
+            }
+        } else {
+            codeIndex = 0; // Reset if they break the sequence
+        }
+    });
+
+    // --- TRIGGER 2: Mobile/Touch Footer Tapping ---
+    let tapCount = 0;
+    let tapTimer = null;
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const footers = document.querySelectorAll('.main-footer');
+        
+        footers.forEach(footer => {
+            footer.addEventListener('click', () => {
+                tapCount++;
+                clearTimeout(tapTimer);
+                
+                // 7 Taps required
+                if (tapCount >= 7) {
+                    triggerAdminTransition();
+                    tapCount = 0;
+                }
+                
+                // Reset the count if they stop tapping for 1 second
+                tapTimer = setTimeout(() => {
+                    tapCount = 0;
+                }, 1000); 
+            });
+        });
+    });
+})();
