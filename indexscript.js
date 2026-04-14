@@ -201,43 +201,156 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // --- 3. HERO SLIDER LOGIC (INTERACTIVE & SWIPEABLE) ---
     const sliderWrapper = document.querySelector('.slider-wrapper');
     if (sliderWrapper) {
         let slideIndex = 0;
         const heroSlides = document.querySelectorAll('.slide');
-        
-        if (window.innerWidth <= 992 && heroSlides.length > 1) {
-            sliderWrapper.prepend(sliderWrapper.lastElementChild);
-            sliderWrapper.style.transition = 'none';
-            sliderWrapper.style.transform = `translateX(-100%)`;
-            Array.from(sliderWrapper.children).forEach(s => s.classList.remove('active'));
-            sliderWrapper.children[1].classList.add('active');
+        const prevBtn = document.getElementById('prevSlide');
+        const nextBtn = document.getElementById('nextSlide');
+        let autoSlideInterval;
+        let isAnimating = false; // Prevents spamming swipes/clicks
 
-            setInterval(() => {
+        function initSlider() {
+            if (window.innerWidth <= 992 && heroSlides.length > 1) {
+                sliderWrapper.prepend(sliderWrapper.lastElementChild);
+                sliderWrapper.style.transition = 'none';
+                sliderWrapper.style.transform = `translateX(-100%)`;
+                Array.from(sliderWrapper.children).forEach(s => s.classList.remove('active'));
+                sliderWrapper.children[1].classList.add('active');
+            }
+            startAutoSlide();
+        }
+
+        function moveNext() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            if (window.innerWidth <= 992 && heroSlides.length > 1) {
                 sliderWrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
-                sliderWrapper.style.transform = `translateX(-200%)`; 
+                sliderWrapper.style.transform = `translateX(-200%)`;
                 sliderWrapper.children[1].classList.remove('active');
                 sliderWrapper.children[2].classList.add('active');
+
                 setTimeout(() => {
                     sliderWrapper.style.transition = 'none';
                     sliderWrapper.appendChild(sliderWrapper.firstElementChild);
-                    sliderWrapper.style.transform = `translateX(-100%)`; 
-                }, 400); 
-            }, 3500);
-        } else {
-            setInterval(() => {
+                    sliderWrapper.style.transform = `translateX(-100%)`;
+                    isAnimating = false;
+                }, 400);
+            } else {
                 slideIndex = (slideIndex + 1) % heroSlides.length;
                 sliderWrapper.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
                 sliderWrapper.style.transform = `translateX(-${slideIndex * 100}%)`;
-            }, 5000);
+                setTimeout(() => { isAnimating = false; }, 500);
+            }
         }
+
+        function movePrev() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            if (window.innerWidth <= 992 && heroSlides.length > 1) {
+                sliderWrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                sliderWrapper.style.transform = `translateX(0%)`;
+                sliderWrapper.children[1].classList.remove('active');
+                sliderWrapper.children[0].classList.add('active');
+
+                setTimeout(() => {
+                    sliderWrapper.style.transition = 'none';
+                    sliderWrapper.prepend(sliderWrapper.lastElementChild);
+                    sliderWrapper.style.transform = `translateX(-100%)`;
+                    isAnimating = false;
+                }, 400);
+            } else {
+                slideIndex = (slideIndex - 1 + heroSlides.length) % heroSlides.length;
+                sliderWrapper.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+                sliderWrapper.style.transform = `translateX(-${slideIndex * 100}%)`;
+                setTimeout(() => { isAnimating = false; }, 500);
+            }
+        }
+
+        function startAutoSlide() {
+            clearInterval(autoSlideInterval);
+            autoSlideInterval = setInterval(moveNext, window.innerWidth <= 992 ? 3500 : 5000);
+        }
+
+        function resetAutoSlide() {
+            startAutoSlide();
+        }
+
+        // 1. Button Controls
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => { moveNext(); resetAutoSlide(); });
+        }
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => { movePrev(); resetAutoSlide(); });
+        }
+
+        // 2. Swipe & Drag Controls
+        let startX = 0;
+        let isDragging = false;
+        let dragThresholdMet = false;
+
+        function handleDragStart(e) {
+            if (isAnimating) return;
+            isDragging = true;
+            dragThresholdMet = false;
+            startX = e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
+            clearInterval(autoSlideInterval); // Pause auto-slide while holding
+        }
+
+        function handleDragMove(e) {
+            if (!isDragging) return;
+            const currentX = e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
+            if (Math.abs(startX - currentX) > 10) {
+                dragThresholdMet = true; // Indicates intent to swipe, not click
+            }
+        }
+
+        function handleDragEnd(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            const endX = e.type.includes('mouse') ? e.pageX : e.changedTouches[0].clientX;
+            const diffX = startX - endX;
+
+            if (Math.abs(diffX) > 50) { // 50px threshold to trigger the slide
+                if (diffX > 0) moveNext(); // Swiped left -> Next
+                else movePrev(); // Swiped right -> Prev
+            }
+            resetAutoSlide(); // Resume auto-slide
+        }
+
+        sliderWrapper.addEventListener('touchstart', handleDragStart, { passive: true });
+        sliderWrapper.addEventListener('touchmove', handleDragMove, { passive: true });
+        sliderWrapper.addEventListener('touchend', handleDragEnd);
+        
+        sliderWrapper.addEventListener('mousedown', handleDragStart);
+        sliderWrapper.addEventListener('mousemove', handleDragMove);
+        sliderWrapper.addEventListener('mouseup', handleDragEnd);
+        sliderWrapper.addEventListener('mouseleave', handleDragEnd);
+
+        // 3. Click logic (ignores clicks if user was dragging)
         heroSlides.forEach(slide => {
-            slide.addEventListener('click', () => {
+            slide.addEventListener('click', (e) => {
+                if (dragThresholdMet) {
+                    e.preventDefault();
+                    return; // Prevent triggering link if user was swiping
+                }
                 if (window.innerWidth <= 992 && !slide.classList.contains('active')) return;
                 const btn = slide.querySelector('.btn-primary');
-                if (btn) window.location.href = btn.getAttribute('href');
+                // Target the hero-play-btn link on mobile or the main watch button on PC
+                const mobileLink = slide.querySelector('a[href^="watch.html"]');
+                
+                if (btn) {
+                    window.location.href = btn.getAttribute('href');
+                } else if (mobileLink) {
+                    window.location.href = mobileLink.getAttribute('href');
+                }
             });
         });
+
+        initSlider();
     }
 
     initializeDramaSite();
