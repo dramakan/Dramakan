@@ -188,8 +188,12 @@ img { max-width: 100%; height: auto; display: block; }
 
 
 /* =====================================================
-   5. DRAMA SECTIONS & CAROUSEL (EDGE-TO-EDGE)
+   5. DRAMA SECTIONS, CAROUSELS, AND CATEGORY GRIDS
 ===================================================== */
+.category-header { padding: 40px 0 20px 0; text-align: center; }
+.category-title { font-size: 2.5rem; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+.category-title span { color: var(--primary-color); }
+
 .section-glass-box {
   background: transparent;
   margin-bottom: 0 !important;
@@ -209,14 +213,17 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .view-all-link:hover { background: var(--primary-color); border-color: var(--primary-color); box-shadow: 0 4px 15px var(--primary-glow); }
 
+/* Universal Grid System (Used by Categories and Carousel) */
+.drama-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+
+/* Carousel Override for Homepage */
 .drama-grid.carousel-mode { 
   display: flex; 
   overflow-x: auto; 
   overflow-y: hidden; 
-  gap: 20px; 
   padding: 0 4% 30px 4%; 
   scroll-behavior: smooth; 
-  min-height: 260px; /* NEW: Prevents Cumulative Layout Shift */
+  min-height: 260px; 
 }
 .drama-grid.carousel-mode::-webkit-scrollbar { height: 6px; opacity: 0; transition: 0.3s; }
 .drama-grid.carousel-mode:hover::-webkit-scrollbar { opacity: 1; }
@@ -224,32 +231,49 @@ img { max-width: 100%; height: auto; display: block; }
 .drama-grid.carousel-mode::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
 .drama-grid.carousel-mode::-webkit-scrollbar-thumb:hover { background: var(--primary-color); box-shadow: 0 0 10px var(--primary-glow); }
 
+/* The Drama Card */
 .drama-card {
-  min-width: 160px; max-width: 160px;
   background: var(--glass-bg);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--glass-border);
   border-radius: 16px;
-  overflow: hidden; flex-shrink: 0;
+  overflow: hidden; 
   transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  animation: cardPopIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards; /* NEW: App-like pop in */
+  position: relative;
 }
-@media (min-width: 1200px) { .drama-card { min-width: 185px; max-width: 185px; } }
+
+.drama-grid.carousel-mode .drama-card {
+  min-width: 160px; max-width: 160px; flex-shrink: 0;
+  animation: cardPopIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+}
+
+@media (min-width: 1200px) { .drama-grid.carousel-mode .drama-card { min-width: 185px; max-width: 185px; } }
 
 .drama-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-8px) scale(1.02);
   background: var(--glass-bg-hover);
-  border-color: var(--glass-border-light);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.6), 0 0 20px rgba(138,43,226,0.15);
+  border-color: rgba(138, 43, 226, 0.6);
+  box-shadow: 0 15px 30px rgba(138, 43, 226, 0.25);
+  z-index: 2;
 }
 
-.drama-card-img img { width: 100%; aspect-ratio: 4/5; object-fit: cover; transition: 0.5s; }
+.drama-card-img { width: 100%; aspect-ratio: 4/5; overflow: hidden; }
+.drama-card-img img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
 .drama-card:hover .drama-card-img img { transform: scale(1.05); }
 
 .drama-card-info { padding: 15px; }
 .drama-card-title { font-size: 0.95rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
 .drama-card-meta { font-size: 0.8rem; color: var(--primary-color); font-weight: 600; }
+
+.bookmark-btn {
+    position: absolute; top: 10px; right: 10px; z-index: 10;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    border: 1px solid var(--glass-border); border-radius: 50%;
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    color: white; cursor: pointer; transition: 0.3s;
+}
+.bookmark-btn:hover { background: var(--primary-color); transform: scale(1.1); border-color: var(--primary-color); }
 
 
 /* =====================================================
@@ -304,11 +328,10 @@ img { max-width: 100%; height: auto; display: block; }
 
 
 /* =====================================================
-   8. MOBILE APP VIEW (FULL OVERHAUL)
+   8. MOBILE APP VIEW & LIQUID GLASS BAR
 ===================================================== */
 @media (max-width: 992px) {
   
-  /* Header Adjustments */
   .main-header .container { flex-direction: column; gap: 12px; align-items: stretch; }
   .header-top-row { width: 100%; }
   .search-bar { width: 100%; margin: 0; }
@@ -332,7 +355,6 @@ img { max-width: 100%; height: auto; display: block; }
   }
   .nav-links a:hover, .nav-links a:active { background: rgba(138, 43, 226, 0.15); border-color: var(--primary-color); }
   
-  /* Premium Earn Button in Navigation */
   .earn-nav-link { color: #d4af37 !important; font-weight: 700 !important; text-shadow: 0 0 10px rgba(212, 175, 55, 0.4) !important; border: 1px solid rgba(212, 175, 55, 0.3) !important; padding: 6px 14px !important; border-radius: 8px; background: rgba(212, 175, 55, 0.05); }
   .earn-nav-link:hover { color: #f1c40f !important; background: rgba(212, 175, 55, 0.15); text-shadow: 0 0 15px rgba(241, 196, 15, 0.6) !important; border-color: #f1c40f !important; }
   .nav-links a.earn-nav-link { margin-top: 15px; background: rgba(212, 175, 55, 0.1); border: 1px solid #d4af37; text-align: center; }
@@ -363,12 +385,15 @@ img { max-width: 100%; height: auto; display: block; }
   .hero-mobile-title { font-size: 1.35rem; font-weight: 700; color: #fff; line-height: 1.2; text-shadow: 0 2px 10px rgba(0,0,0,0.8); max-width: 70%; }
   .hero-play-btn { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--primary-color); border: none; color: white; font-size: 1.3rem; box-shadow: 0 4px 15px var(--primary-glow); }
 
-  .drama-card { min-width: 130px; max-width: 130px; border-radius: 12px; }
+  /* Mobile Grid Formatting */
+  .drama-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
+  .drama-grid.carousel-mode .drama-card { min-width: 130px; max-width: 130px; border-radius: 12px; }
   .drama-card-info { padding: 12px; }
   .drama-card-title { font-size: 0.85rem; }
   .drama-card-meta { font-size: 0.75rem; }
   .section-glass-box { padding: 25px 0 10px 0; }
   .section-title { font-size: 1.3rem; }
+  .category-title { font-size: 1.8rem; }
 
   body { padding-bottom: 80px; }
   .drama-fab { bottom: 90px; right: 20px; padding: 12px 18px; border-radius: 50px; }
@@ -401,33 +426,11 @@ img { max-width: 100%; height: auto; display: block; }
     transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); position: relative;
   }
   
-  .bottom-nav-item.active { 
-      color: #fff; 
-      text-shadow: 0 0 15px var(--primary-glow);
-  }
- 
-  .nav-icon { 
-      font-size: 1.35rem; 
-      margin-bottom: 4px; 
-      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-  }
-  
-  .bottom-nav-item.active .nav-icon { 
-      transform: translateY(-4px) scale(1.15); 
-      color: var(--primary-color);
-      filter: drop-shadow(0 5px 12px var(--primary-glow));
-  }
-  
-  .nav-label { 
-      font-size: 0.65rem; 
-      font-weight: 500; 
-      letter-spacing: 0.3px; 
-      transition: all 0.3s ease;
-  }
-
-  .bottom-nav-item.active .nav-label {
-      font-weight: 700;
-  }
+  .bottom-nav-item.active { color: #fff; text-shadow: 0 0 15px var(--primary-glow); }
+  .nav-icon { font-size: 1.35rem; margin-bottom: 4px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  .bottom-nav-item.active .nav-icon { transform: translateY(-4px) scale(1.15); color: var(--primary-color); filter: drop-shadow(0 5px 12px var(--primary-glow)); }
+  .nav-label { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.3px; transition: all 0.3s ease; }
+  .bottom-nav-item.active .nav-label { font-weight: 700; }
 } 
 
 /* Hide Bottom Nav on Desktop */
@@ -438,143 +441,41 @@ img { max-width: 100%; height: auto; display: block; }
 /* =====================================================
    9. NEW APP HEADER BUTTON & INSTALL POPUP
 ===================================================== */
-
 .header-download-btn {
   display: none; 
-  align-items: center;
-  gap: 8px;
-  background: var(--primary-color);
-  color: white;
-  padding: 10px 18px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  transition: 0.3s ease;
-  box-shadow: 0 4px 15px var(--primary-glow);
-  text-decoration: none;
-  margin-left: 20px;
+  align-items: center; gap: 8px; background: var(--primary-color); color: white;
+  padding: 10px 18px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;
+  transition: 0.3s ease; box-shadow: 0 4px 15px var(--primary-glow); text-decoration: none; margin-left: 20px;
 }
 
-.header-download-btn:hover {
-  background: #9d4edd;
-  transform: translateY(-2px);
-  color: white;
-  box-shadow: 0 6px 20px rgba(157, 78, 221, 0.6);
-}
+.header-download-btn:hover { background: #9d4edd; transform: translateY(-2px); color: white; box-shadow: 0 6px 20px rgba(157, 78, 221, 0.6); }
 
-@media (min-width: 993px) {
-  .header-download-btn { display: inline-flex; }
-}
+@media (min-width: 993px) { .header-download-btn { display: inline-flex; } }
 
 .app-install-popup {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(26, 26, 29, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--primary-color);
-  border-radius: 16px;
-  padding: 12px 16px;
-  z-index: 10000;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px var(--primary-glow);
-  width: 90%;
-  max-width: 420px;
-  display: flex;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: rgba(26, 26, 29, 0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--primary-color); border-radius: 16px; padding: 12px 16px;
+  z-index: 10000; box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px var(--primary-glow);
+  width: 90%; max-width: 420px; display: flex; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
 }
 
-.app-install-popup.hidden {
-  transform: translate(-50%, 150%);
-  opacity: 0;
-  pointer-events: none;
-}
+.app-install-popup.hidden { transform: translate(-50%, 150%); opacity: 0; pointer-events: none; }
+.popup-content { display: flex; align-items: center; width: 100%; gap: 12px; }
+.popup-icon { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; background: rgba(255,255,255,0.1); }
+.popup-text { flex-grow: 1; }
+.popup-text h4 { margin: 0 0 2px 0; font-size: 0.95rem; color: #fff; line-height: 1.2; }
+.popup-text p { margin: 0; font-size: 0.75rem; color: var(--text-muted-color); }
+.btn-install { background: var(--primary-color); color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: 0.3s; box-shadow: 0 2px 10px var(--primary-glow); }
+.btn-install:hover { background: #9d4edd; color: white; }
+.btn-close-popup { background: transparent; border: none; color: var(--text-muted-color); font-size: 1.2rem; cursor: pointer; padding: 0 4px; margin-left: 5px; transition: 0.2s; }
+.btn-close-popup:hover { color: white; }
 
-.popup-content {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  gap: 12px;
-}
-
-.popup-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  object-fit: cover;
-  background: rgba(255,255,255,0.1);
-}
-
-.popup-text {
-  flex-grow: 1;
-}
-
-.popup-text h4 {
-  margin: 0 0 2px 0;
-  font-size: 0.95rem;
-  color: #fff;
-  line-height: 1.2;
-}
-
-.popup-text p {
-  margin: 0;
-  font-size: 0.75rem;
-  color: var(--text-muted-color);
-}
-
-.btn-install {
-  background: var(--primary-color);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 50px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: 0.3s;
-  box-shadow: 0 2px 10px var(--primary-glow);
-}
-
-.btn-install:hover {
-  background: #9d4edd;
-  color: white;
-}
-
-.btn-close-popup {
-  background: transparent;
-  border: none;
-  color: var(--text-muted-color);
-  font-size: 1.2rem;
-  cursor: pointer;
-  padding: 0 4px;
-  margin-left: 5px;
-  transition: 0.2s;
-}
-
-.btn-close-popup:hover {
-  color: white;
-}
-
-@media (max-width: 992px) {
-  .app-install-popup {
-    bottom: 85px; 
-    width: 92%;
-  }
-}
+@media (max-width: 992px) { .app-install-popup { bottom: 85px; width: 92%; } }
 
 /* =====================================================
-   IMMERSION ENHANCEMENTS (Scroll Reveal & Hover Physics)
+   IMMERSION ENHANCEMENTS (Scroll Reveal Animation)
 ===================================================== */
-.drama-card {
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.4s ease;
-}
-.drama-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 15px 30px rgba(138, 43, 226, 0.25);
-  border-color: rgba(138, 43, 226, 0.6);
-  z-index: 2;
-}
-
 .fade-in-section {
   opacity: 0;
   transform: translateY(30px);
@@ -587,21 +488,7 @@ img { max-width: 100%; height: auto; display: block; }
   transform: translateY(0);
 }
 
-/* NEW: Keyframes for the app-like card load */
 @keyframes cardPopIn {
   0% { opacity: 0; transform: translateY(20px) scale(0.95); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
-
-/* =====================================================
-   MY LIST & BOOKMARK BUTTONS
-===================================================== */
-.drama-card { position: relative; }
-.bookmark-btn {
-    position: absolute; top: 10px; right: 10px; z-index: 10;
-    background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-    border: 1px solid var(--glass-border); border-radius: 50%;
-    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-    color: white; cursor: pointer; transition: 0.3s;
-}
-.bookmark-btn:hover { background: var(--primary-color); transform: scale(1.1); }
