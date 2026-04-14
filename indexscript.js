@@ -88,37 +88,41 @@ document.addEventListener('DOMContentLoaded', function () {
     async function initializeDramaSite() {
         let data = [];
         try {
-            // 1. CHECK CACHE FIRST
-            const cachedDramas = sessionStorage.getItem('dramakan_master_db');
-            const cacheTime = sessionStorage.getItem('dramakan_cache_time');
-            const now = new Date().getTime();
+            // 1. CHECK CACHE AND VERSION VERSION FIRST
+            const cachedDramas = localStorage.getItem('dramakan_master_db');
+            const localVersion = localStorage.getItem('dramakan_db_version') || "0";
             
-            let db; 
-            let firestoreModule;
+            const fb = await getFirebase();
+            const db = fb.db;
+            const firestoreModule = fb.firestoreModule;
+            const { collection, getDocs, doc, getDoc, query, orderBy, limit } = firestoreModule;
 
-            // If cache exists and is less than 2 hours old (7200000 ms), use it!
-            if (cachedDramas && cacheTime && (now - parseInt(cacheTime) < 7200000)) {
+            // --- THE 1-READ CHECK ---
+            // We check ONE document to see if the database has been updated
+            let serverVersion = "0";
+            try {
+                const configRef = doc(db, "system", "config");
+                const configSnap = await getDoc(configRef);
+                if (configSnap.exists()) {
+                    serverVersion = configSnap.data().lastUpdated.toString();
+                }
+            } catch(e) { console.log("Version check skipped/failed.", e); }
+
+            // If they have a cache AND the version numbers match, use the free local data!
+            if (cachedDramas && localVersion === serverVersion) {
                 data = JSON.parse(cachedDramas);
-                console.log("Loaded dramas from local cache! (Saved Firebase reads)");
-                
-                const fb = await getFirebase();
-                db = fb.db;
-                firestoreModule = fb.firestoreModule;
+                console.log("Database is up to date! Loaded from LocalStorage (0 extra reads).");
             } else {
-                // 2. NO CACHE? FETCH FROM FIREBASE (Using Singleton)
-                const fb = await getFirebase();
-                db = fb.db;
-                firestoreModule = fb.firestoreModule;
-                
-                const { collection, getDocs } = firestoreModule;
+                // 2. VERSIONS DON'T MATCH OR NO CACHE? FETCH FRESH FROM FIREBASE
+                console.log("New update detected! Fetching fresh dramas from Firebase...");
                 const cmsSnap = await getDocs(collection(db, "dramas"));
-                cmsSnap.forEach((doc) => { 
-                    data.push(doc.data()); 
+                cmsSnap.forEach((d) => { 
+                    data.push(d.data()); 
                 });
                 
-                // Save to cache for next time
-                sessionStorage.setItem('dramakan_master_db', JSON.stringify(data));
-                sessionStorage.setItem('dramakan_cache_time', now.toString());
+                // Save the new data AND the new version number to their phone
+                localStorage.setItem('dramakan_master_db', JSON.stringify(data));
+                localStorage.setItem('dramakan_db_version', serverVersion);
             }
 
             fuse = new Fuse(data, { keys: ['title'], threshold: 0.4 });
@@ -156,10 +160,10 @@ document.addEventListener('DOMContentLoaded', function () {
             renderContinueWatching(); 
             window.addEventListener('historySynced', renderContinueWatching);
 
-            const { collection: col, getDocs: gd, query, orderBy, limit } = firestoreModule;
             try {
-                const q = query(col(db, "drama_stats"), orderBy("views", "desc"), limit(15));
-                const querySnapshot = await gd(q);
+                // Fetch top 15 trending from stats
+                const q = query(collection(db, "drama_stats"), orderBy("views", "desc"), limit(15));
+                const querySnapshot = await getDocs(q);
                 let dynamicTrending = [];
                 querySnapshot.forEach((docStats) => {
                     const found = data.find(d => d.title.toLowerCase() === docStats.data().title.toLowerCase());
