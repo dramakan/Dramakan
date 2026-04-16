@@ -175,6 +175,7 @@
                 <button class="tab-btn" data-target="cms-tab"><i class="fas fa-cloud-upload-alt"></i> Content</button>
                 <button class="tab-btn" data-target="requests-tab"><i class="fas fa-inbox"></i> Requests</button>
                 <button class="tab-btn" data-target="community-tab"><i class="fas fa-users"></i> Community</button>
+                <button class="tab-btn" data-target="broadcast-tab"><i class="fas fa-bullhorn"></i> Broadcasts</button>
             </div>
 
             <div id="analytics-tab" class="tab-content active">
@@ -292,6 +293,7 @@
                     </div>
                 </div>
 
+
                 <div id="viewers-section">
                     <div class="header-flex">
                         <div class="search-filter">
@@ -344,6 +346,31 @@
         </div>
     </div>
 
+<div id="broadcast-tab" class="tab-content">
+    <div class="cms-form-wrapper">
+        <h2 style="margin-bottom: 25px; color: #fff; font-size: 1.5rem;"><i class="fas fa-paper-plane" style="color:var(--primary);"></i> Send Global Notification</h2>
+        
+        <form id="broadcast-form">
+            <div class="cms-form-grid">
+                <div class="cms-group full-width">
+                    <label>Target Audience</label>
+                    <select id="notif-target" class="admin-input">
+                        <option value="all">Everyone (Guests, Viewers & Affiliates)</option>
+                        <option value="viewers">Registered Viewers Only</option>
+                        <option value="creators">Affiliate Partners Only</option>
+                    </select>
+                </div>
+                <div class="cms-group full-width"><label>Notification Title</label><input type="text" id="notif-title" class="admin-input" placeholder="e.g., Server Maintenance" required></div>
+                <div class="cms-group full-width"><label>Message</label><textarea id="notif-message" class="admin-input" rows="3" placeholder="Write your broadcast message here..." required></textarea></div>
+                <div class="cms-group full-width"><label>Call-to-Action Link (Optional)</label><input type="text" id="notif-link" class="admin-input" placeholder="e.g., watch.html?id=mydemon"></div>
+
+                <div style="grid-column: 1 / -1; margin-top: 15px;">
+                    <button type="submit" id="btn-broadcast" class="btn-primary" style="width: 100%;"><i class="fas fa-broadcast-tower"></i> Transmit Notification</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
@@ -776,7 +803,34 @@
                 loadCreators();
             }
         };
+// =====================================
+// BROADCAST NOTIFICATION SYSTEM
+// =====================================
+document.getElementById('broadcast-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btn-broadcast');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transmitting...';
+    btn.disabled = true;
 
+    try {
+        await setDoc(doc(collection(db, "notifications")), {
+            target: document.getElementById('notif-target').value,
+            title: document.getElementById('notif-title').value.trim(),
+            message: document.getElementById('notif-message').value.trim(),
+            link: document.getElementById('notif-link').value.trim(),
+            createdAt: new Date().getTime()
+        });
+        
+        alert("Broadcast transmitted successfully!");
+        e.target.reset();
+    } catch (error) {
+        console.error(error);
+        alert("Failed to send broadcast. Check console.");
+    } finally {
+        btn.innerHTML = '<i class="fas fa-broadcast-tower"></i> Transmit Notification';
+        btn.disabled = false;
+    }
+});
     </script>
 </body>
 </html>
