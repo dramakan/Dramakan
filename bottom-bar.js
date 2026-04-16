@@ -554,3 +554,44 @@ document.addEventListener('DOMContentLoaded', () => {
         isFirstLoad = false;
     });
 })();
+// ==========================================
+// 8. PUSH NOTIFICATION REGISTRATION
+// ==========================================
+Promise.all([
+    import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"),
+    import("https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging.js"),
+    import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"),
+    import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js")
+]).then(async ([appModule, msgModule, authModule, fsModule]) => {
+    const app = appModule.getApp(); // Re-use existing initialized app
+    const messaging = msgModule.getMessaging(app);
+    const auth = authModule.getAuth(app);
+    const db = fsModule.getFirestore(app);
+
+    // You need to generate a VAPID key from Firebase Console -> Project Settings -> Cloud Messaging -> Web configuration
+    const VAPID_KEY = "REPLACE_WITH_YOUR_VAPID_KEY_FROM_FIREBASE_CONSOLE"; 
+
+    async function requestNotificationPermission(user) {
+        try {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                const currentToken = await msgModule.getToken(messaging, { vapidKey: VAPID_KEY });
+                if (currentToken) {
+                    // Save token to user's profile
+                    await fsModule.updateDoc(fsModule.doc(db, "users", user.uid), {
+                        fcmToken: currentToken
+                    });
+                }
+            }
+        } catch (error) {
+            console.log("Push notifications denied or failed.", error);
+        }
+    }
+
+    // When user logs in, ask for permission
+    authModule.onAuthStateChanged(auth, (user) => {
+        if (user) {
+            requestNotificationPermission(user);
+        }
+    });
+});
