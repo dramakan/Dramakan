@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhx Beats Admin | Vault Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* [COPY ALL CSS FROM admin_audio.html EXACTLY AS IS] */
+        :root { --primary: #8A2BE2; --primary-dark: #6a1b9a; --bg: #000000; --surface: rgba(20, 20, 20, 0.8); --border: rgba(255, 255, 255, 0.08); --text: #ffffff; --text-dim: #a0a0a0; --success: #10b981; --error: #ef4444; --premium: #f1c40f; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; min-height: 100vh; background-image: radial-gradient(circle at top right, rgba(138,43,226,0.15), transparent 60%); padding: 20px; }
+        .container { width: 100%; max-width: 900px; margin: 40px auto; }
+        .glass-card { background: var(--surface); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .admin-header { text-align: center; margin-bottom: 30px; }
+        .admin-header h1 { font-size: 2rem; font-weight: 700; letter-spacing: -1px; }
+        .admin-header h1 span { color: var(--primary); }
+        .tab-nav { display: flex; background: rgba(255,255,255,0.03); padding: 6px; border-radius: 14px; margin-bottom: 30px; gap: 5px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: var(--text-dim); font-weight: 600; cursor: pointer; border-radius: 10px; transition: 0.3s; }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 15px var(--primary-dark); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .input-box { margin-bottom: 20px; }
+        .input-box label { display: block; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .field-wrap { position: relative; }
+        .field-wrap i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
+        .control { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 14px 15px 14px 45px; border-radius: 12px; color: white; font-family: inherit; transition: 0.3s; }
+        .control:focus { border-color: var(--primary); outline: none; background: rgba(0,0,0,0.5); }
+        .link-vault { background: rgba(138,43,226,0.03); border: 1px dashed var(--border); padding: 20px; border-radius: 16px; margin: 20px 0; }
+        .link-vault h3 { font-size: 0.9rem; margin-bottom: 15px; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .btn-main { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; border-radius: 14px; color: white; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(138,43,226,0.4); }
+        .track-item { background: var(--surface); border: 1px solid var(--border); margin-bottom: 12px; padding: 15px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; }
+        .track-meta { display: flex; align-items: center; gap: 15px; }
+        .track-meta img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; }
+        .link-indicators { display: flex; gap: 8px; margin-top: 5px; }
+        .indicator { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.05); color: var(--text-dim); }
+        .indicator.active { color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
+        #loginSection { max-width: 400px; margin: 100px auto; }
+        .hidden { display: none !important; }
+        @media (max-width: 600px) { .track-item { flex-direction: column; align-items: flex-start; gap: 15px; } .actions { width: 100%; display: flex; justify-content: flex-end; } .tab-nav { flex-wrap: wrap; } .tab-btn { flex: 1 1 100%; margin-bottom: 5px; } }
+    </style>
+</head>
+<body>
+
+    <div id="loginSection" class="glass-card">
+        <div class="admin-header">
+            <h1>Bhx<span>Admin</span></h1>
+            <p style="color: var(--text-dim); font-size: 0.8rem;">Authorized Personnel Only</p>
+        </div>
+        <div class="input-box"><div class="field-wrap"><i class="fas fa-envelope"></i><input type="email" id="adminEmail" class="control" placeholder="Email (bhxnurawat@gmail.com)"></div></div>
+        <div class="input-box"><div class="field-wrap"><i class="fas fa-lock"></i><input type="password" id="adminPassword" class="control" placeholder="Password"></div></div>
+        <button id="btnLogin" class="btn-main">Unlock Console</button>
+    </div>
+
+    <div id="dashboardSection" class="container hidden">
+        <div class="admin-header" style="display: flex; justify-content: space-between; align-items: center; text-align: left;">
+            <div>
+                <h1>Bhx<span>Hub</span></h1>
+                <p style="color: var(--success); font-size: 0.75rem;"><i class="fas fa-circle"></i> System Online</p>
+            </div>
+            <button id="btnLogout" style="background:transparent; border:none; color:var(--error); cursor:pointer;"><i class="fas fa-power-off"></i> Logout</button>
+        </div>
+
+        <nav class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('upload')">Publish Beat</button>
+            <button class="tab-btn" onclick="switchTab('manage'); fetchAll();">Manage Vault</button>
+            <button class="tab-btn" onclick="switchTab('requests'); fetchRequests();">Payment Requests</button>
+        </nav>
+
+        <div id="tab-upload" class="glass-card">
+            <form id="vaultForm">
+                <input type="hidden" id="editId">
+                
+                <div class="form-grid">
+                    <div class="input-box"><label>Beat Name</label><div class="field-wrap"><i class="fas fa-music"></i><input type="text" id="tTitle" class="control" required></div></div>
+                    <div class="input-box"><label>Producer</label><div class="field-wrap"><i class="fas fa-user-ninja"></i><input type="text" id="tArtist" class="control" value="Bhx Beats" required></div></div>
+                </div>
+
+                <div class="input-box"><label>Cover Art URL (16:9)</label><div class="field-wrap"><i class="fas fa-image"></i><input type="url" id="tThumb" class="control" placeholder="ImgBB Link" required></div></div>
+
+                <div class="link-vault">
+                    <h3><i class="fas fa-link"></i> Distribution Links</h3>
+                    
+                    <div class="form-grid">
+                        <div class="input-box"><label>Free Link (Public)</label><div class="field-wrap"><i class="fas fa-cloud-download-alt"></i><input type="url" id="lFree" class="control" placeholder="Drive/Link"></div></div>
+                        <div class="input-box"><label>Premium Link (Locked)</label><div class="field-wrap"><i class="fas fa-crown" style="color:var(--premium)"></i><input type="url" id="lPrem" class="control" placeholder="Premium Link"></div></div>
+                    </div>
+
+                    <div class="input-box"><label>Original Master (HQ Lossless)</label><div class="field-wrap"><i class="fas fa-waveform-path" style="color:#00d4ff"></i><input type="url" id="lMaster" class="control" placeholder="Studio Quality Link"></div></div>
+                    
+                    <div class="input-box"><label>YouTube Trailer</label><div class="field-wrap"><i class="fab fa-youtube" style="color:var(--error)"></i><input type="url" id="lYoutube" class="control" placeholder="Video Link"></div></div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="input-box">
+                        <label>Visibility Status</label>
+                        <select id="tType" class="control" style="padding-left: 15px;">
+                            <option value="Free">Public (Free)</option>
+                            <option value="Paid">Premium (Paid)</option>
+                        </select>
+                    </div>
+                    <div class="input-box">
+                        <label>Price Tag (if Premium)</label>
+                        <input type="text" id="tPrice" class="control" placeholder="e.g. ₹199" style="padding-left: 15px;">
+                    </div>
+                </div>
+
+                <button type="submit" id="btnSubmit" class="btn-main">Authorize Deployment</button>
+            </form>
+        </div>
+
+        <div id="tab-manage" class="hidden">
+            <div id="vaultList"><p style="text-align: center; color: var(--text-dim);">Scanning database...</p></div>
+        </div>
+
+        <div id="tab-requests" class="hidden">
+            <div id="requestList"><p style="text-align: center; color: var(--text-dim);">Scanning requests...</p></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+       // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyB8GlFBy3boBwqEDWA625MkWKNM1M7w0O0",
+  authDomain: "bhx-beats.firebaseapp.com",
+  projectId: "bhx-beats",
+  storageBucket: "bhx-beats.firebasestorage.app",
+  messagingSenderId: "491393581039",
+  appId: "1:491393581039:web:8204fb8753094a64a9401a",
+  measurementId: "G-PCV97GFYQ7"
+};
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let vaultData = {};
+
+        window.switchTab = (tab) => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-upload').classList.add('hidden');
+            document.getElementById('tab-manage').classList.add('hidden');
+            document.getElementById('tab-requests').classList.add('hidden');
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            event.currentTarget.classList.add('active');
+        };
+
+        // Note: Change the email here if you set up a different admin email in Firebase
+        onAuthStateChanged(auth, user => {
+            if(user && user.email === "bhxnurawat@gmail.com") {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('dashboardSection').classList.remove('hidden');
+            } else {
+                document.getElementById('loginSection').classList.remove('hidden');
+                document.getElementById('dashboardSection').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('btnLogin').onclick = () => {
+            signInWithEmailAndPassword(auth, document.getElementById('adminEmail').value, document.getElementById('adminPassword').value);
+        };
+        document.getElementById('btnLogout').onclick = () => signOut(auth);
+
+        document.getElementById('vaultForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmit');
+            const id = document.getElementById('editId').value;
+            btn.innerText = "Syncing...";
+
+            const payload = {
+                title: document.getElementById('tTitle').value,
+                artist: document.getElementById('tArtist').value,
+                thumbnailUrl: document.getElementById('tThumb').value,
+                type: document.getElementById('tType').value,
+                price: document.getElementById('tPrice').value || "Free",
+                linkFree: document.getElementById('lFree').value,
+                linkPremium: document.getElementById('lPrem').value,
+                linkMaster: document.getElementById('lMaster').value,
+                youtubeUrl: document.getElementById('lYoutube').value,
+                timestamp: Date.now()
+            };
+
+            try {
+                // Changed to bhx_beats
+                if(id) {
+                    await updateDoc(doc(db, "bhx_beats", id), payload);
+                } else {
+                    await addDoc(collection(db, "bhx_beats"), payload);
+                }
+                alert("Vault Updated Successfully!");
+                location.reload();
+            } catch(err) { alert(err.message); }
+        };
+
+        window.fetchAll = async () => {
+            const list = document.getElementById('vaultList');
+            // Changed to bhx_beats
+            const q = query(collection(db, "bhx_beats"), orderBy("timestamp", "desc"));
+            const snap = await getDocs(q);
+            list.innerHTML = "";
+            
+            snap.forEach(d => {
+                const track = d.data();
+                vaultData[d.id] = track;
+                list.innerHTML += `
+                    <div class="track-item">
+                        <div class="track-meta">
+                            <img src="${track.thumbnailUrl}">
+                            <div>
+                                <strong>${track.title}</strong>
+                                <div class="link-indicators">
+                                    <span class="indicator ${track.linkFree ? 'active' : ''}">FREE</span>
+                                    <span class="indicator ${track.linkPremium ? 'active' : ''}">PREM</span>
+                                    <span class="indicator ${track.linkMaster ? 'active' : ''}">MASTER</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button onclick="editTrack('${d.id}')" style="background:none; border:none; color:var(--primary); margin-right:15px; cursor:pointer;"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteTrack('${d.id}')" style="background:none; border:none; color:var(--error); cursor:pointer;"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+        };
+
+        window.editTrack = (id) => {
+            const t = vaultData[id];
+            document.getElementById('editId').value = id;
+            document.getElementById('tTitle').value = t.title;
+            document.getElementById('tArtist').value = t.artist;
+            document.getElementById('tThumb').value = t.thumbnailUrl;
+            document.getElementById('tType').value = t.type;
+            document.getElementById('tPrice').value = t.price;
+            document.getElementById('lFree').value = t.linkFree || "";
+            document.getElementById('lPrem').value = t.linkPremium || "";
+            document.getElementById('lMaster').value = t.linkMaster || "";
+            document.getElementById('lYoutube').value = t.youtubeUrl || "";
+            switchTab('upload');
+            document.getElementById('btnSubmit').innerText = "Update Vault Track";
+        };
+
+        window.deleteTrack = async (id) => {
+            // Changed to bhx_beats
+            if(confirm("Erase from Vault?")) {
+                await deleteDoc(doc(db, "bhx_beats", id));
+                fetchAll();
+            }
+        };
+
+        window.fetchRequests = async () => {
+            const list = document.getElementById('requestList');
+            // Changed to bhx_payment_requests
+            const q = query(collection(db, "bhx_payment_requests"), orderBy("timestamp", "desc"));
+            const snap = await getDocs(q);
+            list.innerHTML = "";
+
+            if(snap.empty) {
+                list.innerHTML = "<p style='text-align: center; color: var(--text-dim);'>No pending payment requests found.</p>";
+                return;
+            }
+            
+            snap.forEach(d => {
+                const req = d.data();
+                const reqDate = new Date(req.timestamp).toLocaleString();
+                
+                list.innerHTML += `
+                    <div class="track-item" style="border-left: 4px solid var(--premium-gold, #f1c40f);">
+                        <div class="track-meta" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                            <strong style="color: var(--premium-gold, #f1c40f); font-size: 1.1rem;">
+                                <i class="fas fa-music" style="margin-right: 5px;"></i> ${req.trackTitle}
+                            </strong>
+                            <div style="font-size: 0.9rem; color: #ddd; line-height: 1.6;">
+                                <div><i class="fas fa-envelope" style="width: 20px;"></i> <a href="mailto:${req.userEmail}" style="color:var(--accent); text-decoration:none;">${req.userEmail}</a></div>
+                                <div><i class="fas fa-hashtag" style="width: 20px;"></i> <strong>UPI ID:</strong> ${req.upiTransactionId}</div>
+                                <div style="color: var(--text-dim); font-size: 0.8rem; margin-top: 4px;"><i class="far fa-clock" style="width: 20px;"></i> Requested on: ${reqDate}</div>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button onclick="resolveRequest('${d.id}')" style="background: var(--success); color: black; border: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-check-double"></i> Mark Done
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        };
+
+        window.resolveRequest = async (id) => {
+            // Changed to bhx_payment_requests
+            if(confirm("Did you verify the UPI ID and email the files to the user? This will remove the request from this list forever.")) {
+                await deleteDoc(doc(db, "bhx_payment_requests", id));
+                fetchRequests();
+            }
+        };
+    </script>
+</body>
+</html>
