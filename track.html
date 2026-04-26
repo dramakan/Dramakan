@@ -225,13 +225,26 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        function getPlayableDriveUrl(url) {
-            if (url?.includes('drive.google.com/file/d/')) {
-                const fileId = url.split('/d/')[1].split('/')[0];
-                return `https://drive.google.com/uc?export=download&id=${fileId}`;
-            }
-            return url; 
+       function getPlayableDriveUrl(url) {
+    if (url && url.includes('drive.google.com')) {
+        let fileId = "";
+        
+        // Handle /file/d/ style links
+        if (url.includes('/file/d/')) {
+            fileId = url.split('/d/')[1].split('/')[0];
+        } 
+        // Handle ?id= style links
+        else if (url.includes('id=')) {
+            fileId = url.split('id=')[1].split('&')[0];
         }
+
+        if (fileId) {
+            // This specific URL format forces a direct download stream
+            return `https://docs.google.com/uc?export=download&id=${fileId}`;
+        }
+    }
+    return url; 
+}
 
         async function loadTrack() {
             const urlParams = new URLSearchParams(window.location.search);
