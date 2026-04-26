@@ -95,25 +95,32 @@ img { max-width: 100%; height: auto; display: block; }
 
 
 /* =====================================================
-   2. HEADER & NAVIGATION (FROSTED GLASS)
+   2. HEADER & NAVIGATION (FLOATING PILL ON PC)
 ===================================================== */
 .main-header {
-  position: sticky;
-  top: 0;
+  position: fixed;
+  top: 20px;
+  left: 0;
+  right: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 92%;
   z-index: 1000;
-  background: rgba(var(--bg-rgb), 0.75);
+  background: rgba(var(--bg-rgb), 0.65);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border-bottom: 1px solid var(--glass-border);
-  padding: 12px 0;
-  transition: background-color 0.5s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  border: 1px solid var(--glass-border);
+  border-radius: 50px;
+  padding: 10px 25px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-.main-header .container { display: flex; align-items: center; justify-content: space-between; }
-.header-top-row { display: flex; align-items: center; justify-content: space-between; }
+.main-header .container { display: flex; align-items: center; justify-content: space-between; padding: 0; max-width: 100%;}
+.header-top-row { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;}
 
-.logo { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; }
-.logo span { color: var(--primary-color); text-shadow: 0 0 10px var(--primary-glow); }
+.logo { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px; }
+.logo span { color: var(--primary-color); text-shadow: 0 0 15px var(--primary-glow); }
 
 /* Premium Search Pill */
 .search-bar { 
@@ -171,33 +178,6 @@ img { max-width: 100%; height: auto; display: block; }
 /* Force search title to adapt */
 .search-result-title { color: var(--text-color); font-weight: 600; font-size: 0.95rem; }
 
-/* =====================================================
-   2. HEADER & NAVIGATION (FLOATING PILL ON PC)
-===================================================== */
-.main-header {
-  position: fixed;
-  top: 20px;
-  left: 0;
-  right: 0;
-  max-width: 1400px;
-  margin: 0 auto;
-  width: 92%;
-  z-index: 1000;
-  background: rgba(var(--bg-rgb), 0.65);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  border-radius: 50px;
-  padding: 10px 25px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
-  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.main-header .container { display: flex; align-items: center; justify-content: space-between; padding: 0; max-width: 100%;}
-.header-top-row { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;}
-
-.logo { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px; }
-.logo span { color: var(--primary-color); text-shadow: 0 0 15px var(--primary-glow); }
 
 /* =====================================================
    3. HERO SLIDER (EDGE-TO-EDGE CINEMATIC)
@@ -205,12 +185,12 @@ img { max-width: 100%; height: auto; display: block; }
 .hero-slider { 
   position: relative; 
   width: 100%; 
-  height: 85vh; /* Reverted to fill top properly */
+  height: 85vh; 
   min-height: 600px; 
   max-height: 800px; 
   overflow: hidden; 
   background: var(--background-color); 
-  margin-top: 0; /* FIX: Removed margin to eliminate black bar above banner */
+  margin-top: 0; 
 } 
 .slider-wrapper { display: flex; height: 100%; transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); cursor: grab; }
 .slider-wrapper:active { cursor: grabbing; }
@@ -225,14 +205,14 @@ img { max-width: 100%; height: auto; display: block; }
     linear-gradient(0deg, rgba(var(--bg-rgb), 1) 0%, rgba(var(--bg-rgb), 0.8) 20%, transparent 60%),
     linear-gradient(90deg, rgba(var(--bg-rgb), 0.9) 0%, transparent 50%);
   z-index: 2;
-  pointer-events: none; /* Critical: Allows clicks on the buttons below */
+  pointer-events: none; 
 }
 
 .slide-content {
   position: relative; z-index: 3; display: flex; flex-direction: column; justify-content: flex-end;
   max-width: 700px; padding-left: 6%; 
-  padding-bottom: 120px; /* Safe zone above bottom navs */
-  padding-top: 130px; /* FIX: Push content safely below the floating header */
+  padding-bottom: 120px; 
+  padding-top: 130px; 
   animation: slideContentUp 1s cubic-bezier(0.25, 1, 0.5, 1) both;
   pointer-events: auto;
 }
@@ -272,7 +252,7 @@ img { max-width: 100%; height: auto; display: block; }
   border: 1px solid var(--glass-border); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 .platform-link img { height: 22px; width: auto; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.7; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
-:root.light-mode .platform-link img { filter: none; opacity: 0.8; } /* Restores native colors in light mode */
+:root.light-mode .platform-link img { filter: none; opacity: 0.8; } 
 .platform-link:hover img { filter: brightness(1) invert(0); opacity: 1; transform: scale(1.1); }
 :root.light-mode .platform-link:hover img { filter: none; opacity: 1; }
 
@@ -293,7 +273,6 @@ img { max-width: 100%; height: auto; display: block; }
 .category-title { font-size: 2.5rem; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
 .category-title span { color: var(--primary-color); }
 
-/* PERFORMANCE FIX: Prevents browser from rendering off-screen sections */
 .latest-episodes {
   content-visibility: auto;
   contain-intrinsic-size: 380px; 
@@ -439,21 +418,38 @@ img { max-width: 100%; height: auto; display: block; }
 :root.light-mode .drama-tg-link { color: var(--primary-color); }
 
 /* =====================================================
-   8. MOBILE APP VIEW & LIQUID GLASS BAR
+   8. MOBILE APP VIEW & LIQUID GLASS BAR (FIXED ALIGNMENTS)
 ===================================================== */
 @media (max-width: 992px) {
   
-  .main-header .container { flex-direction: column; gap: 12px; align-items: stretch;  }
-  .header-top-row { width: 100%; }
+  /* Better Mobile Header Pill */
+  .main-header { 
+    top: 10px; 
+    width: 95%; 
+    padding: 12px 15px; 
+    border-radius: 24px; 
+  }
+  .main-header .container { 
+    flex-direction: column; 
+    gap: 15px; 
+    align-items: stretch; 
+    padding: 0;
+  }
+  .header-top-row { 
+    width: 100%; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+  }
   .search-bar { width: 100%; margin: 0; }
-  .mobile-menu-toggle { display: block; order: -1; z-index: 10005; position: relative; }
+  .mobile-menu-toggle { display: block; z-index: 10005; font-size: 1.6rem; }
 
   /* Premium Side Menu Override */
   .nav-links {
     position: fixed; top: 0; left: -110%; width: 280px; height: 100vh;
     background: rgba(var(--bg-rgb), 0.65);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur); transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur); transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
     padding: 80px 25px; display: block !important;
   }
   .nav-links.active { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
@@ -473,9 +469,26 @@ img { max-width: 100%; height: auto; display: block; }
   .menu-overlay { position: fixed; inset: 0; background: transparent; backdrop-filter: blur(4px); z-index: 998; display: none; }
   .menu-overlay.active { display: block; }
 
-  /* Infinite Scroll Centered Banner Effect */
-  .hero-slider { height: 60vh;  background: transparent; min-height: 550px; padding: 0; margin-top: 10px; overflow: hidden; position: relative; }
-  .slider-wrapper { width: 75%; margin: 0 auto; overflow: visible !important; display: flex; height: 100%; margin-top: 32%; padding-bottom: 35%; }
+  /* Infinite Scroll Centered Banner Effect Fixes */
+  .hero-slider { 
+    height: 55vh; 
+    min-height: 480px; 
+    padding: 0; 
+    margin-top: 80px; /* Safe space for the floating pill header */
+    display: flex; 
+    align-items: center; 
+    background: transparent; 
+    overflow: hidden; 
+    position: relative; 
+  }
+  .slider-wrapper { 
+    width: 85%; /* Removed the hard margins, replaced with proper width */
+    margin: 0 auto; 
+    display: flex; 
+    height: 85%; 
+    overflow: visible !important; 
+    align-items: center; 
+  }
 
   .slide { 
     min-width: 100%; height: 100%; position: relative; border-radius: 20px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.6); 
@@ -491,10 +504,43 @@ img { max-width: 100%; height: auto; display: block; }
   .slide-bg-image, .slide-content, .slider-nav { display: none !important; }
   .slide::after { background: linear-gradient(to top, rgba(var(--bg-rgb),0.95) 0%, rgba(var(--bg-rgb),0.2) 60%, transparent 100%); }
 
-  .hero-mobile-bar { position: absolute; bottom: 0; left: 0; width: 100%; padding: 25px 20px; display: flex; align-items: flex-end; justify-content: space-between; z-index: 5; opacity: 0; pointer-events: none; transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1); }
+  .hero-mobile-bar { 
+    position: absolute; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%; 
+    padding: 20px; /* Refined padding */
+    display: flex; 
+    align-items: flex-end; 
+    justify-content: space-between; 
+    z-index: 5; 
+    opacity: 0; 
+    pointer-events: none; 
+    transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1); 
+  }
   .slide.active .hero-mobile-bar { opacity: 1; pointer-events: auto; }
-  .hero-mobile-title { font-size: 1.35rem; font-weight: 700; color: var(--text-color); line-height: 1.2; text-shadow: 0 2px 10px rgba(0,0,0,0.4); max-width: 70%; }
-  .hero-play-btn { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--primary-color); border: none; color: white; font-size: 1.3rem; box-shadow: 0 4px 15px var(--primary-glow); }
+  .hero-mobile-title { 
+    font-size: 1.25rem; /* Slightly smaller to prevent text wrap issues */
+    font-weight: 700; 
+    color: var(--text-color); 
+    line-height: 1.2; 
+    text-shadow: 0 2px 10px rgba(0,0,0,0.6); 
+    max-width: 65%; /* More space for the button */
+    margin-bottom: 5px;
+  }
+  .hero-play-btn { 
+    width: 48px; 
+    height: 48px; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    background: var(--primary-color); 
+    border: none; 
+    color: white; 
+    font-size: 1.1rem; 
+    box-shadow: 0 4px 15px var(--primary-glow); 
+  }
 
   /* Mobile Grid Formatting */
   .drama-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
@@ -506,8 +552,11 @@ img { max-width: 100%; height: auto; display: block; }
   .section-title { font-size: 1.3rem; }
   .category-title { font-size: 1.8rem; }
 
-  body { padding-bottom: 80px; }
-  .drama-fab { bottom: 90px; right: 20px; padding: 12px 18px; border-radius: 50px; }
+  /* Give the body more padding to clear the floating bottom navs */
+  body { padding-bottom: 110px; } 
+  
+  /* Moved the FAB up slightly to avoid hitting the bottom nav */
+  .drama-fab { bottom: 100px; right: 20px; padding: 12px 18px; border-radius: 50px; }
 
   /* =====================================================
      APPLE LIQUID GLASS BOTTOM BAR
@@ -515,7 +564,7 @@ img { max-width: 100%; height: auto; display: block; }
   .bottom-nav {
     display: flex !important; 
     position: fixed !important; 
-    bottom: 10px !important; 
+    bottom: 15px !important; /* Slightly more lift off the physical screen edge */
     left: 50% !important; 
     transform: translateX(-50%) !important; 
     width: 90% !important; 
@@ -582,7 +631,8 @@ img { max-width: 100%; height: auto; display: block; }
 .btn-close-popup { background: transparent; border: none; color: var(--text-muted-color); font-size: 1.2rem; cursor: pointer; padding: 0 4px; margin-left: 5px; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
 .btn-close-popup:hover { color: var(--text-color); }
 
-@media (max-width: 992px) { .app-install-popup { bottom: 85px; width: 92%; } }
+/* Moved the install popup higher on mobile so it doesn't overlap the bottom nav */
+@media (max-width: 992px) { .app-install-popup { bottom: 105px; width: 92%; } }
 
 /* =====================================================
    IMMERSION ENHANCEMENTS (Scroll Reveal Animation)
