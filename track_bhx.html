@@ -131,13 +131,22 @@ const firebaseConfig = {
         const db = getFirestore(app);
 
         function getPlayableDriveUrl(url) {
-            if (url?.includes('drive.google.com/file/d/')) {
-                const fileId = url.split('/d/')[1].split('/')[0];
-                return `https://drive.google.com/uc?export=download&id=${fileId}`;
-            }
-            return url; 
+    if (url && url.includes('drive.google.com')) {
+        let fileId = "";
+        if (url.includes('/file/d/')) {
+            fileId = url.split('/d/')[1].split('/')[0];
+        } else if (url.includes('id=')) {
+            fileId = url.split('id=')[1].split('&')[0];
         }
 
+        if (fileId) {
+            // Using &confirm=t bypasses the virus scan warning for small files 
+            // and helps trigger the download header from Google's side.
+            return `https://docs.google.com/uc?export=download&id=${fileId}&confirm=t`;
+        }
+    }
+    return url;
+}
         async function loadTrack() {
             const urlParams = new URLSearchParams(window.location.search);
             const trackId = urlParams.get('id');
@@ -174,12 +183,10 @@ const firebaseConfig = {
                     const actionContainer = document.getElementById('actionContainer');
                     let dlHTML = '';
 
-                   // Replace the linkFree section with this:
-// Replace the linkFree section with this corrected code:
 if (data.linkFree) {
     const playableUrl = getPlayableDriveUrl(data.linkFree);
     dlHTML += `
-        <a href="${playableUrl}" download="${data.title}.mp3" target="_blank" class="dl-item">
+        <a href="${playableUrl}" target="_self" class="dl-item">
             <span><i class="fas fa-file-audio" style="margin-right:8px;"></i> Free Version (MP3)</span> 
             <i class="fas fa-download"></i>
         </a>
