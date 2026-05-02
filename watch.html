@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watch Drama - DramaKan</title>
     
+    <!-- Stops browser from pre-loading ad-tracker DNS requests -->
+    <meta http-equiv="x-dns-prefetch-control" content="off">
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
@@ -67,6 +70,7 @@
 
         /* Video Player Layer */
         .video-player-container {
+            position: relative; /* REQUIRED FOR CLICK SHIELD */
             background: var(--glass-bg);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
@@ -79,6 +83,19 @@
             width: 100%;
         }
         .video-player-container iframe { width: 100%; height: 100%; border-radius: 12px; background: #000; }
+
+        /* --- AD-BLOCK CLICK SHIELD CSS --- */
+        .click-shield {
+            position: absolute;
+            top: 12px; 
+            left: 12px;
+            width: calc(100% - 24px);
+            height: calc(100% - 24px);
+            z-index: 10;
+            cursor: pointer;
+            background: transparent;
+            border-radius: 12px;
+        }
 
         /* Episode Navigation Meta */
         .episode-meta {
@@ -114,7 +131,7 @@
             transition: 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
         .episode-item:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
-        .episode-item.current { background: #fff(--primary); border-color: var(--primary); box-shadow: 0 4px 15px var(--primary-glow); color: #fff; }
+        .episode-item.current { background: var(--primary); border-color: var(--primary); box-shadow: 0 4px 15px var(--primary-glow); color: #fff; }
         .ep-number { color: #fff; font-weight: 600; margin: 0 0 4px 0; font-size: 1.1rem; }
         .ep-desc { font-size: 0.75rem; opacity: 0.8; margin: 0; }
 
@@ -147,7 +164,7 @@
         .info-poster { position: relative; }
         .info-poster img { width: 100%; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--glass-border); }
         
-        /* Add to My List Button (Kept for CSS consistency but used with Action Btn instead) */
+        /* Add to My List Button */
         .bookmark-btn {
             position: absolute; top: 10px; right: 10px; z-index: 10;
             background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
@@ -185,30 +202,20 @@
             .drama-info-widget { order: -1; } 
         }
 
-        /* Apple Liquid Glass Bottom Nav (Matches index.css) */
+        /* Apple Liquid Glass Bottom Nav */
         @media (max-width: 992px) {
             .bottom-nav {
-                display: flex !important; 
-                position: fixed !important; 
-                bottom: 10px !important; 
-                left: 50% !important; 
-                transform: translateX(-50%) !important; 
-                width: 90% !important; 
-                max-width: 400px !important; 
-                background: rgba(20, 20, 25, 0.45) !important; 
-                backdrop-filter: blur(40px) saturate(180%) !important; 
-                -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
-                border: 1px solid rgba(255, 255, 255, 0.08) !important; 
-                border-top: 1px solid rgba(255, 255, 255, 0.25) !important; 
-                border-radius: 50px !important; 
-                z-index: 9999 !important;
-                padding: 5px 10px !important; 
+                display: flex !important; position: fixed !important; bottom: 10px !important; 
+                left: 50% !important; transform: translateX(-50%) !important; width: 90% !important; 
+                max-width: 400px !important; background: rgba(20, 20, 25, 0.45) !important; 
+                backdrop-filter: blur(40px) saturate(180%) !important; -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+                border: 1px solid rgba(255, 255, 255, 0.08) !important; border-top: 1px solid rgba(255, 255, 255, 0.25) !important; 
+                border-radius: 50px !important; z-index: 9999 !important; padding: 5px 10px !important; 
                 box-shadow: 0 25px 50px rgba(0,0,0,0.7), inset 0 1px 1px rgba(255,255,255,0.1) !important;
             }
             .bottom-nav-item {
                 flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-                padding: 6px 0; color: rgba(255, 255, 255, 0.5); 
-                transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); position: relative; text-decoration: none;
+                padding: 6px 0; color: rgba(255, 255, 255, 0.5); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); position: relative; text-decoration: none;
             }
             .bottom-nav-item.active { color: #fff; text-shadow: 0 0 15px var(--primary-glow); }
             .nav-icon { font-size: 1.35rem; margin-bottom: 4px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -221,9 +228,8 @@
             .bottom-nav { display: none !important; }
         }
     </style>
-<script src="bottom-bar.js" defer></script><script src="lightmode.js"></script> 
-    
-    
+    <script src="bottom-bar.js" defer></script>
+    <script src="lightmode.js"></script> 
     <link rel="stylesheet" href="lightmode.css"> 
 </head>
 <body>
@@ -241,12 +247,14 @@
         <div class="watch-layout">
             
             <div class="main-content-col">
-                <div class="video-player-container">
+                <div class="video-player-container" id="video-container-wrapper">
+                    <!-- The iframe with added No-Referrer to break ad-tracking networks -->
                     <iframe 
                         id="video-player-iframe"
                         src="" 
                         title="Video Player" 
                         frameborder="0" 
+                        referrerpolicy="no-referrer"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                         allowfullscreen>
                     </iframe>
@@ -375,6 +383,24 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // --- ADVANCED AD & REDIRECT BLOCKER ---
+        // 1. Prevent popups from stealing window focus
+        window.addEventListener('blur', () => {
+            if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
+                console.log("Ad-Blocker: Intercepted popup focus attempt.");
+                setTimeout(() => window.focus(), 10);
+            }
+        });
+
+        // 2. Prevent the iframe from redirecting the main page (Hijack protection)
+        window.addEventListener('beforeunload', function (e) {
+            if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
+                e.preventDefault();
+                e.returnValue = 'Ad Blocked: Prevented a forced redirect.';
+                return e.returnValue;
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const dramaId = urlParams.get('id');
@@ -408,18 +434,14 @@
                     document.getElementById('ui-cast2-name').textContent = data.actor2;
                     document.getElementById('ui-cast2-img').src = data.actor2Img;
 
-                    // Fetch Dynamic Recommendations 
                     loadRecommendations(dramaId);
 
-                    // ==========================================
-                    // ADD TO MY LIST LOGIC
-                    // ==========================================
+                    // My List Logic
                     const bookmarkBtn = document.getElementById('add-to-list-btn');
                     const safeTitle = data.title;
                     const safeImg = data.img;
                     const safeLink = window.location.pathname + window.location.search;
 
-                    // Initialize button state
                     let myList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
                     if (myList.some(item => item.link === safeLink)) {
                         bookmarkBtn.innerHTML = '<i class="fas fa-check"></i> Added';
@@ -429,33 +451,28 @@
 
                     bookmarkBtn.addEventListener('click', function(e) {
                         e.preventDefault();
-                        
-                        // Try calling global toggleMyList if it exists from other scripts
                         if (typeof window.toggleMyList === 'function') {
                             window.toggleMyList(this, encodeURIComponent(safeTitle), encodeURIComponent(safeImg), encodeURIComponent(safeLink));
                         } else {
-                            // Fallback standalone local storage handler
                             let currentList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
                             const dramaObj = { title: safeTitle, img: safeImg, link: safeLink };
                             const existsIndex = currentList.findIndex(item => item.link === dramaObj.link);
                             
                             if (existsIndex > -1) {
-                                currentList.splice(existsIndex, 1); // Remove
+                                currentList.splice(existsIndex, 1); 
                                 this.innerHTML = '<i class="fas fa-plus"></i> My List';
                                 this.style.color = '#fff';
                                 this.style.borderColor = 'var(--glass-border)';
                             } else {
-                                currentList.push(dramaObj); // Add
+                                currentList.push(dramaObj); 
                                 this.innerHTML = '<i class="fas fa-check"></i> Added';
                                 this.style.color = 'var(--primary)';
                                 this.style.borderColor = 'var(--primary)';
                             }
-                            
                             localStorage.setItem('dramakan_mylist', JSON.stringify(currentList));
                             window.dispatchEvent(new Event('myListUpdated'));
                         }
                     });
-
 
                     let seasonsArr = data.seasons || [data.totalEps || 1];
                     let currentSeason = 1;
@@ -494,7 +511,14 @@
                     const prevBtn = document.getElementById('prev-ep-btn');
                     const nextBtn = document.getElementById('next-ep-btn');
 
-                    function loadEpisode(seasonNum, epNum) {
+                    // --- PRE-FETCH FRAMEWORK ---
+                    async function fetchCleanVideoSource(imdbId, season, episode) {
+                        // NOTE: If 2embed continues to bypass the click-shield, switch the return URL below
+                        // from "2embed.cc/embedtv" to "vidsrc.me/embed/tv" which is often much cleaner.
+                        return `https://www.2embed.cc/embedtv/${imdbId}&s=${season}&e=${episode}`;
+                    }
+
+                    async function loadEpisode(seasonNum, epNum) {
                         currentSeason = parseInt(seasonNum);
                         currentEpisode = parseInt(epNum);
                         
@@ -503,16 +527,34 @@
                             renderEpisodeGrid(currentSeason);
                         }
 
-                        const embedLink = `https://www.2embed.cc/embedtv/${data.imdbId}&s=${currentSeason}&e=${currentEpisode}`;
+                        // Use the pre-fetch logic to get the link
+                        const embedLink = await fetchCleanVideoSource(data.imdbId, currentSeason, currentEpisode);
                         videoPlayer.src = embedLink;
                         
+                        // --- AD-BLOCK CLICK SHIELD INJECTION ---
+                        let existingShield = document.getElementById('ad-click-shield');
+                        if (existingShield) existingShield.remove();
+                        
+                        const shield = document.createElement('div');
+                        shield.id = 'ad-click-shield';
+                        shield.className = 'click-shield';
+                        shield.title = 'Click to start (Ad Protected)';
+                        
+                        // Destroy shield on first click, absorbing the popup trigger
+                        shield.addEventListener('click', function(e) {
+                            this.remove();
+                            console.log("Ad-Blocker: Absorbed initial popup click.");
+                        });
+                        
+                        document.getElementById('video-container-wrapper').appendChild(shield);
+                        // ---------------------------------------
+
                         epText.textContent = seasonsArr.length > 1 
                             ? `Playing S${currentSeason} EP ${currentEpisode} - ${data.title}`
                             : `Playing EP ${currentEpisode} - ${data.title}`;
                         
                         updateActiveButton();
 
-                        // The Bulletproof Tracker Injection
                         const epIndexToSave = `${currentSeason}-${currentEpisode}`;
                         localStorage.setItem(`dramakan_ep_${dramaId}`, epIndexToSave);
                         
@@ -565,7 +607,6 @@
 
                     renderEpisodeGrid(1);
 
-                    // Auto-Resume
                     setTimeout(() => {
                         const savedEpRaw = localStorage.getItem(`dramakan_ep_${dramaId}`);
                         if (savedEpRaw && savedEpRaw !== "0") {
@@ -599,7 +640,6 @@
             }
         });
 
-        // Dynamic Recommendation Engine 
         async function loadRecommendations(currentId) {
             const recsContainer = document.getElementById('ui-recs');
             try {
@@ -611,13 +651,12 @@
                     }
                 });
 
-                // Shuffle array securely
                 for (let i = allDramas.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [allDramas[i], allDramas[j]] = [allDramas[j], allDramas[i]];
                 }
 
-                const recs = allDramas.slice(0, 5); // display top 5
+                const recs = allDramas.slice(0, 5); 
                 
                 recsContainer.innerHTML = recs.map(rec => `
                     <a href="${rec.link || `watch.html?id=${rec.id}`}" class="rec-card">
