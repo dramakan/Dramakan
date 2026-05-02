@@ -149,14 +149,51 @@
             .episode-item { padding: 12px 8px; }
         }
 
-        .cast-list { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; margin: 0 -5px; padding-left: 5px;}
-        .cast-list::-webkit-scrollbar { height: 4px; }
-        .cast-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        .cast-card { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 10px; border-radius: 16px; min-width: 180px; transition: all 0.3s ease;}
-        .cast-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(138, 43, 226, 0.3); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.3);}
-        .cast-card img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
-        .actor-name { margin: 0 0 2px 0; font-size: 0.95rem; color:#fff; font-weight: 500;}
-        .character-name { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
+        /* --- UPDATED CAST STYLING --- */
+        .cast-list { 
+            display: flex; 
+            gap: 20px; 
+            overflow-x: auto; 
+            padding: 10px 5px 20px 5px; 
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+        .cast-list::-webkit-scrollbar { height: 6px; }
+        .cast-list::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        
+        .cast-card { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 12px; 
+            background: rgba(255,255,255,0.03); 
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border); 
+            padding: 15px; 
+            border-radius: 20px; 
+            min-width: 140px; 
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .cast-card:hover { 
+            background: rgba(138, 43, 226, 0.08); 
+            border-color: var(--primary); 
+            transform: translateY(-8px); 
+            box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+        }
+        .cast-card img { 
+            width: 80px; 
+            height: 80px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            border: 2px solid var(--primary); 
+            box-shadow: 0 0 15px var(--primary-glow);
+            transition: transform 0.4s ease;
+        }
+        .cast-card:hover img { transform: scale(1.1); }
+        .actor-name { margin: 5px 0 2px 0; font-size: 0.95rem; color:#fff; font-weight: 600; line-height: 1.2;}
+        .character-name { margin: 0; font-size: 0.75rem; color: var(--text-muted); font-weight: 400; }
+        /* --- END CAST STYLING --- */
 
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th, td { padding: 15px; border-bottom: 1px solid var(--glass-border); }
@@ -345,16 +382,16 @@
 
                 <div class="widget cast-section">
                     <h2 class="widget-title"><i class="fas fa-user-friends"></i> Main Cast</h2>
-                    <div class="cast-list-wrapper">
-                        <div class="cast-list">
-                            <div class="cast-card">
-                                <img id="ui-cast1-img" src="" alt="Cast 1">
-                                <div class="cast-info"><h4 class="actor-name" id="ui-cast1-name">Loading...</h4><p class="character-name">Lead</p></div>
-                            </div>
-                            <div class="cast-card">
-                                <img id="ui-cast2-img" src="" alt="Cast 2">
-                                <div class="cast-info"><h4 class="actor-name" id="ui-cast2-name">Loading...</h4><p class="character-name">Lead</p></div>
-                            </div>
+                    <div class="cast-list">
+                        <div class="cast-card">
+                            <img id="ui-cast1-img" src="" alt="Cast 1">
+                            <h4 class="actor-name" id="ui-cast1-name">Loading...</h4>
+                            <p class="character-name">Lead Role</p>
+                        </div>
+                        <div class="cast-card">
+                            <img id="ui-cast2-img" src="" alt="Cast 2">
+                            <h4 class="actor-name" id="ui-cast2-name">Loading...</h4>
+                            <p class="character-name">Lead Role</p>
                         </div>
                     </div>
                 </div>
@@ -439,7 +476,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, doc, getDoc, collection, getDocs, addDoc, serverTimestamp, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        // IMPORT FIREBASE AUTH TO ACCURATELY CHECK LOGIN STATE
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -450,7 +486,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app); // Initialize Auth
+        const auth = getAuth(app); 
 
         let currentServer = 'vsrc'; 
         const episodeMetaContainer = document.getElementById('episode-meta-container');
@@ -524,7 +560,6 @@
                     loadRecommendations(dramaId);
                     initCommentSystem(dramaId); 
 
-                    // --- FULLY RESTORED ORIGINAL SAVE LIST LOGIC ---
                     const bookmarkBtn = document.getElementById('add-to-list-btn');
                     const posterBookmarkBtn = document.getElementById('poster-bookmark-btn');
                     const safeTitle = data.title;
@@ -573,7 +608,6 @@
 
                     bookmarkBtn.addEventListener('click', handleBookmarkClick);
                     posterBookmarkBtn.addEventListener('click', handleBookmarkClick);
-                    // --- END RESTORED SAVE LIST LOGIC ---
 
                     let seasonsArr = data.seasons || [data.totalEps || 1];
                     window.currentSeason = 1;
@@ -748,7 +782,6 @@
                 });
             }
 
-            // --- BULLETPROOF AUTH & COMMENT SYSTEM ---
             function initCommentSystem(dramaId) {
                 const commentsListEl = document.getElementById('comments-list');
                 const commentInput = document.getElementById('comment-text-input');
@@ -759,23 +792,19 @@
                 let activeUserName = null;
                 let activeUserAvatar = null;
 
-                // Function to Update the UI Form States
                 const applyAuthState = (isLoggedIn, name, avatarUrl) => {
                     if (isLoggedIn) {
                         activeUserName = name;
                         activeUserAvatar = avatarUrl;
                         if (avatarEl) avatarEl.src = avatarUrl;
-
                         commentInput.placeholder = "Join the discussion...";
                         commentInput.disabled = false;
                         submitBtn.disabled = false;
                         submitBtn.type = "submit";
                         submitBtn.innerHTML = '<span>Post</span> <i class="fas fa-paper-plane"></i>';
-                        
-                        // Clear the click-to-login listener by cloning the button
                         const newBtn = submitBtn.cloneNode(true);
                         submitBtn.parentNode.replaceChild(newBtn, submitBtn);
-                        submitBtn = document.getElementById('submit-comment-btn'); // Update reference
+                        submitBtn = document.getElementById('submit-comment-btn');
                     } else {
                         activeUserName = null;
                         commentInput.placeholder = "Please log in to join the discussion...";
@@ -783,26 +812,19 @@
                         submitBtn.disabled = false;
                         submitBtn.type = "button";
                         submitBtn.innerHTML = '<i class="fas fa-lock"></i> <span>Login</span>';
-                        
-                        // Force login redirect on button click
                         const newBtn = submitBtn.cloneNode(true);
                         submitBtn.parentNode.replaceChild(newBtn, submitBtn);
-                        submitBtn = document.getElementById('submit-comment-btn'); // Update reference
-                        
-                        submitBtn.addEventListener('click', () => {
-                            window.location.href = 'login.html'; 
-                        });
+                        submitBtn = document.getElementById('submit-comment-btn');
+                        submitBtn.addEventListener('click', () => { window.location.href = 'login.html'; });
                     }
                 };
 
-                // 1. Check strict Firebase Auth state
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         const name = user.displayName || (user.email ? user.email.split('@')[0] : "User");
                         const avatar = user.photoURL || `https://api.dicebear.com/7.x/adventurer/svg?seed=${name}`;
                         applyAuthState(true, name, avatar);
                     } else {
-                        // 2. Fallback check for LocalStorage (in case your system uses a custom script)
                         const sessionAuth = localStorage.getItem('dramakan_user');
                         if (sessionAuth) {
                             try {
@@ -811,45 +833,38 @@
                                 const avatar = parsed.profilePic || parsed.avatar || parsed.photoURL || `https://api.dicebear.com/7.x/adventurer/svg?seed=${name}`;
                                 applyAuthState(true, name, avatar);
                             } catch(err) {
-                                // Fallback if local storage isn't JSON
                                 applyAuthState(true, sessionAuth, `https://api.dicebear.com/7.x/adventurer/svg?seed=${sessionAuth}`);
                             }
                         } else {
-                            applyAuthState(false); // Definitely locked out
+                            applyAuthState(false);
                         }
                     }
                 });
 
-                // Attach the submission handler to the FORM, not the button, to prevent bugs
                 commentForm.onsubmit = async (e) => {
                     e.preventDefault();
-                    if (!activeUserName) return; // Failsafe
-                    
+                    if (!activeUserName) return;
                     const text = commentInput.value.trim();
                     if (!text) return;
-
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
                     try {
                         await addDoc(collection(db, "comments"), {
                             dramaId: dramaId,
                             text: text,
                             user: activeUserName,
-                            userImg: activeUserAvatar, // Save the actual avatar link
+                            userImg: activeUserAvatar,
                             timestamp: serverTimestamp()
                         });
                         commentInput.value = ''; 
                     } catch (err) {
                         console.error("Error posting comment:", err);
-                        alert("Failed to post comment. Make sure you have permission.");
                     } finally {
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = '<span>Post</span> <i class="fas fa-paper-plane"></i>';
                     }
                 };
 
-                // Render Comments
                 const q = query(collection(db, "comments"), where("dramaId", "==", dramaId));
                 onSnapshot(q, (snapshot) => {
                     if (snapshot.empty) {
@@ -859,24 +874,17 @@
                         </div>`;
                         return;
                     }
-                    
                     let commentsArr = [];
-                    snapshot.forEach(docSnap => {
-                        commentsArr.push({ id: docSnap.id, ...docSnap.data() });
-                    });
-                    
+                    snapshot.forEach(docSnap => { commentsArr.push({ id: docSnap.id, ...docSnap.data() }); });
                     commentsArr.sort((a, b) => {
                         const timeA = a.timestamp ? a.timestamp.toMillis() : Date.now();
                         const timeB = b.timestamp ? b.timestamp.toMillis() : Date.now();
                         return timeB - timeA;
                     });
-                    
                     let html = '';
                     commentsArr.forEach(c => {
                         const dateStr = c.timestamp ? new Date(c.timestamp.toDate()).toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'}) : 'Just now';
-                        // Use saved image or generate one based on the saved name
                         const imgToUse = c.userImg || `https://api.dicebear.com/7.x/adventurer/svg?seed=${c.user || 'Guest'}`;
-                        
                         html += `
                         <div class="comment-item" style="display: flex; gap: 15px;">
                             <img src="${imgToUse}" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); object-fit: cover; flex-shrink: 0; background: rgba(0,0,0,0.2);">
@@ -890,8 +898,6 @@
                         </div>`;
                     });
                     commentsListEl.innerHTML = html;
-                }, (error) => {
-                    console.error("Error fetching comments: ", error);
                 });
             }
         });
@@ -901,19 +907,12 @@
             try {
                 const snap = await getDocs(collection(db, "dramas"));
                 let allDramas = [];
-                snap.forEach(d => {
-                    if (d.id !== currentId) {
-                        allDramas.push({ id: d.id, ...d.data() });
-                    }
-                });
-
+                snap.forEach(d => { if (d.id !== currentId) { allDramas.push({ id: d.id, ...d.data() }); } });
                 for (let i = allDramas.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [allDramas[i], allDramas[j]] = [allDramas[j], allDramas[i]];
                 }
-
                 const recs = allDramas.slice(0, 5); 
-                
                 recsContainer.innerHTML = recs.map(rec => `
                     <a href="${rec.link || `watch.html?id=${rec.id}`}" class="rec-card">
                         <img src="${rec.img}" alt="Poster" loading="lazy">
@@ -923,9 +922,7 @@
                         </div>
                     </a>
                 `).join('');
-
             } catch(e) {
-                console.error("Error generating recommendations: ", e);
                 recsContainer.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem;">Failed to load recommendations.</p>`;
             }
         }
