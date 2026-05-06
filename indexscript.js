@@ -125,42 +125,12 @@ document.addEventListener('DOMContentLoaded', function () {
     async function initializeDramaSite() {
         let data = [];
         try {
-            // 1. CHECK CACHE AND VERSION VERSION FIRST
-            const cachedDramas = localStorage.getItem('dramakan_master_db');
-            const localVersion = localStorage.getItem('dramakan_db_version') || "0";
+            // 1. Fetch the static JSON file (0 database reads!)
+            const response = await fetch('/dramas.json');
+            data = await response.json();
             
-            const fb = await getFirebase();
-            const db = fb.db;
-            const firestoreModule = fb.firestoreModule;
-            const { collection, getDocs, doc, getDoc, query, orderBy, limit } = firestoreModule;
-
-            // --- THE 1-READ CHECK ---
-            // We check ONE document to see if the database has been updated
-            let serverVersion = "0";
-            try {
-                const configRef = doc(db, "system", "config");
-                const configSnap = await getDoc(configRef);
-                if (configSnap.exists()) {
-                    serverVersion = configSnap.data().lastUpdated.toString();
-                }
-            } catch(e) { console.log("Version check skipped/failed.", e); }
-
-            // If they have a cache AND the version numbers match, use the free local data!
-            if (cachedDramas && localVersion === serverVersion) {
-                data = JSON.parse(cachedDramas);
-                console.log("Database is up to date! Loaded from LocalStorage (0 extra reads).");
-            } else {
-                // 2. VERSIONS DON'T MATCH OR NO CACHE? FETCH FRESH FROM FIREBASE
-                console.log("New update detected! Fetching fresh dramas from Firebase...");
-                const cmsSnap = await getDocs(collection(db, "dramas"));
-                cmsSnap.forEach((d) => { 
-                    data.push(d.data()); 
-                });
-                
-                // Save the new data AND the new version number to their phone
-                localStorage.setItem('dramakan_master_db', JSON.stringify(data));
-                localStorage.setItem('dramakan_db_version', serverVersion);
-            }
+            // Save to local storage for instant loading on other pages
+            localStorage.setItem('dramakan_master_db', JSON.stringify(data));
 
             fuse = new Fuse(data, { keys: ['title'], threshold: 0.4 });
 
@@ -197,24 +167,10 @@ document.addEventListener('DOMContentLoaded', function () {
             renderContinueWatching(); 
             window.addEventListener('historySynced', renderContinueWatching);
 
-            // RENDER TRENDING (Immediate render because it's near the top)
-            try {
-                const q = query(collection(db, "drama_stats"), orderBy("views", "desc"), limit(15));
-                const querySnapshot = await getDocs(q);
-                let dynamicTrending = [];
-                querySnapshot.forEach((docStats) => {
-                    const found = data.find(d => d.title.toLowerCase() === docStats.data().title.toLowerCase());
-                    if(found) dynamicTrending.push(found);
-                });
-                if(dynamicTrending.length > 0) populateGrid('trending-grid', dynamicTrending);
-                else populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15));
-            } catch(e) { 
-                populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15)); 
-            }
+            // RENDER TRENDING
+            populateGrid('trending-grid', data.filter(d => d.Trend === "T").slice(0, 15));
 
-            // ==========================================
             // PERFORMANCE FIX: TRUE LAZY DOM RENDERING
-            // ==========================================
             const gridConfigs = [
                 { id: 'kdrama-grid', filterType: "K-Drama" },
                 { id: 'cdrama-grid', filterType: "C-Drama" },
@@ -236,25 +192,24 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (config) {
                             let sectionData = [];
                             if (config.isUpcoming) {
-                                sectionData = shuffleArray(data.filter(d => d.release_date === "Upcoming")).slice(0, 15);
+                                sectionData = shuffleArray(data.filter(d => d.status === "Upcoming" || d.release_date === "Upcoming")).slice(0, 15);
                             } else {
                                 sectionData = shuffleArray(data.filter(d => d.type === config.filterType)).slice(0, 15);
                             }
                             
-                            // Only build the HTML when the user scrolls near it!
                             populateGrid(targetId, sectionData);
                             observer.unobserve(entry.target);
                         }
                     }
                 });
-            }, { rootMargin: '300px' }); // Trigger rendering 300px before it comes onto the screen
+            }, { rootMargin: '300px' });
 
             gridConfigs.forEach(config => {
                 const el = document.getElementById(config.id);
                 if (el) gridObserver.observe(el);
             });
 
-        } catch (err) { console.error("Firebase Database Load Error:", err); }
+        } catch (err) { console.error("JSON Load Error:", err); }
     }
 
     // --- SEARCH DEBOUNCE LOGIC (CPU SAVER) ---

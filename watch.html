@@ -536,13 +536,21 @@
                 });
             });
 
-            try {
-                const docRef = doc(db, "dramas", dramaId);
-                const docSnap = await getDoc(docRef);
+           try {
+    // Check if we already have the database cached from the homepage
+    let allDramas = JSON.parse(localStorage.getItem('dramakan_master_db'));
+    
+    // If not, fetch the JSON file
+    if (!allDramas) {
+        const response = await fetch('/dramas.json');
+        allDramas = await response.json();
+    }
 
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
+    // Find the specific drama by its ID in the array
+    const data = allDramas.find(drama => drama.id === dramaId);
 
+    if (data) {
+// ...
                     document.title = `Watch ${data.title} - DramaKan`;
                     document.getElementById('ui-title').textContent = data.title;
                     document.getElementById('ui-poster').src = data.img;
@@ -905,9 +913,13 @@
         async function loadRecommendations(currentId) {
             const recsContainer = document.getElementById('ui-recs');
             try {
-                const snap = await getDocs(collection(db, "dramas"));
-                let allDramas = [];
-                snap.forEach(d => { if (d.id !== currentId) { allDramas.push({ id: d.id, ...d.data() }); } });
+               let allDramas = JSON.parse(localStorage.getItem('dramakan_master_db'));
+if (!allDramas) {
+    const response = await fetch('/dramas.json');
+    allDramas = await response.json();
+}
+// Filter out the current drama so it doesn't recommend itself
+allDramas = allDramas.filter(d => d.id !== currentId);
                 for (let i = allDramas.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [allDramas[i], allDramas[j]] = [allDramas[j], allDramas[i]];

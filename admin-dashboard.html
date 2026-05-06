@@ -565,12 +565,15 @@
             } catch(e) {}
         };
 
-        window.deleteDrama = async function(id) { 
-            if (confirm("WARNING: Confirm permanent purge of this record?")) { 
-                await deleteDoc(doc(db, "dramas", id)); 
-                loadDramas(); 
-            } 
-        };
+       // Find this line around line 355:
+window.deleteDrama = async function(id) { 
+    if (confirm("WARNING: Confirm permanent purge of this record?")) { 
+        await deleteDoc(doc(db, "dramas", id)); 
+        loadDramas(); 
+        // Add this line:
+        fetch('https://api.netlify.com/build_hooks/69faaba323e4ac38b9e03773', { method: 'POST' });
+    } 
+};
 
         document.getElementById('cms-cancel').addEventListener('click', () => { 
             document.getElementById('cms-form').reset(); 
@@ -721,12 +724,16 @@
                     actor2Img: document.getElementById('cms-actor2-img').value.trim() 
                 };
 
-                if (isEditing) { await updateDoc(targetRef, dramaData); } 
-                else { dramaData.createdAt = new Date().getTime(); await setDoc(targetRef, dramaData); }
-                
-                document.getElementById('cms-cancel').click(); 
-                loadDramas();
-                alert("Deployed successfully!");
+               if (isEditing) { await updateDoc(targetRef, dramaData); } 
+else { dramaData.createdAt = new Date().getTime(); await setDoc(targetRef, dramaData); }
+
+document.getElementById('cms-cancel').click(); 
+loadDramas();
+
+// Trigger Netlify Rebuild to update dramas.json
+fetch('https://api.netlify.com/build_hooks/69faaba323e4ac38b9e03773', { method: 'POST' })
+    .then(() => alert("Deployed successfully! Site is updating in the background..."))
+    .catch(() => alert("Saved to DB, but failed to trigger site rebuild."));
 
             } catch (error) { 
                 console.error(error);
