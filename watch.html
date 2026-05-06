@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="bottom-bar.css"> 
 
+    <!-- html2canvas for IG Story Card Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         :root {
             --bg-base: #0B0C10; 
@@ -95,15 +98,22 @@
             border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; margin-bottom: 25px; box-shadow: var(--glass-shadow);
             transition: transform 0.4s ease;
         }
-        .episode-title { font-size: 1.3rem; font-weight: 600; margin: 0; color: #fff; }
+        .episode-title { font-size: 1.3rem; font-weight: 600; margin: 0; color: #fff; flex-grow: 1; }
         
+        .episode-actions { display: flex; gap: 10px; flex-wrap: wrap; }
         .action-btn { background: rgba(255,255,255,0.04); color: #fff; border: 1px solid var(--glass-border); padding: 10px 20px; border-radius: 50px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: inline-flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.9rem;}
         .action-btn i { font-size: 1rem; transition: transform 0.3s ease; }
         .action-btn:hover:not(:disabled) { background: rgba(255,255,255,0.08); border-color: rgba(138, 43, 226, 0.4); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3);}
         .action-btn:hover:not(:disabled) i { transform: scale(1.1); color: var(--primary); }
         .action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        
+        /* Highlight specific buttons */
         #add-to-list-btn.active-list { background: rgba(138, 43, 226, 0.15); color: var(--primary); border-color: var(--primary); box-shadow: 0 4px 15px var(--primary-glow); }
         #add-to-list-btn.active-list i { color: var(--primary); }
+        
+        #share-ig-btn { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); border: none; box-shadow: 0 4px 15px rgba(220, 39, 67, 0.4); }
+        #share-ig-btn:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(220, 39, 67, 0.6); }
+        #share-ig-btn i { color: #fff; }
 
         .season-selector-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .season-select { background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 0.95rem; font-weight: 500; outline: none; cursor: pointer; transition: all 0.3s ease; }
@@ -135,6 +145,10 @@
         .episode-item.current .ep-desc { color: rgba(255,255,255,0.9); }
 
         @media (max-width: 768px) {
+            .episode-meta { flex-direction: column; align-items: stretch; }
+            .episode-actions { justify-content: space-between; }
+            .action-btn { flex: 1; justify-content: center; padding: 10px 5px; font-size: 0.85rem;}
+            
             .episodes-list { 
                 display: grid; 
                 grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); 
@@ -149,51 +163,25 @@
             .episode-item { padding: 12px 8px; }
         }
 
-        /* --- UPDATED CAST STYLING --- */
+        /* --- CAST STYLING --- */
         .cast-list { 
-            display: flex; 
-            gap: 20px; 
-            overflow-x: auto; 
-            padding: 10px 5px 20px 5px; 
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary) transparent;
+            display: flex; gap: 20px; overflow-x: auto; padding: 10px 5px 20px 5px; 
+            scrollbar-width: thin; scrollbar-color: var(--primary) transparent;
         }
         .cast-list::-webkit-scrollbar { height: 6px; }
         .cast-list::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
         
         .cast-card { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 12px; 
-            background: rgba(255,255,255,0.03); 
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border); 
-            padding: 15px; 
-            border-radius: 20px; 
-            min-width: 140px; 
-            text-align: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column; align-items: center; gap: 12px; 
+            background: rgba(255,255,255,0.03); backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border); padding: 15px; border-radius: 20px; 
+            min-width: 140px; text-align: center; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .cast-card:hover { 
-            background: rgba(138, 43, 226, 0.08); 
-            border-color: var(--primary); 
-            transform: translateY(-8px); 
-            box-shadow: 0 12px 24px rgba(0,0,0,0.5);
-        }
-        .cast-card img { 
-            width: 80px; 
-            height: 80px; 
-            border-radius: 50%; 
-            object-fit: cover; 
-            border: 2px solid var(--primary); 
-            box-shadow: 0 0 15px var(--primary-glow);
-            transition: transform 0.4s ease;
-        }
+        .cast-card:hover { background: rgba(138, 43, 226, 0.08); border-color: var(--primary); transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.5); }
+        .cast-card img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); box-shadow: 0 0 15px var(--primary-glow); transition: transform 0.4s ease; }
         .cast-card:hover img { transform: scale(1.1); }
         .actor-name { margin: 5px 0 2px 0; font-size: 0.95rem; color:#fff; font-weight: 600; line-height: 1.2;}
         .character-name { margin: 0; font-size: 0.75rem; color: var(--text-muted); font-weight: 400; }
-        /* --- END CAST STYLING --- */
 
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th, td { padding: 15px; border-bottom: 1px solid var(--glass-border); }
@@ -205,49 +193,17 @@
 
         /* COMMENT SECTION STYLING */
         .comments-widget { position: relative; }
-        
-        .comment-form-container { 
-            display: flex; 
-            gap: 15px; 
-            align-items: flex-start; 
-            margin-bottom: 30px; 
-            background: rgba(0,0,0,0.2); 
-            padding: 20px; 
-            border-radius: 16px; 
-            border: 1px solid var(--glass-border);
-            transition: box-shadow 0.3s ease, border-color 0.3s ease;
-        }
+        .comment-form-container { display: flex; gap: 15px; align-items: flex-start; margin-bottom: 30px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); transition: box-shadow 0.3s ease, border-color 0.3s ease; }
         .comment-form-container:focus-within { border-color: rgba(138, 43, 226, 0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        
-        .user-avatar { 
-            width: 45px; height: 45px; border-radius: 50%; object-fit: cover; 
-            border: 2px solid var(--primary); box-shadow: 0 0 12px var(--primary-glow); 
-            flex-shrink: 0; transition: transform 0.3s ease;
-        }
+        .user-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); box-shadow: 0 0 12px var(--primary-glow); flex-shrink: 0; transition: transform 0.3s ease; }
         .user-avatar:hover { transform: scale(1.05) rotate(5deg); }
-        
-        .comment-input-wrapper { 
-            display: flex; flex-direction: column; gap: 12px; width: 100%; flex: 1;
-        }
-        
-        .comment-input-wrapper textarea { 
-            width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.03); 
-            border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; 
-            color: #fff; font-family: 'Poppins', sans-serif; font-size: 0.9rem; 
-            resize: vertical; min-height: 80px; transition: all 0.3s ease; outline: none; line-height: 1.5;
-        }
+        .comment-input-wrapper { display: flex; flex-direction: column; gap: 12px; width: 100%; flex: 1; }
+        .comment-input-wrapper textarea { width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; color: #fff; font-family: 'Poppins', sans-serif; font-size: 0.9rem; resize: vertical; min-height: 80px; transition: all 0.3s ease; outline: none; line-height: 1.5; }
         .comment-input-wrapper textarea:focus { border-color: var(--primary); background: rgba(0,0,0,0.4); box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.2); }
         .comment-input-wrapper textarea::placeholder { color: rgba(255,255,255,0.3); }
         .comment-input-wrapper textarea:disabled { opacity: 0.5; cursor: not-allowed; background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.05); }
-        
         .comment-actions { display: flex; justify-content: flex-end; width: 100%; }
-        .comment-actions button { 
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-rich) 100%); 
-            color: #fff; border: none; padding: 10px 24px; 
-            border-radius: 50px; font-weight: 500; font-family: 'Poppins'; cursor: pointer; 
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; align-items: center; gap: 8px; 
-            box-shadow: 0 4px 15px var(--primary-glow); 
-        }
+        .comment-actions button { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-rich) 100%); color: #fff; border: none; padding: 10px 24px; border-radius: 50px; font-weight: 500; font-family: 'Poppins'; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px var(--primary-glow); }
         .comment-actions button i { transition: transform 0.3s ease; }
         .comment-actions button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(138, 43, 226, 0.5); }
         .comment-actions button:hover:not(:disabled) i { transform: translateX(3px) scale(1.1); }
@@ -256,7 +212,6 @@
         .comments-list { display: flex; flex-direction: column; gap: 15px; }
         .comment-item { animation: slideInUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border); transition: all 0.3s ease;}
         .comment-item:hover { background: rgba(255,255,255,0.04); border-color: rgba(138, 43, 226, 0.2); transform: translateX(2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2);}
-        @keyframes slideInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Sidebar Info Widget */
         .info-poster { position: relative; border-radius: 16px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
@@ -298,7 +253,7 @@
             .drama-info-widget { order: -1; } 
         }
 
-        /* Apple Liquid Glass Bottom Nav (Original Strict CSS untouched) */
+        /* Bottom Nav */
         @media (max-width: 992px) {
             .bottom-nav { display: flex !important; position: fixed !important; bottom: 10px !important; left: 50% !important; transform: translateX(-50%) !important; width: 90% !important; max-width: 400px !important; background: rgba(20, 20, 25, 0.45) !important; backdrop-filter: blur(40px) saturate(180%) !important; -webkit-backdrop-filter: blur(40px) saturate(180%) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; border-top: 1px solid rgba(255, 255, 255, 0.25) !important; border-radius: 50px !important; z-index: 9999 !important; padding: 5px 10px !important; box-shadow: 0 25px 50px rgba(0,0,0,0.7), inset 0 1px 1px rgba(255,255,255,0.1) !important; }
             .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 0; color: rgba(255, 255, 255, 0.5); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); position: relative; text-decoration: none; }
@@ -351,12 +306,17 @@
 
                 <div class="episode-meta" id="episode-meta-container">
                     <h1 class="episode-title" id="current-episode-title">Select an Episode</h1>
-                    <div class="episode-actions" style="display: flex; gap: 10px;">
+                    
+                    <!-- UPDATED ACTION BAR WITH IG SHARE -->
+                    <div class="episode-actions">
                         <button class="action-btn" id="add-to-list-btn" title="Add to My List">
-                            <i class="fas fa-bookmark"></i> <span>Save</span>
+                            <i class="fas fa-bookmark"></i> <span class="hide-mobile">Save</span>
                         </button>
-                        <button class="action-btn" id="prev-ep-btn"><i class="fas fa-chevron-left"></i> Prev</button>
-                        <button class="action-btn" id="next-ep-btn">Next <i class="fas fa-chevron-right"></i></button>
+                        <button class="action-btn" id="share-ig-btn" title="Share to IG Story">
+                            <i class="fab fa-instagram"></i> <span>Story</span>
+                        </button>
+                        <button class="action-btn" id="prev-ep-btn"><i class="fas fa-chevron-left"></i> <span class="hide-mobile">Prev</span></button>
+                        <button class="action-btn" id="next-ep-btn"><span class="hide-mobile">Next</span> <i class="fas fa-chevron-right"></i></button>
                     </div>
                 </div>
 
@@ -473,6 +433,36 @@
         </a>
     </nav>
 
+    <!-- IG STORY OFFLINE RENDER TARGET -->
+    <div id="ig-export-zone" style="position: fixed; top: 0; left: 0; z-index: -9999; opacity: 0; pointer-events: none; width: 1080px; height: 1920px; background: linear-gradient(135deg, #09090b 0%, #1e1b4b 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; color: white; overflow: hidden;">
+        <!-- Ambient Blur Blobs -->
+        <div style="position: absolute; top: -10%; left: -20%; width: 900px; height: 900px; background: rgba(138,43,226,0.5); filter: blur(250px); border-radius: 50%;"></div>
+        <div style="position: absolute; bottom: -10%; right: -20%; width: 900px; height: 900px; background: rgba(59,130,246,0.3); filter: blur(250px); border-radius: 50%;"></div>
+
+        <!-- Glass Main Card -->
+        <div style="position: relative; z-index: 10; background: rgba(255,255,255,0.06); border: 3px solid rgba(255,255,255,0.15); border-radius: 80px; padding: 100px 80px; display: flex; flex-direction: column; align-items: center; width: 85%; box-shadow: 0 40px 100px rgba(0,0,0,0.8);">
+            
+            <div style="font-size: 2.8rem; font-weight: 800; letter-spacing: 14px; color: #d8b4fe; margin-bottom: 60px; text-transform: uppercase; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">Now Watching</div>
+
+            <!-- Poster Image -->
+            <img id="ig-card-poster" src="" crossorigin="anonymous" alt="" style="width: 100%; border-radius: 50px; box-shadow: 0 30px 80px rgba(0,0,0,0.9); margin-bottom: 80px; object-fit: cover; max-height: 800px; border: 2px solid rgba(255,255,255,0.05);">
+
+            <h1 id="ig-card-title" style="font-size: 5rem; font-weight: 800; text-align: center; margin: 0 0 30px 0; line-height: 1.15; text-shadow: 0 10px 40px rgba(0,0,0,0.7); letter-spacing: -1px;">Drama Title</h1>
+            
+            <div style="background: rgba(138,43,226,0.2); border: 2px solid rgba(138,43,226,0.5); padding: 15px 40px; border-radius: 50px;">
+                <h2 id="ig-card-ep" style="font-size: 3rem; font-weight: 600; color: #fff; margin: 0; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">S1 • EP 1</h2>
+            </div>
+        </div>
+
+        <!-- Simulated Link Sticker / Brand Footer -->
+        <div style="position: absolute; bottom: 100px; display: flex; flex-direction: column; align-items: center; z-index: 10; width: 100%;">
+            <div style="background: rgba(255,255,255,0.9); color: #000; border-radius: 50px; padding: 25px 60px; font-size: 2.5rem; font-weight: 700; display: flex; align-items: center; gap: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); margin-bottom: 50px;">
+                <i class="fas fa-link" style="color: #3b82f6;"></i> Watch on DramaKan
+            </div>
+            <div style="font-size: 2.5rem; font-weight: 800; color: rgba(255,255,255,0.5); letter-spacing: 2px;">Drama<span style="color: #a855f7;">Kan</span></div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, doc, getDoc, collection, getDocs, addDoc, serverTimestamp, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -536,21 +526,16 @@
                 });
             });
 
-           try {
-    // Check if we already have the database cached from the homepage
-    let allDramas = JSON.parse(localStorage.getItem('dramakan_master_db'));
-    
-    // If not, fetch the JSON file
-    if (!allDramas) {
-        const response = await fetch('/dramas.json');
-        allDramas = await response.json();
-    }
+            try {
+                let allDramas = JSON.parse(localStorage.getItem('dramakan_master_db'));
+                if (!allDramas) {
+                    const response = await fetch('/dramas.json');
+                    allDramas = await response.json();
+                }
 
-    // Find the specific drama by its ID in the array
-    const data = allDramas.find(drama => drama.id === dramaId);
+                const data = allDramas.find(drama => drama.id === dramaId);
 
-    if (data) {
-// ...
+                if (data) {
                     document.title = `Watch ${data.title} - DramaKan`;
                     document.getElementById('ui-title').textContent = data.title;
                     document.getElementById('ui-poster').src = data.img;
@@ -565,6 +550,10 @@
                     document.getElementById('ui-cast2-name').textContent = data.actor2;
                     document.getElementById('ui-cast2-img').src = data.actor2Img;
 
+                    // Initialize IG Card Base Data
+                    document.getElementById('ig-card-poster').src = data.img;
+                    document.getElementById('ig-card-title').innerText = data.title;
+
                     loadRecommendations(dramaId);
                     initCommentSystem(dramaId); 
 
@@ -577,12 +566,12 @@
                     const syncBookmarkUI = function() {
                         let currentList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
                         if (currentList.some(item => item.link === safeLink || item.id === dramaId)) {
-                            bookmarkBtn.innerHTML = '<i class="fas fa-check"></i> <span>Saved</span>';
+                            bookmarkBtn.innerHTML = '<i class="fas fa-check"></i> <span class="hide-mobile">Saved</span>';
                             bookmarkBtn.classList.add('active-list');
                             posterBookmarkBtn.innerHTML = '<i class="fas fa-bookmark"></i>';
                             posterBookmarkBtn.style.color = 'var(--primary)';
                         } else {
-                            bookmarkBtn.innerHTML = '<i class="fas fa-bookmark"></i> <span>Save</span>';
+                            bookmarkBtn.innerHTML = '<i class="fas fa-bookmark"></i> <span class="hide-mobile">Save</span>';
                             bookmarkBtn.classList.remove('active-list');
                             posterBookmarkBtn.innerHTML = '<i class="far fa-bookmark"></i>';
                             posterBookmarkBtn.style.color = '#fff';
@@ -593,7 +582,6 @@
 
                     const handleBookmarkClick = function(e) {
                         e.preventDefault();
-                        
                         if (typeof window.toggleMyList === 'function') {
                             window.toggleMyList(bookmarkBtn, encodeURIComponent(safeTitle), encodeURIComponent(safeImg), encodeURIComponent(safeLink));
                             setTimeout(syncBookmarkUI, 100);
@@ -601,13 +589,7 @@
                             let currentList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
                             const dramaObj = { id: dramaId, title: safeTitle, img: safeImg, link: safeLink };
                             const existsIndex = currentList.findIndex(item => item.link === safeLink || item.id === dramaId);
-                            
-                            if (existsIndex > -1) {
-                                currentList.splice(existsIndex, 1); 
-                            } else {
-                                currentList.push(dramaObj); 
-                            }
-                            
+                            if (existsIndex > -1) { currentList.splice(existsIndex, 1); } else { currentList.push(dramaObj); }
                             localStorage.setItem('dramakan_mylist', JSON.stringify(currentList));
                             window.dispatchEvent(new Event('myListUpdated')); 
                             syncBookmarkUI(); 
@@ -632,7 +614,6 @@
                     function renderEpisodeGrid(seasonNum) {
                         window.currentSeason = parseInt(seasonNum);
                         const epsInThisSeason = seasonsArr[window.currentSeason - 1];
-                        
                         let buttonsHtml = '';
                         for (let i = 1; i <= epsInThisSeason; i++) {
                             buttonsHtml += `
@@ -662,17 +643,12 @@
 
                     async function fetchCleanVideoSource(imdbId, season, episode, mediaType) {
                         const isMovie = mediaType && mediaType.toLowerCase().includes('movie');
-                        
                         if (currentServer === 'vsrc') {
-                            return isMovie 
-                                ? `https://vidsrc.fyi/embed/movie/${imdbId}`
-                                : `https://vidsrc.fyi/embed/tv/${imdbId}/${season}/${episode}`;
+                            return isMovie ? `https://vidsrc.fyi/embed/movie/${imdbId}` : `https://vidsrc.fyi/embed/tv/${imdbId}/${season}/${episode}`;
                         } else if (currentServer === 'hindi') {
                             return `https://loffe414wil.com/play/${imdbId}`;
                         } else {
-                            return isMovie 
-                                ? `https://www.2embed.cc/embed/${imdbId}`
-                                : `https://www.2embed.cc/embedtv/${imdbId}&s=${season}&e=${episode}`;
+                            return isMovie ? `https://www.2embed.cc/embed/${imdbId}` : `https://www.2embed.cc/embedtv/${imdbId}&s=${season}&e=${episode}`;
                         }
                     }
 
@@ -707,10 +683,16 @@
                         shield.addEventListener('click', function() { this.remove(); });
                         document.getElementById('video-container-wrapper').appendChild(shield);
 
+                        // Update Page Title
                         epText.textContent = seasonsArr.length > 1 
                             ? `S${window.currentSeason} EP ${window.currentEpisode} - ${data.title}`
                             : `EP ${window.currentEpisode} - ${data.title}`;
                         
+                        // Update IG Card Dynamic Episode Text
+                        document.getElementById('ig-card-ep').innerText = seasonsArr.length > 1
+                            ? `S${window.currentSeason} • EP ${window.currentEpisode}`
+                            : `Episode ${window.currentEpisode}`;
+
                         updateActiveButton();
 
                         const epIndexToSave = `${window.currentSeason}-${window.currentEpisode}`;
@@ -772,6 +754,75 @@
                             window.loadEpisode(1, 1);
                         }
                     }, 500);
+
+                    // ==========================================
+                    // IG STORY SHARE GENERATOR INTEGRATION
+                    // ==========================================
+                    const shareBtn = document.getElementById('share-ig-btn');
+                    shareBtn.addEventListener('click', async () => {
+                        const originalHtml = shareBtn.innerHTML;
+                        shareBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Creating...</span>';
+                        shareBtn.disabled = true;
+
+                        try {
+                            const exportZone = document.getElementById('ig-export-zone');
+                            // Ensure the library can 'see' the element to render it properly
+                            exportZone.style.opacity = '1';
+                            exportZone.style.zIndex = '-9999';
+
+                            const canvas = await html2canvas(exportZone, {
+                                useCORS: true,
+                                allowTaint: true,
+                                backgroundColor: null,
+                                scale: 1 // lock scale to maintain the 1080x1920 fidelity
+                            });
+
+                            exportZone.style.opacity = '0'; // reset
+
+                            canvas.toBlob(async (blob) => {
+                                const file = new File([blob], `Now-Watching-${data.title.replace(/\s+/g, '-')}.png`, { type: "image/png" });
+                                const urlToShare = window.location.href;
+
+                                // Trigger Native Web Share API (Mobile App seamless integration)
+                                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                                    try {
+                                        await navigator.share({
+                                            files: [file],
+                                            title: `Watching ${data.title} on DramaKan`,
+                                            text: `Currently watching ${data.title} on DramaKan! 🍿✨\n\n${urlToShare}`
+                                        });
+                                    } catch (err) {
+                                        console.log('Share prompt dismissed by user.');
+                                    }
+                                } else {
+                                    // Fallback for PC / Unsupported Browsers - Force Download
+                                    const url = URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = `Now-Watching-${data.title.replace(/\s+/g, '-')}.png`;
+                                    a.click();
+                                    URL.revokeObjectURL(url);
+                                    alert("Story card downloaded! You can now add it to your Instagram Story.");
+                                }
+
+                                shareBtn.innerHTML = originalHtml;
+                                shareBtn.disabled = false;
+                            }, 'image/png');
+
+                        } catch (error) {
+                            console.error("Failed to generate Story Card:", error);
+                            // Ultimate Fallback: Just trigger standard text/link share
+                            if (navigator.share) {
+                                navigator.share({
+                                    title: data.title,
+                                    text: `Check out ${data.title} on DramaKan!`,
+                                    url: window.location.href
+                                });
+                            }
+                            shareBtn.innerHTML = originalHtml;
+                            shareBtn.disabled = false;
+                        }
+                    });
 
                     document.getElementById('page-loader').style.display = 'none';
                     document.getElementById('main-content').style.display = 'block';
@@ -914,26 +965,26 @@
             const recsContainer = document.getElementById('ui-recs');
             try {
                let allDramas = JSON.parse(localStorage.getItem('dramakan_master_db'));
-if (!allDramas) {
-    const response = await fetch('/dramas.json');
-    allDramas = await response.json();
-}
-// Filter out the current drama so it doesn't recommend itself
-allDramas = allDramas.filter(d => d.id !== currentId);
-                for (let i = allDramas.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [allDramas[i], allDramas[j]] = [allDramas[j], allDramas[i]];
-                }
-                const recs = allDramas.slice(0, 5); 
-                recsContainer.innerHTML = recs.map(rec => `
-                    <a href="${rec.link || `watch.html?id=${rec.id}`}" class="rec-card">
-                        <img src="${rec.img}" alt="Poster" loading="lazy">
-                        <div class="rec-card-info">
-                            <p class="rec-title">${rec.title}</p>
-                            <p class="rec-meta"><i class="fas fa-star"></i> ${rec.imdb || 'N/A'} &bull; ${rec.type}</p>
-                        </div>
-                    </a>
-                `).join('');
+               if (!allDramas) {
+                   const response = await fetch('/dramas.json');
+                   allDramas = await response.json();
+               }
+               // Filter out the current drama so it doesn't recommend itself
+               allDramas = allDramas.filter(d => d.id !== currentId);
+               for (let i = allDramas.length - 1; i > 0; i--) {
+                   const j = Math.floor(Math.random() * (i + 1));
+                   [allDramas[i], allDramas[j]] = [allDramas[j], allDramas[i]];
+               }
+               const recs = allDramas.slice(0, 5); 
+               recsContainer.innerHTML = recs.map(rec => `
+                   <a href="${rec.link || `watch.html?id=${rec.id}`}" class="rec-card">
+                       <img src="${rec.img}" alt="Poster" loading="lazy">
+                       <div class="rec-card-info">
+                           <p class="rec-title">${rec.title}</p>
+                           <p class="rec-meta"><i class="fas fa-star"></i> ${rec.imdb || 'N/A'} &bull; ${rec.type}</p>
+                       </div>
+                   </a>
+               `).join('');
             } catch(e) {
                 recsContainer.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem;">Failed to load recommendations.</p>`;
             }
