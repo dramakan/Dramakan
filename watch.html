@@ -111,9 +111,21 @@
         #add-to-list-btn.active-list { background: rgba(138, 43, 226, 0.15); color: var(--primary); border-color: var(--primary); box-shadow: 0 4px 15px var(--primary-glow); }
         #add-to-list-btn.active-list i { color: var(--primary); }
         
-        #share-ig-btn { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); border: none; box-shadow: 0 4px 15px rgba(220, 39, 67, 0.4); }
-        #share-ig-btn:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(220, 39, 67, 0.6); }
-        #share-ig-btn i { color: #fff; }
+        /* Themed Share Button Overrides */
+        #share-ig-btn { 
+            background: rgba(138, 43, 226, 0.1); 
+            border: 1px solid rgba(138, 43, 226, 0.3); 
+            color: #fff; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        #share-ig-btn i { color: var(--primary); font-size: 1.1rem; }
+        #share-ig-btn:hover:not(:disabled) { 
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-rich) 100%); 
+            border-color: var(--primary); 
+            box-shadow: 0 6px 20px var(--primary-glow); 
+            color: #fff;
+        }
+        #share-ig-btn:hover:not(:disabled) i { color: #fff; transform: scale(1.1); }
 
         .season-selector-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .season-select { background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 0.95rem; font-weight: 500; outline: none; cursor: pointer; transition: all 0.3s ease; }
@@ -307,11 +319,11 @@
                 <div class="episode-meta" id="episode-meta-container">
                     <h1 class="episode-title" id="current-episode-title">Select an Episode</h1>
                     
-                    <!-- UPDATED ACTION BAR WITH IG SHARE -->
                     <div class="episode-actions">
                         <button class="action-btn" id="add-to-list-btn" title="Add to My List">
                             <i class="fas fa-bookmark"></i> <span class="hide-mobile">Save</span>
                         </button>
+                        <!-- UPDATED SHARE BUTTON THEME -->
                         <button class="action-btn" id="share-ig-btn" title="Share to IG Story">
                             <i class="fab fa-instagram"></i> <span>Story</span>
                         </button>
@@ -433,33 +445,38 @@
         </a>
     </nav>
 
-    <!-- IG STORY OFFLINE RENDER TARGET -->
-    <div id="ig-export-zone" style="position: fixed; top: 0; left: 0; z-index: -9999; opacity: 0; pointer-events: none; width: 1080px; height: 1920px; background: linear-gradient(135deg, #09090b 0%, #1e1b4b 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; color: white; overflow: hidden;">
-        <!-- Ambient Blur Blobs -->
-        <div style="position: absolute; top: -10%; left: -20%; width: 900px; height: 900px; background: rgba(138,43,226,0.5); filter: blur(250px); border-radius: 50%;"></div>
-        <div style="position: absolute; bottom: -10%; right: -20%; width: 900px; height: 900px; background: rgba(59,130,246,0.3); filter: blur(250px); border-radius: 50%;"></div>
+    <!-- PREMIUM IG STORY OFFLINE RENDER TARGET -->
+    <!-- Positioned far off-screen to prevent layout breaking while allowing the canvas to 'see' it properly -->
+    <div id="ig-export-zone" style="position: absolute; top: -20000px; left: -20000px; width: 1080px; height: 1920px; background: #0B0C10; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; color: white; overflow: hidden; z-index: -1;">
+        
+        <!-- Deep Glassmorphism Background Elements -->
+        <div style="position: absolute; top: -10%; left: -20%; width: 1000px; height: 1000px; background: rgba(138,43,226,0.6); filter: blur(200px); border-radius: 50%;"></div>
+        <div style="position: absolute; bottom: -10%; right: -20%; width: 1000px; height: 1000px; background: rgba(106,27,154,0.6); filter: blur(200px); border-radius: 50%;"></div>
+        
+        <!-- Subtle noise texture overlay -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+') repeat; opacity: 0.3;"></div>
 
-        <!-- Glass Main Card -->
-        <div style="position: relative; z-index: 10; background: rgba(255,255,255,0.06); border: 3px solid rgba(255,255,255,0.15); border-radius: 80px; padding: 100px 80px; display: flex; flex-direction: column; align-items: center; width: 85%; box-shadow: 0 40px 100px rgba(0,0,0,0.8);">
+        <!-- Main Glass Subject Card -->
+        <div style="position: relative; z-index: 10; background: rgba(20, 20, 25, 0.4); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); border: 2px solid rgba(138,43,226,0.3); border-radius: 60px; padding: 80px; display: flex; flex-direction: column; align-items: center; width: 85%; box-shadow: 0 40px 100px rgba(0,0,0,0.8), inset 0 2px 20px rgba(255,255,255,0.05);">
             
-            <div style="font-size: 2.8rem; font-weight: 800; letter-spacing: 14px; color: #d8b4fe; margin-bottom: 60px; text-transform: uppercase; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">Now Watching</div>
+            <div style="font-size: 2.2rem; font-weight: 700; letter-spacing: 12px; color: #d8b4fe; margin-bottom: 50px; text-transform: uppercase; text-shadow: 0 4px 15px rgba(138,43,226,0.5); display: flex; align-items: center; gap: 15px;">
+                <i class="fas fa-play-circle"></i> NOW WATCHING
+            </div>
 
             <!-- Poster Image -->
-            <img id="ig-card-poster" src="" crossorigin="anonymous" alt="" style="width: 100%; border-radius: 50px; box-shadow: 0 30px 80px rgba(0,0,0,0.9); margin-bottom: 80px; object-fit: cover; max-height: 800px; border: 2px solid rgba(255,255,255,0.05);">
+            <img id="ig-card-poster" src="" crossorigin="anonymous" alt="" style="width: 100%; border-radius: 40px; box-shadow: 0 30px 80px rgba(0,0,0,0.9); margin-bottom: 60px; object-fit: cover; aspect-ratio: 2/3; border: 1px solid rgba(255,255,255,0.1);">
 
-            <h1 id="ig-card-title" style="font-size: 5rem; font-weight: 800; text-align: center; margin: 0 0 30px 0; line-height: 1.15; text-shadow: 0 10px 40px rgba(0,0,0,0.7); letter-spacing: -1px;">Drama Title</h1>
+            <h1 id="ig-card-title" style="font-size: 4.5rem; font-weight: 800; text-align: center; margin: 0 0 30px 0; line-height: 1.2; text-shadow: 0 10px 40px rgba(0,0,0,0.8); letter-spacing: -2px; color: #fff;">Drama Title</h1>
             
-            <div style="background: rgba(138,43,226,0.2); border: 2px solid rgba(138,43,226,0.5); padding: 15px 40px; border-radius: 50px;">
-                <h2 id="ig-card-ep" style="font-size: 3rem; font-weight: 600; color: #fff; margin: 0; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">S1 • EP 1</h2>
+            <div style="background: rgba(138,43,226,0.15); border: 1px solid rgba(138,43,226,0.4); padding: 15px 40px; border-radius: 50px; box-shadow: 0 10px 30px rgba(138,43,226,0.2);">
+                <h2 id="ig-card-ep" style="font-size: 2.5rem; font-weight: 600; color: #e9d5ff; margin: 0; text-shadow: 0 4px 15px rgba(0,0,0,0.5); letter-spacing: 2px;">S1 • EP 1</h2>
             </div>
         </div>
 
         <!-- Simulated Link Sticker / Brand Footer -->
-        <div style="position: absolute; bottom: 100px; display: flex; flex-direction: column; align-items: center; z-index: 10; width: 100%;">
-            <div style="background: rgba(255,255,255,0.9); color: #000; border-radius: 50px; padding: 25px 60px; font-size: 2.5rem; font-weight: 700; display: flex; align-items: center; gap: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); margin-bottom: 50px;">
-                <i class="fas fa-link" style="color: #3b82f6;"></i> Watch on DramaKan
-            </div>
-            <div style="font-size: 2.5rem; font-weight: 800; color: rgba(255,255,255,0.5); letter-spacing: 2px;">Drama<span style="color: #a855f7;">Kan</span></div>
+        <div style="position: absolute; bottom: 80px; display: flex; flex-direction: column; align-items: center; z-index: 10; width: 100%;">
+            <div style="font-size: 2.8rem; font-weight: 800; color: #fff; letter-spacing: 2px; text-shadow: 0 5px 20px rgba(138,43,226,0.6);">Drama<span style="color: #8A2BE2;">Kan</span></div>
+            <p style="font-size: 1.5rem; color: #a1a1aa; margin-top: 10px; font-weight: 500; letter-spacing: 1px;">Search & Stream for Free</p>
         </div>
     </div>
 
@@ -495,6 +512,24 @@
                 return e.returnValue;
             }
         });
+
+        // Helper function to bypass Canvas CORS tainting issues
+        async function getBase64ImageFromUrl(imageUrl) {
+            try {
+                const response = await fetch(imageUrl, { mode: 'cors' });
+                if (!response.ok) throw new Error('Network response failed');
+                const blob = await response.blob();
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+            } catch (error) {
+                console.warn("CORS fetch failed, using raw URL instead:", error);
+                return imageUrl; 
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -551,7 +586,6 @@
                     document.getElementById('ui-cast2-img').src = data.actor2Img;
 
                     // Initialize IG Card Base Data
-                    document.getElementById('ig-card-poster').src = data.img;
                     document.getElementById('ig-card-title').innerText = data.title;
 
                     loadRecommendations(dramaId);
@@ -756,7 +790,7 @@
                     }, 500);
 
                     // ==========================================
-                    // IG STORY SHARE GENERATOR INTEGRATION
+                    // FIXED IG STORY SHARE GENERATOR 
                     // ==========================================
                     const shareBtn = document.getElementById('share-ig-btn');
                     shareBtn.addEventListener('click', async () => {
@@ -765,25 +799,27 @@
                         shareBtn.disabled = true;
 
                         try {
-                            const exportZone = document.getElementById('ig-export-zone');
-                            // Ensure the library can 'see' the element to render it properly
-                            exportZone.style.opacity = '1';
-                            exportZone.style.zIndex = '-9999';
+                            // 1. Fetch image securely and convert to base64 to prevent canvas CORS taint
+                            const base64Img = await getBase64ImageFromUrl(data.img);
+                            document.getElementById('ig-card-poster').src = base64Img;
 
+                            // 2. Select the properly positioned off-screen export zone
+                            const exportZone = document.getElementById('ig-export-zone');
+
+                            // 3. Render Canvas
                             const canvas = await html2canvas(exportZone, {
                                 useCORS: true,
                                 allowTaint: true,
-                                backgroundColor: null,
-                                scale: 1 // lock scale to maintain the 1080x1920 fidelity
+                                backgroundColor: '#0B0C10',
+                                scale: 1, // lock scale to maintain the 1080x1920 fidelity
+                                logging: false
                             });
-
-                            exportZone.style.opacity = '0'; // reset
 
                             canvas.toBlob(async (blob) => {
                                 const file = new File([blob], `Now-Watching-${data.title.replace(/\s+/g, '-')}.png`, { type: "image/png" });
                                 const urlToShare = window.location.href;
 
-                                // Trigger Native Web Share API (Mobile App seamless integration)
+                                // Trigger Native Web Share API for Mobile devices
                                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                                     try {
                                         await navigator.share({
@@ -795,14 +831,14 @@
                                         console.log('Share prompt dismissed by user.');
                                     }
                                 } else {
-                                    // Fallback for PC / Unsupported Browsers - Force Download
+                                    // Fallback for PC Desktop Browsers - Force Download the Story Card
                                     const url = URL.createObjectURL(blob);
                                     const a = document.createElement('a');
                                     a.href = url;
                                     a.download = `Now-Watching-${data.title.replace(/\s+/g, '-')}.png`;
                                     a.click();
                                     URL.revokeObjectURL(url);
-                                    alert("Story card downloaded! You can now add it to your Instagram Story.");
+                                    alert("Story card downloaded! You can now post it to your Instagram Story.");
                                 }
 
                                 shareBtn.innerHTML = originalHtml;
@@ -811,7 +847,7 @@
 
                         } catch (error) {
                             console.error("Failed to generate Story Card:", error);
-                            // Ultimate Fallback: Just trigger standard text/link share
+                            // Ultimate Fallback: Just trigger standard text/link share if the canvas engine critically fails
                             if (navigator.share) {
                                 navigator.share({
                                     title: data.title,
