@@ -64,7 +64,8 @@
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); const googleProvider = new GoogleAuthProvider();
         const msgBox = document.getElementById('msg-box'); const submitBtn = document.getElementById('submit-btn');
 
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4H68WkOm1U4cKKoQoPWidpOR79j8l7TjnoUp64EDmtigiS4q0Sk7Ckw-iPJtbbPwQpA/exec";
+        // IMPORTANT: Ensure this matches your newly deployed web app URL exactly
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl9a-pUQBTzhT4_8rBXubs-u_IOE9Qkp-opjzarIiwufT2ooGaq2ohPS2ctg1FTIm9/exec";
 
         function showMessage(msg, type) { msgBox.textContent = msg; msgBox.className = type; msgBox.style.display = 'block'; }
         let isActivelyLoggingIn = false;
@@ -74,26 +75,24 @@
             const welcomeBackHtml = `<!DOCTYPE html><html><body style="background-color: #09090B; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background-color: #09090B; padding: 40px 10px;"><tr><td align="center"><table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #121217; border-radius: 24px; border: 1px solid #27272A; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.8);"><tr><td style="background-color: #8A2BE2; height: 6px;"></td></tr><tr><td align="center" style="padding: 40px 20px 20px;"><h1 style="color: #FFFFFF; font-size: 28px; margin: 0; letter-spacing: -1px;">Drama<span style="color: #c488ff;">Kan</span></h1></td></tr><tr><td align="center" style="padding: 0 30px;"><table width="100%" cellpadding="0" cellspacing="0" style="background-color: #1C1C24; border-radius: 16px; border: 1px solid #333;"><tr><td align="center" style="padding: 30px;"><img src="https://img.icons8.com/fluency/96/popcorn.png" alt="Popcorn" width="60" style="display:block; margin-bottom:15px;"><h2 style="color: #FFFFFF; margin: 0 0 10px 0; font-size: 22px;">Welcome back, Streamer!</h2><p style="color: #A1A1AA; font-size: 15px; margin: 0; line-height: 1.6;">We noticed you just logged back into your account. Your watchlist missed you, and we've got fresh episodes waiting in HD.</p></td></tr></table></td></tr><tr><td align="center" style="padding: 30px 40px 40px;"><a href="https://dramakan.site" style="display: inline-block; background-color: #8A2BE2; color: #FFFFFF; font-size: 16px; font-weight: bold; text-decoration: none; padding: 16px 40px; border-radius: 50px;">Jump Back In &rarr;</a></td></tr><tr><td align="center" style="padding: 25px; background-color: #0E0E11; border-top: 1px solid #27272A;"><p style="margin: 0; font-size: 12px; color: #71717A;">&copy; 2026 DramaKan OS.<br>Login alert generated automatically.</p></td></tr></table></td></tr></table><\/body><\/html>`;
 
             try {
-                fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                // By removing no-cors, the browser fully awaits the transaction!
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST', 
                     body: JSON.stringify({ emails: [userEmail], subject: "Welcome back to DramaKan! 🍿", html: welcomeBackHtml })
                 });
-                // Enforce a 1.5 second buffer so the network request completes before redirecting
-                await new Promise(resolve => setTimeout(resolve, 1500));
             } catch (e) { console.log(e); }
         }
 
-        // 🔥 EYE-CATCHY "WELCOME" EMAIL (In case a NEW user uses Google Sign-in on this page) 🔥
+        // 🔥 EYE-CATCHY "WELCOME" EMAIL 🔥
         async function sendWelcomeEmail(userEmail) {
             const welcomeHtml = `<!DOCTYPE html><html><body style="background-color: #09090B; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background-color: #09090B; padding: 40px 10px;"><tr><td align="center"><table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #121217; border-radius: 24px; border: 1px solid #27272A; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.8);"><tr><td style="background-color: #8A2BE2; height: 6px;"></td></tr><tr><td align="center" style="padding: 40px 20px 20px;"><h1 style="color: #FFFFFF; font-size: 28px; margin: 0; letter-spacing: -1px;">Drama<span style="color: #c488ff;">Kan</span></h1></td></tr><tr><td align="center" style="padding: 0 20px;"><img src="https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" style="width: 100%; border-radius: 16px; display: block;" alt="Welcome"></td></tr><tr><td style="padding: 30px 40px;"><h2 style="color: #FFFFFF; margin: 0 0 10px 0; font-size: 24px;">You're in! 🎉</h2><p style="color: #A1A1AA; font-size: 15px; margin: 0 0 25px 0; line-height: 1.6;">Your premium gateway to the best Asian Dramas, Movies, and Anime is officially open. No ads. No interruptions. Just pure HD streaming.</p><table width="100%" cellpadding="0" cellspacing="0" style="background-color: #1C1C24; border-radius: 12px; padding: 20px;"><tr><td style="color: #E4E4E7; font-size: 14px; padding-bottom: 10px;"><strong style="color: #c488ff;">&bull;</strong> Save your Watchlist</td></tr><tr><td style="color: #E4E4E7; font-size: 14px; padding-bottom: 10px;"><strong style="color: #c488ff;">&bull;</strong> Cross-device Cloud Sync</td></tr><tr><td style="color: #E4E4E7; font-size: 14px;"><strong style="color: #c488ff;">&bull;</strong> Daily Episode Updates</td></tr></table></td></tr><tr><td align="center" style="padding: 10px 40px 40px;"><a href="https://dramakan.site" style="display: inline-block; background-color: #8A2BE2; color: #FFFFFF; font-size: 16px; font-weight: bold; text-decoration: none; padding: 16px 40px; border-radius: 50px;">Start Streaming &rarr;</a></td></tr><tr><td align="center" style="padding: 25px; background-color: #0E0E11; border-top: 1px solid #27272A;"><p style="margin: 0; font-size: 12px; color: #71717A;">&copy; 2026 DramaKan OS. All rights reserved.</p></td></tr></table></td></tr></table><\/body><\/html>`;
 
             try {
-                fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                // By removing no-cors, the browser fully awaits the transaction!
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
                     body: JSON.stringify({ emails: [userEmail], subject: "Welcome to DramaKan! 🎉", html: welcomeHtml })
                 });
-                // Enforce a 1.5 second buffer so the network request completes before redirecting
-                await new Promise(resolve => setTimeout(resolve, 1500));
             } catch (e) { console.log(e); }
         }
 
@@ -117,7 +116,9 @@
             try {
                 const cred = await signInWithEmailAndPassword(auth, document.getElementById('email').value.trim(), document.getElementById('password').value);
                 
+                // Program pauses here until the email is confirmed sent by Google
                 await sendWelcomeBackEmail(cred.user.email);
+                
                 window.location.replace('profile.html');
             } catch (error) { showMessage("Invalid email or password.", "error"); submitBtn.innerHTML = 'Sign In'; isActivelyLoggingIn = false; }
         });
