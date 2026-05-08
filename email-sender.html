@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Dispatcher - DramaKan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root { 
+            --bg-base: #09090B; 
+            --primary: #8A2BE2; 
+            --primary-glow: rgba(138, 43, 226, 0.4); 
+            --text-main: #F5F5F5; 
+            --text-muted: #A1A1AA; 
+            --glass-bg: rgba(24, 24, 27, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-base); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; background-image: radial-gradient(circle at top right, rgba(138, 43, 226, 0.1), transparent 40%); }
+        
+        .glass-panel { background: var(--glass-bg); backdrop-filter: blur(24px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px; width: 100%; max-width: 600px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; animation: fadeIn 0.5s ease; }
+        .glass-panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        h2 { font-size: 1.8rem; margin-bottom: 25px; text-align: center; }
+        h2 span { color: var(--primary); }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .form-control { width: 100%; padding: 14px 18px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; color: #fff; font-size: 0.95rem; outline: none; transition: 0.3s; }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.15); }
+        select.form-control { appearance: none; cursor: pointer; }
+        select.form-control option { background: #18181B; }
+
+        .btn { width: 100%; padding: 15px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn:hover:not(:disabled) { background: #9d4edd; transform: translateY(-2px); box-shadow: 0 5px 20px var(--primary-glow); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #10B981; color: #fff; padding: 12px 24px; border-radius: 12px; font-weight: 600; opacity: 0; transform: translateY(20px); transition: 0.4s; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+    <div class="glass-panel active" id="auth-gate">
+        <h2><i class="fas fa-lock" style="color: var(--primary);"></i> Access Control</h2>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">Enter the master passcode to access the email dispatcher.</p>
+        <input type="password" id="master-pass" class="form-control" placeholder="Passcode (dramakan-admin)">
+        <button class="btn" onclick="checkAuth()"><i class="fas fa-unlock"></i> Unlock</button>
+    </div>
+
+    <div class="glass-panel" id="dispatch-panel">
+        <h2>Drama<span>Kan</span> Dispatch</h2>
+        
+        <form id="email-form">
+            <div class="input-group">
+                <label>Recipients (Comma separated)</label>
+                <input type="text" id="target-emails" class="form-control" placeholder="user1@gmail.com, user2@yahoo.com" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Template Type</label>
+                <select id="template-type" class="form-control" required>
+                    <option value="broadcast">System Broadcast</option>
+                    <option value="welcome">Welcome Email (New User)</option>
+                    <option value="welcome-back">Welcome Back (Returning User)</option>
+                    <option value="alert">Security Alert</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Email Subject Line</label>
+                <input type="text" id="email-subject" class="form-control" placeholder="e.g. Major Platform Update" required>
+            </div>
+
+            <div class="input-group">
+                <label>Main Header (Inside Email)</label>
+                <input type="text" id="email-header" class="form-control" placeholder="e.g. New Features Added!" required>
+            </div>
+
+            <div class="input-group">
+                <label>Message Body</label>
+                <textarea id="email-body" class="form-control" rows="4" placeholder="Type your message here..." required></textarea>
+            </div>
+
+            <div class="input-group">
+                <label>Button Redirect Link</label>
+                <input type="url" id="email-link" class="form-control" placeholder="https://dramakan.site" required>
+            </div>
+
+            <button type="submit" class="btn" id="send-btn"><i class="fas fa-paper-plane"></i> Dispatch Payload</button>
+        </form>
+    </div>
+
+    <div class="toast" id="toast"><i class="fas fa-check-circle"></i> Emails Transmitted!</div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4H68WkOm1U4cKKoQoPWidpOR79j8l7TjnoUp64EDmtigiS4q0Sk7Ckw-iPJtbbPwQpA/exec";
+
+        function checkAuth() {
+            if(document.getElementById('master-pass').value === 'dramakan-admin') {
+                document.getElementById('auth-gate').classList.remove('active');
+                document.getElementById('dispatch-panel').classList.add('active');
+            } else { alert("Incorrect Passcode"); }
+        }
+
+        function generateHTML(type, header, body, link) {
+            const formattedBody = body.replace(/\n/g, '<br>');
+            
+            const wrapperStart = `<!DOCTYPE html><html><body style="background-color: #09090B; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background-color: #09090B; padding: 40px 10px;"><tr><td align="center"><table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #121217; border-radius: 24px; border: 1px solid #27272A; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.8);"><tr><td style="background-color: #8A2BE2; height: 6px;"></td></tr><tr><td align="center" style="padding: 40px 20px 20px;"><h1 style="color: #FFFFFF; font-size: 28px; margin: 0; letter-spacing: -1px;">Drama<span style="color: #c488ff;">Kan</span></h1></td></tr>`;
+            
+            // Fixed the escaped tags here!
+            const wrapperEnd = `<tr><td align="center" style="padding: 25px; background-color: #0E0E11; border-top: 1px solid #27272A;"><p style="margin: 0; font-size: 12px; color: #71717A;">&copy; 2026 DramaKan OS. All rights reserved.</p></td></tr></table></td></tr></table><\/body><\/html>`;
+
+            let innerContent = "";
+
+            if(type === 'broadcast' || type === 'alert') {
+                const badgeColor = type === 'alert' ? '#EF4444' : '#8A2BE2';
+                const badgeText = type === 'alert' ? 'SECURITY ALERT' : 'NETWORK UPDATE';
+                innerContent = `<tr><td align="center" style="padding: 0 30px;"><table width="100%" cellpadding="0" cellspacing="0" style="background-color: rgba(138,43,226,0.1); border-radius: 12px; border: 1px solid ${badgeColor};"><tr><td align="center" style="padding: 10px; color: ${badgeColor}; font-size: 13px; font-weight: bold; letter-spacing: 1px;">${badgeText}</td></tr></table></td></tr><tr><td style="padding: 30px 40px; text-align: left;"><h2 style="color: #FFFFFF; margin: 0 0 15px 0; font-size: 22px;">${header}</h2><p style="color: #D4D4D8; line-height: 1.6; font-size: 15px; margin: 0 0 30px 0;">${formattedBody}</p><a href="${link}" style="display: inline-block; background-color: #27272A; border: 1px solid #3F3F46; color: #FFFFFF; font-size: 15px; font-weight: bold; text-decoration: none; padding: 14px 30px; border-radius: 10px;">Review Details &rarr;</a></td></tr>`;
+            } else if (type === 'welcome') {
+                innerContent = `<tr><td align="center" style="padding: 0 20px;"><img src="https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" style="width: 100%; border-radius: 16px; display:block;" alt="Welcome"></td></tr><tr><td style="padding: 30px 40px; text-align: left;"><h2 style="color: #FFFFFF; margin: 0 0 10px 0; font-size: 24px;">${header}</h2><p style="color: #A1A1AA; line-height: 1.6; font-size: 15px; margin: 0 0 25px 0;">${formattedBody}</p><table width="100%" cellpadding="0" cellspacing="0" style="background-color: #1C1C24; border-radius: 12px; padding: 20px; margin-bottom: 10px;"><tr><td style="color: #E4E4E7; font-size: 14px; padding-bottom: 10px;"><strong style="color: #c488ff;">&bull;</strong> Save your Watchlist</td></tr><tr><td style="color: #E4E4E7; font-size: 14px; padding-bottom: 10px;"><strong style="color: #c488ff;">&bull;</strong> Cross-device Cloud Sync</td></tr><tr><td style="color: #E4E4E7; font-size: 14px;"><strong style="color: #c488ff;">&bull;</strong> Daily Episode Updates</td></tr></table></td></tr><tr><td align="center" style="padding: 10px 40px 40px;"><a href="${link}" style="display: inline-block; background-color: #8A2BE2; color: #FFFFFF; font-size: 16px; font-weight: bold; text-decoration: none; padding: 16px 40px; border-radius: 50px;">Start Streaming &rarr;</a></td></tr>`;
+            } else if (type === 'welcome-back') {
+                innerContent = `<tr><td align="center" style="padding: 0 30px;"><table width="100%" cellpadding="0" cellspacing="0" style="background-color: #1C1C24; border-radius: 16px; border: 1px solid #333;"><tr><td align="center" style="padding: 30px;"><img src="https://img.icons8.com/fluency/96/popcorn.png" alt="Popcorn" width="60" style="display:block; margin-bottom:15px;"><h2 style="color: #FFFFFF; margin: 0 0 10px 0; font-size: 22px;">${header}</h2><p style="color: #A1A1AA; font-size: 15px; margin: 0; line-height: 1.6;">${formattedBody}</p></td></tr></table></td></tr><tr><td align="center" style="padding: 30px 40px 40px;"><a href="${link}" style="display: inline-block; background-color: #8A2BE2; color: #FFFFFF; font-size: 16px; font-weight: bold; text-decoration: none; padding: 16px 40px; border-radius: 50px;">Jump Back In &rarr;</a></td></tr>`;
+            }
+
+            return wrapperStart + innerContent + wrapperEnd;
+        }
+
+        document.getElementById('email-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('send-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transmitting...';
+            btn.disabled = true;
+
+            const emails = document.getElementById('target-emails').value.split(',').map(e => e.trim());
+            const type = document.getElementById('template-type').value;
+            const subject = document.getElementById('email-subject').value;
+            const header = document.getElementById('email-header').value;
+            const body = document.getElementById('email-body').value;
+            const link = document.getElementById('email-link').value;
+
+            const finalHtml = generateHTML(type, header, body, link);
+
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ emails: emails, subject: subject, html: finalHtml })
+                });
+
+                document.getElementById('toast').classList.add('show');
+                setTimeout(() => document.getElementById('toast').classList.remove('show'), 3000);
+                e.target.reset();
+            } catch (err) {
+                console.error(err);
+                alert("Failed to connect to Google API.");
+            } finally {
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Dispatch Payload';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
