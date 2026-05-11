@@ -1,0 +1,693 @@
+/* =====================================================
+   1. GLOBAL RESET & GLASS DESIGN SYSTEM
+===================================================== */
+:root {
+  /* Brand Colors */
+  --primary-color: #8A2BE2;
+  --primary-glow: rgba(138, 43, 226, 0.4);
+  --secondary-color: #E50914;
+  
+  /* Dynamic RGB definitions for transparent gradients */
+  --bg-rgb: 11, 12, 16;
+  --text-rgb: 245, 245, 245;
+
+  /* Deep Dark Theme (Default) */
+  --background-color: rgb(var(--bg-rgb));
+  --surface-color: #1A1A1D;
+  --text-color: rgb(var(--text-rgb));
+  --text-muted-color: #a0a0a0;
+  
+  /* Unified Glassmorphism Variables */
+  --glass-bg: rgba(26, 26, 29, 0.45);
+  --glass-bg-hover: rgba(26, 26, 29, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-light: rgba(255, 255, 255, 0.15);
+  --glass-blur: blur(16px);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+
+  /* Bottom Nav Specifics */
+  --bottom-nav-bg: rgba(20, 20, 25, 0.45);
+  --bottom-nav-border: rgba(255, 255, 255, 0.08);
+  --bottom-nav-item: rgba(255, 255, 255, 0.5);
+  --bottom-nav-item-active: #fff;
+}
+
+/* --- LIGHT MODE INJECTION --- */
+:root.light-mode {
+  --bg-rgb: 248, 249, 250;
+  --text-rgb: 26, 26, 29;
+
+  --background-color: rgb(var(--bg-rgb));
+  --surface-color: #FFFFFF;
+  --text-color: rgb(var(--text-rgb));
+  --text-muted-color: #6B7280;
+  
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-bg-hover: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-border-light: rgba(0, 0, 0, 0.15);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+
+  --bottom-nav-bg: rgba(255, 255, 255, 0.75);
+  --bottom-nav-border: rgba(0, 0, 0, 0.1);
+  --bottom-nav-item: rgba(0, 0, 0, 0.5);
+  --bottom-nav-item-active: var(--primary-color);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.5s cubic-bezier(0.25, 1, 0.5, 1), color 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+img { max-width: 100%; height: auto; display: block; }
+
+/* Edge-to-Edge Container */
+.container { max-width: 100% !important; margin: 0 auto; padding: 0 4% !important; width: 100% !important; }
+
+/* =====================================================
+   THEME TOGGLE BUTTON
+===================================================== */
+.theme-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-left: 15px;
+}
+.theme-toggle-btn:hover { background: var(--glass-bg); color: var(--primary-color); }
+
+
+/* =====================================================
+   2. HEADER & NAVIGATION (FLOATING PILL ON PC)
+===================================================== */
+.main-header {
+  position: fixed;
+  top: 20px;
+  left: 0;
+  right: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 92%;
+  z-index: 1000;
+  background: rgba(var(--bg-rgb), 0.65);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 50px;
+  padding: 10px 25px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.main-header .container { display: flex; align-items: center; justify-content: space-between; padding: 0; max-width: 100%;}
+.header-top-row { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;}
+
+.logo { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px; }
+.logo span { color: var(--primary-color); text-shadow: 0 0 15px var(--primary-glow); }
+
+/* Premium Search Pill */
+.search-bar { 
+  flex-grow: 1; 
+  margin: 0 40px; 
+  position: relative; 
+  display: flex; 
+  align-items: center;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 12px 45px 12px 45px;
+  border-radius: 50px;
+  border: 1px solid var(--glass-border);
+  background: rgba(var(--text-rgb), 0.04);
+  color: var(--text-color);
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.search-bar input:focus {
+  outline: none;
+  background: rgba(var(--text-rgb), 0.08);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.search-bar i.fa-search { position: absolute; left: 18px; color: var(--text-muted-color); }
+
+.search-filter-link {
+  position: absolute; right: 18px; color: var(--text-muted-color);
+  font-size: 1.1rem; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); cursor: pointer; z-index: 5;
+}
+.search-filter-link:hover { color: var(--primary-color); transform: scale(1.1); }
+
+.nav-links ul { display: flex; gap: 25px; }
+.nav-links a { font-weight: 500; font-size: 1.05rem; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); opacity: 0.8; }
+.nav-links a:hover, .nav-links a.active { color: var(--primary-color); opacity: 1; text-shadow: 0 0 10px var(--primary-glow); }
+
+.mobile-menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; position: relative; z-index: 10005; }
+
+/* Search Results Dropdown */
+.search-results {
+  position: absolute; top: calc(100% + 10px); left: 0; width: 100%;
+  background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border); border-radius: 16px;
+  max-height: 350px; overflow-y: auto; display: none; z-index: 2000;
+  box-shadow: var(--glass-shadow);
+}
+.search-results::-webkit-scrollbar { width: 6px; }
+.search-results::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 10px; }
+.search-result-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid var(--glass-border); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+.search-result-item:hover { background: rgba(138, 43, 226, 0.15); }
+
+/* Force search title to adapt */
+.search-result-title { color: var(--text-color); font-weight: 600; font-size: 0.95rem; }
+
+
+/* =====================================================
+   3. HERO SLIDER (EDGE-TO-EDGE CINEMATIC)
+===================================================== */
+.hero-slider { 
+  position: relative; 
+  width: 100%; 
+  height: 85vh; 
+  min-height: 600px; 
+  max-height: 800px; 
+  overflow: hidden; 
+  background: var(--background-color); 
+  margin-top: 0; 
+} 
+.slider-wrapper { display: flex; height: 100%; transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); cursor: grab; }
+.slider-wrapper:active { cursor: grabbing; }
+
+.slide { min-width: 100%; height: 100%; position: relative; display: flex; align-items: flex-end;}
+.slide-bg-image { width: 100%; height: 100%; object-fit: cover; object-position: top; position: absolute; top: 0; left: 0; z-index: 1; }
+
+/* Deep Cinematic Vignette */
+.slide::after {
+  content: ''; position: absolute; inset: 0;
+  background: 
+    linear-gradient(0deg, rgba(var(--bg-rgb), 1) 0%, rgba(var(--bg-rgb), 0.8) 20%, transparent 60%),
+    linear-gradient(90deg, rgba(var(--bg-rgb), 0.9) 0%, transparent 50%);
+  z-index: 2;
+  pointer-events: none; 
+}
+
+.slide-content {
+  position: relative; z-index: 3; display: flex; flex-direction: column; justify-content: flex-end;
+  max-width: 700px; padding-left: 6%; 
+  padding-bottom: 120px; 
+  padding-top: 130px; 
+  animation: slideContentUp 1s cubic-bezier(0.25, 1, 0.5, 1) both;
+  pointer-events: auto;
+}
+@keyframes slideContentUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide-title { color: #fff; font-size: 4.5rem; font-weight: 700; margin-bottom: 15px; line-height: 1.05; letter-spacing: -1.5px; text-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+.slide-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; font-size: 0.9rem; font-weight: 600; }
+.slide-meta span { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); padding: 6px 16px; border-radius: 8px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);}
+.slide-meta span:first-child { color: #f1c40f; border-color: rgba(241, 196, 15, 0.3); background: rgba(241, 196, 15, 0.1);}
+.slide-desc { font-size: 1.1rem; margin-bottom: 30px; color: #e4e4e7; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 2px 10px rgba(0,0,0,0.8);}
+
+.btn { display: inline-flex; align-items: center; justify-content: center; padding: 14px 35px; border-radius: 50px; font-weight: 600; font-size: 1.05rem; cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); border: none; gap: 10px;}
+.btn-primary { background: #fff; color: #000; box-shadow: 0 10px 30px rgba(255,255,255,0.2); will-change: transform, box-shadow; transform: translateZ(0);}
+.btn-primary:hover { background: var(--primary-color); color: #fff; transform: translate3d(0, -3px, 0) scale(1.05); box-shadow: 0 15px 35px var(--primary-glow); }
+
+.slider-nav { position: absolute; bottom: 120px; right: 6%; display: flex; gap: 15px; z-index: 4; }
+.slider-nav button { width: 50px; height: 50px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); color: #fff; font-size: 1.2rem; cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+.slider-nav button:hover { background: var(--primary-color); border-color: var(--primary-color); transform: scale(1.1); box-shadow: 0 10px 25px var(--primary-glow);}
+
+/* =====================================================
+   4. PLATFORMS MARQUEE (GLASS PILLS)
+===================================================== */
+.platforms-section { background: var(--background-color); padding: 20px 0; border-bottom: 1px solid var(--glass-border); position: relative; z-index: 2; margin: 0; transition: background-color 0.5s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.5s cubic-bezier(0.25, 1, 0.5, 1);}
+.platforms-title { text-align: center; font-size: 0.85rem; color: var(--text-muted-color); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
+.marquee-container { width: 100%; overflow: hidden; white-space: nowrap; position: relative; }
+.marquee-container::before, .marquee-container::after { content: ''; position: absolute; top: 0; width: 150px; height: 100%; z-index: 2; pointer-events: none; transition: background 0.5s cubic-bezier(0.25, 1, 0.5, 1);}
+.marquee-container::before { left: 0; background: linear-gradient(to right, var(--background-color), transparent); }
+.marquee-container::after { right: 0; background: linear-gradient(to left, var(--background-color), transparent); }
+
+.marquee-content { display: inline-block; animation: scroll 25s linear infinite; }
+.marquee-content:hover { animation-play-state: paused; }
+@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+.platform-link {
+  display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; margin: 0 8px;
+  background: var(--glass-bg); backdrop-filter: var(--glass-blur); border-radius: 50px;
+  border: 1px solid var(--glass-border); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.platform-link img { height: 22px; width: auto; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.7; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+:root.light-mode .platform-link img { filter: none; opacity: 0.8; } 
+.platform-link:hover img { filter: brightness(1) invert(0); opacity: 1; transform: scale(1.1); }
+:root.light-mode .platform-link:hover img { filter: none; opacity: 1; }
+
+.brand-netflix:hover { background: #fff; border-color: #E50914; box-shadow: 0 0 20px rgba(229, 9, 20, 0.3); }
+.brand-prime:hover { background: #fff; border-color: #00A8E1; box-shadow: 0 0 20px rgba(0, 168, 225, 0.3); }
+.brand-viki:hover { background: #fff; border-color: #fff; box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
+.brand-viu:hover { background: #fff; border-color: #FFD200; box-shadow: 0 0 20px rgba(255, 210, 0, 0.3); }
+.brand-iqiyi:hover { background: #fff; border-color: #00D06D; box-shadow: 0 0 20px rgba(0, 208, 109, 0.3); }
+.brand-wetv:hover { background: #FF7000; border-color: #FF7000; box-shadow: 0 0 20px rgba(255, 112, 0, 0.3); }
+.brand-crunchyroll:hover { background: #ca21f4; border-color: #ca21f4; box-shadow: 0 0 20px rgba(202, 33, 244, 0.3); }
+.brand-disney:hover { background: #fff; border-color: #113CCF; box-shadow: 0 0 20px rgba(17, 60, 207, 0.3); }
+
+
+/* =====================================================
+   5. DRAMA SECTIONS, CAROUSELS, AND CATEGORY GRIDS
+===================================================== */
+.category-header { padding: 40px 0 20px 0; text-align: center; }
+.category-title { font-size: 2.5rem; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+.category-title span { color: var(--primary-color); }
+
+.latest-episodes {
+  content-visibility: auto;
+  contain-intrinsic-size: 380px; 
+}
+
+.section-glass-box {
+  background: transparent;
+  margin-bottom: 0 !important;
+  padding: 40px 0 10px 0;
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid var(--glass-border); 
+}
+
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 4%; }
+.section-title { font-size: 1.6rem; font-weight: 600; color: var(--text-color); }
+
+.view-all-link {
+  font-size: 0.85rem; color: var(--text-color); font-weight: 500;
+  padding: 6px 16px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); 
+  border: 1px solid var(--glass-border); border-radius: 50px; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.view-all-link:hover { background: var(--primary-color); border-color: var(--primary-color); box-shadow: 0 4px 15px var(--primary-glow); color: white; }
+
+/* Universal Grid System (Used by Categories and Carousel) */
+.drama-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+
+/* Carousel Override for Homepage */
+.drama-grid.carousel-mode { 
+  display: flex; 
+  overflow-x: auto; 
+  overflow-y: hidden; 
+  padding: 0 4% 30px 4%; 
+  scroll-behavior: smooth; 
+  min-height: 260px; 
+}
+.drama-grid.carousel-mode::-webkit-scrollbar { height: 6px; opacity: 0; transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+.drama-grid.carousel-mode:hover::-webkit-scrollbar { opacity: 1; }
+.drama-grid.carousel-mode::-webkit-scrollbar-track { background: rgba(var(--text-rgb),0.03); border-radius: 10px; margin: 0 4%; }
+.drama-grid.carousel-mode::-webkit-scrollbar-thumb { background: rgba(var(--text-rgb),0.2); border-radius: 10px; }
+.drama-grid.carousel-mode::-webkit-scrollbar-thumb:hover { background: var(--primary-color); box-shadow: 0 0 10px var(--primary-glow); }
+
+/* The Drama Card */
+.drama-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  overflow: hidden; 
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  position: relative;
+  
+  /* PERFORMANCE FIX: Hardware Acceleration for Glassmorphism */
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.drama-grid.carousel-mode .drama-card {
+  min-width: 160px; max-width: 160px; flex-shrink: 0;
+  animation: cardPopIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+}
+
+@media (min-width: 1200px) { .drama-grid.carousel-mode .drama-card { min-width: 185px; max-width: 185px; } }
+
+.drama-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  background: var(--glass-bg-hover);
+  border-color: rgba(138, 43, 226, 0.6);
+  box-shadow: 0 15px 30px rgba(138, 43, 226, 0.25);
+  z-index: 2;
+}
+
+.drama-card-img { width: 100%; aspect-ratio: 4/5; overflow: hidden; }
+.drama-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+.drama-card:hover .drama-card-img img { transform: scale(1.05); }
+
+.drama-card-info { padding: 15px; }
+.drama-card-title { font-size: 0.95rem; color: var(--text-color); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+.drama-card-meta { font-size: 0.8rem; color: var(--primary-color); font-weight: 600; }
+
+.bookmark-btn {
+    position: absolute; top: 10px; right: 10px; z-index: 10;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    border: 1px solid var(--glass-border); border-radius: 50%;
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    color: white; cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.bookmark-btn:hover { background: var(--primary-color); transform: scale(1.1); border-color: var(--primary-color); }
+
+
+/* =====================================================
+   6. FOOTER
+===================================================== */
+.main-footer {
+  background: rgba(var(--bg-rgb), 0.9);
+  border-top: 1px solid var(--glass-border);
+  padding: 60px 0 30px 0;
+  transition: background-color 0.5s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.footer-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; }
+.footer-socials a {
+  display: inline-flex; justify-content: center; align-items: center; width: 45px; height: 45px;
+  background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 50%;
+  color: var(--text-color); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); margin-left: 10px; font-size: 1.2rem;
+}
+.footer-socials a:hover { background: var(--primary-color); border-color: var(--primary-color); transform: translateY(-4px); box-shadow: 0 5px 15px var(--primary-glow); color: white;}
+.footer-bottom { text-align: center; font-size: 0.9rem; color: var(--text-muted-color); border-top: 1px solid var(--glass-border); padding-top: 20px; }
+
+
+/* =====================================================
+   7. FAB & MODAL (RICH GLASS)
+===================================================== */
+.drama-fab {
+  position: fixed; bottom: 30px; right: 30px;
+  background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border-light); color: var(--text-color); border-radius: 50px; padding: 14px 26px; 
+  cursor: pointer; display: flex; align-items: center; gap: 10px; z-index: 999;
+  box-shadow: var(--glass-shadow); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); font-weight: 500;
+}
+.drama-fab:hover { background: var(--primary-color); border-color: var(--primary-color); transform: scale(1.05); box-shadow: 0 10px 25px var(--primary-glow); color: white;}
+
+.drama-modal-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  z-index: 10000; justify-content: center; align-items: center; padding: 20px;
+}
+.drama-modal-card {
+  background: rgba(var(--bg-rgb), 0.85); backdrop-filter: blur(24px); border: 1px solid var(--glass-border-light);
+  border-radius: 24px; padding: 40px 30px 30px; max-width: 420px; width: 100%;
+  position: relative; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+}
+.drama-section-highlight { background: rgba(138, 43, 226, 0.1); border: 1px solid rgba(138, 43, 226, 0.25); border-radius: 16px; padding: 18px; margin-bottom: 20px; }
+.drama-section-highlight h4 { color: var(--primary-color); margin-bottom: 5px; font-weight: 600;}
+.drama-input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(var(--text-rgb), 0.04); color: var(--text-color); margin-bottom: 12px; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+.drama-input:focus { outline: none; border-color: var(--primary-color); background: rgba(var(--text-rgb), 0.08); box-shadow: inset 0 0 10px rgba(138,43,226,0.1); }
+.drama-timer-text { font-size: 0.8rem; color: var(--text-muted-color); margin-bottom: 15px; text-align: left; padding-left: 5px; }
+.drama-submit-btn { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--primary-color); color: white; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: 0 4px 15px var(--primary-glow); }
+.drama-submit-btn:hover { background: #9d4edd; transform: translateY(-2px); }
+.drama-modal-close { position: absolute; top: 15px; right: 20px; background: none; border: none; color: var(--text-muted-color); font-size: 24px; cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+.drama-modal-close:hover { color: var(--text-color); transform: rotate(90deg); }
+.drama-tg-link { color: #c488ff; font-weight: 600; }
+:root.light-mode .drama-tg-link { color: var(--primary-color); }
+
+/* =====================================================
+   8. MOBILE APP VIEW & LIQUID GLASS BAR (FIXED ALIGNMENTS)
+===================================================== */
+@media (max-width: 992px) {
+  
+  /* Better Mobile Header Pill */
+  .main-header { 
+    top: 10px; 
+    width: 95%; 
+    padding: 12px 15px; 
+    border-radius: 24px; 
+  }
+  .main-header .container { 
+    flex-direction: column; 
+    gap: 15px; 
+    align-items: stretch; 
+    padding: 0;
+  }
+  .header-top-row { 
+    width: 100%; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+  }
+  .search-bar { width: 100%; margin: 0; }
+  .mobile-menu-toggle { display: block; z-index: 10005; font-size: 1.6rem; }
+
+  /* Premium Side Menu Override */
+  .nav-links {
+    position: fixed; top: 0; left: -110%; width: 280px; height: 100vh;
+    background: rgba(var(--bg-rgb), 0.65);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur); transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    padding: 80px 25px; display: block !important;
+  }
+  .nav-links.active { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
+  .nav-links ul { flex-direction: column; gap: 14px; align-items: flex-start; }
+  .nav-links a { 
+    display: inline-block; width: 140px; padding: 12px 20px; border-radius: 12px; 
+    background: transparent; border: 1px solid var(--glass-border-light); 
+    font-size: 1.05rem; font-weight: 500; text-align: left;
+    color: var(--text-color); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .nav-links a:hover, .nav-links a:active { background: rgba(138, 43, 226, 0.15); border-color: var(--primary-color); color: var(--primary-color);}
+  
+  .earn-nav-link { color: #d4af37 !important; font-weight: 700 !important; border: 1px solid rgba(212, 175, 55, 0.3) !important; padding: 6px 14px !important; border-radius: 8px; background: rgba(212, 175, 55, 0.05); }
+  .earn-nav-link:hover { color: #f1c40f !important; background: rgba(212, 175, 55, 0.15); border-color: #f1c40f !important; }
+  .nav-links a.earn-nav-link { margin-top: 15px; background: rgba(212, 175, 55, 0.1); border: 1px solid #d4af37; text-align: center; }
+  
+  .menu-overlay { position: fixed; inset: 0; background: transparent; backdrop-filter: blur(4px); z-index: 998; display: none; }
+  .menu-overlay.active { display: block; }
+
+  /* Infinite Scroll Centered Banner Effect Fixes */
+  .hero-slider { 
+    height: 55vh; 
+    min-height: 480px; 
+    padding: 0; 
+    margin-top: 80px; /* Safe space for the floating pill header */
+    display: flex; 
+    align-items: center; 
+    background: transparent; 
+    overflow: hidden; 
+    position: relative; 
+  }
+  .slider-wrapper { 
+    width: 65%; /* Removed the hard margins, replaced with proper width */
+    margin: 0 auto; 
+    display: flex; 
+    height: 95%; 
+    overflow: visible !important; 
+    align-items: center; 
+    padding-top: 11%;
+  }
+
+
+  .slide { 
+    min-width: 100%; height: 100%; position: relative; border-radius: 20px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.6); 
+    background-size: cover; background-position: center; border: 1px solid rgba(255,255,255,0.1);
+    transform: scale(0.85); opacity: 0.5; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .slide.active { transform: scale(1); opacity: 1; z-index: 2; }
+  
+  .slider-wrapper .slide-1 { background-image: url('https://asianwiki.com/images/f/fe/Boyfriend_on_Demand-p2.jpeg'); }
+  .slider-wrapper .slide-2 { background-image: url('https://m.media-amazon.com/images/M/MV5BMTQyYWJlYjgtMzJjZC00YmU0LTk1ODUtOTdhNWRmOTFlMzMzXkEyXkFqcGc@._V1_.jpg'); }
+  .slider-wrapper .slide-3 { background-image: url('https://i0.wp.com/blog.kocowa.com/wp-content/uploads/2025/12/idol-12.jpg?resize=719%2C1024&ssl=1'); }
+  .slider-wrapper .slide-4 { background-image: url('https://preview.redd.it/perfect-crown-episodes-1-2-v0-rccoh9yt38ug1.jpg?width=900&format=pjpg&auto=webp&s=24e40adff47b98c1d5c82ae86124e87269ca5ba9'); }
+  .slide-bg-image, .slide-content, .slider-nav { display: none !important; }
+  .slide::after { background: linear-gradient(to top, rgba(var(--bg-rgb),0.95) 0%, rgba(var(--bg-rgb),0.2) 60%, transparent 100%); }
+
+  .hero-mobile-bar { 
+    position: absolute; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%; 
+    padding: 20px; /* Refined padding */
+    display: flex; 
+    align-items: flex-end; 
+    justify-content: space-between; 
+    z-index: 5; 
+    opacity: 0; 
+    pointer-events: none; 
+    transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1); 
+  }
+  .slide.active .hero-mobile-bar { opacity: 1; pointer-events: auto; }
+  .hero-mobile-title { 
+    font-size: 1.25rem; /* Slightly smaller to prevent text wrap issues */
+    font-weight: 700; 
+    color: var(--text-color); 
+    line-height: 1.2; 
+    text-shadow: 0 2px 10px rgba(0,0,0,0.6); 
+    max-width: 65%; /* More space for the button */
+    margin-bottom: 5px;
+  }
+  .hero-play-btn { 
+    width: 48px; 
+    height: 48px; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    background: var(--primary-color); 
+    border: none; 
+    color: white; 
+    font-size: 1.1rem; 
+    box-shadow: 0 4px 15px var(--primary-glow); 
+  }
+
+  /* Mobile Grid Formatting */
+  .drama-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
+  .drama-grid.carousel-mode .drama-card { min-width: 130px; max-width: 130px; border-radius: 12px; }
+  .drama-card-info { padding: 12px; }
+  .drama-card-title { font-size: 0.85rem; }
+  .drama-card-meta { font-size: 0.75rem; }
+  .section-glass-box { padding: 25px 0 10px 0; }
+  .section-title { font-size: 1.3rem; }
+  .category-title { font-size: 1.8rem; }
+
+  /* Give the body more padding to clear the floating bottom navs */
+  body { padding-bottom: 110px; } 
+  
+  /* Moved the FAB up slightly to avoid hitting the bottom nav */
+  .drama-fab { bottom: 100px; right: 20px; padding: 12px 18px; border-radius: 50px; }
+
+  /* =====================================================
+     APPLE LIQUID GLASS BOTTOM BAR
+  ===================================================== */
+  .bottom-nav {
+    display: flex !important; 
+    position: fixed !important; 
+    bottom: 15px !important; /* Slightly more lift off the physical screen edge */
+    left: 50% !important; 
+    transform: translateX(-50%) !important; 
+    width: 90% !important; 
+    max-width: 400px !important; 
+    background: var(--bottom-nav-bg) !important; 
+    backdrop-filter: blur(40px) saturate(180%) !important; 
+    -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+    border: 1px solid var(--bottom-nav-border) !important; 
+    border-radius: 50px !important; 
+    z-index: 9999 !important;
+    padding: 5px 10px !important; 
+    box-shadow: 0 25px 50px rgba(0,0,0,0.2) !important;
+    transition: background 0.5s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  
+  .bottom-nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 6px 0; color: var(--bottom-nav-item); 
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); position: relative;
+  }
+  
+  .bottom-nav-item.active { color: var(--bottom-nav-item-active); }
+  .nav-icon { font-size: 1.35rem; margin-bottom: 4px; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+  .bottom-nav-item.active .nav-icon { transform: translateY(-4px) scale(1.15); color: var(--primary-color); }
+  .nav-label { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.3px; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+  .bottom-nav-item.active .nav-label { font-weight: 700; }
+} 
+
+/* Hide Bottom Nav on Desktop */
+@media (min-width: 993px) {
+  .bottom-nav { display: none !important; }
+}
+
+/* =====================================================
+   9. NEW APP HEADER BUTTON & INSTALL POPUP
+===================================================== */
+.header-download-btn {
+  display: none; 
+  align-items: center; gap: 8px; background: var(--primary-color); color: white;
+  padding: 10px 18px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: 0 4px 15px var(--primary-glow); text-decoration: none; margin-left: 20px;
+}
+
+.header-download-btn:hover { background: #9d4edd; transform: translateY(-2px); color: white; box-shadow: 0 6px 20px rgba(157, 78, 221, 0.6); }
+
+@media (min-width: 993px) { .header-download-btn { display: inline-flex; } }
+
+.app-install-popup {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: rgba(var(--bg-rgb), 0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--primary-color); border-radius: 16px; padding: 12px 16px;
+  z-index: 10000; box-shadow: 0 10px 30px rgba(0,0,0,0.4), 0 0 15px var(--primary-glow);
+  width: 90%; max-width: 420px; display: flex; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.app-install-popup.hidden { transform: translate(-50%, 150%); opacity: 0; pointer-events: none; }
+.popup-content { display: flex; align-items: center; width: 100%; gap: 12px; }
+.popup-icon { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; background: rgba(var(--text-rgb),0.1); }
+.popup-text { flex-grow: 1; }
+.popup-text h4 { margin: 0 0 2px 0; font-size: 0.95rem; color: var(--text-color); line-height: 1.2; }
+.popup-text p { margin: 0; font-size: 0.75rem; color: var(--text-muted-color); }
+.btn-install { background: var(--primary-color); color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: 0 2px 10px var(--primary-glow); }
+.btn-install:hover { background: #9d4edd; color: white; }
+.btn-close-popup { background: transparent; border: none; color: var(--text-muted-color); font-size: 1.2rem; cursor: pointer; padding: 0 4px; margin-left: 5px; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+.btn-close-popup:hover { color: var(--text-color); }
+
+/* Moved the install popup higher on mobile so it doesn't overlap the bottom nav */
+@media (max-width: 992px) { .app-install-popup { bottom: 105px; width: 92%; } }
+
+/* =====================================================
+   IMMERSION ENHANCEMENTS (Scroll Reveal Animation)
+===================================================== */
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: opacity, visibility;
+}
+
+.fade-in-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes cardPopIn {
+  0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* =====================================================
+   LITE MODE UI (Triggered automatically on budget phones)
+===================================================== */
+.lite-mode {
+  /* Replace transparent variables with solid, fast-rendering colors */
+  --glass-bg: var(--surface-color);
+  --glass-bg-hover: rgba(var(--text-rgb), 0.05); 
+  --glass-blur: blur(0px); 
+  --glass-border: rgba(var(--text-rgb), 0.05); 
+  --glass-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); 
+}
+
+/* Strip heavy effects from specific elements */
+.lite-mode .drama-card,
+.lite-mode .main-header,
+.lite-mode .community-sidebar,
+.lite-mode .chat-area,
+.lite-mode .bottom-nav {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  background-color: var(--glass-bg) !important;
+}
+
+/* Simplify the Hero Slider background gradient */
+.lite-mode .slide::after {
+  background: rgb(var(--bg-rgb)) !important; 
+  opacity: 0.8; 
+}
+
+/* Disable heavy CSS animations on low-end devices */
+.lite-mode * {
+  transition-duration: 0.1s !important; 
+  animation-duration: 0.01ms !important; 
+}
