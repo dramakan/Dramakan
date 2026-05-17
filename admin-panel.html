@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dramakan Admin Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #1A1A1D; color: #fff; padding: 40px; display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; }
+        .admin-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(138, 43, 226, 0.3); padding: 30px; border-radius: 20px; backdrop-filter: blur(20px); width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;}
+        h2 { margin-top: 0; color: #8A2BE2; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 0.85rem; margin-bottom: 8px; color: #aaa; }
+        input, textarea, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: #fff; font-family: inherit; box-sizing: border-box; }
+        input:focus, textarea:focus { outline: none; border-color: #8A2BE2; }
+        button { width: 100%; padding: 14px; border: none; border-radius: 8px; background: linear-gradient(135deg, #8A2BE2, #6a1b9a); color: white; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px;}
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(138, 43, 226, 0.4); }
+        button:disabled { background: #555; cursor: not-allowed; transform: none; box-shadow: none; color: #999;}
+        
+        /* Toggle Switch CSS */
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #8A2BE2; }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        /* Auth Overlay */
+        .authOverlay { position: absolute; inset: 0; background: rgba(26,26,29,0.95); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; text-align: center; padding: 20px;}
+        .authOverlay i { font-size: 2rem; color: #E50914; margin-bottom: 10px;}
+    </style>
+</head>
+<body>
+
+    <div class="admin-card">
+        <div id="bannerAuthOverlay" class="authOverlay">
+            <i class="fas fa-spinner fa-spin" style="color: #8A2BE2;"></i>
+            <p style="font-size: 0.9rem;">Verifying Admin Access...</p>
+        </div>
+
+        <h2><i class="fas fa-flag"></i> Promo Notification Control</h2>
+        <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+            <label style="margin:0; color:#fff; font-weight:600;">Enable Promo</label>
+            <label class="switch">
+                <input type="checkbox" id="bannerActive">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="form-group">
+            <label>Promo Message</label>
+            <textarea id="bannerMessage" rows="3">Make account till 1st June and get a permanent free drama account on Dramakan!</textarea>
+        </div>
+        <div class="form-group">
+            <label>Button Text</label>
+            <input type="text" id="bannerBtnText" value="Claim Lifetime Free">
+        </div>
+        <div class="form-group">
+            <label>Button Link URL</label>
+            <input type="text" id="bannerLink" value="login.html">
+        </div>
+        <div class="form-group">
+            <label>Auto-Expire Date</label>
+            <input type="datetime-local" id="bannerExpiry" style="color-scheme: dark;">
+        </div>
+        <button id="saveBannerBtn" disabled>Update Live Promo</button>
+        <div id="bannerStatus" style="margin-top: 15px; font-size: 0.85rem; font-weight: 600; display: none;"></div>
+    </div>
+
+    <div class="admin-card">
+        <div id="notifAuthOverlay" class="authOverlay">
+            <i class="fas fa-spinner fa-spin" style="color: #8A2BE2;"></i>
+            <p style="font-size: 0.9rem;">Verifying Admin Access...</p>
+        </div>
+
+        <h2><i class="fas fa-bell"></i> Send Push Notification</h2>
+        <div class="form-group">
+            <label>Target Audience</label>
+            <input type="text" id="notifTarget" value="all" placeholder="'all' OR user's exact email/uid">
+            <small style="color:#777; font-size:0.75rem;">Type 'all' to broadcast to everyone, or paste a user's email to send a private alert.</small>
+        </div>
+        <div class="form-group">
+            <label>Notification Title</label>
+            <input type="text" id="notifTitle" placeholder="e.g., Your Request is Ready!">
+        </div>
+        <div class="form-group">
+            <label>Message Body</label>
+            <textarea id="notifBody" rows="3" placeholder="Drama has been uploaded..."></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Action Link (Optional)</label>
+            <input type="text" id="notifLink" placeholder="e.g., watch.html?id=perfectcrown">
+            <small style="color:#777; font-size:0.75rem;">If you add a link, a clickable button will appear inside the notification.</small>
+        </div>
+
+        <button id="sendNotifBtn" disabled>Send Notification Alert</button>
+        <div id="notifStatus" style="margin-top: 15px; font-size: 0.85rem; font-weight: 600; display: none;"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
+            authDomain: "dramakan007.firebaseapp.com",
+            projectId: "dramakan007"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const bannerRef = doc(db, "site_settings", "main_banner");
+
+        // ONLY execute the database reads/writes AFTER confirming admin login
+        onAuthStateChanged(auth, async (user) => {
+            const overlays = document.querySelectorAll('.authOverlay');
+            
+            if (user && user.email === "zabaazcreations@gmail.com") {
+                // Admin verified! Remove locks.
+                overlays.forEach(el => el.style.display = 'none');
+                document.getElementById('saveBannerBtn').disabled = false;
+                document.getElementById('sendNotifBtn').disabled = false;
+
+                // Load current banner settings safely
+                try {
+                    const docSnap = await getDoc(bannerRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        document.getElementById('bannerActive').checked = data.isActive || false;
+                        document.getElementById('bannerMessage').value = data.message || "";
+                        document.getElementById('bannerBtnText').value = data.buttonText || "";
+                        document.getElementById('bannerLink').value = data.link || "";
+                        
+                        if (data.expiryDate) {
+                            // Convert timestamp to datetime-local string format
+                            const date = new Date(data.expiryDate);
+                            date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+                            document.getElementById('bannerExpiry').value = date.toISOString().slice(0,16);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error loading banner:", error);
+                }
+
+            } else {
+                // Not logged in, or not the admin email
+                overlays.forEach(el => {
+                    el.innerHTML = `<i class="fas fa-lock"></i><p style="font-size: 0.9rem;">Access Denied.<br><br>Please log into Dramakan with your admin email (zabaazcreations) first.</p>`;
+                });
+            }
+        });
+
+        // --- BANNER SAVE LOGIC ---
+        document.getElementById('saveBannerBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('saveBannerBtn');
+            const status = document.getElementById('bannerStatus');
+            btn.innerText = "Saving...";
+            
+            try {
+                const expiryInput = document.getElementById('bannerExpiry').value;
+                const expiryTimestamp = expiryInput ? new Date(expiryInput).getTime() : 0;
+
+                await setDoc(bannerRef, {
+                    isActive: document.getElementById('bannerActive').checked,
+                    message: document.getElementById('bannerMessage').value,
+                    buttonText: document.getElementById('bannerBtnText').value,
+                    link: document.getElementById('bannerLink').value,
+                    expiryDate: expiryTimestamp
+                }, { merge: true });
+                
+                status.style.color = "#10b981";
+                status.innerText = "Promo Updated Successfully!";
+                sessionStorage.removeItem('dramakan_promo_closed');
+                
+            } catch (error) {
+                status.style.color = "#E50914";
+                status.innerText = "Error: " + error.message;
+            }
+
+            btn.innerText = "Update Live Promo";
+            status.style.display = "block";
+            setTimeout(() => status.style.display = "none", 4000);
+        });
+
+        // --- NOTIFICATION SEND LOGIC ---
+        document.getElementById('sendNotifBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('sendNotifBtn');
+            const status = document.getElementById('notifStatus');
+            btn.innerText = "Sending...";
+            
+            try {
+                // Capture the new link field
+                const notifLinkValue = document.getElementById('notifLink').value.trim();
+
+                await addDoc(collection(db, "notifications"), {
+                    target: document.getElementById('notifTarget').value.trim(),
+                    title: document.getElementById('notifTitle').value.trim(),
+                    message: document.getElementById('notifBody').value.trim(),
+                    link: notifLinkValue, // Saves the link to Firebase
+                    createdAt: Date.now()
+                });
+
+                status.style.color = "#10b981";
+                status.innerText = "Notification Sent Successfully!";
+                
+                // Clear the form fields after sending
+                document.getElementById('notifTitle').value = '';
+                document.getElementById('notifBody').value = '';
+                document.getElementById('notifLink').value = '';
+                
+            } catch (error) {
+                status.style.color = "#E50914";
+                status.innerText = "Error: " + error.message;
+            }
+
+            btn.innerText = "Send Notification Alert";
+            status.style.display = "block";
+            setTimeout(() => status.style.display = "none", 4000);
+        });
+    </script>
+</body>
+</html>

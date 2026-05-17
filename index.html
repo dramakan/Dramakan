@@ -37,6 +37,9 @@
     <script src="indexscript.js" defer></script>
     <script src="bottom-bar.js" defer></script>
     
+    <script type="module" src="promo-banner.js"></script>
+    <script type="module" src="anykan-notifier.js"></script>
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Dramakan">
@@ -137,9 +140,77 @@
                     <div id="searchResults" class="search-results"></div>
                 </div>
 
-                <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle Theme">
-                    <i class="fas fa-sun"></i>
-                </button>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <button id="globalNotifBtn" class="theme-toggle-btn" aria-label="Notifications" style="position: relative;">
+                        <i class="fas fa-bell"></i>
+                        <span id="globalNotifBadge" style="display:none; position:absolute; top:2px; right:4px; width:8px; height:8px; background:#E50914; border-radius:50%; box-shadow: 0 0 8px #E50914;"></span>
+                    </button>
+                    
+                    <div id="globalNotifDropdown" style="display: none; position: absolute; right: 0; top: 120%; background: rgba(11, 12, 16, 0.95); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(138, 43, 226, 0.3); border-radius: 16px; width: 320px; max-height: 400px; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.8); padding: 15px; z-index: 9999; flex-direction: column;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px; margin-bottom:10px;">
+                            <h4 style="margin:0; font-size:0.95rem; color:#fff;">Notifications</h4>
+                            <button id="clearNotifsBtn" style="background:none; border:none; color:#a0a0a0; font-size:0.8rem; cursor:pointer; transition: color 0.3s;">Clear All</button>
+                        </div>
+                        <div id="globalNotifList" style="display: flex; flex-direction: column; gap: 10px;">
+                            </div>
+                    </div>
+                </div>
+                
+                <style>
+                    /* Premium Glassmorphism Dropdown */
+                    #globalNotifDropdown.active { display: flex !important; animation: fadeDown 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+                    @keyframes fadeDown { 
+                        from { opacity: 0; transform: translateY(-15px) scale(0.98); } 
+                        to { opacity: 1; transform: translateY(0) scale(1); } 
+                    }
+                    
+                    #globalNotifDropdown {
+                        background: rgba(15, 15, 20, 0.55) !important;
+                        backdrop-filter: blur(40px) saturate(200%) !important;
+                        -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+                        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                        border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+                        box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 40px rgba(138, 43, 226, 0.15) !important;
+                        border-radius: 24px !important;
+                        padding: 20px !important;
+                    }
+
+                    .global-notif-item { 
+                        padding: 16px; 
+                        background: rgba(255,255,255,0.02); 
+                        border: 1px solid rgba(255,255,255,0.03);
+                        border-radius: 16px; 
+                        display: flex; 
+                        gap: 15px; 
+                        position: relative; 
+                        transition: all 0.3s ease;
+                    }
+                    .global-notif-item:hover {
+                        background: rgba(138, 43, 226, 0.08);
+                        border-color: rgba(138, 43, 226, 0.2);
+                        transform: translateY(-2px);
+                    }
+                    .global-notif-title { color: #fff; font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; letter-spacing: 0.5px;}
+                    .global-notif-body { color: rgba(255,255,255,0.6); font-size: 0.8rem; line-height: 1.4;}
+                    .global-notif-time { color: rgba(255,255,255,0.3); font-size: 0.65rem; margin-top: 8px; font-weight: 500;}
+                    
+                    .global-notif-icon { 
+                        color: #fff; 
+                        background: linear-gradient(135deg, rgba(138, 43, 226, 0.8), rgba(106, 27, 154, 0.9)); 
+                        width: 40px; height: 40px; border-radius: 12px; 
+                        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+                        box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+                        font-size: 1.1rem;
+                    }
+                    
+                    .global-notif-delete { position: absolute; right: 12px; top: 12px; background: none; border: none; color: rgba(255,255,255,0.2); cursor: pointer; transition: 0.3s;}
+                    .global-notif-delete:hover { color: #E50914; transform: scale(1.1);}
+                    
+                    /* Mobile full-width override */
+                    @media (max-width: 992px) { 
+                        #globalNotifDropdown { position: fixed !important; top: 75px !important; right: 5% !important; width: 90% !important; max-height: 70vh !important;} 
+                    }
+                </style>
                 <a href="login.html" class="header-profile-btn" id="topAuthBtn">
                     <i class="fa-solid fa-user"></i>
                 </a>
@@ -338,17 +409,6 @@
             </div>
         </section>
      
-        <section class="latest-episodes">
-            <div class="container">
-                <div class="section-glass-box">
-                    <div class="section-header">
-                        <h2 class="section-title">Upcoming Dramas</h2>
-                        <a href="upcoming.html" class="view-all-link">View All <i class="fas fa-chevron-right"></i></a>
-                    </div>
-                    <div id="upcoming-grid" class="drama-grid carousel-mode"></div>
-                </div>
-            </div>
-        </section>
 
         <button id="dramaRequestBtn" class="drama-fab">
             <span class="fab-text">Didn't find your drama?</span>
@@ -396,18 +456,7 @@
         </div>
     </footer>
 
-    <div id="appInstallPopup" class="app-install-popup">
-        <div class="popup-content">
-            <img src="favicon.png" alt="App Icon" class="popup-icon" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/d/d0/Android_logo_2023_%28stacked%29.svg'">
-            <div class="popup-text">
-                <h4>DramaKan App</h4>
-                <p>Install the app now for the best experience!</p>
-            </div>
-            <a href="app.html" class="btn-install">Install</a>
-            <button id="closeInstallPopup" class="btn-close-popup"><i class="fas fa-times"></i></button>
-        </div>
-    </div>
-
+   
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item active">
             <i class="fa-solid fa-house nav-icon"></i>

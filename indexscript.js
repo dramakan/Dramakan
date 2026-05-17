@@ -1,13 +1,6 @@
 // --- 0. THEME & HARDWARE DETECTION (RUNS IMMEDIATELY) ---
 (function initUI() {
-    // A. Theme Setup
-    const savedTheme = localStorage.getItem('dramakan_theme');
-    const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-    
-    // Automatically apply light mode if user prefers it or previously saved it
-    if (savedTheme === 'light' || (!savedTheme && prefersLight)) {
-        document.documentElement.classList.add('light-mode');
-    }
+  
 
     // B. Hardware Power Setup (Lite Mode Fallback)
     let isLowEnd = false;
@@ -49,20 +42,7 @@ async function getFirebase() {
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    // --- 0. THEME TOGGLE LISTENER ---
-    const themeToggle = document.getElementById('themeToggle');
-    if (themeToggle) {
-        const icon = themeToggle.querySelector('i');
-        if (document.documentElement.classList.contains('light-mode')) icon.className = 'fas fa-moon';
-        else icon.className = 'fas fa-sun';
-
-        themeToggle.addEventListener('click', () => {
-            document.documentElement.classList.toggle('light-mode');
-            const isLight = document.documentElement.classList.contains('light-mode');
-            localStorage.setItem('dramakan_theme', isLight ? 'light' : 'dark');
-            icon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
-        });
-    }
+    
 
     // --- 1. MOBILE MENU LOGIC ---
     const menuToggle = document.getElementById('mobileMenuToggle');
