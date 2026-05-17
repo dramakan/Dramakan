@@ -18,7 +18,6 @@
         button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(138, 43, 226, 0.4); }
         button:disabled { background: #555; cursor: not-allowed; transform: none; box-shadow: none; color: #999;}
         
-        /* Toggle Switch CSS */
         .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
@@ -26,9 +25,12 @@
         input:checked + .slider { background-color: #8A2BE2; }
         input:checked + .slider:before { transform: translateX(24px); }
 
-        /* Auth Overlay */
         .authOverlay { position: absolute; inset: 0; background: rgba(26,26,29,0.95); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; text-align: center; padding: 20px;}
         .authOverlay i { font-size: 2rem; color: #E50914; margin-bottom: 10px;}
+        
+        /* Custom scrollbar for history */
+        #adminNotifHistory::-webkit-scrollbar { width: 6px; }
+        #adminNotifHistory::-webkit-scrollbar-thumb { background: #8A2BE2; border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -98,9 +100,22 @@
         <div id="notifStatus" style="margin-top: 15px; font-size: 0.85rem; font-weight: 600; display: none;"></div>
     </div>
 
+    <div class="admin-card" style="width: 100%; max-width: 830px;">
+        <div id="historyAuthOverlay" class="authOverlay">
+            <i class="fas fa-spinner fa-spin" style="color: #8A2BE2;"></i>
+            <p style="font-size: 0.9rem;">Loading History...</p>
+        </div>
+
+        <h2><i class="fas fa-history"></i> Broadcast History</h2>
+        <p style="font-size: 0.85rem; color: #aaa; margin-bottom: 15px;">Delete a notification here to instantly remove it from all users' inboxes globally.</p>
+        
+        <div id="adminNotifHistory" style="max-height: 400px; overflow-y: auto; padding-right: 10px;">
+            </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -114,17 +129,15 @@
 
         const bannerRef = doc(db, "site_settings", "main_banner");
 
-        // ONLY execute the database reads/writes AFTER confirming admin login
         onAuthStateChanged(auth, async (user) => {
             const overlays = document.querySelectorAll('.authOverlay');
             
             if (user && user.email === "zabaazcreations@gmail.com") {
-                // Admin verified! Remove locks.
                 overlays.forEach(el => el.style.display = 'none');
                 document.getElementById('saveBannerBtn').disabled = false;
                 document.getElementById('sendNotifBtn').disabled = false;
 
-                // Load current banner settings safely
+                // Load banner settings
                 try {
                     const docSnap = await getDoc(bannerRef);
                     if (docSnap.exists()) {
@@ -133,25 +146,63 @@
                         document.getElementById('bannerMessage').value = data.message || "";
                         document.getElementById('bannerBtnText').value = data.buttonText || "";
                         document.getElementById('bannerLink').value = data.link || "";
-                        
                         if (data.expiryDate) {
-                            // Convert timestamp to datetime-local string format
                             const date = new Date(data.expiryDate);
                             date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
                             document.getElementById('bannerExpiry').value = date.toISOString().slice(0,16);
                         }
                     }
-                } catch (error) {
-                    console.error("Error loading banner:", error);
-                }
+                } catch (error) { console.error("Error loading banner:", error); }
+
+                // --- NEW: LOAD NOTIFICATION HISTORY ---
+                const notifQuery = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
+                onSnapshot(notifQuery, (snapshot) => {
+                    const historyDiv = document.getElementById('adminNotifHistory');
+                    if (snapshot.empty) {
+                        historyDiv.innerHTML = '<div style="text-align: center; color: #777; padding: 20px;">No broadcast history found.</div>';
+                        return;
+                    }
+
+                    let html = '';
+                    snapshot.forEach(docSnap => {
+                        const data = docSnap.data();
+                        const dateStr = new Date(data.createdAt).toLocaleString();
+                        html += `
+                            <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 15px;">
+                                <div style="flex-grow: 1;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                        <strong style="color: #8A2BE2; font-size: 0.95rem;">${data.title}</strong>
+                                        <span style="font-size: 0.75rem; color: #777; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 20px;">Target: ${data.target}</span>
+                                    </div>
+                                    <div style="font-size: 0.85rem; color: #ccc; margin-bottom: 8px;">${data.message}</div>
+                                    <div style="font-size: 0.7rem; color: #555;">Sent: ${dateStr}</div>
+                                </div>
+                                <button onclick="window.deleteBroadcast('${docSnap.id}')" style="background: #E50914; color: white; border: none; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; transition: 0.3s; flex-shrink: 0; padding: 0; margin: 0; min-width: auto; box-shadow: none;">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+                    historyDiv.innerHTML = html;
+                });
 
             } else {
-                // Not logged in, or not the admin email
                 overlays.forEach(el => {
                     el.innerHTML = `<i class="fas fa-lock"></i><p style="font-size: 0.9rem;">Access Denied.<br><br>Please log into Dramakan with your admin email (zabaazcreations) first.</p>`;
                 });
             }
         });
+
+        // --- ATTACH GLOBAL DELETE FUNCTION ---
+        window.deleteBroadcast = async (notifId) => {
+            if (confirm("Are you sure you want to delete this notification globally? It will be removed from all users' inboxes immediately.")) {
+                try {
+                    await deleteDoc(doc(db, "notifications", notifId));
+                } catch (error) {
+                    alert("Error deleting: " + error.message);
+                }
+            }
+        };
 
         // --- BANNER SAVE LOGIC ---
         document.getElementById('saveBannerBtn').addEventListener('click', async () => {
@@ -174,7 +225,6 @@
                 status.style.color = "#10b981";
                 status.innerText = "Promo Updated Successfully!";
                 sessionStorage.removeItem('dramakan_promo_closed');
-                
             } catch (error) {
                 status.style.color = "#E50914";
                 status.innerText = "Error: " + error.message;
@@ -192,21 +242,17 @@
             btn.innerText = "Sending...";
             
             try {
-                // Capture the new link field
-                const notifLinkValue = document.getElementById('notifLink').value.trim();
-
                 await addDoc(collection(db, "notifications"), {
                     target: document.getElementById('notifTarget').value.trim(),
                     title: document.getElementById('notifTitle').value.trim(),
                     message: document.getElementById('notifBody').value.trim(),
-                    link: notifLinkValue, // Saves the link to Firebase
+                    link: document.getElementById('notifLink').value.trim(),
                     createdAt: Date.now()
                 });
 
                 status.style.color = "#10b981";
                 status.innerText = "Notification Sent Successfully!";
                 
-                // Clear the form fields after sending
                 document.getElementById('notifTitle').value = '';
                 document.getElementById('notifBody').value = '';
                 document.getElementById('notifLink').value = '';

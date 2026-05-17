@@ -77,7 +77,6 @@ function showPopup(title, body) {
 let notifHistory = JSON.parse(localStorage.getItem('Anykan_Notif_History')) || [];
 let deletedNotifs = JSON.parse(localStorage.getItem('Anykan_Deleted_Notifs')) || []; 
 
-// Renamed to globally accessible function so promo-banner.js can trigger it
 window.renderGlobalHistory = function() {
     const list = document.getElementById('globalNotifList');
     const badge = document.getElementById('globalNotifBadge');
@@ -90,12 +89,10 @@ window.renderGlobalHistory = function() {
     }
 
     list.innerHTML = notifHistory.map(n => {
-        // Determine if this is a special promo item
         const isPromo = n.id === "PROMO_BANNER_STATIC";
         const customClass = isPromo ? "global-notif-item promo-highlight" : "global-notif-item";
         const iconClass = isPromo ? "fas fa-gift" : "fas fa-bell";
         
-        // Generate Clickable Action Button if a link exists
         const actionBtn = n.link ? 
             `<a href="${n.link}" style="display: inline-block; margin-top: 10px; padding: 8px 16px; background: linear-gradient(135deg, #8A2BE2, #6a1b9a); color: #fff; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.3s;">
                 Claim Offer <i class="fas fa-arrow-right" style="margin-left: 5px;"></i>
@@ -106,11 +103,8 @@ window.renderGlobalHistory = function() {
             <div class="global-notif-icon"><i class="${iconClass}"></i></div>
             <div class="global-notif-content" style="flex-grow: 1;">
                 <div class="global-notif-title">${n.title}</div>
-                
                 <div class="global-notif-body" style="white-space: normal;">${n.body}</div>
-                
                 ${actionBtn}
-                
                 <div class="global-notif-time">${new Date(n.timestamp).toLocaleString()}</div>
             </div>
             <button class="global-notif-delete" onclick="window.deleteGlobalNotif('${n.id}')"><i class="fas fa-trash-alt"></i></button>
@@ -130,7 +124,7 @@ window.deleteGlobalNotif = (id) => {
     window.renderGlobalHistory();
 };
 
-// 3. SECURE FIREBASE LISTENER (Waits for Auth)
+// 3. SECURE FIREBASE LISTENER
 let listenerUnsubscribe = null;
 
 onAuthStateChanged(auth, (user) => {
@@ -140,6 +134,8 @@ onAuthStateChanged(auth, (user) => {
     
     listenerUnsubscribe = onSnapshot(q, (snapshot) => {
         snapshot.docChanges().forEach((change) => {
+            
+            // LOGIC A: Admin added a new notification
             if (change.type === "added") {
                 const data = change.doc.data();
                 const notifId = change.doc.id;
@@ -157,7 +153,7 @@ onAuthStateChanged(auth, (user) => {
                         id: notifId,
                         title: data.title || "Admin Update",
                         body: data.message || data.body || "",
-                        link: data.link || null, // Capture link if admin sent one
+                        link: data.link || null,
                         timestamp: data.createdAt ? (data.createdAt.toMillis ? data.createdAt.toMillis() : data.createdAt) : Date.now(),
                         read: false
                     };
@@ -171,6 +167,14 @@ onAuthStateChanged(auth, (user) => {
                         showPopup(newNotif.title, newNotif.body);
                     }
                 }
+            }
+            
+            // LOGIC B: Admin deleted a notification globally
+            if (change.type === "removed") {
+                const deletedId = change.doc.id;
+                notifHistory = notifHistory.filter(n => n.id !== deletedId);
+                localStorage.setItem('Anykan_Notif_History', JSON.stringify(notifHistory));
+                if (window.renderGlobalHistory) window.renderGlobalHistory();
             }
         });
     });
@@ -206,7 +210,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
     
-    // Initial render
     setTimeout(() => {
         window.renderGlobalHistory();
     }, 500);
