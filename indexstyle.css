@@ -735,3 +735,51 @@ img { max-width: 100%; height: auto; display: block; }
   backdrop-filter: none !important; background-color: var(--glass-bg) !important;
 }
 .lite-mode * { transition-duration: 0.1s !important; animation-duration: 0.01ms !important; }
+/* =========================================
+   PC SEARCH BAR ANIMATION (LIQUID GLASS)
+========================================= */
+
+/* Target the PC Search Input */
+#searchInput {
+    width: 220px; 
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); 
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    /* FIX: Increased left and right padding so text doesn't overlap the icons! */
+    padding: 10px 40px 10px 40px; 
+    border-radius: 50px; 
+    outline: none;
+}
+
+/* The Magic: When the user clicks inside the search bar */
+#searchInput:focus {
+    width: 340px; 
+    background: rgba(0, 0, 0, 0.6); 
+    border-color: #9D4EDD; 
+    
+    box-shadow: 
+        0 8px 25px rgba(157, 78, 221, 0.4), 
+        0 0 0 3px rgba(157, 78, 221, 0.15),
+        inset 0 2px 5px rgba(0,0,0,0.5);
+        
+    transform: translateY(-2px); 
+}
+
+.search-container {
+    position: relative;
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Make sure the icons don't block mouse clicks */
+.search-bar i.fa-search,
+.mobile-glass-search i.fa-search {
+    pointer-events: none;
+}
+
+#searchInput:focus ~ i.fa-search,
+#searchInput:focus + i.fa-search {
+    color: #9D4EDD;
+    transform: scale(1.1);
+    transition: all 0.3s ease;
+}

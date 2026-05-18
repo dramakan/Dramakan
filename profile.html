@@ -801,6 +801,7 @@
                     mobBtn.classList.add('fa-chart-line'); 
                 }
             }
+            renderProfiles();
         };
 
         // =====================================
@@ -826,7 +827,6 @@
             }
         });
 
-        // Leaving local storage key as Anykan_Notif_History to seamlessly link with anykan-notifier.js
         let notifHistory = JSON.parse(localStorage.getItem('Anykan_Notif_History')) || [];
         let deletedNotifs = JSON.parse(localStorage.getItem('Anykan_Deleted_Notifs')) || []; 
 
@@ -930,7 +930,7 @@
             let html = '';
             
             userProfiles.forEach((prof, idx) => {
-                const isActive = idx === activeProfileIndex ? 'active' : '';
+                const isActive = idx === activeProfileIndex && !isCreatorView ? 'active' : '';
                 const isEmoji = prof.avatar && prof.avatar.length <= 10 && !prof.avatar.includes('http') && !prof.avatar.includes('data:image');
                 
                 html += `
@@ -1024,6 +1024,7 @@
         }
 
         window.switchProfile = (idx) => {
+            if (isCreatorView) toggleCreatorView();
             activeProfileIndex = idx;
             const activeProf = userProfiles[activeProfileIndex];
             localStorage.setItem('dramakan_active_profile_id', activeProf.id);
@@ -1222,7 +1223,7 @@
         }
 
         // =====================================
-        // AUTH INIT & REALTIME SYNC (WITH LEGACY AVATAR FIX)
+        // AUTH INIT & REALTIME SYNC
         // =====================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -1230,7 +1231,6 @@
                     document.getElementById('edit-email').value = user.email;
                     currentUserDocRef = doc(db, "users", user.uid);
                     
-                    // Hook into Real-Time Notifications
                     setupRealTimeNotifications(user.uid);
 
                     const docSnap = await getDoc(currentUserDocRef);
@@ -1238,15 +1238,12 @@
                     if (docSnap.exists()) {
                         const data = docSnap.data();
                         
-                        // LEGACY AVATAR SUPPORT (Dynamically generates an image or fetches the old uploaded one)
                         const fallbackAvatar = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(data.username || "User")}`;
                         const legacyAvatar = data.avatarUrl || fallbackAvatar;
                         
                         if(data.profiles && data.profiles.length > 0) {
                             userProfiles = data.profiles;
                             
-                            // FIX: If the main profile missed the update and is using the generic Netflix placeholder,
-                            // replace it immediately with the legacy avatar from the database.
                             if (userProfiles[0].avatar.includes('Netflix-avatar.png') || !userProfiles[0].avatar) {
                                 userProfiles[0].avatar = legacyAvatar;
                                 updateDoc(currentUserDocRef, { profiles: userProfiles }).catch(()=>{});
@@ -1286,11 +1283,15 @@
                     if (creatorSnap.exists()) {
                         const cData = creatorSnap.data();
                         
-                        if (["Active", "Warning", "Banned"].includes(cData.accountStatus)) {
+                        // FIX: Relaxing the strict check to support databases that don't have accountStatus explicitly set
+                        const currentStatus = cData.accountStatus || "Active";
+                        
+                        if (["Active", "Warning", "Banned"].includes(currentStatus)) {
                             document.body.classList.add('is-affiliate');
                             document.getElementById('ui-total-clicks').textContent = cData.totalClicks || 0;
                             document.getElementById('ui-tracking-link').value = cData.trackingUrl || '';
                             
+                            // Obediently applying the $0.05 payout calculation rate
                             const owed = ((cData.unpaidClicks || 0) * 0.05).toFixed(2);
                             const payoutBtn = document.getElementById('btn-request-payout');
                             const warningBanner = document.getElementById('creator-warning-banner');
@@ -1304,12 +1305,12 @@
                             if(progressPercent > 100) progressPercent = 100;
                             document.getElementById('payout-progress-bar').style.width = progressPercent + '%';
 
-                            if (cData.accountStatus === "Warning" || cData.policyWarning === true) {
+                            if (currentStatus === "Warning" || cData.policyWarning === true) {
                                 warningBanner.style.display = 'block';
                                 warningBanner.innerHTML = '<i class="fas fa-exclamation-triangle" style="margin-right:8px; font-size:1.2rem;"></i> <strong>Account Restricted:</strong> Suspicious traffic detected. Your earnings are currently on hold pending a manual review. Payouts are disabled.';
                                 earningsDisplay.innerHTML = `<span style="color:#FBBF24;">$${owed} (ON HOLD)</span>`;
                                 payoutUiContainer.style.display = 'none';
-                            } else if (cData.accountStatus === "Banned") {
+                            } else if (currentStatus === "Banned") {
                                 warningBanner.style.display = 'block';
                                 warningBanner.innerHTML = '<i class="fas fa-ban" style="margin-right:8px; font-size:1.2rem;"></i> <strong>Account Banned:</strong> This account has been permanently suspended for violating anti-fraud policies. All earnings are voided.';
                                 earningsDisplay.innerHTML = `<span style="color:#EF4444;">$0.00 (VOIDED)</span>`;
@@ -1337,6 +1338,9 @@
                         }
                     }
 
+                    // Re-render the profiles to show the new Affiliate Profile Option if applicable
+                    renderProfiles();
+
                 } catch (error) { console.error("Data Load Error:", error); }
             } else { 
                 window.location.replace('login.html'); 
@@ -1347,7 +1351,6 @@
         // ACTIONS & BUTTONS
         // =====================================
         
-        // Copy Tracking Link
         document.getElementById('copy-aff-btn').addEventListener('click', () => {
             const linkInput = document.getElementById('ui-tracking-link');
             linkInput.select();
@@ -1357,7 +1360,6 @@
             setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy Link'; }, 2000);
         });
 
-        // Request Payout
         document.getElementById('btn-request-payout').addEventListener('click', async () => {
             const details = document.getElementById('payout-details').value.trim();
             if(!details) return alert("Please enter your UPI ID.");
@@ -1367,7 +1369,6 @@
             btn.disabled = true;
 
             try {
-                // Final safety check
                 const snap = await getDoc(creatorDocRef);
                 if (snap.exists()) {
                     const cData = snap.data();
@@ -1377,7 +1378,7 @@
                         btn.innerHTML = '<i class="fas fa-lock"></i> Threshold Not Met ($100)';
                         return;
                     }
-                    if (cData.accountStatus !== "Active") {
+                    if (cData.accountStatus !== "Active" && cData.accountStatus) {
                         alert("Account restricted. Cannot process payout.");
                         return;
                     }
@@ -1408,7 +1409,6 @@
             try {
                 const avatarToSave = pendingAvatarUrl || userProfiles[activeProfileIndex].avatar;
                 
-                // Only sync the primary active profile to global Auth for external systems
                 if (activeProfileIndex === 0 && avatarToSave.length < 500) {
                     await updateProfile(auth.currentUser, {
                         displayName: newName,
@@ -1419,7 +1419,6 @@
                 userProfiles[activeProfileIndex].name = newName;
                 userProfiles[activeProfileIndex].avatar = avatarToSave;
                 
-                // Keep the legacy fields updated alongside the new profile array so other pages don't break
                 let updateData = { profiles: userProfiles };
                 if (activeProfileIndex === 0) {
                     updateData.avatarUrl = avatarToSave;
