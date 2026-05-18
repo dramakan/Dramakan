@@ -90,12 +90,6 @@
         .header-icons i#mobileAffiliateBtn:hover { background: #d4af37; border-color: #d4af37; box-shadow: 0 5px 15px rgba(212,175,55,0.4); color: #000; }
 
         .notif-badge { position: relative; display: flex; align-items: center; justify-content: center;}
-        .notif-badge::after { 
-            content: ''; position: absolute; top: 0; right: 2px; 
-            width: 10px; height: 10px; background: #e50914; 
-            border-radius: 50%; border: 2px solid var(--bg-base); box-shadow: 0 0 8px rgba(229, 9, 20, 0.8); display: none; 
-        }
-        .notif-badge.has-new::after { display: block; }
 
         .notif-dropdown {
             position: absolute; top: calc(100% + 15px); right: -10px; width: 340px; max-height: 400px; overflow-y: auto;
@@ -496,18 +490,22 @@
             <i class="fas fa-chart-line mobile-only affiliate-btn-trigger" id="mobileAffiliateBtn" style="color: #d4af37; border-color: rgba(212,175,55,0.3);" title="Creator Dashboard" onclick="toggleCreatorView()"></i>
             
             <i class="fas fa-cog" id="settingsBtn" title="Settings"></i>
-            <div class="notif-badge" id="notifBadge">
-                <i class="fas fa-bell" id="notifBtn" title="Notifications"></i>
-                <div class="notif-dropdown" id="notifDropdown">
+            
+            <div class="notif-badge">
+                <i class="fas fa-bell" id="globalNotifBtn" title="Notifications" style="position: relative;">
+                    <span id="globalNotifBadge" style="display:none; position:absolute; top: -2px; right: -2px; width:10px; height:10px; background:#e50914; border-radius:50%; border:2px solid var(--bg-base); box-shadow: 0 0 8px rgba(229, 9, 20, 0.8);"></span>
+                </i>
+                <div class="notif-dropdown" id="globalNotifDropdown">
                     <div class="notif-header">
                         <span>Notifications</span>
                         <button id="clearNotifsBtn">Clear All</button>
                     </div>
-                    <div id="dropdown-notif-list" class="notif-list">
+                    <div id="globalNotifList" class="notif-list">
                         <div class="empty-notifs">No notifications yet.</div>
                     </div>
                 </div>
             </div>
+            
         </div>
     </header>
 
@@ -737,10 +735,9 @@
             <i class="fa-solid fa-house nav-icon"></i>
             <span class="nav-label">Home</span>
         </a>
-        <a href="community.html" class="bottom-nav-item">
-            <i class="fa-solid fa-users nav-icon"></i>
-            <span class="nav-label">Community</span>
-        </a>
+       <a href="community.html" class="bottom-nav-item">
+            <i class="fa-solid fa-bell nav-icon"></i>
+            <span class="nav-label">Updates</span>
         <a href="mylist.html" class="bottom-nav-item">
             <i class="fa-solid fa-bookmark nav-icon"></i>
             <span class="nav-label">My List</span>
@@ -851,113 +848,6 @@
             }
             renderProfiles();
         };
-
-        // =====================================
-        // REAL-TIME NOTIFICATION SYSTEM
-        // =====================================
-        const notifBtn = document.getElementById('notifBtn');
-        const notifDropdown = document.getElementById('notifDropdown');
-        const notifBadge = document.getElementById('notifBadge');
-        
-        notifBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            notifDropdown.classList.toggle('active');
-            
-            // Mark read on open
-            notifHistory.forEach(n => n.read = true);
-            localStorage.setItem('Anykan_Notif_History', JSON.stringify(notifHistory));
-            notifBadge.classList.remove('has-new');
-        });
-        
-        document.addEventListener('click', (e) => {
-            if(!notifDropdown.contains(e.target) && e.target !== notifBtn) {
-                notifDropdown.classList.remove('active');
-            }
-        });
-
-        let notifHistory = JSON.parse(localStorage.getItem('Anykan_Notif_History')) || [];
-        let deletedNotifs = JSON.parse(localStorage.getItem('Anykan_Deleted_Notifs')) || []; 
-
-        function renderHistory() {
-            const list = document.getElementById('dropdown-notif-list');
-            if (!list) return;
-
-            if (notifHistory.length === 0) {
-                list.innerHTML = `<div class="empty-notifs">No notifications yet.</div>`;
-                notifBadge.classList.remove('has-new');
-                return;
-            }
-
-            list.innerHTML = notifHistory.map(n => `
-                <div class="global-notif-item">
-                    <div class="global-notif-icon"><i class="fas fa-bullhorn"></i></div>
-                    <div class="global-notif-content">
-                        <div class="global-notif-title">${n.title}</div>
-                        <div class="global-notif-body">${n.body}</div>
-                        <div class="global-notif-time">${new Date(n.timestamp).toLocaleString()}</div>
-                    </div>
-                    <button class="global-notif-delete" onclick="window.deleteGlobalNotif('${n.id}')"><i class="fas fa-trash-alt"></i></button>
-                </div>
-            `).join('');
-
-            const unread = notifHistory.some(n => !n.read);
-            if (unread) notifBadge.classList.add('has-new');
-            else notifBadge.classList.remove('has-new');
-        }
-
-        window.deleteGlobalNotif = (id) => {
-            notifHistory = notifHistory.filter(n => n.id !== id);
-            deletedNotifs.push(id);
-            if (deletedNotifs.length > 100) deletedNotifs = deletedNotifs.slice(-50);
-            
-            localStorage.setItem('Anykan_Notif_History', JSON.stringify(notifHistory));
-            localStorage.setItem('Anykan_Deleted_Notifs', JSON.stringify(deletedNotifs));
-            renderHistory();
-        };
-
-        document.getElementById('clearNotifsBtn').addEventListener('click', () => {
-            notifHistory.forEach(n => deletedNotifs.push(n.id));
-            if (deletedNotifs.length > 100) deletedNotifs = deletedNotifs.slice(-50);
-            localStorage.setItem('Anykan_Deleted_Notifs', JSON.stringify(deletedNotifs));
-
-            notifHistory = [];
-            localStorage.setItem('Anykan_Notif_History', JSON.stringify([]));
-            renderHistory();
-        });
-
-        function setupRealTimeNotifications(userId) {
-            const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"), limit(20));
-            onSnapshot(q, (snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === "added") {
-                        const data = change.doc.data();
-                        const notifId = change.doc.id;
-                        
-                        if (data.target === "all" || data.target === "viewers" || data.target === userId) {
-                            
-                            const exists = notifHistory.find(n => n.id === notifId);
-                            const isDeleted = deletedNotifs.includes(notifId);
-
-                            if (!exists && !isDeleted) {
-                                const newNotif = {
-                                    id: notifId,
-                                    title: data.title || "Admin Broadcast",
-                                    body: data.message || data.body || "",
-                                    timestamp: data.createdAt ? (data.createdAt.toMillis ? data.createdAt.toMillis() : data.createdAt) : Date.now(),
-                                    read: false
-                                };
-                                
-                                notifHistory.unshift(newNotif);
-                                if (notifHistory.length > 30) notifHistory.pop(); 
-                                localStorage.setItem('Anykan_Notif_History', JSON.stringify(notifHistory));
-                                
-                                renderHistory();
-                            }
-                        }
-                    }
-                });
-            });
-        }
 
         // =====================================
         // PROFILE RENDER & SYNC LOGIC
@@ -1296,8 +1186,6 @@
                 try {
                     document.getElementById('edit-email').value = user.email;
                     currentUserDocRef = doc(db, "users", user.uid);
-                    
-                    setupRealTimeNotifications(user.uid);
 
                     const docSnap = await getDoc(currentUserDocRef);
 

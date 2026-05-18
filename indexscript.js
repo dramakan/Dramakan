@@ -579,6 +579,47 @@ async function initAuthSync() {
                         } else {
                             userProfiles = [{ id: 'prof_default', name: data.username || "User", avatar: legacyAvatar }];
                         }
+                        
+                        // --- VIP & PROMO LOGIC FOR HOME PAGE ---
+                        const now = Date.now();
+                        let activePlan = "Basic";
+                        if (data.isPremium && data.premiumExpiry > now) {
+                            activePlan = data.premiumPlan || "Elite_VIP_35";
+                        }
+                    
+                        const headerVipBtn = document.querySelector('.vip-header-btn');
+                        if (headerVipBtn) {
+                            if (activePlan.includes('Crown')) {
+                                headerVipBtn.style.display = 'none'; // Max tier, completely hide upgrade button
+                            } else if (activePlan.includes('Elite')) {
+                                headerVipBtn.className = 'vip-header-btn status-crown';
+                                headerVipBtn.innerHTML = '<i class="fas fa-arrow-up"></i> Upgrade Crown';
+                                headerVipBtn.style.display = 'inline-flex';
+                            } else {
+                                headerVipBtn.className = 'vip-header-btn status-basic';
+                                headerVipBtn.innerHTML = '<i class="fas fa-bolt"></i> Upgrade VIP';
+                                headerVipBtn.style.display = 'inline-flex';
+                            }
+                        }
+                    
+                        const hasClaimedTrial = data.trialClaimed === true;
+                        const isPremiumActive = data.isPremium && data.premiumExpiry > now;
+                        
+                        // Security flag & dynamic CSS injection to fully kill the promo banner logic
+                        if (hasClaimedTrial || isPremiumActive) {
+                            // Tell promo-banner.js to abort
+                            localStorage.setItem('dramakan_promo_closed', 'true');
+                            
+                            // Inject strict CSS rule to force hide any active trial promos existing in the DOM
+                            const blockStyle = document.createElement('style');
+                            blockStyle.innerHTML = '#dramakan-bottom-promo, .promo-banner, #promoBanner { display: none !important; }';
+                            document.head.appendChild(blockStyle);
+                            
+                            // Also explicitly hide if it's already generated
+                            const existingPromo = document.getElementById('dramakan-bottom-promo');
+                            if(existingPromo) existingPromo.style.display = 'none';
+                        }
+                        // ---------------------------------------
                     }
 
                     // Check if we already showed the prompt today

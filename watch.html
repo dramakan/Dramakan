@@ -432,6 +432,23 @@
             </div>
             
         </div>
+
+        <div id="ad-return-popup" class="drama-modal-overlay" style="z-index: 100000; display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); justify-content: center; align-items: center; padding: 20px;">
+            <div class="drama-modal-card" style="background: rgba(11, 12, 16, 0.95); border: 1px solid #f1c40f; border-radius: 16px; padding: 40px 30px 30px; max-width: 420px; width: 100%; position: relative; text-align: center; box-shadow: 0 10px 40px rgba(241, 196, 15, 0.3);">
+                <button class="drama-modal-close" onclick="document.getElementById('ad-return-popup').style.display='none'" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: #a1a1aa; font-size: 24px; cursor: pointer;">&times;</button>
+                <div class="drama-section-highlight" style="background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.3); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <i class="fas fa-crown" style="font-size: 3rem; color: #f1c40f; margin-bottom: 10px;"></i>
+                    <h4 style="color: #fff; margin: 0 0 5px 0; font-size: 1.2rem;">Tired of Video Ads?</h4>
+                    <p style="color: #a1a1aa; margin: 0; font-size: 0.9rem;">Popups ruining your streaming experience?</p>
+                </div>
+                <div class="drama-section-main">
+                    <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 20px; line-height: 1.6;">Upgrade to <strong>Crown VIP</strong> to completely block all video player ads, popups, and website UI ads. Enjoy seamless, uninterrupted streaming!</p>
+                    <a href="subscription.html" class="drama-submit-btn" style="background: linear-gradient(135deg, #f1c40f, #d4af37); color: #000; text-decoration: none; display: block; text-align: center; padding: 14px; border-radius: 8px; font-weight: 600; box-shadow: 0 4px 15px rgba(241,196,15,0.4); margin-bottom: 10px;">Upgrade to Crown VIP</a>
+                    <button onclick="document.getElementById('ad-return-popup').style.display='none'" style="background: transparent; color: #aaa; border: 1px solid rgba(255,255,255,0.2); width: 100%; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Continue with Ads</button>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <footer class="main-footer" style="text-align: center; padding: 20px 0; border-top: 1px solid var(--glass-border); margin-top: 30px;">
@@ -443,10 +460,9 @@
             <i class="fa-solid fa-house nav-icon"></i>
             <span class="nav-label">Home</span>
         </a>
-        <a href="community.html" class="bottom-nav-item">
-            <i class="fa-solid fa-users nav-icon"></i>
-            <span class="nav-label">Community</span>
-        </a>
+       <a href="community.html" class="bottom-nav-item">
+            <i class="fa-solid fa-bell nav-icon"></i>
+            <span class="nav-label">Updates</span>
         <a href="mylist.html" class="bottom-nav-item">
             <i class="fa-solid fa-bookmark nav-icon"></i>
             <span class="nav-label">My List</span>
@@ -476,23 +492,32 @@
         const episodeMetaContainer = document.getElementById('episode-meta-container');
         const episodesListWidget = document.getElementById('episodes-list-widget');
 
+        // ==========================================
+        // SMART TIER-BASED AD TRACKING & POPUPS
+        // ==========================================
+        let adClickTime = 0;
+        
         window.addEventListener('blur', () => {
-            if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
-                setTimeout(() => window.focus(), 10);
+            const activeVipTier = localStorage.getItem('dramakan_vip_tier') || 'Basic';
+            // Only track ad clicks for users who do NOT have Crown (Crown blocks all video popups natively)
+            if (!activeVipTier.includes('Crown') && document.activeElement && document.activeElement.tagName === 'IFRAME') {
+                adClickTime = Date.now();
             }
         });
 
-        window.addEventListener('beforeunload', function (e) {
-            if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
-                e.preventDefault();
-                e.returnValue = 'Ad Blocked: Prevented a forced redirect.';
-                return e.returnValue;
+        window.addEventListener('focus', () => {
+            if (adClickTime > 0) {
+                const timeAway = Date.now() - adClickTime;
+                // If they actually left the page/tab (e.g. ad popup opened)
+                if (timeAway > 300) { 
+                    const popup = document.getElementById('ad-return-popup');
+                    if(popup) popup.style.display = 'flex';
+                }
+                adClickTime = 0;
             }
         });
+        // ==========================================
 
-        // ==========================================
-        // BULLETPROOF INITIALIZATION AND ERROR HANDLING
-        // ==========================================
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const dramaId = urlParams.get('id');
@@ -721,27 +746,56 @@
                             renderEpisodeGrid(window.currentSeason);
                         }
 
-                        if (currentServer === 'hindi') {
-                            videoPlayer.removeAttribute('referrerpolicy'); 
-                            videoPlayer.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
-                        } else if (currentServer === '2embed') {
-                            videoPlayer.removeAttribute('sandbox'); 
+                        // ==========================================
+                        // SECURE VIP AD-BLOCKER IMPLEMENTATION
+                        // ==========================================
+                        const activeVipTier = localStorage.getItem('dramakan_vip_tier') || 'Basic';
+                        const isCrown = activeVipTier.includes('Crown');
+
+                        // Remove "sandbox" attribute entirely to preserve beautiful player UI 
+                        // (Vidsrc/2embed detects sandbox and intentionally breaks the player visually to punish users).
+                        videoPlayer.removeAttribute('sandbox');
+                        
+                        if (currentServer === '2embed') {
                             videoPlayer.setAttribute('referrerpolicy', 'no-referrer');
                         } else {
-                            videoPlayer.removeAttribute('sandbox');
-                            videoPlayer.removeAttribute('referrerpolicy'); 
+                            videoPlayer.removeAttribute('referrerpolicy');
                         }
 
                         const embedLink = await fetchCleanVideoSource(data.imdbId, window.currentSeason, window.currentEpisode, data.type);
                         videoPlayer.src = embedLink;
                         
+                        // Click Shield clean up
                         let existingShield = document.getElementById('ad-click-shield');
                         if (existingShield) existingShield.remove();
-                        const shield = document.createElement('div');
-                        shield.id = 'ad-click-shield';
-                        shield.className = 'click-shield';
-                        shield.addEventListener('click', function() { this.remove(); });
-                        document.getElementById('video-container-wrapper').appendChild(shield);
+                        
+                        // Smart Click-Shield Application
+                        if (isCrown) {
+                            // Crown Tier: Absorbs the first 2 clicks (completely neutralizing the hidden popup layers)
+                            let clickCount = 0;
+                            const shield = document.createElement('div');
+                            shield.id = 'ad-click-shield';
+                            shield.className = 'click-shield';
+                            shield.title = "Crown VIP Active: Ad layers neutralized.";
+                            shield.addEventListener('click', function(e) { 
+                                e.stopPropagation();
+                                clickCount++;
+                                if(clickCount >= 2) this.remove(); 
+                            });
+                            document.getElementById('video-container-wrapper').appendChild(shield);
+                        } else if (activeVipTier.includes('Elite')) {
+                            // Elite Tier: Absorbs 1 click
+                            const shield = document.createElement('div');
+                            shield.id = 'ad-click-shield';
+                            shield.className = 'click-shield';
+                            shield.addEventListener('click', function(e) { 
+                                e.stopPropagation();
+                                this.remove(); 
+                            });
+                            document.getElementById('video-container-wrapper').appendChild(shield);
+                        }
+                        // Basic tier gets NO shield, so they click the ad directly and get the popup.
+                        // ==========================================
 
                         epText.textContent = seasonsArr.length > 1 
                             ? `S${window.currentSeason} EP ${window.currentEpisode} - ${data.title}`

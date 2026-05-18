@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Lounge - DramaKan</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="lightmode.css"> 
+    <script src="lightmode.js"></script> 
+
+    <style>
+        /* * DISCORD x LIQUID GLASS THEME */
+        body { 
+            background-color: var(--background-color); 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            height: 100dvh; 
+            overflow: hidden; 
+            margin: 0;
+            background-image: radial-gradient(circle at top right, rgba(138, 43, 226, 0.1), transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(138, 43, 226, 0.05), transparent 40%);
+        }
+        
+        .bottom-nav { flex-shrink: 0; z-index: 10000; }
+
+        .community-wrapper { 
+            flex-grow: 1; 
+            display: flex; 
+            width: 100%; 
+            max-width: 1600px; 
+            margin: 0 auto; 
+            overflow: hidden; 
+            animation: fadeIn 0.5s ease;
+            position: relative;
+        }
+
+        /* --- SIDEBAR (Server / Channels List) --- */
+        .sidebar-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(3px);
+            z-index: 15;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .community-sidebar { 
+            width: 260px;
+            background: var(--glass-bg); 
+            backdrop-filter: var(--glass-blur); 
+            -webkit-backdrop-filter: var(--glass-blur); 
+            border-right: 1px solid var(--glass-border); 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; 
+            flex-shrink: 0;
+            z-index: 20;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-header {
+            padding: 20px 15px;
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-title { 
+            color: #fff; 
+            font-size: 1.05rem; 
+            font-weight: 700; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .home-return-btn {
+            color: var(--text-muted-color);
+            background: rgba(255,255,255,0.05);
+            width: 32px; 
+            height: 32px;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .home-return-btn:hover { 
+            background: rgba(138, 43, 226, 0.15); 
+            color: #fff; 
+            border-color: rgba(138, 43, 226, 0.3);
+        }
+
+        .channel-list-container {
+            padding: 15px 10px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .channel-list-container::-webkit-scrollbar { width: 4px; }
+        .channel-list-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+        .channel-category { 
+            font-size: 0.75rem; 
+            color: var(--text-muted-color); 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+            margin: 15px 0 5px 8px; 
+            font-weight: 600; 
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .channel-btn { 
+            background: transparent; 
+            border: none; 
+            width: 100%; 
+            text-align: left; 
+            padding: 8px 10px; 
+            color: #a1a1aa; 
+            font-family: 'Poppins', sans-serif; 
+            font-size: 0.95rem; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            transition: 0.15s ease; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            margin-bottom: 2px; 
+            font-weight: 500; 
+        }
+        .channel-btn i { font-size: 1.1rem; width: 20px; text-align: center; opacity: 0.6;}
+        .channel-btn:hover { background: rgba(255,255,255,0.08); color: #e4e4e7; }
+        .channel-btn:hover i { opacity: 1; }
+        .channel-btn.active { 
+            background: rgba(138, 43, 226, 0.2); 
+            color: #fff; 
+            font-weight: 600; 
+        }
+        .channel-btn.active i { color: #fff; opacity: 1; }
+
+        /* --- CHAT AREA --- */
+        .chat-area { 
+            flex-grow: 1;
+            background: rgba(11, 12, 16, 0.6); 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            position: relative; 
+        }
+
+        .chat-header { 
+            padding: 12px 20px; 
+            background: var(--glass-bg); 
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--glass-border); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-shrink: 0; 
+            z-index: 5;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+
+        .chat-header-left { display: flex; align-items: center; }
+        .chat-header-info { display: flex; align-items: center; gap: 15px; }
+        .chat-header-title { color: #fff; font-size: 1.05rem; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .chat-header-desc { color: var(--text-muted-color); font-size: 0.85rem; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px;}
+        
+        .online-count { 
+            background: rgba(16, 185, 129, 0.1); 
+            color: #10b981; 
+            padding: 4px 10px; 
+            border-radius: 50px; 
+            font-size: 0.75rem; 
+            font-weight: 600; 
+            border: 1px solid rgba(16, 185, 129, 0.2); 
+            display: flex; 
+            align-items: center; 
+            gap: 6px;
+        }
+        .online-dot { width: 6px; height: 6px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; animation: pulse 2s infinite; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+        /* --- DISCORD STYLE MESSAGE FEED --- */
+        .chat-feed { 
+            flex-grow: 1; 
+            padding: 10px 0 20px 0; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            scroll-behavior: smooth; 
+        }
+        .chat-feed::-webkit-scrollbar { width: 6px; }
+        .chat-feed::-webkit-scrollbar-track { background: transparent; }
+        .chat-feed::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .chat-feed::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+        .message-wrapper { 
+            display: flex; 
+            gap: 16px; 
+            padding: 6px 20px; 
+            margin-top: 10px;
+            animation: slideUp 0.2s ease; 
+        }
+        .message-wrapper:hover { background: rgba(255, 255, 255, 0.03); }
+        .message-wrapper.own-message-highlight { background: rgba(138, 43, 226, 0.03); border-left: 2px solid var(--primary-color); padding-left: 18px;}
+        .message-wrapper.own-message-highlight:hover { background: rgba(138, 43, 226, 0.06); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .message-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer; transition: 0.2s; margin-top: 2px;}
+        .message-avatar:hover { transform: scale(1.05); box-shadow: 0 0 10px rgba(255,255,255,0.1); }
+        
+        .message-content-group { display: flex; flex-direction: column; flex-grow: 1; max-width: 100%; overflow: hidden; }
+        
+        .message-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; }
+        .message-author { color: #fff; font-weight: 500; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+        .message-author:hover { text-decoration: underline; }
+        .message-time { color: var(--text-muted-color); font-size: 0.75rem; font-weight: 400; }
+        
+        .message-text { color: #d4d4d8; font-size: 0.95rem; line-height: 1.45; word-wrap: break-word; white-space: pre-wrap; }
+
+        /* --- INPUT AREA --- */
+        .chat-input-wrapper { 
+            padding: 0 20px 25px 20px; 
+            background: transparent; 
+            flex-shrink: 0; 
+        }
+        
+        .input-glass-container {
+            background: var(--glass-bg); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: flex-end; 
+            padding: 8px 12px; 
+            transition: 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .input-glass-container:focus-within { 
+            border-color: rgba(138, 43, 226, 0.4); 
+            background: rgba(26, 26, 29, 0.8); 
+        }
+
+        .upload-btn {
+            background: transparent;
+            color: var(--text-muted-color);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+            margin-right: 8px;
+            margin-bottom: 4px;
+        }
+        .upload-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+        .chat-input { 
+            flex-grow: 1; 
+            background: transparent; 
+            border: none; 
+            color: #fff; 
+            font-family: 'Poppins', sans-serif; 
+            font-size: 0.95rem; 
+            padding: 8px 5px; 
+            outline: none; 
+            resize: none; 
+            max-height: 200px; 
+            min-height: 24px; 
+            line-height: 1.4;
+        }
+        .chat-input::placeholder { color: rgba(255,255,255,0.4); }
+
+        .send-btn { 
+            background: transparent; 
+            color: var(--primary-color); 
+            border: none; 
+            width: 36px; 
+            height: 36px; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            flex-shrink: 0; 
+            font-size: 1.1rem; 
+            margin-bottom: 2px;
+        }
+        .send-btn:hover:not(:disabled) { 
+            background: rgba(138, 43, 226, 0.15); 
+            transform: scale(1.05); 
+        }
+        .send-btn:disabled { color: #3f3f46; cursor: not-allowed; }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 992px) {
+            .menu-toggle { display: block; }
+            
+            .community-sidebar { 
+                position: absolute;
+                top: 0;
+                left: -100%;
+                height: 100%;
+                width: 280px;
+                box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+            }
+            
+            .community-sidebar.open {
+                left: 0;
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+                opacity: 1;
+            }
+
+            .chat-header { padding: 12px 15px; }
+            .chat-header-desc { display: none; } 
+            
+            .message-wrapper { padding: 6px 15px; gap: 12px; }
+            .message-avatar { width: 36px; height: 36px; }
+            
+            /* Box aligned properly to the bottom nav */
+            .chat-input-wrapper { padding: 10px 10px 15px 10px; }
+            .input-glass-container { border-radius: 18px; padding: 5px 8px;}
+        }
+    </style>
+</head>
+<body>
+
+    <main class="community-wrapper">
+        
+        <!-- Mobile Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <aside class="community-sidebar" id="communitySidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title"><i class="fas fa-server" style="color: var(--primary-color);"></i> DramaKan Server</div>
+                <!-- PC Home Button Relocated Here -->
+                <a href="index.html" class="home-return-btn" title="Return to Home"><i class="fas fa-home"></i></a>
+            </div>
+            
+            <div class="channel-list-container">
+                <div class="channel-category"><i class="fas fa-chevron-down" style="font-size: 0.6rem;"></i> Public Rooms</div>
+                <button class="channel-btn active" data-room="global" data-desc="Talk about anything and everything DramaKan!">
+                    <i class="fas fa-hashtag"></i> global-chat
+                </button>
+                <button class="channel-btn" data-room="recommendations" data-desc="Share and discover the best hidden gems.">
+                    <i class="fas fa-hashtag"></i> recommendations
+                </button>
+                <button class="channel-btn" data-room="spoilers" data-desc="Discuss endings and plot twists freely here.">
+                    <i class="fas fa-hashtag"></i> spoilers-zone
+                </button>
+
+                <div class="channel-category" style="margin-top: 20px;"><i class="fas fa-chevron-down" style="font-size: 0.6rem;"></i> Site Support</div>
+                <button class="channel-btn" data-room="feedback" data-desc="Report issues or suggest new features for the app.">
+                    <i class="fas fa-hashtag"></i> feedback-bugs
+                </button>
+            </div>
+        </aside>
+
+        <section class="chat-area">
+            
+            <div class="chat-header">
+                <div class="chat-header-left">
+                    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+                    <div class="chat-header-info">
+                        <div class="chat-header-title" id="current-room-title"><i class="fas fa-hashtag" style="color: var(--text-muted-color);"></i> global-chat</div>
+                        <div class="chat-header-desc" id="current-room-desc">Talk about anything and everything DramaKan!</div>
+                    </div>
+                </div>
+                <div class="online-count">
+                    <div class="online-dot"></div> <span id="random-online-count">142 Online</span>
+                </div>
+            </div>
+
+            <div class="chat-feed" id="chat-feed">
+                <div style="text-align: center; color: var(--text-muted-color); margin-top: 50px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px;"></i>
+                    <p>Connecting to secure channel...</p>
+                </div>
+            </div>
+
+            <div class="chat-input-wrapper">
+                <div class="input-glass-container">
+                    <button class="upload-btn" onclick="alert('File uploads coming soon!')"><i class="fas fa-plus-circle"></i></button>
+                    <textarea id="chat-input" class="chat-input" placeholder="Loading..." rows="1" disabled oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
+                    <button id="send-btn" class="send-btn" disabled><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <i class="fa-solid fa-house nav-icon"></i>
+            <span class="nav-label">Home</span>
+        </a>
+        <a href="community.html" class="bottom-nav-item active">
+            <i class="fa-solid fa-users nav-icon"></i>
+            <span class="nav-label">Community</span>
+        </a>
+        <a href="mylist.html" class="bottom-nav-item">
+            <i class="fa-solid fa-bookmark nav-icon"></i>
+            <span class="nav-label">My List</span>
+        </a>
+        <a href="login.html" class="bottom-nav-item" id="bottomAuthBtn">
+            <i class="fa-solid fa-user nav-icon"></i>
+            <span class="nav-label">Profile</span>
+        </a>
+    </nav>
+
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", authDomain: "dramakan007.firebaseapp.com", projectId: "dramakan007" };
+        
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp(); 
+        const auth = getAuth(app); 
+        const db = getFirestore(app);
+
+        let currentUserProfile = { uid: null, name: "Guest", avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=Guest" };
+        let isLoggedIn = false;
+        let currentRoom = "global";
+        let unsubscribeListener = null;
+
+        const chatFeed = document.getElementById('chat-feed');
+        const inputField = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('communitySidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+
+        menuToggle.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                isLoggedIn = true;
+                currentUserProfile.uid = user.uid;
+                inputField.disabled = false;
+                sendBtn.disabled = false;
+                
+                try {
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        currentUserProfile.name = data.username || "DramaFan";
+                        if (data.avatarUrl) currentUserProfile.avatar = data.avatarUrl;
+                        else currentUserProfile.avatar = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(currentUserProfile.name)}`;
+                    }
+                } catch(e) { console.error("Profile fetch error", e); }
+                
+                listenToRoom(currentRoom);
+            } else {
+                inputField.placeholder = "Please log in to chat...";
+                inputField.disabled = true;
+                sendBtn.disabled = true;
+                
+                inputField.parentElement.addEventListener('click', () => {
+                    alert("You must be logged in to participate in the community.");
+                    window.location.href = "login.html";
+                });
+                listenToRoom(currentRoom);
+            }
+        });
+
+        function listenToRoom(roomName) {
+            if (unsubscribeListener) unsubscribeListener();
+            if(isLoggedIn) inputField.placeholder = `Message #${roomName}`;
+            
+            const roomDesc = document.querySelector(`.channel-btn[data-room="${roomName}"]`).getAttribute('data-desc');
+            const roomTitle = document.querySelector(`.channel-btn[data-room="${roomName}"]`).innerText.trim();
+            
+            chatFeed.innerHTML = `
+                <div style="padding: 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px;">
+                    <div style="width: 68px; height: 68px; background: rgba(138, 43, 226, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; color: var(--primary-color); margin-bottom: 15px;">
+                        <i class="fas fa-hashtag"></i>
+                    </div>
+                    <h2 style="color: #fff; font-size: 1.6rem; margin-bottom: 8px;">Welcome to #${roomTitle}!</h2>
+                    <p style="color: var(--text-muted-color); font-size: 0.95rem;">This is the start of the #${roomTitle} channel. ${roomDesc}</p>
+                </div>
+            `;
+
+            const q = query(collection(db, `chat_${roomName}`), orderBy("timestamp", "asc"), limit(50));
+            unsubscribeListener = onSnapshot(q, (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added") {
+                        const msg = change.doc.data();
+                        appendMessageToDOM(msg, change.doc.id);
+                    }
+                });
+                setTimeout(() => {
+                    chatFeed.scrollTo({ top: chatFeed.scrollHeight, behavior: 'smooth' });
+                }, 100);
+            });
+        }
+
+        function appendMessageToDOM(msg, docId) {
+            const isOwnMessage = (msg.userId === currentUserProfile.uid);
+            let timeString = "Today at " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            if (msg.timestamp) {
+                const date = msg.timestamp.toDate();
+                timeString = date.toLocaleDateString([], {month: 'short', day: 'numeric'}) + " " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }
+            const safeText = msg.text ? msg.text.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
+            
+            const msgHTML = `
+                <div class="message-wrapper ${isOwnMessage ? 'own-message-highlight' : ''}" id="msg-${docId}">
+                    <img src="${msg.userAvatar}" alt="${msg.userName}" class="message-avatar">
+                    <div class="message-content-group">
+                        <div class="message-header">
+                            <span class="message-author" style="${isOwnMessage ? 'color: #c488ff;' : ''}">${msg.userName}</span>
+                            <span class="message-time">${timeString}</span>
+                        </div>
+                        <div class="message-text">${safeText}</div>
+                    </div>
+                </div>
+            `;
+            chatFeed.insertAdjacentHTML('beforeend', msgHTML);
+        }
+
+        async function sendMessage() {
+            const text = inputField.value.trim();
+            if (!text || !isLoggedIn) return;
+            inputField.value = '';
+            inputField.style.height = '24px'; 
+            inputField.focus();
+            try {
+                await addDoc(collection(db, `chat_${currentRoom}`), {
+                    text: text, userId: currentUserProfile.uid, userName: currentUserProfile.name,
+                    userAvatar: currentUserProfile.avatar, timestamp: serverTimestamp()
+                });
+            } catch(e) { console.error("Error sending message", e); alert("Failed to send message. Please try again."); }
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        inputField.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { 
+                e.preventDefault(); 
+                sendMessage(); 
+            }
+        });
+
+        const buttons = document.querySelectorAll('.channel-btn');
+        const headerTitle = document.getElementById('current-room-title');
+        const headerDesc = document.getElementById('current-room-desc');
+        const onlineCount = document.getElementById('random-online-count');
+
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const newRoom = btn.getAttribute('data-room');
+                if(newRoom === currentRoom) return;
+                buttons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentRoom = newRoom;
+                
+                const titleText = btn.innerText.trim();
+                headerTitle.innerHTML = `<i class="fas fa-hashtag" style="color: var(--text-muted-color);"></i> ${titleText}`;
+                headerDesc.innerText = btn.getAttribute('data-desc');
+                onlineCount.innerText = Math.floor(Math.random() * (250 - 40 + 1) + 40) + " Online";
+                listenToRoom(currentRoom);
+
+                if(window.innerWidth <= 992 && sidebar.classList.contains('open')) {
+                    toggleSidebar();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
