@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upgrade to VIP - Dramakan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --primary: #9D4EDD;
+            --primary-glow: rgba(157, 78, 221, 0.4);
+            --glass-bg: rgba(20, 20, 25, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --crown-gold: #f1c40f;
+            --crown-glow: rgba(241, 196, 15, 0.4);
+        }
+        
+        body { font-family: 'Poppins', sans-serif; background: #050507; color: #fff; margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden;}
+        .liquid-bg { position: fixed; inset: 0; background: radial-gradient(circle at top right, rgba(157, 78, 221, 0.15), transparent 50%), radial-gradient(circle at bottom left, rgba(157, 78, 221, 0.1), transparent 50%); z-index: -1; }
+        
+        .container { max-width: 1100px; width: 100%; z-index: 1; padding: 40px 5%; box-sizing: border-box;}
+        
+        /* App-Like Header */
+        .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .nav-header a { color: #9ca3af; text-decoration: none; transition: color 0.3s; font-weight: 500; display: flex; align-items: center; gap: 8px;}
+        .nav-header a:hover { color: var(--primary); }
+        .nav-title { display: none; font-weight: 600; font-size: 1.1rem; }
+
+        .header-text { text-align: center; margin-bottom: 40px; }
+        .header-text h1 { font-size: 2.8rem; margin-bottom: 10px; background: linear-gradient(135deg, #fff, #d8b4fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; letter-spacing: -1px;}
+        .header-text p { color: #9ca3af; font-size: 1.05rem; max-width: 600px; margin: 0 auto;}
+
+        /* Promo Banner */
+        .promo-banner { display: none; background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), rgba(106, 27, 154, 0.2)); border: 1px solid var(--primary); padding: 25px; border-radius: 20px; text-align: center; margin-bottom: 30px; box-shadow: 0 10px 30px var(--primary-glow); animation: fadeDown 0.6s ease; }
+        .promo-banner h2 { margin: 0 0 10px 0; color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1.4rem; }
+        .promo-banner p { margin: 0 0 15px 0; color: #d8b4fe; font-size: 0.95rem; line-height: 1.5; }
+        .btn-activate-trial { background: #f1c40f; color: #000; padding: 12px 25px; border: none; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4); font-family: inherit;}
+        .btn-activate-trial:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(241, 196, 15, 0.6); background: #f39c12;}
+        .btn-activate-trial:disabled { opacity: 0.7; cursor: not-allowed; transform: none;}
+        
+        @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Carousel Wrapper */
+        .carousel-wrapper { position: relative; width: 100%; }
+        .carousel-dots { display: none; justify-content: center; gap: 8px; margin-top: 15px; margin-bottom: 30px;}
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: 0.3s; }
+        .dot.active { background: var(--primary); width: 24px; border-radius: 10px; box-shadow: 0 0 10px var(--primary-glow);}
+
+        /* Pricing Grid (PC Default) */
+        .plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; align-items: stretch; }
+        
+        .plan-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 35px 25px; text-align: left; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box;}
+        .plan-card.selectable { cursor: pointer; }
+        .plan-card.selectable:hover { transform: translateY(-8px); border-color: rgba(157, 78, 221, 0.5); box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 25px rgba(157, 78, 221, 0.15); }
+        .plan-card.selected { border-color: var(--primary); background: rgba(157, 78, 221, 0.08); box-shadow: 0 0 0 2px var(--primary), 0 15px 40px var(--primary-glow); transform: translateY(-8px);}
+        
+        /* Current Active Plan Styling */
+        .plan-card.active-plan { border-color: #10B981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); pointer-events: none;}
+        
+        /* Crown Card Specifics */
+        .plan-card.crown-card.selectable:hover { border-color: var(--crown-gold); box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 25px var(--crown-glow); }
+        .plan-card.crown-card.selected { border-color: var(--crown-gold); background: rgba(241, 196, 15, 0.05); box-shadow: 0 0 0 2px var(--crown-gold), 0 15px 40px var(--crown-glow); }
+
+        .plan-name { font-size: 1.1rem; font-weight: 700; color: #d8b4fe; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
+        .crown-card .plan-name { color: var(--crown-gold); }
+        
+        .plan-price { font-size: 3.2rem; font-weight: 800; margin-bottom: 25px; color: #fff; line-height: 1; display: flex; align-items: baseline; letter-spacing: -1px;}
+        .plan-price span { font-size: 1rem; font-weight: 500; color: #9ca3af; margin-left: 5px; letter-spacing: 0;}
+        
+        .plan-features { list-style: none; padding: 0; margin: 0 0 30px 0; flex-grow: 1; }
+        .plan-features li { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 15px; font-size: 0.9rem; color: #d1d5db; line-height: 1.4;}
+        .plan-features li i.fa-check { color: #10B981; margin-top: 3px; font-size: 0.95rem;}
+        .plan-features li i.fa-times { color: #EF4444; margin-top: 3px; font-size: 0.95rem; opacity: 0.7;}
+        
+        .popular-tag { position: absolute; top: 18px; right: -35px; background: #E50914; color: #fff; padding: 5px 40px; font-size: 0.75rem; font-weight: 700; transform: rotate(45deg); letter-spacing: 1px; box-shadow: 0 2px 10px rgba(229,9,20,0.5);}
+        .crown-tag { background: linear-gradient(135deg, #f1c40f, #d4af37); color: #000; box-shadow: 0 2px 15px var(--crown-glow);}
+
+        .plan-action-btn { width: 100%; padding: 16px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; font-family: inherit; font-size: 1.05rem;}
+        .btn-outline { border: 1px solid var(--primary); background: transparent; color: #fff; }
+        .btn-outline-crown { border: 1px solid var(--crown-gold); background: transparent; color: #fff; }
+        .plan-card.selectable:hover .btn-outline { background: rgba(157, 78, 221, 0.1); }
+        .plan-card.crown-card.selectable:hover .btn-outline-crown { background: rgba(241, 196, 15, 0.1); }
+
+        /* Animation to encourage Crown upgrade */
+        @keyframes pulseCrown { 0% { box-shadow: 0 0 0 0 var(--crown-glow); } 70% { box-shadow: 0 0 0 15px rgba(241,196,15,0); } 100% { box-shadow: 0 0 0 0 rgba(241,196,15,0); } }
+        .upgrade-pulse { animation: pulseCrown 2s infinite; border-color: var(--crown-gold) !important; }
+
+        /* Payment Section */
+        .payment-section { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px; display: none; animation: fadeUp 0.5s ease; margin-top: 40px;}
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .payment-flex { display: flex; gap: 40px; flex-wrap: wrap; align-items: flex-start;}
+        .qr-container { flex: 1; min-width: 250px; display: flex; flex-direction: column; align-items: center; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 40px;}
+        .qr-code { width: 220px; height: 220px; border-radius: 16px; border: 4px solid var(--primary); margin-bottom: 15px; background: #fff; padding: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); transition: border-color 0.3s;}
+        .upi-id { font-family: monospace; font-size: 1.1rem; color: #d8b4fe; background: rgba(157, 78, 221, 0.15); padding: 8px 20px; border-radius: 50px; border: 1px solid rgba(157, 78, 221, 0.3); transition: all 0.3s;}
+
+        .form-container { flex: 1; min-width: 250px; display: flex; flex-direction: column; justify-content: center;}
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #9ca3af; font-size: 0.9rem; font-weight: 500;}
+        input { width: 100%; padding: 15px; border-radius: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 1rem; outline: none; box-sizing: border-box; transition: 0.3s; font-family: inherit;}
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(157, 78, 221, 0.2); background: rgba(0,0,0,0.6);}
+        
+        .btn-submit { width: 100%; padding: 16px; border-radius: 12px; border: none; background: linear-gradient(135deg, var(--primary), #7b2cbf); color: #fff; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: 0.3s; box-shadow: 0 8px 20px var(--primary-glow); display: flex; justify-content: center; align-items: center; gap: 10px;}
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(157, 78, 221, 0.6); }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* T&C Guidelines */
+        .guidelines-box { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); border-radius: 16px; padding: 25px; margin-top: 30px;}
+        .guidelines-box h3 { margin: 0 0 15px 0; color: #fff; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;}
+        .guidelines-box ul { padding-left: 20px; margin: 0; color: #9ca3af; font-size: 0.85rem; line-height: 1.6;}
+        .guidelines-box li { margin-bottom: 8px; }
+        .guidelines-box strong { color: #d8b4fe; }
+
+        /* =========================================
+           MOBILE APP-LIKE OPTIMIZATION (SWIPE CAROUSEL)
+        ========================================= */
+        @media (max-width: 768px) {
+            .container { padding: 0 0 40px 0; }
+            
+            /* Sticky Frosted Header */
+            .nav-header { 
+                position: sticky; top: 0; z-index: 100;
+                margin: 0 0 20px 0; padding: 15px 20px;
+                background: rgba(5, 5, 7, 0.85);
+                backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+                border-bottom: 1px solid var(--glass-border);
+            }
+            .nav-header a span { display: none; } 
+            .nav-title { display: block; }
+
+            .header-text { margin-top: 10px; margin-bottom: 15px; padding: 0 20px; }
+            .header-text h1 { font-size: 2.2rem; }
+            .header-text p { font-size: 0.95rem; }
+            .promo-banner { margin: 0 20px 20px 20px; }
+
+            /* Interactive Carousel Magic */
+            .carousel-dots { display: flex; }
+            .plans-grid { 
+                display: flex; 
+                flex-wrap: nowrap; 
+                overflow-x: auto; 
+                scroll-snap-type: x mandatory; 
+                gap: 15px; 
+                /* 17vw padding perfectly centers a 66vw card and shows siblings on edges */
+                padding: 10px 17vw 30px 17vw; 
+                scrollbar-width: none; 
+                scroll-behavior: smooth;
+            }
+            .plans-grid::-webkit-scrollbar { display: none; } 
+            
+            .plan-card { 
+                min-width: 66vw; /* Reduced width so sibling cards peek out prominently */
+                max-width: 66vw;
+                scroll-snap-align: center;
+                flex-shrink: 0;
+                padding: 25px 20px; /* Reduced height padding */
+                border-radius: 20px; 
+                margin: 0;
+            }
+
+            .plan-name { font-size: 1rem; }
+            .plan-price { font-size: 2.2rem; margin-bottom: 15px;}
+            .plan-features { margin-bottom: 20px; }
+            .plan-features li { font-size: 0.8rem; margin-bottom: 10px; gap: 10px;}
+            .plan-action-btn { padding: 12px; font-size: 0.95rem; }
+            
+            .payment-section { padding: 25px 20px; border-radius: 20px; margin: 0 20px 30px 20px;}
+            .payment-flex { flex-direction: column; gap: 25px;}
+            .qr-container { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-right: 0; padding-bottom: 25px; width: 100%;}
+            .guidelines-box { padding: 20px; border-radius: 20px; margin: 0 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="liquid-bg"></div>
+
+    <div class="container">
+        <div class="nav-header">
+            <a href="index.html" title="Back"><i class="fas fa-arrow-left" style="font-size: 1.2rem;"></i> <span>Back</span></a>
+            <div class="nav-title">Premium</div>
+            <a href="profile.html" title="Profile"><span>Profile</span> <i class="fas fa-user-circle" style="font-size: 1.3rem;"></i></a>
+        </div>
+        
+        <div class="header-text">
+            <h1>Select a Plan</h1>
+            <p>Unlock the ultimate streaming experience. Choose a plan that fits your binge-watching style.</p>
+        </div>
+
+        <div class="promo-banner" id="promoBanner"></div>
+
+        <div class="carousel-wrapper">
+            <div class="plans-grid" id="plansGrid">
+                
+                <div class="plan-card" id="cardBasic" data-plan="Basic" style="opacity: 0.8;">
+                    <div class="plan-name" style="color: #9ca3af;">Basic</div>
+                    <div class="plan-price">₹0 <span>/forever</span></div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Standard Quality (720p)</li>
+                        <li><i class="fas fa-times"></i> Multiple Profiles (1 Only)</li>
+                        <li><i class="fas fa-times"></i> Website Pop-up Ads</li>
+                        <li><i class="fas fa-times"></i> Video Player Ads</li>
+                    </ul>
+                    <button class="plan-action-btn" style="background: rgba(255,255,255,0.05); color: #9ca3af; border: none; pointer-events: none;">Current Plan</button>
+                </div>
+
+                <div class="plan-card selectable" id="cardElite" data-plan="Elite_VIP_35" data-price="35" onclick="selectPlan(this)">
+                    <div class="plan-name">Elite VIP</div>
+                    <div class="plan-price">₹35 <span>/month</span></div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> <strong style="color:#fff;">Full HD 1080p Quality</strong></li>
+                        <li><i class="fas fa-check"></i> <strong style="color:#fff;">2 Shared Profiles</strong></li>
+                        <li><i class="fas fa-check"></i> <strong style="color:#fff;">Zero Website UI Ads</strong></li>
+                        <li><i class="fas fa-times"></i> Video Player Ads</li>
+                    </ul>
+                    <button class="plan-action-btn btn-outline">Select Elite</button>
+                </div>
+
+                <div class="plan-card crown-card selectable" id="cardCrown" data-plan="Crown_VIP_99" data-price="99" onclick="selectPlan(this)">
+                    <div class="popular-tag crown-tag">BEST VALUE</div>
+                    <div class="plan-name">Crown VIP</div>
+                    <div class="plan-price">₹99 <span>/month</span></div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> <strong style="color:#fff;">Full HD 1080p Quality</strong></li>
+                        <li><i class="fas fa-check"></i> <strong style="color:#fff;">Up to 4 Profiles</strong></li>
+                        <li><i class="fas fa-check"></i> <strong style="color:#fff;">Zero Website UI Ads</strong></li>
+                        <li><i class="fas fa-check"></i> <strong style="color:var(--crown-gold);">Zero Video Player Ads</strong></li>
+                    </ul>
+                    <button class="plan-action-btn btn-outline-crown">Select Crown</button>
+                </div>
+
+            </div>
+            
+            <div class="carousel-dots" id="carouselDots">
+                <div class="dot"></div>
+                <div class="dot active"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+
+        <div class="payment-section" id="paymentSection">
+            <div class="payment-flex">
+                <div class="qr-container">
+                    <p style="margin-top: 0; color: #fff; font-weight: 600; margin-bottom: 15px; text-align: center; font-size: 1.1rem;">1. Scan & Pay <span id="displayPrice" style="color:#d8b4fe;"></span></p>
+                    <img src="qr.png" alt="UPI QR Code" class="qr-code" id="qrCodeImg">
+                    <div class="upi-id" id="upiTextDisplay">kalkandha6700@okhdfcbank</div>
+                </div>
+
+                <div class="form-container">
+                    <form id="paymentForm">
+                        <p style="margin-top: 0; color: #fff; font-weight: 600; margin-bottom: 15px; font-size: 1.1rem;">2. Submit Transaction Details</p>
+                        <div class="form-group">
+                            <label>UPI Reference Number (12-digit UTR)</label>
+                            <input type="text" id="trxId" required placeholder="e.g., 312345678901" pattern="\d{10,14}" title="Please enter a valid numeric UTR/Transaction ID">
+                        </div>
+                        <button type="submit" class="btn-submit" id="submitBtn"><i class="fas fa-shield-alt"></i> Verify Payment</button>
+                        <div id="statusMsg" style="margin-top: 15px; text-align: center; font-size: 0.95rem; line-height: 1.5;"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="guidelines-box">
+            <h3><i class="fas fa-info-circle" style="color: var(--primary);"></i> Purchase Guidelines & Terms</h3>
+            <ul>
+                <li><strong>Manual Verification:</strong> Because we use direct UPI to avoid gateway fees, all payments are verified manually. Your VIP status will activate within <strong>2 to 4 hours</strong> of submitting the UTR.</li>
+                <li><strong>Ad Terminology:</strong> "UI Ads" refer to pop-ups on the Dramakan website. "Video Player Ads" refer to ads embedded directly inside the video stream.</li>
+                <li><strong>Refund Policy:</strong> All subscription purchases are final and non-refundable once activated.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script type="module">
+        // ✅ Added setDoc to the imports to ensure the trial button operates flawlessly
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDoc, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", authDomain: "dramakan007.firebaseapp.com", projectId: "dramakan007" };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let selectedPlan = "";
+        let currentUser = null;
+        let userData = null;
+
+        // Interactive Mobile Carousel Logic
+        const grid = document.getElementById('plansGrid');
+        const dots = document.getElementById('carouselDots').querySelectorAll('.dot');
+        
+        // Auto-Center the Elite Plan on Mobile Load so both side cards peek
+        setTimeout(() => {
+            if (window.innerWidth <= 768) {
+                const eliteCard = document.getElementById('cardElite');
+                if(grid && eliteCard) {
+                    const scrollPos = eliteCard.offsetLeft - grid.offsetLeft - (grid.clientWidth / 2) + (eliteCard.offsetWidth / 2);
+                    grid.scrollTo({
+                        left: scrollPos,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        }, 300);
+
+        grid.addEventListener('scroll', () => {
+            if(window.innerWidth > 768) return;
+            const scrollLeft = grid.scrollLeft;
+            const cardWidth = grid.offsetWidth * 0.66; // matches the 66vw width
+            const index = Math.round(scrollLeft / cardWidth);
+            
+            dots.forEach(d => d.classList.remove('active'));
+            if(dots[index]) dots[index].classList.add('active');
+        });
+
+        // Cutoff Date for Free Elite VIP Promo: June 1, 2026
+        const PROMO_CUTOFF_DATE = new Date("2026-06-01T00:00:00Z").getTime();
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if(snap.exists()) userData = snap.data();
+
+                const now = Date.now();
+                let activePlan = "Basic";
+                
+                // Determine Current Plan from Database
+                if (userData && userData.isPremium && userData.premiumExpiry > now) {
+                    activePlan = userData.premiumPlan || "Elite_VIP_35"; // Fallback to Elite for legacy
+                }
+
+                // Apply "Current Plan" State visually
+                document.querySelectorAll('.plan-card').forEach(card => {
+                    const planId = card.getAttribute('data-plan');
+                    if (planId === activePlan) {
+                        card.classList.add('active-plan');
+                        card.classList.remove('selectable');
+                        card.onclick = null;
+                        
+                        const btn = card.querySelector('.plan-action-btn');
+                        if (btn) {
+                            btn.innerText = 'Current Plan';
+                            btn.style.background = 'rgba(16, 185, 129, 0.15)';
+                            btn.style.color = '#10B981';
+                            btn.style.border = '1px solid #10B981';
+                        }
+                    }
+                });
+
+                // Check Early Adopter Free Trial Eligibility
+                const accountCreationTime = new Date(user.metadata.creationTime).getTime();
+                const isEligibleForTrial = accountCreationTime < PROMO_CUTOFF_DATE;
+                const hasClaimedTrial = userData && userData.trialClaimed === true;
+                
+                if (isEligibleForTrial && !hasClaimedTrial && activePlan === "Basic") {
+                    
+                    document.getElementById('promoBanner').style.display = 'block';
+                    document.getElementById('promoBanner').innerHTML = `
+                        <h2><i class="fas fa-gift" style="color: #f1c40f;"></i> Claim Your Free Trial!</h2>
+                        <p>Because you registered before June 1st, you get <strong>1 Month of Elite VIP</strong> absolutely free.</p>
+                        <button id="activateTrialBtn" class="btn-activate-trial">Activate Elite Trial Now</button>
+                    `;
+
+                    // Handle 1-Click Activation
+                    document.getElementById('activateTrialBtn').addEventListener('click', async () => {
+                        const btn = document.getElementById('activateTrialBtn');
+                        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Activating...';
+                        btn.disabled = true;
+                        try {
+                            // ✅ Safety Enhancement: Safely sets data even if the user document is empty
+                            await setDoc(doc(db, "users", currentUser.uid), {
+                                isPremium: true,
+                                premiumPlan: 'Elite_VIP_35',
+                                premiumExpiry: Date.now() + (30 * 24 * 60 * 60 * 1000),
+                                trialClaimed: true
+                            }, { merge: true });
+                            
+                            alert("Success! 30 Days of Elite VIP has been activated.");
+                            window.location.reload();
+                        } catch(e) {
+                            alert("Error: " + e.message);
+                            btn.innerHTML = 'Activate Elite Trial Now';
+                            btn.disabled = false;
+                        }
+                    });
+                }
+                
+                // If they are on Elite Trial, pulse the Crown upgrade
+                if (activePlan === "Elite_VIP_35") {
+                    const crownCard = document.getElementById('cardCrown');
+                    crownCard.classList.add('upgrade-pulse');
+                    const crownBtn = crownCard.querySelector('.plan-action-btn');
+                    if(crownBtn) crownBtn.innerText = 'Upgrade to Crown';
+                }
+
+            } else {
+                alert("Please login to view or purchase VIP plans.");
+                window.location.href = "login.html";
+            }
+        });
+
+        window.selectPlan = function(element) {
+            // Ignore if clicked on the active plan
+            if (element.classList.contains('active-plan')) return;
+
+            // Reset all selectable cards (except the currently active plan)
+            document.querySelectorAll('.plan-card.selectable:not(.active-plan)').forEach(c => {
+                c.classList.remove('selected');
+                const btn = c.querySelector('.plan-action-btn');
+                if(btn) { 
+                    btn.style.background = 'transparent';
+                    if(c.id === 'cardCrown') {
+                        btn.style.color = '#fff'; 
+                        btn.style.border = '1px solid var(--crown-gold)';
+                        if(btn.innerText === 'Selected') btn.innerText = 'Upgrade to Crown';
+                    } else {
+                        btn.style.color = '#fff'; 
+                        btn.style.border = '1px solid var(--primary)';
+                        if(btn.innerText === 'Selected') btn.innerText = 'Select Elite';
+                    }
+                }
+            });
+            
+            // Highlight selected card
+            element.classList.add('selected');
+            selectedPlan = element.getAttribute('data-plan');
+            
+            const selectedBtn = element.querySelector('.plan-action-btn');
+            if (element.id === 'cardCrown') {
+                selectedBtn.style.background = 'var(--crown-gold)';
+                selectedBtn.style.color = '#000';
+            } else {
+                selectedBtn.style.background = 'var(--primary)';
+            }
+            selectedBtn.style.border = 'none';
+            selectedBtn.innerText = 'Selected';
+
+            // Update Payment UI
+            document.getElementById('displayPrice').innerText = "₹" + element.getAttribute('data-price');
+            document.getElementById('paymentSection').style.display = 'block';
+            
+            const qrCodeImg = document.getElementById('qrCodeImg');
+            const upiText = document.getElementById('upiTextDisplay');
+            if (element.id === 'cardCrown') {
+                qrCodeImg.style.borderColor = 'var(--crown-gold)';
+                upiText.style.color = 'var(--crown-gold)';
+                upiText.style.border = '1px solid var(--crown-gold)';
+                upiText.style.background = 'rgba(241, 196, 15, 0.15)';
+            } else {
+                qrCodeImg.style.borderColor = 'var(--primary)';
+                upiText.style.color = '#d8b4fe';
+                upiText.style.border = '1px solid rgba(157, 78, 221, 0.3)';
+                upiText.style.background = 'rgba(157, 78, 221, 0.15)';
+            }
+
+            setTimeout(() => {
+                document.getElementById('paymentSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        };
+
+        document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return alert("You must be logged in.");
+            
+            const trxId = document.getElementById('trxId').value.trim();
+            const btn = document.getElementById('submitBtn');
+            const status = document.getElementById('statusMsg');
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            btn.disabled = true;
+
+            try {
+                const durationDays = 30; // Default monthly
+
+                await addDoc(collection(db, "premium_requests"), {
+                    userId: currentUser.uid || "",
+                    userEmail: currentUser.email || "No Email Provided",
+                    username: (userData && userData.username) ? userData.username : (currentUser.displayName || "User"),
+                    plan: selectedPlan || "Elite_VIP_35",
+                    durationDays: durationDays,
+                    transactionId: trxId,
+                    status: "Pending",
+                    createdAt: Date.now()
+                });
+
+                document.getElementById('paymentForm').style.display = 'none';
+                document.querySelector('.qr-container').style.display = 'none';
+                status.style.color = "#10B981";
+                status.innerHTML = "<i class='fas fa-check-circle' style='font-size:3.5rem; margin-bottom:15px; display:block;'></i><br><strong style='font-size:1.2rem; color:#fff;'>Verification Pending</strong><br><br><span style='color:#9ca3af;'>We have successfully received your UTR number. Your VIP status will be activated within 2 to 4 hours. You can safely close this page.</span>";
+                
+            } catch (err) {
+                console.error("Firebase Error:", err);
+                status.style.color = "#EF4444";
+                status.innerText = "Error: " + err.message;
+                btn.innerHTML = '<i class="fas fa-shield-alt"></i> Verify Payment';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <script src="bottom-bar.js" defer></script>
+    <script src="premium-manager.js" defer></script>
     
     <style>
         /* =========================================
@@ -77,16 +78,11 @@
         .header-logo:hover { transform: scale(1.05); }
         .header-logo span { color: var(--primary-color); }
 
-        .mobile-only { display: none; }
-        .mobile-profile-header { align-items: center; gap: 12px; cursor: pointer; }
-        .mobile-header-avatar { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,255,255,0.2); }
-        .mobile-header-name { font-size: 1.15rem; font-weight: 700; color: #fff; display: flex; align-items: center; letter-spacing: -0.3px;}
-
-        .header-icons { display: flex; align-items: center; gap: 20px; position: relative; }
+        .header-icons { display: flex; align-items: center; gap: 15px; position: relative; }
         .header-icons i { 
-            font-size: 1.3rem; color: var(--text-color); cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
+            font-size: 1.2rem; color: var(--text-color); cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
             background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;
+            width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
             border-radius: 50%; border: 1px solid var(--glass-border);
         }
         .header-icons i:hover { color: #fff; background: var(--primary-color); border-color: var(--primary-color); transform: scale(1.05); box-shadow: 0 5px 15px var(--primary-glow); }
@@ -165,27 +161,56 @@
 
         .hero-right { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: center; flex: 1; }
         .hero-greeting { font-size: 1.2rem; color: var(--text-muted); font-weight: 500; margin-bottom: 0; }
+        
         .gradient-text { 
-            font-size: 3rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px; line-height: 1.1;
+            font-size: 3rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 10px; line-height: 1.1;
             background: linear-gradient(135deg, #fff 0%, #d8b4fe 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
             text-shadow: 0 4px 20px rgba(157, 78, 221, 0.3);
         }
         
-        .hero-action-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .hero-actions-wrapper { display: flex; align-items: center; flex-wrap: wrap; gap: 15px; margin-top: 5px; }
         
-        .hero-stats { display: flex; gap: 15px; flex-wrap: wrap; }
+        .hero-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 0; align-items: center; }
+        .hero-action-row { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; margin-top: 0; }
+        
         .stat-pill { 
-            background: rgba(0,0,0,0.4); padding: 10px 20px; border-radius: 12px; 
-            border: 1px solid var(--glass-border); font-size: 0.9rem; font-weight: 600; color: #fff;
-            display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            padding: 8px 16px; border-radius: 12px; 
+            font-size: 0.85rem; font-weight: 600; color: #fff;
+            display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        .stat-pill i { color: var(--primary-color); font-size: 1.1rem; }
+        .stat-basic { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); }
+        .stat-elite { background: linear-gradient(135deg, #10B981, #059669); border: none; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
+        .stat-crown { background: linear-gradient(135deg, #f1c40f, #d4af37); color: #000; border: none; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4); }
+        
+        .stat-pill i { font-size: 1rem; }
+        .stat-basic i { color: var(--primary-color); }
+
+        /* Dynamic Animated Upgrade Button */
+        .btn-upgrade-hero {
+            padding: 8px 18px; border-radius: 12px; font-weight: 600; font-size: 0.85rem;
+            display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .upgrade-elite {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-rich)); color: #fff;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            animation: pulseElite 2s infinite;
+        }
+        @keyframes pulseElite { 0% { box-shadow: 0 0 0 0 var(--primary-glow); } 70% { box-shadow: 0 0 0 10px rgba(157,78,221,0); } 100% { box-shadow: 0 0 0 0 rgba(157,78,221,0); } }
+        
+        .upgrade-crown {
+            background: linear-gradient(135deg, #f1c40f, #d4af37); color: #000;
+            box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4);
+            animation: pulseCrown 2s infinite;
+        }
+        @keyframes pulseCrown { 0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(241,196,15,0); } 100% { box-shadow: 0 0 0 0 rgba(241,196,15,0); } }
+
 
         .btn-switch-profile {
             background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border-light);
-            color: #fff; padding: 10px 24px; border-radius: 12px; font-weight: 600; font-size: 0.95rem;
-            display: flex; align-items: center; gap: 10px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            color: #fff; padding: 10px 20px; border-radius: 12px; font-weight: 600; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         .btn-switch-profile:hover {
             background: var(--primary-color); border-color: var(--primary-color);
@@ -385,9 +410,7 @@
         ========================================= */
         @media (max-width: 768px) {
             .pc-only { display: none !important; }
-            
-            .profile-hero-panel { display: none !important; }
-            .page-container { padding-top: 95px; }
+            .page-container { padding-top: 85px; }
             
             .app-header { 
                 padding: 15px 5%; 
@@ -404,6 +427,29 @@
             .notif-dropdown {
                 position: fixed; top: 80px; right: 5%; width: 90%; max-width: none; transform-origin: top right;
             }
+
+            /* Responsive Hero Banner for Mobile */
+            .profile-hero-panel {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+                padding: 20px 15px;
+                border-radius: 16px;
+                margin: 0 5% 20px 5%;
+            }
+            .hero-right {
+                align-items: center;
+            }
+            .hero-greeting { font-size: 0.9rem; margin-bottom: -5px; }
+            .gradient-text { font-size: 1.8rem; margin-bottom: 5px; }
+            .hero-actions-wrapper { justify-content: center; gap: 10px; margin-top: 5px; }
+            .hero-stats { justify-content: center; margin-bottom: 0; gap: 10px; }
+            .hero-action-row { justify-content: center; margin-top: 0; gap: 10px; }
+            .hero-avatar { width: 85px; height: 85px; }
+            .avatar-container::before { inset: -4px; }
+
+            /* Smaller buttons for single line fit on mobile */
+            .stat-pill, .btn-upgrade-hero, .btn-switch-profile { padding: 6px 12px; font-size: 0.75rem; }
         }
 
         @media (max-width: 992px) {
@@ -433,6 +479,8 @@
         .mobile-only { display: none !important; }
         @media (max-width: 768px) {
             .mobile-only:not(.affiliate-btn-trigger) { display: flex !important; }
+            .mobile-only.affiliate-btn-trigger { display: none !important; } /* Only show affiliate in bottom nav or hero on mobile */
+            body.is-affiliate .mobile-only.affiliate-btn-trigger { display: flex !important; }
         }
     </style>
 </head>
@@ -442,13 +490,8 @@
     <div class="liquid-orb orb-2"></div>
 
     <header class="app-header">
-        <a href="index.html" class="header-logo pc-only">Drama<span>Kan</span></a>
+        <a href="index.html" class="header-logo">Drama<span>Kan</span></a>
         
-        <div class="mobile-profile-header mobile-only" onclick="openModal('profilesModal')" title="Switch Profile">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" class="mobile-header-avatar" id="mobileHeaderAvatar" alt="Profile">
-            <span class="mobile-header-name"><span id="mobileHeaderNameText">Loading...</span> <i class="fas fa-caret-down" style="font-size: 0.8rem; color: var(--text-muted); margin-left: 4px;"></i></span>
-        </div>
-
         <div class="header-icons">
             <i class="fas fa-chart-line mobile-only affiliate-btn-trigger" id="mobileAffiliateBtn" style="color: #d4af37; border-color: rgba(212,175,55,0.3);" title="Creator Dashboard" onclick="toggleCreatorView()"></i>
             
@@ -470,7 +513,7 @@
 
     <main class="page-container">
         
-        <div class="profile-hero-panel pc-only">
+        <div class="profile-hero-panel">
             <div class="hero-bg-effect"></div>
             
             <div class="hero-left">
@@ -483,19 +526,24 @@
                 <h2 class="hero-greeting">Welcome back,</h2>
                 <h1 class="gradient-text" id="headerName">Loading...</h1>
                 
-                <div class="hero-action-row">
+                <div class="hero-actions-wrapper">
                     <div class="hero-stats" id="pc-viewer-stats">
-                        <span class="stat-pill" id="stat-list-count"><i class="fas fa-bookmark"></i> 0 in list</span>
-                        <span class="stat-pill" id="stat-req-count"><i class="fas fa-paper-plane"></i> 0 pending</span>
+                        <span class="stat-pill stat-basic" id="stat-vip-status"><i class="fas fa-user"></i> Basic Plan</span>
+                        <a href="subscription.html" class="btn-upgrade-hero upgrade-elite" id="heroUpgradeBtn"><i class="fas fa-bolt"></i> Upgrade VIP</a>
+                        
+                        <span id="stat-list-count" style="display: none !important;"></span>
+                        <span id="stat-req-count" style="display: none !important;"></span>
                     </div>
                     
-                    <button class="btn-switch-profile" id="profileSelectorBtn" title="Switch Profile">
-                        <i class="fas fa-users"></i> Switch Profile
-                    </button>
-                    
-                    <button class="btn-switch-profile affiliate-btn affiliate-btn-trigger pc-only" id="pcAffiliateBtn" style="border-color: rgba(212,175,55,0.4); color: #d4af37;" title="Creator Dashboard" onclick="toggleCreatorView()">
-                        <i class="fas fa-chart-line"></i> Affiliate Panel
-                    </button>
+                    <div class="hero-action-row">
+                        <button class="btn-switch-profile" id="profileSelectorBtn" title="Switch Profile">
+                            <i class="fas fa-users"></i> Switch Profile
+                        </button>
+                        
+                        <button class="btn-switch-profile affiliate-btn affiliate-btn-trigger pc-only" id="pcAffiliateBtn" style="border-color: rgba(212,175,55,0.4); color: #d4af37;" title="Creator Dashboard" onclick="toggleCreatorView()">
+                            <i class="fas fa-chart-line"></i> Affiliate Panel
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -965,22 +1013,6 @@
                 }
             }
             document.getElementById('headerName').textContent = activeProf.name || 'User';
-            
-            // Sync Mobile Nav Header Avatar
-            const mobileAvatar = document.getElementById('mobileHeaderAvatar');
-            const mobileName = document.getElementById('mobileHeaderNameText');
-            if (mobileAvatar) {
-                if (activeProf.avatar && activeProf.avatar.length <= 10 && !activeProf.avatar.includes('http') && !activeProf.avatar.includes('data:image')) {
-                    mobileAvatar.outerHTML = `<div class="mobile-header-avatar" id="mobileHeaderAvatar" style="display:flex; align-items:center; justify-content:center; font-size:1.2rem; background: var(--glass-bg);">${activeProf.avatar}</div>`;
-                } else {
-                    if(mobileAvatar.tagName === 'DIV') {
-                        mobileAvatar.outerHTML = `<img src="${activeProf.avatar}" class="mobile-header-avatar" id="mobileHeaderAvatar" alt="Profile">`;
-                    } else {
-                        mobileAvatar.src = activeProf.avatar;
-                    }
-                }
-            }
-            if (mobileName) mobileName.textContent = activeProf.name || 'User';
         }
 
         function refreshProfileData() {
@@ -996,7 +1028,10 @@
             }
             
             renderPosterRow('mylist-container', cachedMyList, 'mylist');
-            document.getElementById('stat-list-count').innerHTML = `<i class="fas fa-bookmark"></i> ${cachedMyList.length} in list`;
+            
+            // Check if element exists before modifying to prevent null errors due to hidden spans
+            const listCountEl = document.getElementById('stat-list-count');
+            if (listCountEl) listCountEl.innerHTML = `<i class="fas fa-bookmark"></i> ${cachedMyList.length} in list`;
             
             let historyObj = {};
             const specificHistoryKey = 'dramakan_history_' + activeProf.id;
@@ -1033,11 +1068,38 @@
             closeModal('profilesModal');
         };
 
-        window.openAddProfileModal = () => {
+        window.openAddProfileModal = async () => {
+            // 1. Check if user actively purchased VIP
+            let isPremium = false;
+            if (currentUserDocRef) {
+                const snap = await getDoc(currentUserDocRef);
+                if (snap.exists() && snap.data().isPremium && snap.data().premiumExpiry > Date.now()) {
+                    isPremium = true;
+                }
+            }
+            
+            // 2. Check if they are in the 30-Day Early Adopter Trial
+            let isEarlyAdopterTrial = false;
+            if (auth.currentUser) {
+                const creationTime = new Date(auth.currentUser.metadata.creationTime).getTime();
+                const oneMonthLater = creationTime + (30 * 24 * 60 * 60 * 1000);
+                if (creationTime < new Date("2026-06-01T00:00:00Z").getTime() && Date.now() < oneMonthLater) {
+                    isEarlyAdopterTrial = true;
+                }
+            }
+
+            // Lock it down if they have neither
+            if (!isPremium && !isEarlyAdopterTrial) {
+                alert("Multiple profiles are only available for Elite & Crown VIP members. Upgrade today to unlock!");
+                window.location.href = 'subscription.html';
+                return;
+            }
+
             if(userProfiles.length >= 4) {
                 alert("Maximum limit of 4 profiles reached.");
                 return;
             }
+            
             closeModal('profilesModal');
             document.getElementById('new-profile-name').value = '';
             openModal('addProfileModal');
@@ -1189,7 +1251,10 @@
                 }
                 
                 renderPosterRow('mylist-container', cachedMyList, 'mylist');
-                document.getElementById('stat-list-count').innerHTML = `<i class="fas fa-bookmark"></i> ${cachedMyList.length} in list`;
+                
+                // Safe check
+                const listCountEl = document.getElementById('stat-list-count');
+                if (listCountEl) listCountEl.innerHTML = `<i class="fas fa-bookmark"></i> ${cachedMyList.length} in list`;
             }
         };
 
@@ -1219,7 +1284,8 @@
                 </a>`;
             }).join('');
             
-            document.getElementById('stat-req-count').innerHTML = `<i class="fas fa-paper-plane"></i> ${pendingCount} pending`;
+            const reqCountEl = document.getElementById('stat-req-count');
+            if(reqCountEl) reqCountEl.innerHTML = `<i class="fas fa-paper-plane"></i> ${pendingCount} pending`;
         }
 
         // =====================================
@@ -1266,6 +1332,45 @@
 
                         renderProfiles();
                         refreshProfileData();
+
+                        // --- VIP STATUS UI SYNC ---
+                        const now = Date.now();
+                        let activePlan = "Basic";
+                        if (data.isPremium && data.premiumExpiry > now) {
+                            activePlan = data.premiumPlan || "Elite_VIP_35";
+                        }
+
+                        // Update the VIP Banner Elements
+                        const statVipStatus = document.getElementById('stat-vip-status');
+                        const heroUpgradeBtn = document.getElementById('heroUpgradeBtn');
+
+                        if (activePlan.includes('Crown')) {
+                            if(statVipStatus) {
+                                statVipStatus.innerHTML = '<i class="fas fa-crown"></i> Crown VIP';
+                                statVipStatus.className = 'stat-pill stat-crown';
+                            }
+                            if(heroUpgradeBtn) heroUpgradeBtn.style.display = 'none'; // Max tier
+                        } else if (activePlan.includes('Elite')) {
+                            if(statVipStatus) {
+                                statVipStatus.innerHTML = '<i class="fas fa-gem"></i> Elite VIP';
+                                statVipStatus.className = 'stat-pill stat-elite';
+                            }
+                            if(heroUpgradeBtn) {
+                                heroUpgradeBtn.style.display = 'inline-flex';
+                                heroUpgradeBtn.innerHTML = '<i class="fas fa-arrow-up"></i> Upgrade Crown';
+                                heroUpgradeBtn.className = 'btn-upgrade-hero upgrade-crown';
+                            }
+                        } else {
+                            if(statVipStatus) {
+                                statVipStatus.innerHTML = '<i class="fas fa-user"></i> Basic Plan';
+                                statVipStatus.className = 'stat-pill stat-basic';
+                            }
+                            if(heroUpgradeBtn) {
+                                heroUpgradeBtn.style.display = 'inline-flex';
+                                heroUpgradeBtn.innerHTML = '<i class="fas fa-bolt"></i> Upgrade VIP';
+                                heroUpgradeBtn.className = 'btn-upgrade-hero upgrade-elite';
+                            }
+                        }
                     }
 
                     // Requests fetch
@@ -1283,7 +1388,6 @@
                     if (creatorSnap.exists()) {
                         const cData = creatorSnap.data();
                         
-                        // FIX: Relaxing the strict check to support databases that don't have accountStatus explicitly set
                         const currentStatus = cData.accountStatus || "Active";
                         
                         if (["Active", "Warning", "Banned"].includes(currentStatus)) {
@@ -1291,7 +1395,6 @@
                             document.getElementById('ui-total-clicks').textContent = cData.totalClicks || 0;
                             document.getElementById('ui-tracking-link').value = cData.trackingUrl || '';
                             
-                            // Obediently applying the $0.05 payout calculation rate
                             const owed = ((cData.unpaidClicks || 0) * 0.05).toFixed(2);
                             const payoutBtn = document.getElementById('btn-request-payout');
                             const warningBanner = document.getElementById('creator-warning-banner');
@@ -1338,7 +1441,6 @@
                         }
                     }
 
-                    // Re-render the profiles to show the new Affiliate Profile Option if applicable
                     renderProfiles();
 
                 } catch (error) { console.error("Data Load Error:", error); }
