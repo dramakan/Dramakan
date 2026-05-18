@@ -18,224 +18,481 @@
             --surface: #121418;
             --glass: rgba(255, 255, 255, 0.03);
             --border: rgba(255, 255, 255, 0.08);
-            --text-main: #f8f9fa;
-            --text-dim: #a0a0ab;
-            --font-main: 'Plus Jakarta Sans', sans-serif;
-            --font-heading: 'Space Grotesk', sans-serif;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
-
         body {
+            margin: 0;
+            padding: 0;
             background-color: var(--bg-dark);
             color: var(--text-main);
-            font-family: var(--font-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
             line-height: 1.6;
             overflow-x: hidden;
         }
 
-        /* Hero Section */
-        .legal-hero {
-            padding: 100px 20px 60px;
-            background: radial-gradient(circle at 50% -20%, rgba(138, 43, 226, 0.15), transparent);
-            text-align: center;
+        /* Abstract Background Elements */
+        .bg-element {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -1;
+            opacity: 0.4;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+        .bg-1 { width: 40vw; height: 40vw; background: #8A2BE2; top: -10%; left: -10%; }
+        .bg-2 { width: 30vw; height: 30vw; background: #E50914; bottom: -5%; right: -5%; animation-delay: -5s;}
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(5%, 10%) scale(1.1); }
         }
 
-        .legal-hero h1 {
-            font-family: var(--font-heading);
-            font-size: 3rem;
-            margin-bottom: 15px;
-            background: linear-gradient(to right, #fff, #8A2BE2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(8, 9, 10, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 5%;
+            display: flex;
+            align-items: center;
         }
-
-        .last-updated {
-            color: var(--text-dim);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        
+        .back-btn {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 1.2rem;
+            margin-right: 20px;
+            transition: transform 0.3s;
         }
+        .back-btn:hover { transform: translateX(-5px); color: #8A2BE2;}
 
-        /* Layout Container */
-        .legal-container {
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+        .logo span { color: #8A2BE2; }
+
+        /* Main Layout */
+        .layout-container {
             max-width: 1200px;
-            margin: 0 auto 100px;
+            margin: 0 auto;
+            padding: 40px 5%;
             display: grid;
             grid-template-columns: 280px 1fr;
-            gap: 40px;
-            padding: 0 20px;
+            gap: 50px;
         }
 
         /* Sidebar Navigation */
-        .legal-sidebar {
+        .sidebar {
             position: sticky;
             top: 100px;
-            height: fit-content;
+            height: max-content;
         }
 
-        .nav-card {
-            background: var(--surface);
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            background: var(--glass);
             border: 1px solid var(--border);
             border-radius: 20px;
-            padding: 25px;
+            padding: 20px;
         }
 
-        .nav-card h4 { margin-bottom: 20px; font-family: var(--font-heading); color: #8A2BE2; }
+        .nav-item { margin-bottom: 10px; }
+        .nav-item:last-child { margin-bottom: 0; }
 
         .nav-link {
-            display: block;
-            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-muted);
             text-decoration: none;
-            padding: 10px 0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
             font-size: 0.95rem;
-            transition: 0.3s;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
         }
 
-        .nav-link:hover, .nav-link.active { color: var(--text-main); padding-left: 5px; }
-
-        /* Main Content */
-        .legal-content {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 50px;
+        .nav-link i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+            transition: transform 0.3s;
         }
 
-        section { margin-bottom: 60px; }
-        section h2 { 
-            font-family: var(--font-heading); 
-            font-size: 1.8rem; 
-            margin-bottom: 25px; 
+        .nav-link:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .nav-link.active {
+            background: var(--primary-gradient);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        }
+        .nav-link.active i { transform: scale(1.1); }
+
+        /* Content Area */
+        .content-area {
+            padding-bottom: 50px;
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            background: linear-gradient(to right, #fff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+            letter-spacing: -1px;
+        }
+
+        .last-updated {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .content-section {
+            margin-bottom: 60px;
+            scroll-margin-top: 100px; /* For smooth anchor scrolling offset */
+            animation: fadeUp 0.6s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            color: #fff;
+            margin: 0 0 25px 0;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        section h2 i { color: #8A2BE2; font-size: 1.4rem; }
+        
+        .section-title i { color: #8A2BE2; }
 
-        p { margin-bottom: 20px; color: var(--text-dim); font-size: 1.05rem; }
-
-        .highlight-box {
-            background: var(--glass);
-            border-left: 4px solid #8A2BE2;
-            padding: 25px;
-            border-radius: 0 15px 15px 0;
-            margin: 20px 0;
-        }
-
-        .dmca-steps {
-            list-style: none;
-            margin: 25px 0;
-        }
-
-        .dmca-steps li {
-            background: rgba(255,255,255,0.02);
-            margin-bottom: 10px;
-            padding: 15px 20px;
-            border-radius: 12px;
+        .glass-card {
+            background: var(--surface);
             border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Subtle glow line on top of cards */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-gradient);
+            opacity: 0.5;
+        }
+
+        .glass-card p {
+            margin: 0 0 20px 0;
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+        .glass-card p:last-child { margin-bottom: 0; }
+
+        .glass-card strong { color: #fff; font-weight: 600; }
+
+        .info-group {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .info-group:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-group h4 {
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
             display: flex;
-            gap: 15px;
+            align-items: center;
+            gap: 10px;
         }
+        .info-group h4 i { color: #a78bfa; font-size: 1rem;}
 
-        .step-num {
-            color: #8A2BE2;
-            font-weight: 800;
+        ul {
+            color: var(--text-muted);
+            padding-left: 20px;
+            margin: 0 0 20px 0;
         }
+        ul li { margin-bottom: 10px; }
 
-        /* Footer nav placeholder */
-        .main-header { padding: 20px; position: fixed; width: 100%; top: 0; background: rgba(8,9,10,0.8); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid var(--border); }
-        .logo { font-size: 1.5rem; font-weight: 800; text-decoration: none; color: white; }
-        .logo span { color: #8A2BE2; }
+        a.contact-link {
+            color: #a78bfa;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        a.contact-link:hover { color: #fff; text-decoration: underline; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 992px) {
+            .layout-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                padding: 30px 5%;
+            }
+            .sidebar { display: none; } /* Hide sidebar on mobile to save space */
+            .page-title { font-size: 2.5rem; }
+            .section-title { font-size: 1.5rem; }
+            .glass-card { padding: 25px; }
+        }
+        
+        /* Bottom Navigation specifically for mobile */
+        .bottom-nav {
+            display: none;
+        }
 
         @media (max-width: 992px) {
-            .legal-container { grid-template-columns: 1fr; }
-            .legal-sidebar { display: none; }
-            .legal-content { padding: 30px; }
+            .bottom-nav {
+                display: flex !important;
+                position: fixed !important;
+                bottom: 15px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                width: 90% !important;
+                max-width: 400px !important;
+                background: rgba(20, 20, 25, 0.45) !important;
+                backdrop-filter: blur(40px) saturate(180%) !important;
+                -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                border-radius: 50px !important;
+                z-index: 9999 !important;
+                padding: 5px 10px !important;
+                box-shadow: 0 25px 50px rgba(0,0,0,0.5) !important;
+            }
+
+            .bottom-nav-item {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 6px 0;
+                color: rgba(255, 255, 255, 0.5);
+                transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+                text-decoration: none;
+            }
+
+            .bottom-nav-item.active { color: #fff; }
+            .bottom-nav-item .fa-solid {
+                font-size: 1.35rem;
+                margin-bottom: 4px;
+                transition: transform 0.4s;
+            }
+            .nav-label {
+                font-size: 0.65rem;
+                font-weight: 500;
+                letter-spacing: 0.3px;
+            }
         }
     </style>
-<script src="bottom-bar.js" defer></script><script src="lightmode.js"></script> 
-    
-    
-    <link rel="stylesheet" href="lightmode.css"> 
 </head>
 <body>
 
-    <header class="main-header">
+    <div class="bg-element bg-1"></div>
+    <div class="bg-element bg-2"></div>
+
+    <header class="header">
+        <a href="index.html" class="back-btn" title="Back to Home"><i class="fas fa-arrow-left"></i></a>
         <a href="index.html" class="logo">Drama<span>Kan</span></a>
     </header>
 
-    <div class="legal-hero">
-        <h1>Privacy & Transparency</h1>
-        <p class="last-updated">Effective Date: March 21, 2026</p>
-    </div>
-
-    <main class="legal-container">
-        <aside class="legal-sidebar">
-            <div class="nav-card">
-                <h4>Legal Index</h4>
-                <a href="#introduction" class="nav-link">Introduction</a>
-                <a href="#data-collection" class="nav-link">Data Collection</a>
-                <a href="#cookies" class="nav-link">Cookies Policy</a>
-                <a href="#dmca" class="nav-link">DMCA Notice</a>
-                <a href="#contact" class="nav-link">Contact Legal</a>
-            </div>
+    <div class="layout-container">
+        
+        <aside class="sidebar">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="#data-collection" class="nav-link active"><i class="fas fa-database"></i> Data Collection</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#vip-subscriptions" class="nav-link"><i class="fas fa-crown"></i> VIP Subscriptions & Ads</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#platform-protection" class="nav-link"><i class="fas fa-shield-alt"></i> Platform Protections</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#cookies" class="nav-link"><i class="fas fa-cookie-bite"></i> Cookies & Tracking</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#third-party" class="nav-link"><i class="fas fa-share-nodes"></i> Third-Party Services</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#user-rights" class="nav-link"><i class="fas fa-user-shield"></i> Your Rights</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link"><i class="fas fa-envelope"></i> Contact Us</a>
+                </li>
+            </ul>
         </aside>
 
-        <article class="legal-content">
-            <section id="introduction">
-                <h2><i class="fa-solid fa-shield-halved"></i> Introduction</h2>
-                <p>Welcome to DramaKan. Your privacy is not just a policy; it is our commitment. We believe in being 100% transparent about how we operate and how we handle the minimal data we may process while you enjoy Asian entertainment.</p>
-                <div class="highlight-box">
-                    <strong>Zero-Log Commitment:</strong> We do not store your private watch history on our physical servers. Most of your preferences are stored locally on your device to ensure maximum privacy.
+        <main class="content-area">
+            <h1 class="page-title">Privacy Policy & Legal Terms</h1>
+            <div class="last-updated"><i class="fas fa-clock"></i> Last Updated: May 2026</div>
+
+            <section id="data-collection" class="content-section">
+                <h2 class="section-title"><i class="fas fa-database"></i> Data Collection & Usage</h2>
+                <div class="glass-card">
+                    <p>At Dramakan, your privacy is a top priority. We collect minimal personal information strictly necessary to provide and improve our services.</p>
+                    
+                    <div class="info-group">
+                        <h4><i class="fas fa-user"></i> Account Information</h4>
+                        <p>When you register, we collect your email address, username, and encrypted password. This is securely managed via Google Firebase Authentication.</p>
+                    </div>
+                    
+                    <div class="info-group">
+                        <h4><i class="fas fa-bookmark"></i> User Preferences</h4>
+                        <p>We store your "My List" saves, continue-watching history, and profile avatars in our database to sync your experience across devices.</p>
+                    </div>
                 </div>
             </section>
 
-            <section id="data-collection">
-                <h2><i class="fa-solid fa-database"></i> Data Collection</h2>
-                <p>We only collect information that is strictly necessary to provide our service:</p>
-                <ul style="color: var(--text-dim); margin-left: 20px; margin-bottom: 20px;">
-                    <li><strong>Usage Data:</strong> Pages visited and time spent to improve performance.</li>
-                    <li><strong>Device Info:</strong> Browser type and OS to ensure player compatibility.</li>
-                    <li><strong>IP Address:</strong> For security and regional licensing compliance.</li>
-                </ul>
-            </section>
+            <section id="vip-subscriptions" class="content-section">
+                <h2 class="section-title"><i class="fas fa-crown"></i> VIP Subscriptions, Ads, and Limitations</h2>
+                <div class="glass-card">
+                    <p>We offer premium subscription tiers (Elite VIP and Crown VIP) to enhance your viewing experience. By purchasing a subscription, you agree to the following terms, features, and technical limitations:</p>
+                    
+                    <div class="info-group">
+                        <h4><i class="fas fa-gem" style="color:#10B981;"></i> Elite VIP Benefits</h4>
+                        <p>Removes all website UI ads (popups and banners specifically generated by Dramakan pages), unlocks 1080p quality, and allows 2 shared profiles.</p>
+                    </div>
+                    
+                    <div class="info-group">
+                        <h4><i class="fas fa-crown" style="color:#f1c40f;"></i> Crown VIP Benefits</h4>
+                        <p>Includes all Elite benefits, expands to 4 shared profiles, and actively neutralizes hidden popups inside the video player using our advanced embedded click-shield technology.</p>
+                    </div>
+                    
+                    <div class="info-group">
+                        <h4><i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i> The Embed Limitation (Ad Disclaimer)</h4>
+                        <p>Dramakan does not host video files. We utilize third-party embed links (such as Vidsrc, 2embed, etc.). While our Crown VIP tier heavily suppresses popup layers over the player, <strong>some embedded hardcoded ads or highly resilient popups may occasionally bypass our filters</strong>. Because we do not control the servers providing these video streams, we cannot guarantee a 100% ad-free video player experience in every scenario.</p>
+                    </div>
 
-            <section id="dmca">
-                <h2><i class="fa-solid fa-gavel"></i> DMCA & Content Policy</h2>
-                <p>DramaKan acts as a content indexing service. We do not host or upload any video files on our own servers. Our system crawls third-party video hosting services to provide a centralized interface.</p>
-                <p>We respect the intellectual property rights of others. If you believe your copyrighted work is being infringed, please follow the DMCA procedure below:</p>
-                
-                <div class="highlight-box">
-                    <strong>Takedown Requirements:</strong> Your notice must include:
+                    <div class="info-group">
+                        <h4><i class="fas fa-file-invoice-dollar" style="color:#a78bfa;"></i> Refund Policy</h4>
+                        <p>Due to the manual verification process and the immediate access granted to digital streaming benefits, all VIP subscription purchases are final, non-refundable, and non-transferable under any circumstances.</p>
+                    </div>
                 </div>
-
-                <ul class="dmca-steps">
-                    <li><span class="step-num">01</span> A physical or electronic signature of the copyright owner.</li>
-                    <li><span class="step-num">02</span> Identification of the copyrighted work claimed to have been infringed.</li>
-                    <li><span class="step-num">03</span> Direct links (URLs) to the pages on DramaKan where the content is indexed.</li>
-                    <li><span class="step-num">04</span> Your contact information (Email, Address, Phone).</li>
-                    <li><span class="step-num">05</span> A statement of "Good Faith" belief that use of the material is unauthorized.</li>
-                </ul>
-
-                <p>Send all DMCA notices to: <strong style="color: #fff;">privcy@dramakan.site</strong>. We typically process valid requests within 48-72 business hours.</p>
             </section>
 
-            <section id="cookies">
-                <h2><i class="fa-solid fa-cookie-bite"></i> Third-Party & Cookies</h2>
-                <p>We utilize essential cookies to remember your "Last Watched" episode and dark mode settings. Additionally, third-party players (embedded via iframe) may use their own cookies. We recommend using a modern browser with tracking protection for the best experience.</p>
+            <section id="platform-protection" class="content-section">
+                <h2 class="section-title"><i class="fas fa-shield-alt"></i> Platform Protections & Legal Disclaimers</h2>
+                <div class="glass-card">
+                    <p>By using Dramakan, you acknowledge and agree to the following legal protections concerning content hosting and liability:</p>
+                    
+                    <div class="info-group">
+                        <h4><i class="fas fa-server"></i> Zero Hosting Policy</h4>
+                        <p>Dramakan operates strictly as a web directory and indexing tool. <strong>We do not host, store, or upload any video, media, or copyright-protected content on our servers.</strong> All media is streamed directly from unaffiliated third-party services.</p>
+                    </div>
+                    
+                    <div class="info-group">
+                        <h4><i class="fas fa-gavel"></i> DMCA & Copyright Infringement</h4>
+                        <p>We deeply respect intellectual property rights. However, since we do not host any of the video files, copyright infringement claims and takedown requests must be directed directly to the third-party video hosts (e.g., Vidsrc, 2embed, etc.). Dramakan has no technical ability to remove files from external servers.</p>
+                    </div>
+
+                    <div class="info-group">
+                        <h4><i class="fas fa-user-shield"></i> Limitation of Liability</h4>
+                        <p>Dramakan, its administrators, creators, and developers shall not be held liable for any damages, data loss, exposure to malware via third-party ads, or service interruptions arising from the use of our website or third-party embeds. You utilize this platform entirely at your own risk.</p>
+                    </div>
+                </div>
             </section>
 
-            <section id="contact">
-                <h2><i class="fa-solid fa-envelope-open-text"></i> Contact Legal Team</h2>
-                <p>If you have questions regarding this policy or any legal inquiries, our specialized team is ready to assist you.</p>
-                <a href="mailto:privacy@dramakan.site" style="display: inline-block; padding: 12px 30px; background: var(--primary-gradient); color: white; text-decoration: none; border-radius: 30px; font-weight: 700; margin-top: 10px;">Contact Us Now</a>
+            <section id="cookies" class="content-section">
+                <h2 class="section-title"><i class="fas fa-cookie-bite"></i> Cookies & Tracking</h2>
+                <div class="glass-card">
+                    <p>We use local storage and essential cookies to ensure the website functions correctly.</p>
+                    <ul>
+                        <li><strong>Authentication:</strong> To keep you logged in securely.</li>
+                        <li><strong>Preferences:</strong> To remember your selected theme (Dark/Light) and volume settings.</li>
+                        <li><strong>Watch History:</strong> To save your progress locally if you watch without an account.</li>
+                    </ul>
+                    <p>We do not use intrusive tracking cookies for personalized external advertising.</p>
+                </div>
             </section>
-        </article>
-    </main>
 
-    <link rel="stylesheet" href="bottom-bar.css"> 
+            <section id="third-party" class="content-section">
+                <h2 class="section-title"><i class="fas fa-share-nodes"></i> Third-Party Services</h2>
+                <div class="glass-card">
+                    <p>Our platform integrates with secure third-party services to function:</p>
+                    <div class="info-group">
+                        <h4>Google Firebase</h4>
+                        <p>Used for our database, authentication, and secure data storage. Their privacy policy governs how that backend data is secured.</p>
+                    </div>
+                    <div class="info-group">
+                        <h4>Video Hosts</h4>
+                        <p>As outlined in our Legal Disclaimers, video streams (Vidsrc, 2embed, etc.) are third-party services. These external sites may collect your IP address or deploy their own tracking when you interact with their video players.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="user-rights" class="content-section">
+                <h2 class="section-title"><i class="fas fa-user-check"></i> Your Rights</h2>
+                <div class="glass-card">
+                    <p>You have full control over your account data. You reserve the right to:</p>
+                    <ul>
+                        <li>Request a full export of your account data.</li>
+                        <li>Change your username, password, or associated email at any time.</li>
+                        <li>Request complete deletion of your account and all associated history from our Firebase database.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="contact" class="content-section">
+                <h2 class="section-title"><i class="fas fa-envelope"></i> Contact Us</h2>
+                <div class="glass-card">
+                    <p>If you have any questions, concerns, or requests regarding this Privacy Policy, your account data, or our platform's legal structure, please reach out to us:</p>
+                    <p><strong>Email:</strong> <a href="mailto:privacy@dramakan.site" class="contact-link">privacy@dramakan.site</a></p>
+                    <p><strong>Telegram:</strong> <a href="https://t.me/iamashish6700" target="_blank" class="contact-link">@iamashish6700</a></p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item">
             <i class="fa-solid fa-house"></i>
@@ -259,7 +516,7 @@
         // Smooth active state for sidebar links
         window.addEventListener('scroll', () => {
             let current = "";
-            const sections = document.querySelectorAll("section");
+            const sections = document.querySelectorAll(".content-section");
             sections.forEach((section) => {
                 const sectionTop = section.offsetTop;
                 if (pageYOffset >= sectionTop - 150) {
@@ -272,6 +529,36 @@
                 if (link.getAttribute("href").includes(current)) {
                     link.classList.add("active");
                 }
+            });
+        });
+
+        // Add intersection observer for smooth fade-in
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.content-section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
             });
         });
     </script>
