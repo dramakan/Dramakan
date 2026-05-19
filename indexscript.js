@@ -642,16 +642,18 @@ async function initAuthSync() {
                 } catch (error) {
                     console.error("Auth UI Error:", error);
                 }
-            } else {
+         } else {
                 // Completely Logged Out State
                 const authBtn = document.getElementById('topAuthBtn');
                 if (authBtn) {
                     authBtn.href = "login.html";
-                    authBtn.innerHTML = `<i class="fas fa-user"></i> <span>Login</span>`;
-                    authBtn.style.padding = "8px 24px";
-                    authBtn.style.background = "var(--primary-color)";
-                    authBtn.style.border = "none";
-                    authBtn.style.borderRadius = "50px";
+                    authBtn.innerHTML = `<i class="fas fa-user"></i> <span>Login / Sign Up</span>`;
+                    
+                    // Clear out inline styles so the premium CSS takes over automatically
+                    authBtn.style.padding = "";
+                    authBtn.style.background = "";
+                    authBtn.style.border = "";
+                    authBtn.style.borderRadius = "";
                 }
             }
         });
