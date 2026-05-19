@@ -69,7 +69,6 @@
             aspect-ratio: 16/9; width: 100%;
         }
         .video-player-container iframe { width: 100%; height: 100%; border-radius: 12px; background: #000; border: none; }
-        .click-shield { position: absolute; top: 12px; left: 12px; width: calc(100% - 24px); height: calc(100% - 24px); z-index: 10; cursor: pointer; background: transparent; border-radius: 12px; }
 
         .server-selector-container {
             display: flex; align-items: center; gap: 15px; background: var(--glass-bg); 
@@ -296,9 +295,9 @@
         }
         @media (min-width: 993px) { .bottom-nav { display: none !important; } }
     </style>
+    
+    <script type="module" src="premium-manager.js"></script>
     <script src="bottom-bar.js" defer></script>
-    <script src="lightmode.js"></script> 
-    <link rel="stylesheet" href="lightmode.css"> 
 </head>
 <body>
 
@@ -385,7 +384,7 @@
                      <div class="comments-header"><h2 class="widget-title"><i class="fas fa-comments"></i> Discussion</h2></div>
                      
                      <form id="comment-form" class="comment-form-container">
-                        <img class="user-avatar" id="current-user-avatar" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Guest" alt="User Avatar">
+                        <img class="user-avatar" id="current-user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>" alt="User Avatar">
                         
                         <div class="comment-input-wrapper">
                             <textarea id="comment-text-input" placeholder="Loading authentication status..." required disabled></textarea>
@@ -432,23 +431,6 @@
             </div>
             
         </div>
-
-        <div id="ad-return-popup" class="drama-modal-overlay" style="z-index: 100000; display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); justify-content: center; align-items: center; padding: 20px;">
-            <div class="drama-modal-card" style="background: rgba(11, 12, 16, 0.95); border: 1px solid #f1c40f; border-radius: 16px; padding: 40px 30px 30px; max-width: 420px; width: 100%; position: relative; text-align: center; box-shadow: 0 10px 40px rgba(241, 196, 15, 0.3);">
-                <button class="drama-modal-close" onclick="document.getElementById('ad-return-popup').style.display='none'" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: #a1a1aa; font-size: 24px; cursor: pointer;">&times;</button>
-                <div class="drama-section-highlight" style="background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.3); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                    <i class="fas fa-crown" style="font-size: 3rem; color: #f1c40f; margin-bottom: 10px;"></i>
-                    <h4 style="color: #fff; margin: 0 0 5px 0; font-size: 1.2rem;">Tired of Video Ads?</h4>
-                    <p style="color: #a1a1aa; margin: 0; font-size: 0.9rem;">Popups ruining your streaming experience?</p>
-                </div>
-                <div class="drama-section-main">
-                    <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 20px; line-height: 1.6;">Upgrade to <strong>Crown VIP</strong> to completely block all video player ads, popups, and website UI ads. Enjoy seamless, uninterrupted streaming!</p>
-                    <a href="subscription.html" class="drama-submit-btn" style="background: linear-gradient(135deg, #f1c40f, #d4af37); color: #000; text-decoration: none; display: block; text-align: center; padding: 14px; border-radius: 8px; font-weight: 600; box-shadow: 0 4px 15px rgba(241,196,15,0.4); margin-bottom: 10px;">Upgrade to Crown VIP</a>
-                    <button onclick="document.getElementById('ad-return-popup').style.display='none'" style="background: transparent; color: #aaa; border: 1px solid rgba(255,255,255,0.2); width: 100%; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Continue with Ads</button>
-                </div>
-            </div>
-        </div>
-
     </main>
 
     <footer class="main-footer" style="text-align: center; padding: 20px 0; border-top: 1px solid var(--glass-border); margin-top: 30px;">
@@ -463,6 +445,7 @@
        <a href="community.html" class="bottom-nav-item">
             <i class="fa-solid fa-bell nav-icon"></i>
             <span class="nav-label">Updates</span>
+        </a>
         <a href="mylist.html" class="bottom-nav-item">
             <i class="fa-solid fa-bookmark nav-icon"></i>
             <span class="nav-label">My List</span>
@@ -492,37 +475,12 @@
         const episodeMetaContainer = document.getElementById('episode-meta-container');
         const episodesListWidget = document.getElementById('episodes-list-widget');
 
-        // ==========================================
-        // SMART TIER-BASED AD TRACKING & POPUPS
-        // ==========================================
-        let adClickTime = 0;
-        
-        window.addEventListener('blur', () => {
-            const activeVipTier = localStorage.getItem('dramakan_vip_tier') || 'Basic';
-            // Only track ad clicks for users who do NOT have Crown (Crown blocks all video popups natively)
-            if (!activeVipTier.includes('Crown') && document.activeElement && document.activeElement.tagName === 'IFRAME') {
-                adClickTime = Date.now();
-            }
-        });
-
-        window.addEventListener('focus', () => {
-            if (adClickTime > 0) {
-                const timeAway = Date.now() - adClickTime;
-                // If they actually left the page/tab (e.g. ad popup opened)
-                if (timeAway > 300) { 
-                    const popup = document.getElementById('ad-return-popup');
-                    if(popup) popup.style.display = 'flex';
-                }
-                adClickTime = 0;
-            }
-        });
-        // ==========================================
+        const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
 
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const dramaId = urlParams.get('id');
 
-            // SAFEGUARD 1: Check for missing ID
             if (!dramaId) {
                 alert("NAVIGATION ERROR: The link is missing the '?id=' parameter. You will be redirected to the homepage.");
                 window.location.replace('index.html');
@@ -553,7 +511,6 @@
            try {
                 let data = null;
                 
-                // --- ATTEMPT 1: Read from Netlify's generated JSON ---
                 try {
                     const response = await fetch('./dramas.json?t=' + new Date().getTime()); 
                     if (response.ok) {
@@ -572,9 +529,7 @@
                     console.warn("Local JSON check skipped, falling back to Firebase.", e);
                 }
 
-                // --- ATTEMPT 2: The Smart Firebase Fallback ---
                 if (!data) {
-                    console.log("Drama not in JSON. Fetching directly from Firebase...");
                     const docRef = doc(db, "dramas", dramaId); 
                     const docSnap = await getDoc(docRef);
                     
@@ -584,9 +539,7 @@
                     }
                 }
 
-                // --- PROCEED IF FOUND ---
                 if (data) {
-                    // --- INSTANT SEO INJECTION START ---
                     document.title = `Watch ${data.title || data.dramaName} Full Episodes Free - Dramakan`;
 
                     let metaDesc = document.querySelector('meta[name="description"]');
@@ -611,7 +564,6 @@
                         "url": window.location.href
                     });
                     document.head.appendChild(schemaScript);
-                    // --- INSTANT SEO INJECTION END ---
 
                     document.getElementById('ui-title').textContent = data.title;
                     document.getElementById('ui-poster').src = data.img;
@@ -746,16 +698,6 @@
                             renderEpisodeGrid(window.currentSeason);
                         }
 
-                        // ==========================================
-                        // SECURE VIP AD-BLOCKER IMPLEMENTATION
-                        // ==========================================
-                        const activeVipTier = localStorage.getItem('dramakan_vip_tier') || 'Basic';
-                        const isCrown = activeVipTier.includes('Crown');
-
-                        // Remove "sandbox" attribute entirely to preserve beautiful player UI 
-                        // (Vidsrc/2embed detects sandbox and intentionally breaks the player visually to punish users).
-                        videoPlayer.removeAttribute('sandbox');
-                        
                         if (currentServer === '2embed') {
                             videoPlayer.setAttribute('referrerpolicy', 'no-referrer');
                         } else {
@@ -763,39 +705,9 @@
                         }
 
                         const embedLink = await fetchCleanVideoSource(data.imdbId, window.currentSeason, window.currentEpisode, data.type);
+                        
+                        // Just set the source. premium-manager.js will securely apply the sandbox attribute if needed
                         videoPlayer.src = embedLink;
-                        
-                        // Click Shield clean up
-                        let existingShield = document.getElementById('ad-click-shield');
-                        if (existingShield) existingShield.remove();
-                        
-                        // Smart Click-Shield Application
-                        if (isCrown) {
-                            // Crown Tier: Absorbs the first 2 clicks (completely neutralizing the hidden popup layers)
-                            let clickCount = 0;
-                            const shield = document.createElement('div');
-                            shield.id = 'ad-click-shield';
-                            shield.className = 'click-shield';
-                            shield.title = "Crown VIP Active: Ad layers neutralized.";
-                            shield.addEventListener('click', function(e) { 
-                                e.stopPropagation();
-                                clickCount++;
-                                if(clickCount >= 2) this.remove(); 
-                            });
-                            document.getElementById('video-container-wrapper').appendChild(shield);
-                        } else if (activeVipTier.includes('Elite')) {
-                            // Elite Tier: Absorbs 1 click
-                            const shield = document.createElement('div');
-                            shield.id = 'ad-click-shield';
-                            shield.className = 'click-shield';
-                            shield.addEventListener('click', function(e) { 
-                                e.stopPropagation();
-                                this.remove(); 
-                            });
-                            document.getElementById('video-container-wrapper').appendChild(shield);
-                        }
-                        // Basic tier gets NO shield, so they click the ad directly and get the popup.
-                        // ==========================================
 
                         epText.textContent = seasonsArr.length > 1 
                             ? `S${window.currentSeason} EP ${window.currentEpisode} - ${data.title}`
@@ -927,10 +839,18 @@
                     }
                 };
 
-                onAuthStateChanged(auth, (user) => {
+                onAuthStateChanged(auth, async (user) => {
                     if (user) {
                         const name = user.displayName || (user.email ? user.email.split('@')[0] : "User");
-                        const avatar = user.photoURL || `https://api.dicebear.com/7.x/adventurer/svg?seed=${name}`;
+                        let avatar = user.photoURL || defaultAvatar;
+
+                        try {
+                            const userDoc = await getDoc(doc(db, "users", user.uid));
+                            if (userDoc.exists() && userDoc.data().avatarUrl) {
+                                avatar = userDoc.data().avatarUrl;
+                            }
+                        } catch (err) {}
+
                         applyAuthState(true, name, avatar);
                     } else {
                         const sessionAuth = localStorage.getItem('dramakan_user');
@@ -938,10 +858,10 @@
                             try {
                                 const parsed = JSON.parse(sessionAuth);
                                 const name = parsed.name || parsed.username || parsed.email || "User";
-                                const avatar = parsed.profilePic || parsed.avatar || parsed.photoURL || `https://api.dicebear.com/7.x/adventurer/svg?seed=${name}`;
+                                const avatar = parsed.profilePic || parsed.avatar || parsed.photoURL || parsed.avatarUrl || defaultAvatar;
                                 applyAuthState(true, name, avatar);
                             } catch(err) {
-                                applyAuthState(true, sessionAuth, `https://api.dicebear.com/7.x/adventurer/svg?seed=${sessionAuth}`);
+                                applyAuthState(true, sessionAuth, defaultAvatar);
                             }
                         } else {
                             applyAuthState(false);
@@ -961,7 +881,7 @@
                             dramaId: dramaId,
                             text: text,
                             user: activeUserName,
-                            userImg: activeUserAvatar,
+                            userImg: activeUserAvatar, // Safely stores exact database avatar
                             timestamp: serverTimestamp()
                         });
                         commentInput.value = ''; 
@@ -992,7 +912,7 @@
                     let html = '';
                     commentsArr.forEach(c => {
                         const dateStr = c.timestamp ? new Date(c.timestamp.toDate()).toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'}) : 'Just now';
-                        const imgToUse = c.userImg || `https://api.dicebear.com/7.x/adventurer/svg?seed=${c.user || 'Guest'}`;
+                        const imgToUse = c.userImg || defaultAvatar; // Renders exact database avatar
                         html += `
                         <div class="comment-item" style="display: flex; gap: 15px;">
                             <img src="${imgToUse}" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); object-fit: cover; flex-shrink: 0; background: rgba(0,0,0,0.2);">

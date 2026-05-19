@@ -12,8 +12,9 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// 1. Get cached tier immediately so the page doesn't flash ads while loading
+// 1. Get cached tier immediately
 const activeTier = localStorage.getItem('dramakan_vip_tier') || 'Basic';
+let sandboxObserver = null;
 
 function applyPremiumFeatures(tier) {
     // --- FEATURE 1: HIDE GOOGLE/UI ADS (ELITE & CROWN) ---
@@ -23,13 +24,8 @@ function applyPremiumFeatures(tier) {
             const style = document.createElement('style');
             style.id = 'premium-ad-blocker';
             style.innerHTML = `
-                /* Add all Google Ads and UI Ad classes here */
                 ins.adsbygoogle, .ad-container, .ad-banner, .popup-ad, [id^="div-gpt-ad"] {
-                    display: none !important;
-                    opacity: 0 !important;
-                    pointer-events: none !important;
-                    width: 0 !important;
-                    height: 0 !important;
+                    display: none !important; opacity: 0 !important; pointer-events: none !important; width: 0 !important; height: 0 !important;
                 }
             `;
             document.head.appendChild(style);
@@ -40,28 +36,58 @@ function applyPremiumFeatures(tier) {
         if (style) style.remove();
     }
 
-    // --- FEATURE 2: KILL VIDEO ADS VIA SANDBOX (CROWN ONLY) ---
+    // --- FEATURE 2: STRICT VIDEO SANDBOX LOGIC ---
+    let iframeStateChanged = false;
+    const iframes = document.querySelectorAll('iframe');
+
     if (tier.includes('Crown')) {
-        blockVideoPopups();
-        // Setup a MutationObserver just in case the iframe loads a few seconds late
-        const observer = new MutationObserver(() => blockVideoPopups());
-        observer.observe(document.body, { childList: true, subtree: true });
+        // Enforce Sandbox for Crown ONLY
+        iframes.forEach(iframe => {
+            if (!iframe.src.includes('google') && !iframe.src.includes('firebase') && !iframe.hasAttribute('sandbox')) {
+                iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
+                iframeStateChanged = true;
+            }
+        });
+
+        // Set up the observer to catch dynamically loaded iframes
+        if (!sandboxObserver) {
+            sandboxObserver = new MutationObserver(() => {
+                document.querySelectorAll('iframe').forEach(iframe => {
+                    if (!iframe.src.includes('google') && !iframe.src.includes('firebase') && !iframe.hasAttribute('sandbox')) {
+                        iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
+                    }
+                });
+            });
+            sandboxObserver.observe(document.body, { childList: true, subtree: true });
+        }
+    } else {
+        // STRICTLY REMOVE Sandbox for Basic and Elite
+        if (sandboxObserver) {
+            sandboxObserver.disconnect();
+            sandboxObserver = null;
+        }
+        
+        iframes.forEach(iframe => {
+            if (iframe.hasAttribute('sandbox')) {
+                iframe.removeAttribute('sandbox');
+                iframeStateChanged = true;
+            }
+        });
+    }
+
+    // If the state changed (e.g. sandbox wrongfully applied via cache), reload the iframe to clear the red error screen
+    if (iframeStateChanged) {
+        iframes.forEach(iframe => { 
+            if (!iframe.src.includes('google') && !iframe.src.includes('firebase')) {
+                const currentSrc = iframe.src;
+                iframe.src = '';
+                setTimeout(() => { iframe.src = currentSrc; }, 50);
+            }
+        });
     }
 
     // --- FEATURE 3: DYNAMIC HEADER BUTTON ---
     updateVIPButton(tier);
-}
-
-// Applies strict sandbox rules to stop video popups and redirects
-function blockVideoPopups() {
-    const iframes = document.querySelectorAll('iframe');
-    iframes.forEach(iframe => {
-        // Ignore Google Auth/Recaptcha iframes, target video players only
-        if (!iframe.src.includes('google') && !iframe.src.includes('firebase')) {
-            // Omitting 'allow-popups' and 'allow-top-navigation' completely kills video ads
-            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
-        }
-    });
 }
 
 function updateVIPButton(tier) {
@@ -70,11 +96,11 @@ function updateVIPButton(tier) {
         if (tier.includes('Crown')) {
             btn.innerHTML = '<i class="fas fa-crown"></i> Crown VIP';
             btn.className = 'vip-header-btn status-crown';
-            btn.href = 'profile.html'; // Already max tier, link to profile
+            btn.href = 'profile.html'; 
         } else if (tier.includes('Elite')) {
             btn.innerHTML = '<i class="fas fa-gem"></i> Elite VIP';
             btn.className = 'vip-header-btn status-elite';
-            btn.href = 'subscription.html'; // Can still upgrade to Crown
+            btn.href = 'subscription.html'; 
         } else {
             btn.innerHTML = '<i class="fas fa-bolt"></i> Upgrade VIP';
             btn.className = 'vip-header-btn status-basic';
@@ -83,7 +109,7 @@ function updateVIPButton(tier) {
     });
 }
 
-// Run immediately from cache
+// Initial Cached Run
 applyPremiumFeatures(activeTier);
 
 // 2. Securely verify the real status with Firebase Database
@@ -100,16 +126,13 @@ onAuthStateChanged(auth, async (user) => {
                     localStorage.setItem('dramakan_vip_tier', plan);
                     applyPremiumFeatures(plan);
                 } else {
-                    // Expired or Basic
                     localStorage.setItem('dramakan_vip_tier', 'Basic');
                     applyPremiumFeatures('Basic');
                 }
             }
-        } catch (error) {
-            console.error("Premium Verification Error", error);
-        }
+        } catch (error) { console.error("Verification Error", error); }
     } else {
-        // Logged out
+        // Enforce Basic rules if logged out
         localStorage.setItem('dramakan_vip_tier', 'Basic');
         applyPremiumFeatures('Basic');
     }
