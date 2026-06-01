@@ -75,7 +75,7 @@ function applyPremiumFeatures(tier) {
         });
     }
 
-    // If the state changed (e.g. sandbox wrongfully applied via cache), reload the iframe to clear the red error screen
+    // If the state changed, reload the iframe to clear errors
     if (iframeStateChanged) {
         iframes.forEach(iframe => { 
             if (!iframe.src.includes('google') && !iframe.src.includes('firebase')) {
@@ -132,7 +132,6 @@ onAuthStateChanged(auth, async (user) => {
             }
         } catch (error) { console.error("Verification Error", error); }
     } else {
-        // Enforce Basic rules if logged out
         localStorage.setItem('dramakan_vip_tier', 'Basic');
         applyPremiumFeatures('Basic');
     }

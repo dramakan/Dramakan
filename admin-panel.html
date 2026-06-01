@@ -90,10 +90,13 @@
         .stat-box p { margin: 0; color: #aaa; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;}
         
         /* Dynamic Info Bar */
-        .filter-info-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 15px 25px; border-radius: 12px; margin-bottom: 15px; border: 1px dashed rgba(255,255,255,0.1); }
+        .filter-info-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 15px 25px; border-radius: 12px; margin-bottom: 15px; border: 1px dashed rgba(255,255,255,0.1); gap: 10px; }
         .filter-info-bar span { font-size: 0.9rem; color: #ccc; }
+        .action-btn-group { display: flex; gap: 10px; }
         .early-adopter-btn { background: linear-gradient(135deg, var(--primary), #7b2cbf); border: none; color: #fff; padding: 8px 15px; border-radius: 8px; font-weight: 600; cursor: pointer; display: none; align-items: center; gap: 8px; font-size: 0.85rem; box-shadow: 0 4px 15px var(--primary-glow); }
         .early-adopter-btn:hover { filter: brightness(1.2); }
+        .fix-accident-btn { background: linear-gradient(135deg, #EF4444, #b91c1c); border: none; color: #fff; padding: 8px 15px; border-radius: 8px; font-weight: 600; cursor: pointer; display: none; align-items: center; gap: 8px; font-size: 0.85rem; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
+        .fix-accident-btn:hover { filter: brightness(1.2); }
     </style>
 </head>
 <body>
@@ -184,7 +187,10 @@
                 <div style="padding: 0 25px;">
                     <div class="filter-info-bar" id="filterInfoBar">
                         <span id="filterDescription">Showing all registered users.</span>
-                        <button class="early-adopter-btn" id="btnEarlyAdopter" onclick="window.bulkUpgradeEarlyAdopters()"><i class="fas fa-gift"></i> Grant Pre-June 1st Elite VIPs</button>
+                        <div class="action-btn-group">
+                            <button class="fix-accident-btn" id="btnFixAccident" onclick="window.fixAccidentalSubscriptions()"><i class="fas fa-tools"></i> Fix 1-Year Accident</button>
+                            <button class="early-adopter-btn" id="btnEarlyAdopter" onclick="window.bulkUpgradeEarlyAdopters()"><i class="fas fa-gift"></i> Grant Pre-June 1st Elite VIPs</button>
+                        </div>
                     </div>
                 </div>
 
@@ -381,17 +387,21 @@
             // Adjust Info Bar
             const infoText = document.getElementById('filterDescription');
             const earlyBtn = document.getElementById('btnEarlyAdopter');
+            const fixBtn = document.getElementById('btnFixAccident');
             
             if (filterType === 'all') {
                 infoText.innerHTML = "Showing <strong>all registered users</strong>.";
                 earlyBtn.style.display = 'flex';
+                fixBtn.style.display = 'flex';
             } else if (filterType === 'vip') {
                 earlyBtn.style.display = 'none';
+                fixBtn.style.display = 'none';
                 const crown = globalUsersArray.filter(u => u.isPremium && u.premiumExpiry > Date.now() && u.premiumPlan === 'Crown_VIP_99').length;
                 const elite = globalUsersArray.filter(u => u.isPremium && u.premiumExpiry > Date.now() && u.premiumPlan !== 'Crown_VIP_99').length;
                 infoText.innerHTML = `Active VIPs &mdash; <strong style="color:#f59e0b;"><i class="fas fa-crown"></i> Crown: ${crown}</strong> | <strong style="color:#10B981;"><i class="fas fa-gem"></i> Elite: ${elite}</strong>`;
             } else if (filterType === 'expiring') {
                 earlyBtn.style.display = 'none';
+                fixBtn.style.display = 'none';
                 infoText.innerHTML = "<span style='color:#f59e0b;'><i class='fas fa-exclamation-triangle'></i> These users have 7 or fewer days left on their VIP. Auto-reminders are active.</span>";
             }
 
@@ -496,9 +506,46 @@
             else tbody.innerHTML = html;
         }
 
-        // --- BULK PRE-JUNE 1ST EARLY ADOPTER UPGRADE ---
+        // --- RECOVERY REMEDIAL TOOL: CORRECTS ACCIDENTAL 1-YEAR PLANS DOWN TO 1-MONTH ---
+        window.fixAccidentalSubscriptions = async () => {
+            const now = Date.now();
+            // Target users with extreme expiration limits (e.g., greater than 100 days from now)
+            const thresholdTime = now + (100 * 24 * 60 * 60 * 1000);
+            const accidentalUsers = globalUsersArray.filter(u => u.isPremium && u.premiumExpiry > thresholdTime);
+
+            if (accidentalUsers.length === 0) {
+                alert("Clean database! No active accounts found with accidental 1-Year long durations.");
+                return;
+            }
+
+            if (!confirm(`Found ${accidentalUsers.length} profiles holding extreme expiration records. Would you like to automatically safely reduce them to 1 Month (30 Days) from today?`)) return;
+
+            const btn = document.getElementById('btnFixAccident');
+            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Rescaling Records...";
+            btn.disabled = true;
+
+            let updatedCount = 0;
+            const newExpiryTime = now + (30 * 24 * 60 * 60 * 1000); // Set strict 30-day window
+
+            for (const u of accidentalUsers) {
+                try {
+                    await updateDoc(doc(db, "users", u.uid), {
+                        premiumExpiry: newExpiryTime,
+                        expiryReminded: deleteField() 
+                    });
+                    updatedCount++;
+                } catch (e) { console.error("Could not rescale profile timeline: " + u.uid, e); }
+            }
+
+            alert(`Database successfully cleaned! Clamped ${updatedCount} profiles down to a safe 1-Month VIP timeline.`);
+            btn.innerHTML = `<i class="fas fa-check"></i> Fix Complete`;
+            btn.disabled = false;
+            setTimeout(() => { btn.innerHTML = `<i class="fas fa-tools"></i> Fix 1-Year Accident`; }, 3000);
+        };
+
+        // --- BULK PRE-JUNE 1ST EARLY ADOPTER UPGRADE (FIXED TO 1-MONTH) ---
         window.bulkUpgradeEarlyAdopters = async () => {
-            if(!confirm("Warning: This will scan for all basic users registered before June 1, 2026, and automatically upgrade them to a 1-Year Elite VIP plan. Proceed?")) return;
+            if(!confirm("Warning: This will scan for all basic users registered before June 1, 2026, and automatically upgrade them to a 1-Month Elite VIP plan. Proceed?")) return;
             
             const btn = document.getElementById('btnEarlyAdopter');
             btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Processing Users...";
@@ -521,14 +568,14 @@
                     await updateDoc(doc(db, "users", u.uid), {
                         isPremium: true,
                         premiumPlan: "Elite_VIP_35",
-                        premiumExpiry: now + (365 * 24 * 60 * 60 * 1000), // Give 1 year
+                        premiumExpiry: now + (30 * 24 * 60 * 60 * 1000), // FIXED: Now exactly 1 Month instead of 365 days
                         expiryReminded: deleteField() // Reset reminder block
                     });
                     
                     await addDoc(collection(db, "notifications"), {
                         target: u.uid,
                         title: "🎁 Early Adopter Bonus!",
-                        message: "Thank you for joining Dramakan early! As a token of our appreciation, we've upgraded your account to a 1-Year Elite VIP membership. Enjoy zero ads!",
+                        message: "Thank you for joining Dramakan early! As a token of our appreciation, we've upgraded your account to a 1-Month Elite VIP membership. Enjoy zero ads!",
                         link: "profile.html",
                         createdAt: Date.now()
                     });
@@ -536,7 +583,7 @@
                 } catch(e) { console.error("Failed upgrading user: " + u.uid, e); }
             }
             
-            alert(`Success! Granted 1-Year Elite VIP to ${upgradeCount} early adopters.`);
+            alert(`Success! Granted 1-Month Elite VIP to ${upgradeCount} early adopters.`);
             btn.innerHTML = `<i class="fas fa-check"></i> Process Complete`;
             setTimeout(() => { btn.innerHTML = `<i class="fas fa-gift"></i> Grant Pre-June 1st Elite VIPs`; }, 3000);
         };
@@ -734,7 +781,6 @@
             if (!confirm(`Approve this payment and grant VIP access for ${days} days?`)) return;
             
             try {
-                // We check existing to allow seamless extension if they renew early
                 const userRef = doc(db, "users", userId);
                 const userSnap = await getDoc(userRef);
                 
@@ -852,7 +898,6 @@
                     const data = docSnap.data();
                     const dateStr = new Date(data.createdAt).toLocaleString();
                     
-                    // Safe strings for inline onclick
                     const safeTarget = (data.target || '').replace(/'/g, "\\'");
                     const safeTitle = (data.title || '').replace(/'/g, "\\'");
                     const safeMsg = (data.message || '').replace(/'/g, "\\'");
@@ -889,7 +934,6 @@
             document.getElementById('sendNotifBtn').innerHTML = '<i class="fas fa-edit"></i> Update Notification';
             document.getElementById('cancelEditNotifBtn').style.display = 'inline-block';
             
-            // Scroll smoothly back to top of workspace
             document.querySelector('.workspace').scrollTo({ top: 0, behavior: 'smooth' });
         };
 
@@ -930,18 +974,15 @@
             
             try {
                 if (editId) {
-                    // Update existing notification
                     await updateDoc(doc(db, "notifications", editId), {
                         target: target,
                         title: title,
                         message: message,
                         link: link,
-                        // Not changing createdAt so it retains its place in history
                     });
                     status.innerText = "Notification Updated Successfully!";
-                    window.cancelEditNotif(); // Reset form
+                    window.cancelEditNotif();
                 } else {
-                    // Create new notification
                     await addDoc(collection(db, "notifications"), {
                         target: target,
                         title: title,
