@@ -1,6 +1,5 @@
 // --- 0. THEME, HARDWARE & CSS FIXES (RUNS IMMEDIATELY) ---
 (function initUI() {
-    // Inject vital CSS fixes for the Search Bar and Profile Overlay directly so you don't need to edit CSS files
     const injectedStyles = document.createElement('style');
     injectedStyles.innerHTML = `
         /* FIX: Prevent search text from overlapping icons */
@@ -28,10 +27,31 @@
             .switcher-title { font-size: 1.8rem; }
             .switcher-avatar-img { width: 100px; height: 100px; font-size: 3rem; }
         }
+        
+        /* AD CARD STYLES FOR GRIDS */
+        .ad-card-wrapper {
+            position: relative;
+            background: rgba(255,255,255,0.03); 
+            border: 1px solid rgba(138,43,226,0.3);
+            border-radius: 12px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            overflow: hidden;
+            min-height: 200px;
+        }
+        .ad-card-wrapper::before {
+            content: 'Ad';
+            position: absolute;
+            top: 2px;
+            left: 5px;
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.4);
+            z-index: 10;
+        }
     `;
     document.head.appendChild(injectedStyles);
 
-    // Hardware Power Setup (Lite Mode Fallback)
     let isLowEnd = false;
     if ('deviceMemory' in navigator && navigator.deviceMemory < 4) isLowEnd = true;
     if ('hardwareConcurrency' in navigator && navigator.hardwareConcurrency <= 4) isLowEnd = true;
@@ -43,35 +63,29 @@
     }
 })();
 
-// --- UNIFIED MASTER FIREBASE CONFIGURATION ---
 const firebaseConfig = {
     apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
     authDomain: "dramakan007.firebaseapp.com",
     projectId: "dramakan007"
 };
 
-// --- SINGLETON FIREBASE LOADER ---
 let firebaseInstance = null;
 async function getFirebase() {
     if (firebaseInstance) return firebaseInstance;
-    
     const [appModule, authModule, firestoreModule] = await Promise.all([
         import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"),
         import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"),
         import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js")
     ]);
-
     const app = !appModule.getApps().length ? appModule.initializeApp(firebaseConfig) : appModule.getApp();
     const auth = authModule.getAuth(app);
     const db = firestoreModule.getFirestore(app);
-    
     firebaseInstance = { app, auth, db, appModule, authModule, firestoreModule };
     return firebaseInstance;
 }
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    // --- 1. MOBILE MENU LOGIC ---
     const menuToggle = document.getElementById('mobileMenuToggle');
     const navLinks = document.getElementById('navLinks');
     const overlay = document.createElement('div');
@@ -102,7 +116,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return shuffled;
     }
 
-    // --- 2. DATA POPULATION & CAROUSELS ---
     let fuse;
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
@@ -110,11 +123,16 @@ document.addEventListener('DOMContentLoaded', function () {
     function populateGrid(elementId, items) {
         const grid = document.getElementById(elementId);
         if (!grid) return;
-        grid.innerHTML = items.map(drama => {
+        
+        let htmlContent = '';
+        
+        items.forEach((drama, index) => {
             const safeTitle = encodeURIComponent(drama.title);
             const safeImg = encodeURIComponent(drama.img);
             const safeLink = encodeURIComponent(drama.link);
-            return `
+            
+            // Standard Drama Card
+            htmlContent += `
             <a href="${drama.link}" class="drama-card">
                 <div class="drama-card-img"><img src="${drama.img}" alt="${drama.title}" loading="lazy" decoding="async"></div>
                 <div class="drama-card-info">
@@ -125,8 +143,35 @@ document.addEventListener('DOMContentLoaded', function () {
                     <i class="fas fa-plus"></i>
                 </button>
             </a>
-        `;
-        }).join('');
+            `;
+
+            // --- IN-FEED AD INJECTION LOGIC ---
+            // Injects specific In-Feed units natively inside the carousel/grid after the 3rd item
+            if (index === 2) {
+                if (elementId === 'kdrama-grid') {
+                    htmlContent += `
+                    <div class="drama-card ad-card-wrapper">
+                        <ins class="adsbygoogle" style="display:block; width:100%; height:100%;" data-ad-format="fluid" data-ad-layout-key="+21+s4-18-23+8q" data-ad-client="ca-pub-3854581977852778" data-ad-slot="2322807703"></ins>
+                    </div>`;
+                } else if (elementId === 'jdrama-grid') {
+                    htmlContent += `
+                    <div class="drama-card ad-card-wrapper">
+                        <ins class="adsbygoogle" style="display:block; width:100%; height:100%;" data-ad-format="fluid" data-ad-layout-key="+2a+rx+1+2-3" data-ad-client="ca-pub-3854581977852778" data-ad-slot="6975017511"></ins>
+                    </div>`;
+                }
+            }
+        });
+
+        grid.innerHTML = htmlContent;
+
+        // Force Adsense to push the newly injected dynamic ad units
+        setTimeout(() => {
+            const uninitializedAds = grid.querySelectorAll('.adsbygoogle:not([data-adsbygoogle-status="done"])');
+            uninitializedAds.forEach(() => {
+                try { (adsbygoogle = window.adsbygoogle || []).push({}); } 
+                catch (e) { console.error("Dynamic Ad Init Error", e); }
+            });
+        }, 500);
     }
 
     async function initializeDramaSite() {
@@ -234,7 +279,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // --- 3. HERO SLIDER LOGIC ---
     const sliderWrapper = document.querySelector('.slider-wrapper');
     if (sliderWrapper) {
         let slideIndex = 0;
@@ -358,7 +402,6 @@ document.addEventListener('DOMContentLoaded', function () {
         initSlider();
     }
 
-    // --- 4. APP-LIKE SCROLL REVEAL ---
     const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
     const sectionObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
@@ -377,7 +420,6 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeDramaSite();
 });
 
-// --- 5. DRAMA REQUEST MODAL ---
 document.addEventListener("DOMContentLoaded", function() {
     const modal = document.getElementById("dramaModal");
     const openBtn = document.getElementById("dramaRequestBtn");
@@ -439,12 +481,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
-// --- 6. PWA SERVICE WORKER ---
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW Failed', err)); });
 }
 
-// --- 7. SMART APP INSTALL PROMPT LOGIC ---
 document.addEventListener("DOMContentLoaded", function() {
     const installPopup = document.getElementById('appInstallPopup');
     const closeInstallBtn = document.getElementById('closeInstallPopup');
@@ -457,9 +497,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
-// --- 8. AUTHENTICATION UI SYNC & WHO'S WATCHING OVERLAY ---
-
-// Creates the "Who's Watching" Overlay dynamically
 function createProfileSwitcher(profiles) {
     if (document.getElementById('home-profile-switcher-overlay')) return;
 
@@ -494,10 +531,8 @@ function createProfileSwitcher(profiles) {
         card.addEventListener('click', () => {
             const selectedId = card.getAttribute('data-id');
             
-            // Mark today's date so we don't show the prompt again until tomorrow
             const todayStr = new Date().toDateString();
             localStorage.setItem('dramakan_profile_prompt_date', todayStr);
-            
             localStorage.setItem('dramakan_active_profile_id', selectedId);
             
             overlay.classList.add('hidden');
@@ -508,7 +543,6 @@ function createProfileSwitcher(profiles) {
     });
 }
 
-// Updates the Header UI to show only the Image
 function updateHeaderAvatar(profiles) {
     const activeId = localStorage.getItem('dramakan_active_profile_id');
     let activeProf = profiles[0]; 
@@ -531,7 +565,7 @@ function updateHeaderAvatar(profiles) {
 
     if (authBtn) {
         authBtn.href = "profile.html";
-        authBtn.innerHTML = avatarHtml; // STRIPS OUT TEXT, LEAVES ONLY IMAGE
+        authBtn.innerHTML = avatarHtml; 
         authBtn.style.padding = "0"; 
         authBtn.style.background = "transparent";
         authBtn.style.border = "none";
@@ -553,7 +587,6 @@ function updateHeaderAvatar(profiles) {
     }
 }
 
-// Master Authentication Listener
 async function initAuthSync() {
     try {
         const { auth, db, firestoreModule, authModule } = await getFirebase();
@@ -580,7 +613,6 @@ async function initAuthSync() {
                             userProfiles = [{ id: 'prof_default', name: data.username || "User", avatar: legacyAvatar }];
                         }
                         
-                        // --- VIP & PROMO LOGIC FOR HOME PAGE ---
                         const now = Date.now();
                         let activePlan = "Basic";
                         if (data.isPremium && data.premiumExpiry > now) {
@@ -590,7 +622,7 @@ async function initAuthSync() {
                         const headerVipBtn = document.querySelector('.vip-header-btn');
                         if (headerVipBtn) {
                             if (activePlan.includes('Crown')) {
-                                headerVipBtn.style.display = 'none'; // Max tier, completely hide upgrade button
+                                headerVipBtn.style.display = 'none'; 
                             } else if (activePlan.includes('Elite')) {
                                 headerVipBtn.className = 'vip-header-btn status-crown';
                                 headerVipBtn.innerHTML = '<i class="fas fa-arrow-up"></i> Upgrade Crown';
@@ -605,51 +637,39 @@ async function initAuthSync() {
                         const hasClaimedTrial = data.trialClaimed === true;
                         const isPremiumActive = data.isPremium && data.premiumExpiry > now;
                         
-                        // Security flag & dynamic CSS injection to fully kill the promo banner logic
                         if (hasClaimedTrial || isPremiumActive) {
-                            // Tell promo-banner.js to abort
                             localStorage.setItem('dramakan_promo_closed', 'true');
-                            
-                            // Inject strict CSS rule to force hide any active trial promos existing in the DOM
                             const blockStyle = document.createElement('style');
                             blockStyle.innerHTML = '#dramakan-bottom-promo, .promo-banner, #promoBanner { display: none !important; }';
                             document.head.appendChild(blockStyle);
-                            
-                            // Also explicitly hide if it's already generated
                             const existingPromo = document.getElementById('dramakan-bottom-promo');
                             if(existingPromo) existingPromo.style.display = 'none';
                         }
-                        // ---------------------------------------
                     }
 
-                    // Check if we already showed the prompt today
                     const todayStr = new Date().toDateString();
                     const lastPromptDate = localStorage.getItem('dramakan_profile_prompt_date');
 
-                    // Show "Who's Watching" if it's a new day, else just render the header
                     if (lastPromptDate !== todayStr && userProfiles.length > 0) {
                         createProfileSwitcher(userProfiles);
                     } else {
                         updateHeaderAvatar(userProfiles);
                     }
 
-                    // Update UI if user clicked a profile in the overlay
                     window.addEventListener('profileSelected', () => {
                         updateHeaderAvatar(userProfiles);
-                        window.dispatchEvent(new Event('historySynced')); // Force CW section to refresh
+                        window.dispatchEvent(new Event('historySynced')); 
                     });
 
                 } catch (error) {
                     console.error("Auth UI Error:", error);
                 }
          } else {
-                // Completely Logged Out State
                 const authBtn = document.getElementById('topAuthBtn');
                 if (authBtn) {
                     authBtn.href = "login.html";
                     authBtn.innerHTML = `<i class="fas fa-user"></i> <span>Login / Sign Up</span>`;
                     
-                    // Clear out inline styles so the premium CSS takes over automatically
                     authBtn.style.padding = "";
                     authBtn.style.background = "";
                     authBtn.style.border = "";
