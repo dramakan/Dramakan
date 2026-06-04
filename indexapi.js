@@ -1,10 +1,10 @@
-// indexapi.js — Frontend Integration for Xyra API
+// indexapi.js — Frontend Integration for Dramacool9 API
 
-const API_BASE = "http://127.0.0.1:8788/v1/dramacool";
-const API_KEY = "somekey1"; // Updated to match your active local key
+const API_BASE = "http://127.0.0.1:8788/v1/dramacool9";
+const API_KEY = "key1"; // Updated to match the active local key
 
 /**
- * Master fetch wrapper for the local Xyra API
+ * Master fetch wrapper for the Dramacool9 local API
  */
 async function fetchXyraAPI(endpoint, params = {}) {
     params.api_key = API_KEY;
@@ -15,29 +15,34 @@ async function fetchXyraAPI(endpoint, params = {}) {
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         
-        const data = await res.json();
+        const json = await res.json();
         
-        // Handle Xyra's specific nested structures (like /home vs /popular)
-        if (data.data && data.data.recently_added) return data.data.recently_added;
-        return data.data || data.results || [];
+        if (!json.success) throw new Error(json.message || "API returned success: false");
+        
+        return json.data;
     } catch (e) {
-        console.error(`[Xyra API Error] Failed to fetch ${endpoint}:`, e.message);
-        return [];
+        console.error(`[Dramacool9 API Error] Failed to fetch ${endpoint}:`, e.message);
+        return null;
     }
 }
 
 /**
- * Extracts a clean slug from Xyra's full URL IDs
+ * Extracts a clean slug from full URL IDs (Leaves quality tags intact for dramacool9)
  */
 function extractSlug(rawId) {
     if (!rawId) return '';
+    let slug = rawId;
+    
     if (rawId.includes('http')) {
         try {
-            return new URL(rawId).pathname.split('/').filter(Boolean).pop();
-        } catch(e) { return rawId; }
+            slug = new URL(rawId).pathname.split('/').filter(Boolean).pop();
+        } catch(e) { slug = rawId; }
+    } else if (rawId.includes('/')) {
+        slug = rawId.split('/').filter(Boolean).pop();
     }
-    if (rawId.includes('/')) return rawId.split('/').filter(Boolean).pop();
-    return rawId;
+    
+    // We stopped stripping the tags here! watchapi.html will handle it dynamically.
+    return slug;
 }
 
 /**
@@ -82,7 +87,7 @@ function renderContinueWatching() {
                 cwSection.style.display = 'none';
             }
         }
-    } catch(e) { console.error("CW Render Error:", e); }
+    } catch(e) { console.error("[Dramacool9 API Error] CW Render Error:", e); }
 }
 
 /**
@@ -90,11 +95,13 @@ function renderContinueWatching() {
  */
 function createDramaCard(item) {
     const rawId = item.id || item.dramaId || item.original_id;
-    const slug = extractSlug(rawId); // Clean the ID!
+    const slug = extractSlug(rawId); 
     
     const title = item.title || item.name;
     const img = item.image || item.img || item.poster || 'https://via.placeholder.com/300x450?text=No+Poster';
-    const ep = item.episode || item.latest_episode || (item.status === 'Completed' ? 'Completed' : 'Series');
+    
+    // Extracting episode safely, falling back to time or default values
+    const ep = item.episode || item.time || item.latest_episode || (item.status === 'Completed' ? 'Completed' : 'Series');
     
     const watchLink = `watchapi.html?id=${encodeURIComponent(slug)}`;
 
@@ -114,21 +121,30 @@ function createDramaCard(item) {
 }
 
 /**
- * Initializes the grid populations on page load
+ * Utility to populate a specific grid
+ */
+function populateGrid(gridId, dataArray) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    
+    if (dataArray && Array.isArray(dataArray) && dataArray.length > 0) {
+        grid.innerHTML = dataArray.slice(0, 15).map(createDramaCard).join('');
+    } else {
+        grid.innerHTML = '<p style="color:#a1a1aa; padding:20px; text-align:center; width:100%;">Failed to load content.</p>';
+    }
+}
+
+/**
+ * Initializes the grid populations on page load with multi-country layout filters
  */
 async function initializeDramaSite() {
     renderContinueWatching();
     window.addEventListener('historySynced', renderContinueWatching);
 
-    const gridConfigs = [
-        { id: 'latest-grid', endpoint: '/latest' },
-        { id: 'popular-grid', endpoint: '/popular' },
-        { id: 'ongoing-grid', endpoint: '/ongoing' },
-        { id: 'upcoming-grid', endpoint: '/upcoming' }
-    ];
-
-    gridConfigs.forEach(config => {
-        const el = document.getElementById(config.id);
+    // Apply loading skeletons to the newly customized grids
+    const gridIds = ['latest-grid', 'popular-grid', 'korean-grid', 'japanese-grid', 'chinese-grid'];
+    gridIds.forEach(id => {
+        const el = document.getElementById(id);
         if (el) {
             el.innerHTML = Array(6).fill(0).map(() => `
                 <div class="drama-card" style="pointer-events:none; border: 1px solid rgba(255,255,255,0.05);">
@@ -141,26 +157,38 @@ async function initializeDramaSite() {
         }
     });
 
-    const results = await Promise.allSettled(
-        gridConfigs.map(config => fetchXyraAPI(config.endpoint))
-    );
+    try {
+        // Parallel fetching including your dynamic country list parameters
+        const [homeData, popularData, japanData, chinaData] = await Promise.all([
+            fetchXyraAPI('/home'),
+            fetchXyraAPI('/popular', { page: 1 }),
+            fetchXyraAPI('/list', { country: 'japan', page: 1 }),
+            fetchXyraAPI('/list', { country: 'china', page: 1 })
+        ]);
 
-    gridConfigs.forEach((config, i) => {
-        const grid = document.getElementById(config.id);
-        if (!grid) return;
-
-        const data = results[i].status === 'fulfilled' ? results[i].value : [];
-        
-        if (data.length > 0) {
-            grid.innerHTML = data.slice(0, 15).map(createDramaCard).join('');
+        // Process Global Home & Popular Data
+        if (homeData) {
+            populateGrid('latest-grid', homeData.drama);
+            // Default home feed works beautifully to showcase the newest Korean entries
+            populateGrid('korean-grid', homeData.drama); 
         } else {
-            grid.innerHTML = '<p style="color:#a1a1aa; padding:20px; text-align:center; width:100%;">Failed to load content.</p>';
+            console.error("[Dramacool9 API Error] Home data feed failed.");
+            populateGrid('latest-grid', []);
+            populateGrid('korean-grid', []);
         }
-    });
-}
 
+        populateGrid('popular-grid', popularData);
+
+        // Populate targeted regional channels
+        populateGrid('japanese-grid', japanData);
+        populateGrid('chinese-grid', chinaData);
+
+    } catch (error) {
+        console.error("[Dramacool9 API Error] Initialization failed:", error);
+    }
+}
 /**
- * Handles Live Search interactions
+ * Handles Live Search interactions utilizing the /search endpoint
  */
 function setupLiveSearch() {
     const searchInput = document.getElementById('searchInput');
@@ -178,7 +206,7 @@ function setupLiveSearch() {
             }
 
             debounceTimer = setTimeout(async () => {
-                const results = await fetchXyraAPI('/search', { query: query });
+                const results = await fetchXyraAPI('/search', { query: query, page: 1 });
                 
                 if (results && results.length > 0) {
                     searchResults.innerHTML = results.slice(0, 8).map(item => {
@@ -188,7 +216,7 @@ function setupLiveSearch() {
                             <img src="${item.image || item.img}" width="45" height="60" loading="lazy" onerror="this.src='https://via.placeholder.com/45x60'">
                             <div class="search-result-text">
                                 <div class="search-result-title">${item.title || item.name}</div>
-                                <small style="color:var(--primary); font-weight:500;">${item.episode || 'Series'}</small>
+                                <small style="color:var(--primary); font-weight:500;">${item.time || item.episode || 'Series'}</small>
                             </div>
                         </a>`;
                     }).join('');
