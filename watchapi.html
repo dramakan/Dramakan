@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="bottom-bar.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
     <style>
         :root {
@@ -25,40 +27,48 @@
         }
         body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Poppins', sans-serif; margin: 0; padding: 0; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
-        /* PAGE LOADER */
         #page-loader { position: fixed; inset: 0; background: var(--bg-base); z-index: 10000; display: flex; justify-content: center; align-items: center; flex-direction: column; color: #fff; transition: opacity 0.4s ease; }
         .spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.05); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* HEADER */
         .main-header { background: rgba(11, 12, 16, 0.85); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-bottom: 1px solid var(--glass-border); padding: 15px 4%; position: sticky; top: 0; z-index: 1000; }
         .logo { font-size: 1.8rem; font-weight: 700; color: #fff; text-decoration: none; letter-spacing: -0.5px; transition: text-shadow 0.3s ease; }
         .logo:hover { text-shadow: 0 0 15px var(--primary-glow); }
         .logo span { color: var(--primary); text-shadow: 0 0 8px var(--primary-glow); }
 
-        /* SHARED GLASS WIDGET */
         .widget { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 20px; padding: 25px; margin-bottom: 25px; box-shadow: var(--glass-shadow); }
         .widget-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 20px; color: #fff; display: flex; align-items: center; gap: 8px; }
         .widget-title i { color: var(--primary); font-size: 1.1rem; }
 
-        /* VIDEO PLAYER */
-        .video-player-container { position: relative; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 20px; padding: 12px; margin-bottom: 20px; box-shadow: var(--glass-shadow); aspect-ratio: 16/9; width: 100%; box-sizing: border-box; }
-        .video-player-container iframe { width: 100%; height: 100%; border-radius: 12px; background: #000; border: none; }
+        .video-player-container { position: relative; background: #000; border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; margin-bottom: 20px; box-shadow: var(--glass-shadow); aspect-ratio: 16/9; width: 100%; box-sizing: border-box; }
+        .video-player-container iframe { width: 100%; height: 100%; background: #000; border: none; display: none; }
+        .video-player-container video { width: 100%; height: 100%; background: #000; outline: none; display: none; }
+        video::cue { background-color: rgba(0, 0, 0, 0.8); color: white; font-size: 1.1rem; font-family: 'Poppins', sans-serif; text-shadow: 1px 1px 2px black; }
+        
+        #player-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--text-muted); pointer-events: none; }
+        #player-placeholder i { font-size: 3rem; color: rgba(138,43,226,0.4); }
+        #player-placeholder p { margin: 0; font-size: 0.9rem; }
 
-        /* SERVER SELECTOR */
         .server-selector-container { display: flex; align-items: center; gap: 10px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px 20px; margin-bottom: 25px; box-shadow: var(--glass-shadow); overflow-x: auto; flex-wrap: wrap; }
         .server-selector-container::-webkit-scrollbar { display: none; }
         .server-label { color: var(--text-muted); font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
         .server-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); color: var(--text-main); padding: 8px 18px; border-radius: 50px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 0.82rem; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); white-space: nowrap; }
         .server-btn:hover:not(.active) { background: rgba(255,255,255,0.08); border-color: rgba(138,43,226,0.3); transform: translateY(-1px); }
         .server-btn.active { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-rich) 100%); border-color: var(--primary); box-shadow: 0 6px 15px var(--primary-glow); color: #fff; font-weight: 600; }
-        .provider-tag { font-size: 0.72rem; background: rgba(138,43,226,0.15); color: #c084fc; border: 1px solid rgba(138,43,226,0.25); padding: 3px 10px; border-radius: 20px; margin-left: auto; white-space: nowrap; }
 
-        /* EPISODE META */
+        .notice-bar { display: none; border-radius: 12px; padding: 12px 18px; font-size: 0.85rem; margin-bottom: 20px; align-items: center; gap: 10px; }
+        .notice-bar.show { display: flex; }
+        .notice-bar.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+
+        #stream-error { display: none; position: absolute; inset: 0; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: rgba(0,0,0,0.7); border-radius: 20px; color: #fca5a5; padding: 20px; text-align: center; z-index: 10; }
+        #stream-error.show { display: flex; }
+        #stream-error i { font-size: 2.5rem; color: #ef4444; }
+        #stream-error p { margin: 0; font-size: 0.95rem; max-width: 340px; line-height: 1.5; }
+        #stream-error small { color: var(--text-muted); font-size: 0.78rem; }
+
         .episode-meta { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; margin-bottom: 25px; box-shadow: var(--glass-shadow); }
         .episode-title { font-size: 1.2rem; font-weight: 600; margin: 0; color: #fff; }
 
-        /* BUTTONS */
         .action-btn { background: rgba(255,255,255,0.04); color: #fff; border: 1px solid var(--glass-border); padding: 10px 20px; border-radius: 50px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: inline-flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.9rem; font-family: 'Poppins', sans-serif; }
         .action-btn i { font-size: 1rem; transition: transform 0.3s ease; }
         .action-btn:hover:not(:disabled) { background: rgba(255,255,255,0.08); border-color: rgba(138,43,226,0.4); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
@@ -66,7 +76,6 @@
         .action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
         #add-to-list-btn.active-list { background: rgba(138,43,226,0.15); color: var(--primary); border-color: var(--primary); box-shadow: 0 4px 15px var(--primary-glow); }
 
-        /* EPISODES GRID */
         .episodes-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
         .episode-item { position: relative; overflow: hidden; background: linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.2) 100%); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px 10px; text-align: center; cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .episode-item:hover { transform: translateY(-3px); background: rgba(255,255,255,0.08); border-color: rgba(138,43,226,0.3); box-shadow: 0 6px 15px rgba(0,0,0,0.4); }
@@ -82,7 +91,6 @@
             .episodes-list::-webkit-scrollbar-thumb { background: rgba(138,43,226,0.5); border-radius: 4px; }
         }
 
-        /* CAST */
         .cast-list { display: flex; gap: 20px; overflow-x: auto; padding: 10px 5px 20px 5px; scrollbar-width: thin; scrollbar-color: var(--primary) transparent; }
         .cast-list::-webkit-scrollbar { height: 6px; }
         .cast-list::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
@@ -92,7 +100,6 @@
         .actor-name { margin: 5px 0 2px 0; font-size: 0.9rem; color: #fff; font-weight: 600; line-height: 1.2; }
         .cast-placeholder { width: 80px; height: 80px; border-radius: 50%; background: rgba(138,43,226,0.1); border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #fff; }
 
-        /* COMMENTS */
         .comment-form-container { display: flex; gap: 15px; align-items: flex-start; margin-bottom: 30px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); transition: box-shadow 0.3s ease, border-color 0.3s ease; }
         .comment-form-container:focus-within { border-color: rgba(138,43,226,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
         .user-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); box-shadow: 0 0 12px var(--primary-glow); flex-shrink: 0; }
@@ -107,7 +114,6 @@
         .comment-item:hover { background: rgba(255,255,255,0.04); border-color: rgba(138,43,226,0.2); transform: translateX(2px); }
         @keyframes slideInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* SIDEBAR INFO */
         .info-poster { position: relative; border-radius: 16px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
         .info-poster img { width: 100%; display: block; transition: transform 0.5s ease; }
         .info-poster:hover img { transform: scale(1.04); }
@@ -122,7 +128,6 @@
         .info-details p span:last-child { font-weight: 500; text-align: right; max-width: 65%; }
         .status-badge { background: rgba(138,43,226,0.15); color: #e9d5ff; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; border: 1px solid rgba(138,43,226,0.25); }
 
-        /* SUGGESTIONS */
         .recommendations-list { display: flex; flex-direction: column; gap: 15px; }
         .rec-card { display: flex; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 10px; border-radius: 12px; align-items: center; transition: all 0.3s ease; text-decoration: none; }
         .rec-card:hover { background: rgba(138,43,226,0.1); border-color: rgba(138,43,226,0.3); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
@@ -131,17 +136,10 @@
         .rec-title { font-size: 0.9rem; font-weight: 600; color: #fff; margin: 0 0 5px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; }
         .rec-meta { font-size: 0.78rem; color: var(--text-muted); margin: 0; }
 
-        /* LAYOUT */
         .container { max-width: 1400px; margin: 0 auto; padding: 30px 4%; }
         .watch-layout { display: grid; grid-template-columns: 1fr 360px; gap: 30px; }
         @media (max-width: 1024px) { .watch-layout { grid-template-columns: 1fr; } .drama-info-widget { order: -1; } }
 
-        /* ALERT TOAST */
-        #api-notice { display: none; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; border-radius: 12px; padding: 12px 18px; font-size: 0.85rem; margin-bottom: 20px; }
-        #api-notice.show { display: flex; align-items: center; gap: 10px; }
-        #api-notice i { color: #ef4444; font-size: 1rem; flex-shrink: 0; }
-
-        /* BOTTOM NAV */
         @media (max-width: 992px) {
             .bottom-nav { display: flex !important; position: fixed !important; bottom: 10px !important; left: 50% !important; transform: translateX(-50%) !important; width: 90% !important; max-width: 400px !important; background: rgba(20,20,25,0.45) !important; backdrop-filter: blur(40px) saturate(180%) !important; -webkit-backdrop-filter: blur(40px) saturate(180%) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 50px !important; z-index: 9999 !important; padding: 5px 10px !important; }
             .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 0; color: rgba(255,255,255,0.5); transition: all 0.4s ease; text-decoration: none; }
@@ -155,7 +153,6 @@
 
     <script type="module" src="premium-manager.js"></script>
     <script src="bottom-bar.js" defer></script>
-<script src="premium-manager.js" defer></script>
 </head>
 <body>
 
@@ -169,17 +166,27 @@
 </header>
 
 <main class="container" style="display: none;" id="main-content">
-    <div id="api-notice">
+    <div id="api-notice" class="notice-bar error">
         <i class="fas fa-exclamation-circle"></i>
         <span id="api-notice-text"></span>
     </div>
     <div class="watch-layout">
-        <!-- MAIN COLUMN -->
         <div class="main-content-col">
-            <div class="video-player-container">
+            <div class="video-player-container" id="player-wrap">
+                <div id="player-placeholder">
+                    <i class="fas fa-play-circle"></i>
+                    <p>Select an episode to start watching</p>
+                </div>
+                <div id="stream-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p id="stream-error-msg">No playable sources could be found for this episode.</p>
+                    <small>Try a different server or check back later.</small>
+                </div>
                 <iframe id="video-player-iframe" src="" title="Video Player" frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen></iframe>
+                    allowfullscreen referrerpolicy="no-referrer"></iframe>
+                
+                <video id="native-video-player" controls playsinline crossorigin="anonymous"></video>
             </div>
 
             <div class="server-selector-container" id="server-selector-container">
@@ -224,7 +231,6 @@
             </div>
         </div>
 
-        <!-- SIDEBAR -->
         <div class="sidebar-col">
             <div class="widget drama-info-widget">
                 <div class="info-poster">
@@ -263,115 +269,217 @@
     <a href="login.html" class="bottom-nav-item" id="bottomAuthBtn"><i class="fa-solid fa-user nav-icon"></i><span class="nav-label">Profile</span></a>
 </nav>
 
+
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-    // ── FIREBASE ────────────────────────────────────────────────────────────────
     const firebaseConfig = {
         apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
         authDomain: "dramakan007.firebaseapp.com",
         projectId: "dramakan007"
     };
     const fbApp = initializeApp(firebaseConfig);
-    const db  = getFirestore(fbApp);
-    const auth = getAuth(fbApp);
+    const db    = getFirestore(fbApp);
+    const auth  = getAuth(fbApp);
 
-    // ── YOUR API ─────────────────────────────────────────────────────────────────
-    // Your server.js runs on port 3000. Update this if you deploy to a remote server.
-    const API_BASE = "http://localhost:3000";
+    // ── XYRA API INTEGRATION ────────────────────────────────────────────────────
+    const API_BASE = "http://127.0.0.1:8788/v1/dramacool";
+    const API_KEY = "somekey1";
 
-    /**
-     * fetchAPI — calls your aggregator API.
-     * Your server returns: { success: true, count: N, results: [...], provider: "..." }
-     * Returns the parsed JSON or null on error.
-     */
+    // Grab the intended resume time from the URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    let startProgressTime = parseInt(urlParams.get('t')) || 0;
+    let resumeOnLoadTriggered = false;
+
     async function fetchAPI(endpoint, params = {}) {
-        const qs = new URLSearchParams(params).toString();
+        params.api_key = API_KEY; 
+        const qs  = new URLSearchParams(params).toString();
         const url = qs ? `${API_BASE}${endpoint}?${qs}` : `${API_BASE}${endpoint}`;
+        
         try {
-            const res = await fetch(url);
+            const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             return await res.json();
         } catch (e) {
-            console.warn(`[DramaKan API] ${endpoint}:`, e.message);
+            console.warn(`[Xyra API] ${endpoint}:`, e.message);
             return null;
         }
     }
 
-    /**
-     * normalisePosterUrl — handles protocol-relative, root-relative, and empty URLs.
-     */
+    function extractSlug(rawId) {
+        if (!rawId) return '';
+        if (rawId.includes('http')) {
+            try { return new URL(rawId).pathname.split('/').filter(Boolean).pop(); } 
+            catch(e) { return rawId; }
+        }
+        if (rawId.includes('/')) return rawId.split('/').filter(Boolean).pop();
+        return rawId;
+    }
+
     function normalisePoster(url) {
         if (!url || typeof url !== 'string' || !url.trim()) return 'https://via.placeholder.com/300x450?text=No+Poster';
-        if (url.startsWith('//')) return 'https:' + url;
-        if (url.startsWith('/')) return 'https://dramacool.sh' + url;
+        if (url.startsWith('//'))  return 'https:' + url;
+        if (url.startsWith('/'))   return 'https://dramacool.sh' + url;
         return url;
     }
 
-    /**
-     * fixDeadDomain — replaces known dead AsianLoad/AsianC CDN domains with the active one.
-     */
+    // 🔴 THE FIX: Point dead domains to a working VIDEO CDN (asianc.to), NOT the UI domain (dramacool.sh)
     function fixDeadDomain(url) {
         if (!url) return url;
-        const live = 'asianc.pe';
+        const liveVideoCDN = 'asianc.to'; 
         return url
-            .replace(/asianload\.cfd/gi, live)
-            .replace(/asianc\.sh/gi,    live)
-            .replace(/asianc\.co/gi,    live)
-            .replace(/asianload\.cc/gi, live)
-            .replace(/asianload\.io/gi, live);
+            .replace(/asianload\.cfd/gi, liveVideoCDN)
+            .replace(/asianc\.sh/gi,    liveVideoCDN)
+            .replace(/asianc\.co/gi,    liveVideoCDN)
+            .replace(/asianload\.cc/gi, liveVideoCDN)
+            .replace(/asianload\.io/gi, liveVideoCDN)
+            .replace(/asianc\.pe/gi,    liveVideoCDN)
+            .replace(/dramacool\.sh\/streaming/gi, `${liveVideoCDN}/streaming`);
     }
 
-    /**
-     * extractServers — aggressively hunts for embeddable stream links
-     * inside whatever shape your providers return.
-     */
     function extractServers(payload) {
         if (!payload) return [];
-        let servers = [];
+        let raw = [];
 
-        // Shape 1: { embed_iframe_url, standard: { embeded_link } } — AsianFlix-style
-        if (payload.embed_iframe_url) {
-            servers.push({ name: 'Main HD', link: fixDeadDomain(payload.embed_iframe_url) });
-        }
-        if (payload.standard?.embeded_link && payload.standard.embeded_link !== payload.embed_iframe_url) {
-            servers.push({ name: 'Standard', link: fixDeadDomain(payload.standard.embeded_link) });
-        }
+        if (typeof payload === 'object' && !Array.isArray(payload)) {
+            for (const [key, val] of Object.entries(payload)) {
+                if (val && typeof val === 'object' && val.embeded_link) {
+                    const serverName = key.charAt(0).toUpperCase() + key.slice(1);
+                    
+                    // Grab subtitles provided by the API
+                    const subLink = val.sub || null;
 
-        // Shape 2: flat array
-        if (!servers.length && Array.isArray(payload)) {
-            servers = payload;
-        }
-
-        // Shape 3: { links: [...] } | { sources: [...] } | { server: [...] }
-        if (!servers.length) {
-            const arr = payload.links || payload.sources || payload.server || payload.servers || [];
-            if (Array.isArray(arr)) servers = arr;
-        }
-
-        // Shape 4: { link: "..." }
-        if (!servers.length && payload.link) {
-            servers = [{ name: payload.server || 'Server 1', link: payload.link }];
+                    if (val.stream) {
+                        raw.push({ name: `${serverName} (Direct)`, link: val.stream, sub: subLink });
+                    }
+                    raw.push({ name: `${serverName} (Embed)`, link: val.embeded_link, sub: subLink });
+                }
+            }
+            if (raw.length === 0) {
+                if (payload.embed_iframe_url) raw.push({ name: 'Main HD', link: payload.embed_iframe_url, sub: null });
+                if (payload.streaming_link) raw.push({ name: 'Direct Stream', link: payload.streaming_link, sub: null });
+            }
+        } else if (Array.isArray(payload)) {
+            raw = payload;
         }
 
-        return servers
-            .map(s => ({
-                name: s.name || s.server || s.label || 'Server',
-                link: fixDeadDomain(s.link || s.url || s.embed || s.iframe || s.file || '')
-            }))
-            .filter(s => s.link && s.link.startsWith('http'));
+        return raw.map(s => {
+            let link = s.link || s.url || s.file || '';
+            if (link.startsWith('//')) link = 'https:' + link;
+            link = fixDeadDomain(link);
+            return { name: s.name || 'Server', link, sub: s.sub };
+        }).filter(s => s.link && s.link.startsWith('http'));
     }
 
-    // ── DEFAULTS ─────────────────────────────────────────────────────────────────
+    function isNativeStream(url) {
+        try {
+            const u = new URL(url);
+            const path = u.pathname.toLowerCase();
+            return (
+                path.endsWith('.m3u8') || path.endsWith('.mp4') || path.endsWith('.webm') ||
+                path.includes('/hls/') || path.includes('/stream/') || path.includes('/manifest') ||
+                u.searchParams.has('m3u8') || u.hostname.includes('kisskh') ||
+                (u.hostname.includes('cloudfront.net') && (path.includes('index') || path.endsWith('.m3u8'))) ||
+                u.hostname.includes('akamaized.net')
+            );
+        } catch {
+            return url.includes('.m3u8') || url.includes('.mp4') || url.includes('/hls/');
+        }
+    }
+
+    let hlsInstance = null;
+    const videoIframe  = document.getElementById('video-player-iframe');
+    const nativePlayer = document.getElementById('native-video-player');
+    const playerPlaceholder = document.getElementById('player-placeholder');
+    const streamError  = document.getElementById('stream-error');
+    const streamErrorMsg = document.getElementById('stream-error-msg');
+
+    function showPlayerError(msg = 'No playable sources could be found for this episode.') {
+        videoIframe.style.display  = 'none';
+        nativePlayer.style.display = 'none';
+        playerPlaceholder.style.display = 'none';
+        streamError.classList.add('show');
+        if (msg) streamErrorMsg.textContent = msg;
+    }
+
+    function clearPlayerError() {
+        streamError.classList.remove('show');
+    }
+
+    // Pass the extracted subUrl straight into the native player track
+    function playVideo(url, subUrl) {
+        if (!url) { showPlayerError(); return; }
+
+        clearPlayerError();
+        playerPlaceholder.style.display = 'none';
+
+        if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+        nativePlayer.pause();
+        nativePlayer.innerHTML = ''; // Wipe old subtitle tracks
+
+        if (isNativeStream(url)) {
+            videoIframe.style.display  = 'none';
+            nativePlayer.style.display = 'block';
+
+            // Inject the subtitle track if the API provided a .vtt link
+            if (subUrl) {
+                const track = document.createElement('track');
+                track.kind = 'captions';
+                track.label = 'English';
+                track.srclang = 'en';
+                track.src = subUrl;
+                track.default = true;
+                nativePlayer.appendChild(track);
+            }
+
+            const attemptSeek = () => {
+                if (startProgressTime > 0 && !resumeOnLoadTriggered) {
+                    nativePlayer.currentTime = startProgressTime;
+                    resumeOnLoadTriggered = true;
+                }
+            };
+
+            const isHLS = url.includes('.m3u8') || url.includes('/hls/') || url.includes('/manifest');
+
+            if (isHLS && Hls.isSupported()) {
+                hlsInstance = new Hls({ enableWorker: true, lowLatencyMode: false });
+                hlsInstance.loadSource(url);
+                hlsInstance.attachMedia(nativePlayer);
+                hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+                    attemptSeek();
+                    nativePlayer.play().catch(() => {});
+                });
+                hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+                    if (data.fatal) showPlayerError('Stream error: ' + data.details + '. Try another server.');
+                });
+            } else if (isHLS && nativePlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                nativePlayer.src = url;
+                nativePlayer.onloadedmetadata = () => attemptSeek();
+                nativePlayer.play().catch(() => {});
+            } else {
+                nativePlayer.src = url;
+                nativePlayer.onloadedmetadata = () => attemptSeek();
+                nativePlayer.play().catch(() => {});
+            }
+
+            nativePlayer.onerror = () => { showPlayerError('This stream could not be loaded. Try another server.'); };
+        } else {
+            // Embeds handle their own subtitles!
+            nativePlayer.style.display = 'none';
+            videoIframe.style.display  = 'block';
+            videoIframe.src = '';
+            requestAnimationFrame(() => { videoIframe.src = url; });
+        }
+    }
+
     const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
 
-    // ── BOOT ──────────────────────────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', async () => {
-        const urlParams  = new URLSearchParams(window.location.search);
-        const rawId      = urlParams.get('id');
-        const urlProvider = urlParams.get('provider') || ''; // passed by index grid links
+        let rawId = urlParams.get('id');
+        let targetEp = urlParams.get('ep'); // Support ?ep=2 routing from homepage continue watching
 
         if (!rawId) {
             alert("Missing drama ID in the URL. Redirecting home.");
@@ -379,44 +487,47 @@
             return;
         }
 
-        // Strip leading slashes / stray path segments
-        const dramaId = rawId.includes('/') ? rawId.split('/').filter(Boolean).pop() : rawId;
-
-        let sortedEpisodes     = [];
+        const dramaId = extractSlug(decodeURIComponent(rawId));
+        let sortedEpisodes      = [];
         let currentEpisodeIndex = 0;
-        let currentDramaData   = null;
+        let currentDramaData    = null;
 
-        const showNotice = (msg) => {
-            const el = document.getElementById('api-notice');
-            document.getElementById('api-notice-text').textContent = msg;
-            el.classList.add('show');
-        };
+        // 🔴 CONTINUE WATCHING: Track the native player time
+        if (!window._timeTrackerSetup) {
+            window._timeTrackerSetup = true;
+            nativePlayer.addEventListener('timeupdate', () => {
+                // Ensure we only save meaningful progress (after 5 seconds of playing)
+                if (nativePlayer.currentTime > 5 && currentDramaData) {
+                    let history = JSON.parse(localStorage.getItem('dramakan_history') || '{}');
+                    if (history[dramaId]) {
+                        history[dramaId].progress = Math.floor(nativePlayer.currentTime);
+                        localStorage.setItem('dramakan_history', JSON.stringify(history));
+                    }
+                }
+            });
+        }
 
         try {
-            // ── 1. FETCH DRAMA INFO ──────────────────────────────────────────────
-            // Try /info first (providers that support it), then fall back to a
-            // search so the page still loads even without a dedicated info endpoint.
             let infoData = null;
-            let infoProvider = urlProvider;
-
             const infoRes = await fetchAPI('/info', { id: dramaId });
-            if (infoRes?.success && (infoRes.data || infoRes.results?.length)) {
-                infoData = infoRes.data || infoRes.results[0];
-                infoProvider = infoRes.provider || urlProvider;
+
+            if (infoRes) {
+                infoData = infoRes.results?.[0] || infoRes.results || infoRes.data || infoRes;
+                if (Array.isArray(infoData)) infoData = infoData[0];
             }
 
-            // Fallback: search by dramaId (slug → readable title)
             if (!infoData) {
                 const searchQuery = dramaId.replace(/-/g, ' ');
-                const searchRes = await fetchAPI('/search', { q: searchQuery });
-                if (searchRes?.success && searchRes.results?.length) {
-                    // Pick the closest match
-                    infoData = searchRes.results.find(r =>
-                        r.id === dramaId ||
-                        (r.title || '').toLowerCase().replace(/\s+/g, '-') === dramaId.toLowerCase()
-                    ) || searchRes.results[0];
-                    infoProvider = searchRes.provider || urlProvider;
-                    showNotice('Full drama details could not be loaded — showing partial data from search results.');
+                const searchRes   = await fetchAPI('/search', { query: searchQuery });
+                
+                if (searchRes) {
+                    const extractedResults = searchRes.results || searchRes.data || searchRes;
+                    if (extractedResults.length) {
+                        infoData = extractedResults.find(r =>
+                            extractSlug(r.id || r.dramaId || r.original_id) === dramaId ||
+                            (r.title || '').toLowerCase().replace(/\s+/g, '-') === dramaId.toLowerCase()
+                        ) || extractedResults[0];
+                    }
                 }
             }
 
@@ -425,80 +536,70 @@
             currentDramaData = infoData;
             const data = currentDramaData;
 
-            // ── 2. POPULATE UI ───────────────────────────────────────────────────
-            document.title = `Watch ${data.title} Free – DramaKan`;
+            document.title = `Watch ${data.title || data.name} Free – DramaKan`;
 
             const posterUrl = normalisePoster(data.image || data.img || data.poster || data.cover || data.thumbnail);
-            document.getElementById('ui-poster').src   = posterUrl;
-            document.getElementById('ui-title').textContent      = data.title || 'Untitled';
-            document.getElementById('synopsis-text').textContent = data.description || data.synopsis || data.overview || 'No description available.';
-            document.getElementById('ui-release').textContent    = data.release_year || data.year || data.releaseDate || '—';
-            document.getElementById('ui-status').textContent     = data.status || 'Ongoing';
-            document.getElementById('ui-provider').textContent   = infoProvider || 'Unknown';
+            document.getElementById('ui-poster').src              = posterUrl;
+            document.getElementById('ui-title').textContent       = data.title || data.name || 'Untitled';
+            document.getElementById('synopsis-text').textContent  = data.description || data.synopsis || data.overview || 'No description available.';
+            document.getElementById('ui-release').textContent     = data.release_year || data.year || data.releaseDate || '—';
+            document.getElementById('ui-status').textContent      = data.status || 'Ongoing';
+            document.getElementById('ui-provider').textContent    = 'Xyra Engine';
 
-            const genres = Array.isArray(data.genres)
-                ? data.genres.slice(0, 4).join(', ')
-                : (data.genres || data.genre || 'Drama');
+            const genres = Array.isArray(data.genres) ? data.genres.slice(0, 4).join(', ') : (data.genres || data.genre || 'Drama');
             document.getElementById('ui-genre').textContent = genres;
 
-            // Cast
             const casts = data.casts || data.cast || [];
             if (casts.length > 0) {
                 document.getElementById('cast-section-container').style.display = 'block';
                 document.getElementById('cast-list-container').innerHTML = casts.map(cast => {
-                    const name  = typeof cast === 'string' ? cast : (cast.name || cast.actor || 'Unknown');
-                    const img   = typeof cast === 'object' ? normalisePoster(cast.img || cast.image || cast.photo) : null;
+                    const name = typeof cast === 'string' ? cast : (cast.name || cast.actor || 'Unknown');
+                    const img  = typeof cast === 'object' ? normalisePoster(cast.img || cast.image || cast.photo) : null;
                     return `
                     <div class="cast-card">
-                        ${img
-                            ? `<img src="${img}" alt="${name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
-                            : ''}
+                        ${img ? `<img src="${img}" alt="${name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
                         <div class="cast-placeholder" ${img ? 'style="display:none;"' : ''}><i class="fas fa-user"></i></div>
                         <h4 class="actor-name">${name}</h4>
                     </div>`;
                 }).join('');
             }
 
-            // ── 3. EPISODES ──────────────────────────────────────────────────────
             const rawEps = data.episodes || data.episode_list || [];
             if (rawEps.length > 0) {
                 sortedEpisodes = rawEps.map((ep, index) => {
-                    // Build a reliable episode ID from whatever field exists
-                    let epId = ep.id || ep.episode_id || ep.original_id;
-                    if (!epId && ep.url) {
-                        epId = ep.url.split('/').filter(Boolean).pop().replace('.html', '');
-                    }
-                    if (!epId) epId = `ep-${index}`;
-
-                    // Parse episode number
+                    let epId = extractSlug(ep.id || ep.episode_id || ep.original_id);
                     let epNum = ep.episode ?? ep.episode_number ?? ep.ep ?? ep.number;
+                    
                     if (epNum === undefined || epNum === null) {
                         const src = ep.title || ep.name || epId || '';
                         const m   = src.match(/episode[- _]?(\d+(\.\d+)?)/i) || src.match(/ep[- _]?(\d+(\.\d+)?)/i) || src.match(/(\d+(\.\d+)?)/);
                         epNum = m ? parseFloat(m[1]) : (rawEps.length - index);
                     }
 
-                    return {
-                        id:      epId,
-                        episode: parseFloat(epNum),
-                        title:   ep.title || ep.name || `Episode ${epNum}`
-                    };
+                    if (!epId || epId === 'undefined') epId = `${dramaId}-episode-${epNum}`;
+
+                    return { id: epId, episode: parseFloat(epNum), title: ep.title || ep.name || `Episode ${epNum}` };
                 }).sort((a, b) => a.episode - b.episode);
 
                 renderEpisodeGrid();
             } else {
                 document.getElementById('episodes-list-container').innerHTML =
-                    `<p style="color:var(--text-muted); font-size:0.85rem; grid-column:1/-1;">No episode list available from the provider.</p>`;
+                    `<p style="color:var(--text-muted); font-size:0.85rem; grid-column:1/-1;">No episode list available.</p>`;
             }
 
-            // ── 4. WIRE UP BUTTONS ───────────────────────────────────────────────
             initBookmarkSystem(data, posterUrl);
 
             document.getElementById('prev-ep-btn').addEventListener('click', () => {
-                if (currentEpisodeIndex > 0) loadEpisodeData(currentEpisodeIndex - 1);
+                if (currentEpisodeIndex > 0) {
+                    resumeOnLoadTriggered = false; startProgressTime = 0; // Reset progress when manually switching eps
+                    loadEpisodeData(currentEpisodeIndex - 1);
+                }
             });
             document.getElementById('next-ep-btn').addEventListener('click', () => {
-                if (currentEpisodeIndex < sortedEpisodes.length - 1) loadEpisodeData(currentEpisodeIndex + 1);
+                if (currentEpisodeIndex < sortedEpisodes.length - 1) {
+                    resumeOnLoadTriggered = false; startProgressTime = 0;
+                    loadEpisodeData(currentEpisodeIndex + 1);
+                }
             });
             document.getElementById('read-more-btn').addEventListener('click', (e) => {
                 const el = document.getElementById('synopsis-text');
@@ -506,14 +607,21 @@
                 e.target.textContent = el.classList.contains('truncated') ? 'Read More' : 'Read Less';
             });
 
-            // Resume or start from episode 0
+            // 🔴 CONTINUE WATCHING ROUTER LOGIC
+            let targetIdx = 0;
             const savedEpId = localStorage.getItem(`dramakan_ep_${dramaId}`);
-            if (savedEpId && sortedEpisodes.length > 0) {
+            
+            // If url passed a target episode (from homepage continue watching link)
+            if (targetEp && sortedEpisodes.length > 0) {
+                const foundIdx = sortedEpisodes.findIndex(ep => ep.episode === parseFloat(targetEp));
+                if (foundIdx > -1) targetIdx = foundIdx;
+            } else if (savedEpId && sortedEpisodes.length > 0) {
+                // Otherwise use local storage save
                 const savedIdx = sortedEpisodes.findIndex(ep => ep.id === savedEpId);
-                loadEpisodeData(savedIdx > -1 ? savedIdx : 0);
-            } else if (sortedEpisodes.length > 0) {
-                loadEpisodeData(0);
+                if (savedIdx > -1) targetIdx = savedIdx;
             }
+
+            if (sortedEpisodes.length > 0) loadEpisodeData(targetIdx);
 
             loadSuggestions();
             initCommentSystem(dramaId);
@@ -523,15 +631,13 @@
             document.getElementById('main-content').style.display = 'block';
 
         } catch (err) {
-            console.error('[DramaKan] Critical load error:', err);
             document.getElementById('page-loader').innerHTML = `
                 <i class="fas fa-exclamation-triangle" style="font-size:3rem; color:#ef4444; margin-bottom:15px;"></i>
                 <p style="color:#ef4444; font-weight:600;">Failed to Load Drama</p>
                 <p style="font-size:0.85rem; color:#aaa; text-align:center; max-width:80%; line-height:1.5;">${err.message}</p>
-                <button onclick="window.location.replace('index.html')" style="margin-top:20px; padding:10px 20px; background:var(--primary); color:#fff; border:none; border-radius:8px; cursor:pointer; font-family:'Poppins',sans-serif;">Return Home</button>`;
+                <button onclick="window.location.replace('index.html')" style="margin-top:20px; padding:10px 20px; background:var(--primary); color:#fff; border:none; border-radius:8px; cursor:pointer;">Return Home</button>`;
         }
 
-        // ── RENDER EPISODE GRID ──────────────────────────────────────────────────
         function renderEpisodeGrid() {
             const grid = document.getElementById('episodes-list-container');
             grid.innerHTML = sortedEpisodes.map((ep, index) => `
@@ -539,13 +645,14 @@
                     <p class="ep-number">EP ${ep.episode}</p>
                     <p class="ep-desc">${ep.title}</p>
                 </div>`).join('');
-
             grid.querySelectorAll('.episode-item').forEach(item => {
-                item.addEventListener('click', () => loadEpisodeData(+item.dataset.index));
+                item.addEventListener('click', () => {
+                    resumeOnLoadTriggered = false; startProgressTime = 0; // Wipe resume progress when manually selecting
+                    loadEpisodeData(+item.dataset.index);
+                });
             });
         }
 
-        // ── LOAD EPISODE + STREAM ────────────────────────────────────────────────
         async function loadEpisodeData(index) {
             if (index < 0 || index >= sortedEpisodes.length) return;
             currentEpisodeIndex = index;
@@ -553,105 +660,101 @@
 
             document.getElementById('prev-ep-btn').disabled = (currentEpisodeIndex === 0);
             document.getElementById('next-ep-btn').disabled = (currentEpisodeIndex === sortedEpisodes.length - 1);
-            document.getElementById('current-episode-title').textContent = `${currentDramaData.title} — Episode ${activeEp.episode}`;
+            document.getElementById('current-episode-title').textContent = `${currentDramaData.title || currentDramaData.name} — Episode ${activeEp.episode}`;
 
-            document.querySelectorAll('.episode-item').forEach((item, i) =>
-                item.classList.toggle('current', i === currentEpisodeIndex));
+            document.querySelectorAll('.episode-item').forEach((item, i) => item.classList.toggle('current', i === currentEpisodeIndex));
 
-            // Scroll to active episode on mobile
-            const activeEl = document.querySelector('.episode-item.current');
-            if (activeEl) activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-            // Show loading state
             const serverContainer = document.getElementById('server-selector-container');
             serverContainer.innerHTML = '<span class="server-label"><i class="fas fa-spinner fa-spin"></i> &nbsp;Fetching servers...</span>';
-            const videoIframe = document.getElementById('video-player-iframe');
-            videoIframe.src = '';
 
-            // ── Fetch stream sources ──
-            // Your aggregator exposes /watch?episode_id=<id>
-            // If a provider returns it differently, the extractServers() normaliser handles it.
-            const streamRes = await fetchAPI('/watch', { episode_id: activeEp.id, drama_id: dramaId });
+            clearPlayerError();
+            playerPlaceholder.style.display = 'none';
+            videoIframe.style.display  = 'none';
+            nativePlayer.style.display = 'none';
+            videoIframe.src = '';
+            nativePlayer.pause();
+            if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+
+            const streamRes = await fetchAPI('/stream', { episode_id: activeEp.id });
             serverContainer.innerHTML = '<span class="server-label"><i class="fas fa-server"></i> &nbsp;Servers:</span>';
 
             let servers = [];
-            if (streamRes?.success) {
-                const payload = streamRes.data || streamRes.results || streamRes;
-                servers = extractServers(Array.isArray(payload) ? payload[0] : payload);
-
-                // Show which provider responded
-                const providerName = streamRes.provider || '';
-                if (providerName) {
-                    serverContainer.innerHTML += `<span class="provider-tag"><i class="fas fa-plug"></i> ${providerName}</span>`;
-                }
+            if (streamRes) {
+                const extractionTarget = streamRes.results || streamRes.data || streamRes;
+                servers = extractServers(extractionTarget);
             }
 
             if (servers.length > 0) {
                 servers.forEach((srv, i) => {
                     const btn = document.createElement('button');
                     btn.className = `server-btn${i === 0 ? ' active' : ''}`;
-                    btn.textContent = srv.name;
+                    btn.textContent = srv.name || `Server ${i + 1}`;
                     btn.onclick = () => {
                         serverContainer.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
-                        videoIframe.src = srv.link;
+                        playVideo(srv.link, srv.sub); // Feed subtitle track into player
                     };
                     serverContainer.appendChild(btn);
                 });
-                videoIframe.src = servers[0].link;
+                
+                playVideo(servers[0].link, servers[0].sub);
             } else {
-                serverContainer.innerHTML = '<span class="server-label" style="color:#ef4444;"><i class="fas fa-times-circle"></i> &nbsp;No playable sources found for this episode.</span>';
+                showPlayerError('No playable sources found for this episode. Try a different episode.');
+                serverContainer.innerHTML += `<span class="server-label" style="color:#ef4444; gap:6px;"><i class="fas fa-times-circle"></i> No servers available</span>`;
             }
 
-            // Save watch progress
+            // 🔴 CONTINUE WATCHING: Update LocalStorage Entry
             localStorage.setItem(`dramakan_ep_${dramaId}`, activeEp.id);
             let history = JSON.parse(localStorage.getItem('dramakan_history') || '{}');
+            
+            // Keep old progress if switching back to an already partially watched episode
+            const existingProgress = history[dramaId]?.progress || 0;
+            
             history[dramaId] = {
                 id:        dramaId,
-                title:     currentDramaData.title,
+                title:     currentDramaData.title || currentDramaData.name,
                 img:       document.getElementById('ui-poster').src,
                 episode:   activeEp.episode,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                progress:  startProgressTime > 0 ? startProgressTime : existingProgress
             };
             localStorage.setItem('dramakan_history', JSON.stringify(history));
             window.dispatchEvent(new Event('historySynced'));
         }
 
-        // ── SUGGESTIONS via /popular ─────────────────────────────────────────────
         async function loadSuggestions() {
             const recsEl = document.getElementById('ui-recs');
             try {
                 const res = await fetchAPI('/popular');
-                if (res?.success && res.results?.length) {
-                    const items = res.results.filter(d => d.id !== dramaId).slice(0, 6);
+                const results = res?.results || res?.data || res;
+                if (results?.length) {
+                    const items = results.filter(d => extractSlug(d.id || d.dramaId || d.original_id) !== dramaId).slice(0, 6);
                     recsEl.innerHTML = items.map(rec => {
                         const img  = normalisePoster(rec.image || rec.img || rec.poster || rec.thumbnail);
-                        const link = `watchapi.html?id=${encodeURIComponent(rec.id)}&provider=${encodeURIComponent(rec.provider || '')}`;
+                        const cleanRecId = extractSlug(rec.id || rec.dramaId || rec.original_id);
+                        const link = `watchapi.html?id=${encodeURIComponent(cleanRecId)}`;
                         return `
                         <a href="${link}" class="rec-card">
-                            <img src="${img}" alt="${rec.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/60x85?text=N/A'">
+                            <img src="${img}" alt="${rec.title || rec.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/60x85?text=N/A'">
                             <div class="rec-card-info">
-                                <p class="rec-title">${rec.title}</p>
+                                <p class="rec-title">${rec.title || rec.name}</p>
                                 <p class="rec-meta">${rec.episode || 'Series'}</p>
                             </div>
                         </a>`;
                     }).join('');
-                } else {
-                    throw new Error('No results');
                 }
             } catch {
                 recsEl.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem;">Could not load suggestions.</p>`;
             }
         }
 
-        // ── BOOKMARK SYSTEM ──────────────────────────────────────────────────────
         function initBookmarkSystem(data, posterUrl) {
             const mainBtn   = document.getElementById('add-to-list-btn');
             const posterBtn = document.getElementById('poster-bookmark-btn');
             const pageLink  = window.location.pathname + window.location.search;
 
             const sync = () => {
-                const list = JSON.parse(localStorage.getItem('dramakan_mylist') || '[]');
+                const list  = JSON.parse(localStorage.getItem('dramakan_mylist') || '[]');
                 const saved = list.some(i => i.id === dramaId);
                 mainBtn.innerHTML   = saved ? '<i class="fas fa-check"></i> <span>Saved</span>' : '<i class="fas fa-bookmark"></i> <span>Save</span>';
                 mainBtn.classList.toggle('active-list', saved);
@@ -662,14 +765,14 @@
             const toggle = (e) => {
                 e.preventDefault();
                 if (typeof window.toggleMyList === 'function') {
-                    window.toggleMyList(mainBtn, data.title, posterUrl, pageLink);
+                    window.toggleMyList(mainBtn, data.title || data.name, posterUrl, pageLink);
                     setTimeout(sync, 100);
                     return;
                 }
                 let list = JSON.parse(localStorage.getItem('dramakan_mylist') || '[]');
                 const idx = list.findIndex(i => i.id === dramaId);
                 if (idx > -1) list.splice(idx, 1);
-                else list.push({ id: dramaId, title: data.title, img: posterUrl, link: pageLink });
+                else list.push({ id: dramaId, title: data.title || data.name, img: posterUrl, link: pageLink });
                 localStorage.setItem('dramakan_mylist', JSON.stringify(list));
                 sync();
             };
@@ -679,13 +782,12 @@
             posterBtn.addEventListener('click', toggle);
         }
 
-        // ── FIREBASE COMMENT SYSTEM ──────────────────────────────────────────────
         function initCommentSystem(dramaId) {
-            const listEl     = document.getElementById('comments-list');
-            const inputEl    = document.getElementById('comment-text-input');
-            const avatarEl   = document.getElementById('current-user-avatar');
+            const listEl      = document.getElementById('comments-list');
+            const inputEl     = document.getElementById('comment-text-input');
+            const avatarEl    = document.getElementById('current-user-avatar');
             const commentForm = document.getElementById('comment-form');
-            let submitBtn    = document.getElementById('submit-comment-btn');
+            let submitBtn     = document.getElementById('submit-comment-btn');
 
             let activeUser   = null;
             let activeAvatar = null;
@@ -699,8 +801,6 @@
                     submitBtn.disabled  = false;
                     submitBtn.type      = 'submit';
                     submitBtn.innerHTML = '<span>Post</span> <i class="fas fa-paper-plane"></i>';
-
-                    // Re-clone to remove old listeners
                     const nb = submitBtn.cloneNode(true);
                     submitBtn.parentNode.replaceChild(nb, submitBtn);
                     submitBtn = document.getElementById('submit-comment-btn');
@@ -711,7 +811,6 @@
                     submitBtn.disabled  = false;
                     submitBtn.type      = 'button';
                     submitBtn.innerHTML = '<i class="fas fa-lock"></i> <span>Login</span>';
-
                     const nb = submitBtn.cloneNode(true);
                     submitBtn.parentNode.replaceChild(nb, submitBtn);
                     submitBtn = document.getElementById('submit-comment-btn');
@@ -742,10 +841,7 @@
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                 try {
                     await addDoc(collection(db, 'comments'), {
-                        dramaId, text,
-                        user:      activeUser,
-                        userImg:   activeAvatar,
-                        timestamp: serverTimestamp()
+                        dramaId, text, user: activeUser, userImg: activeAvatar, timestamp: serverTimestamp()
                     });
                     inputEl.value = '';
                 } catch (err) {
@@ -759,10 +855,7 @@
             const q = query(collection(db, 'comments'), where('dramaId', '==', dramaId));
             onSnapshot(q, (snap) => {
                 if (snap.empty) {
-                    listEl.innerHTML = `
-                        <div style="text-align:center; padding:25px; background:rgba(255,255,255,0.01); border-radius:12px; border:1px dashed var(--glass-border);">
-                            <p style="color:var(--text-muted); font-size:0.9rem; margin:0;">No comments yet. Start the discussion!</p>
-                        </div>`;
+                    listEl.innerHTML = `<div style="text-align:center; padding:25px; background:rgba(255,255,255,0.01); border-radius:12px; border:1px dashed var(--glass-border);"><p style="color:var(--text-muted); font-size:0.9rem; margin:0;">No comments yet. Start the discussion!</p></div>`;
                     return;
                 }
                 let arr = [];
@@ -791,7 +884,7 @@
                 }).join('');
             });
         }
-    }); // end DOMContentLoaded
+    });
 </script>
 </body>
 </html>

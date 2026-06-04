@@ -1,0 +1,2173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>DramaKan — Featured Picks 🎬</title>
+    <meta name="description" content="Watch the latest trending dramas featured on our Instagram. Stream now on DramaKan.">
+    <meta name="theme-color" content="#8A2BE2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3854581977852778" crossorigin="anonymous"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* ============================================
+           DESIGN SYSTEM — inherits from indexstyle.css
+        ============================================ */
+        :root {
+            --primary-color: #8A2BE2;
+            --primary-glow: rgba(138, 43, 226, 0.4);
+            --primary-vivid: #9d4edd;
+            --secondary-color: #E50914;
+            --bg-rgb: 11, 12, 16;
+            --text-rgb: 245, 245, 245;
+            --background-color: rgb(var(--bg-rgb));
+            --surface-color: #1A1A1D;
+            --text-color: rgb(var(--text-rgb));
+            --text-muted-color: #a0a0a0;
+            --glass-bg: rgba(26, 26, 29, 0.45);
+            --glass-bg-hover: rgba(26, 26, 29, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-light: rgba(255, 255, 255, 0.15);
+            --glass-blur: blur(16px);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            --bottom-nav-bg: rgba(20, 20, 25, 0.45);
+            --bottom-nav-border: rgba(255, 255, 255, 0.08);
+            --bottom-nav-item: rgba(255, 255, 255, 0.5);
+            --bottom-nav-item-active: #fff;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        img { display: block; max-width: 100%; }
+
+        /* ============================================
+           DYNAMIC BACKGROUND
+        ============================================ */
+        #page-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: background-image 0.8s ease;
+        }
+        #page-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(11, 12, 16, 0.92) 0%,
+                rgba(11, 12, 16, 0.75) 50%,
+                rgba(11, 12, 16, 0.95) 100%
+            );
+            backdrop-filter: blur(40px) saturate(120%);
+            -webkit-backdrop-filter: blur(40px) saturate(120%);
+        }
+
+        /* ============================================
+           TOP HEADER BAR (minimal, IG-optimized)
+        ============================================ */
+        .ig-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 14px 20px;
+            background: rgba(var(--bg-rgb), 0.7);
+            backdrop-filter: blur(24px) saturate(160%);
+            -webkit-backdrop-filter: blur(24px) saturate(160%);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ig-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #fff;
+        }
+        .ig-logo span { color: var(--primary-color); }
+
+        .ig-header-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(138, 43, 226, 0.15);
+            border: 1px solid rgba(138, 43, 226, 0.35);
+            border-radius: 50px;
+            padding: 5px 12px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #c488ff;
+            letter-spacing: 0.5px;
+        }
+        .ig-header-badge i { font-size: 0.75rem; }
+
+        /* ============================================
+           FEATURED IN TODAY'S REEL — HERO SECTION
+        ============================================ */
+        .reel-section {
+            padding: 22px 18px 0;
+            animation: sectionFadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) both;
+        }
+
+        .reel-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: linear-gradient(90deg, rgba(229, 9, 20, 0.2), rgba(229, 9, 20, 0.08));
+            border: 1px solid rgba(229, 9, 20, 0.35);
+            border-radius: 50px;
+            padding: 4px 14px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .reel-label .dot {
+            width: 7px; height: 7px;
+            background: #E50914;
+            border-radius: 50%;
+            animation: pulseDot 1.4s ease-in-out infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.7); }
+        }
+
+        /* Hero Card */
+        .hero-feature-card {
+            position: relative;
+            width: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #1a1a1d;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.07);
+            aspect-ratio: 2 / 3;
+            max-height: 520px;
+        }
+
+        .hero-poster {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            display: block;
+        }
+        .hero-feature-card:hover .hero-poster { transform: scale(1.04); }
+
+        /* Overlays */
+        .hero-overlay-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to top,
+                rgba(11, 12, 16, 1) 0%,
+                rgba(11, 12, 16, 0.85) 30%,
+                rgba(11, 12, 16, 0.2) 60%,
+                transparent 100%
+            );
+            pointer-events: none;
+        }
+
+        .hero-overlay-top {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 80px;
+            background: linear-gradient(to bottom, rgba(11,12,16,0.5), transparent);
+            pointer-events: none;
+        }
+
+        /* Glow ring effect */
+        .hero-glow-ring {
+            position: absolute;
+            inset: -2px;
+            border-radius: 22px;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0%,
+                rgba(138, 43, 226, 0.4) 20%,
+                transparent 40%,
+                rgba(229, 9, 20, 0.3) 60%,
+                transparent 80%,
+                rgba(138, 43, 226, 0.4) 100%
+            );
+            animation: glowRotate 8s linear infinite;
+            z-index: -1;
+            filter: blur(6px);
+        }
+
+        @keyframes glowRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .hero-content-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0; right: 0;
+            padding: 24px 20px 28px;
+            z-index: 2;
+        }
+
+        .hero-type-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(138, 43, 226, 0.25);
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            border-radius: 50px;
+            padding: 3px 10px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #c488ff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .hero-drama-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.9rem;
+            font-weight: 700;
+            line-height: 1.15;
+            color: #fff;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+
+        .hero-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .meta-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50px;
+            padding: 3px 10px;
+            font-size: 0.72rem;
+            color: var(--text-muted-color);
+            font-weight: 500;
+        }
+        .meta-chip i { color: #f59e0b; font-size: 0.7rem; }
+        .meta-chip.imdb i { color: #f5c518; }
+
+        /* THE MAIN CTA BUTTON */
+        .btn-watch-now {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #8A2BE2 0%, #9d4edd 50%, #b469ff 100%);
+            border: none;
+            border-radius: 14px;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow:
+                0 8px 30px rgba(138, 43, 226, 0.55),
+                0 0 0 1px rgba(255,255,255,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.15);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-watch-now::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: left 0.5s ease;
+        }
+        .btn-watch-now:hover::before { left: 100%; }
+        .btn-watch-now:hover {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow:
+                0 15px 40px rgba(138, 43, 226, 0.7),
+                0 0 0 1px rgba(255,255,255,0.15),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        .btn-watch-now:active { transform: translateY(-1px) scale(0.99); }
+
+        .btn-watch-now .play-icon-wrap {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .btn-watch-now .play-icon-wrap i { font-size: 0.85rem; margin-left: 2px; }
+
+        /* ============================================
+           RECENT REELS GRID
+        ============================================ */
+        .recent-section {
+            padding: 28px 18px 0;
+            animation: sectionFadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) 0.15s both;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-title-ig {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.3px;
+        }
+        .section-title-ig i { color: var(--primary-color); font-size: 0.9rem; }
+
+        .section-view-all {
+            font-size: 0.75rem;
+            color: var(--primary-vivid);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: opacity 0.3s ease;
+        }
+        .section-view-all:hover { opacity: 0.75; }
+
+        /* 2-Column Recent Grid */
+        .recent-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .recent-card {
+            position: relative;
+            border-radius: 14px;
+            overflow: hidden;
+            background: var(--surface-color);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.35s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            animation: sectionFadeUp 0.5s cubic-bezier(0.25, 1, 0.5, 1) both;
+        }
+        .recent-card:nth-child(1) { animation-delay: 0.2s; }
+        .recent-card:nth-child(2) { animation-delay: 0.3s; }
+        .recent-card:nth-child(3) { animation-delay: 0.4s; }
+        .recent-card:nth-child(4) { animation-delay: 0.5s; }
+
+        .recent-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(138,43,226,0.3);
+            border-color: rgba(138, 43, 226, 0.3);
+        }
+        .recent-card:active { transform: scale(0.97); }
+
+        .recent-card-img {
+            aspect-ratio: 2/3;
+            overflow: hidden;
+            background: #0f0f12;
+            position: relative;
+        }
+        .recent-card-img img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .recent-card:hover .recent-card-img img { transform: scale(1.08); }
+
+        /* Purple shimmer overlay on hover */
+        .recent-card-img::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(138,43,226,0.5) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+        .recent-card:hover .recent-card-img::after { opacity: 1; }
+
+        .recent-card-ep-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            padding: 2px 7px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.8);
+            letter-spacing: 0.5px;
+        }
+
+        .recent-card-play-btn {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .recent-card:hover .recent-card-play-btn { opacity: 1; }
+        .recent-card-play-btn i {
+            width: 44px; height: 44px;
+            background: rgba(138, 43, 226, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(138,43,226,0.7);
+            padding-left: 3px;
+        }
+
+        .recent-card-info {
+            padding: 10px 10px 12px;
+        }
+        .recent-card-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.3;
+            margin-bottom: 5px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .recent-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .recent-card-type {
+            font-size: 0.62rem;
+            font-weight: 600;
+            color: var(--primary-vivid);
+            background: rgba(138,43,226,0.12);
+            border: 1px solid rgba(138,43,226,0.25);
+            border-radius: 4px;
+            padding: 1px 6px;
+        }
+        .recent-card-ep-count {
+            font-size: 0.62rem;
+            color: var(--text-muted-color);
+        }
+
+        /* Skeleton loading states */
+        .skeleton {
+            background: linear-gradient(90deg, #1e1e22 25%, #2a2a30 50%, #1e1e22 75%);
+            background-size: 200% 100%;
+            animation: skeletonPulse 1.5s ease infinite;
+            border-radius: 8px;
+        }
+        @keyframes skeletonPulse {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-hero { aspect-ratio: 2/3; max-height: 520px; border-radius: 20px; }
+        .skeleton-recent { aspect-ratio: 2/3; border-radius: 14px; }
+
+        /* ============================================
+           FOOTER
+        ============================================ */
+        .ig-footer {
+            padding: 28px 20px 16px;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+            margin-top: 30px;
+        }
+
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 8px;
+        }
+        .footer-logo span { color: var(--primary-color); }
+
+        .footer-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            margin-bottom: 12px;
+        }
+        .footer-links a {
+            font-size: 0.72rem;
+            color: var(--text-muted-color);
+            transition: color 0.3s ease;
+        }
+        .footer-links a:hover { color: var(--primary-vivid); }
+
+        .footer-copy {
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 0.5px;
+        }
+
+        /* THE SECRET TRIGGER WORD */
+        #secret-007 {
+            cursor: default;
+            color: rgba(255,255,255,0.15);
+            transition: color 0.3s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            display: inline-block;
+        }
+        #secret-007.tapped { color: var(--primary-vivid); }
+
+        /* ============================================
+           BOTTOM NAV — identical to index.html
+        ============================================ */
+        .bottom-nav {
+            display: flex;
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: var(--bottom-nav-bg);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid var(--bottom-nav-border);
+            border-radius: 50px;
+            z-index: 9999;
+            padding: 5px 10px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        .bottom-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 0;
+            color: var(--bottom-nav-item);
+            transition: all 0.4s ease;
+            text-decoration: none;
+        }
+        .bottom-nav-item.active { color: var(--bottom-nav-item-active); }
+        .nav-icon {
+            font-size: 1.35rem;
+            margin-bottom: 4px;
+            transition: transform 0.4s ease;
+        }
+        .bottom-nav-item.active .nav-icon {
+            transform: translateY(-4px) scale(1.15);
+            color: var(--primary-color);
+        }
+        .nav-label { font-size: 0.65rem; font-weight: 500; }
+
+        /* ============================================
+           ANIMATIONS
+        ============================================ */
+        @keyframes sectionFadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shimmerIn {
+            from { opacity: 0; transform: translateY(-10px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes modalReveal {
+            from { opacity: 0; transform: translateY(60px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes glassBlur {
+            from { backdrop-filter: blur(0px); opacity: 0; }
+            to { backdrop-filter: blur(20px); opacity: 1; }
+        }
+
+        /* ============================================
+           LITE MODE (from indexscript.js)
+        ============================================ */
+        .lite-mode #page-bg::after {
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+        .lite-mode .hero-feature-card,
+        .lite-mode .recent-card,
+        .lite-mode .bottom-nav,
+        .lite-mode .ig-header {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+        .lite-mode * { transition-duration: 0.1s !important; animation-duration: 0.01ms !important; }
+        .lite-mode .hero-glow-ring { display: none; }
+
+        /* ============================================
+           ADMIN CONSOLE MODAL
+        ============================================ */
+        #admin-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(12px) saturate(130%);
+            -webkit-backdrop-filter: blur(12px) saturate(130%);
+            z-index: 99999;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        #admin-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #admin-modal {
+            width: 100%;
+            max-width: 540px;
+            max-height: 90vh;
+            background: rgba(15, 15, 20, 0.97);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-bottom: none;
+            border-radius: 28px 28px 0 0;
+            box-shadow: 0 -20px 80px rgba(138, 43, 226, 0.25), 0 0 0 1px rgba(255,255,255,0.04);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            transform: translateY(100%);
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        #admin-overlay.visible #admin-modal {
+            transform: translateY(0);
+        }
+
+        .admin-modal-handle {
+            display: flex;
+            justify-content: center;
+            padding: 12px 0 6px;
+        }
+        .admin-modal-handle-bar {
+            width: 40px; height: 4px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 2px;
+        }
+
+        .admin-modal-inner { padding: 0 22px 30px; }
+
+        .admin-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0 20px;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 22px;
+        }
+
+        .admin-modal-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .admin-modal-title i { color: var(--primary-color); }
+
+        .admin-close-btn {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .admin-close-btn:hover { background: rgba(239,68,68,0.15); color: #fca5a5; border-color: rgba(239,68,68,0.3); }
+
+        /* Pin Screen */
+        #admin-pin-screen { }
+        #admin-dashboard-screen { display: none; }
+
+        .admin-section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted-color);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .pin-dots {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin: 24px 0 20px;
+        }
+        .pin-dot {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+        .pin-dot.filled {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.6);
+        }
+        .pin-dot.error {
+            background: #ef4444;
+            border-color: #ef4444;
+            animation: pinShake 0.4s ease;
+        }
+        @keyframes pinShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+
+        .pin-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .pin-key {
+            aspect-ratio: 1.6;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pin-key:hover { background: rgba(138,43,226,0.2); border-color: rgba(138,43,226,0.4); }
+        .pin-key:active { transform: scale(0.9); background: rgba(138,43,226,0.35); }
+        .pin-key.delete { font-size: 1rem; color: var(--text-muted-color); }
+        .pin-key.zero { grid-column: 2; }
+        .pin-key.biometric { background: rgba(138,43,226,0.1); border-color: rgba(138,43,226,0.25); color: var(--primary-vivid); }
+
+        .pin-hint {
+            text-align: center;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.2);
+            margin-top: 10px;
+        }
+
+        /* Admin Dashboard Content */
+        #admin-dashboard-screen .admin-section-label { margin-top: 4px; }
+
+        .admin-status-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 22px;
+        }
+        .admin-status-bar i { color: #34d399; font-size: 0.8rem; }
+        .admin-status-bar span { font-size: 0.78rem; font-weight: 600; color: #6ee7b7; }
+
+        /* Search & Deploy */
+        .admin-search-box {
+            position: relative;
+            margin-bottom: 12px;
+        }
+        .admin-search-box input {
+            width: 100%;
+            padding: 13px 50px 13px 16px;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.88rem;
+            outline: none;
+            transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .admin-search-box input::placeholder { color: rgba(255,255,255,0.25); }
+        .admin-search-box input:focus {
+            border-color: var(--primary-color);
+            background: rgba(0,0,0,0.5);
+            box-shadow: 0 0 0 3px rgba(138,43,226,0.12);
+        }
+        .admin-search-btn {
+            position: absolute;
+            right: 8px; top: 50%;
+            transform: translateY(-50%);
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-vivid));
+            border: none;
+            border-radius: 9px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(138,43,226,0.4);
+        }
+        .admin-search-btn:hover { box-shadow: 0 6px 20px rgba(138,43,226,0.6); transform: translateY(-50%) scale(1.05); }
+
+        /* Fetched Drama Preview */
+        #admin-result-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 14px;
+            display: none;
+            margin-top: 14px;
+            animation: shimmerIn 0.35s ease both;
+        }
+        .result-card-inner {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+        .result-card-poster {
+            width: 66px;
+            flex-shrink: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+        .result-card-poster img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+        .result-card-info { flex: 1; min-width: 0; }
+        .result-card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .result-card-sub {
+            font-size: 0.72rem;
+            color: var(--text-muted-color);
+            margin-bottom: 10px;
+        }
+        .result-action-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .btn-deploy {
+            padding: 9px 8px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+            letter-spacing: 0.3px;
+        }
+        .btn-deploy.main-feature {
+            background: linear-gradient(135deg, #8A2BE2, #9d4edd);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(138,43,226,0.4);
+        }
+        .btn-deploy.main-feature:hover { box-shadow: 0 6px 22px rgba(138,43,226,0.6); transform: translateY(-2px); }
+        .btn-deploy.add-grid {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid var(--glass-border-light);
+            color: rgba(255,255,255,0.8);
+        }
+        .btn-deploy.add-grid:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); transform: translateY(-2px); }
+
+        /* Status toast */
+        .admin-toast {
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-top: 10px;
+            display: none;
+            animation: shimmerIn 0.3s ease;
+        }
+        .admin-toast.success { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+        .admin-toast.error { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+
+        /* Divider */
+        .admin-divider {
+            border: none;
+            border-top: 1px solid var(--glass-border);
+            margin: 20px 0;
+        }
+
+        /* Quick Actions */
+        .quick-action-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .qa-btn {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 13px 10px;
+            color: rgba(255,255,255,0.7);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+            transition: all 0.3s ease;
+        }
+        .qa-btn:hover { background: rgba(138,43,226,0.1); border-color: rgba(138,43,226,0.3); color: #c488ff; transform: translateY(-2px); }
+        .qa-btn i { font-size: 1.1rem; }
+
+        /* ============================================
+           AD CONTAINERS — Premium Glassmorphism
+        ============================================ */
+
+        /* --- AD LABEL SHARED --- */
+        .ad-eyebrow {
+            font-size: 0.55rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.18);
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* -------------------------------------------------------
+           AD 1 — BANNER SPLICE
+           Full-width glassy strip between hero and recent grid.
+           Looks like a "Now Streaming" promo panel.
+        ------------------------------------------------------- */
+        .ad-splice-banner {
+            margin: 24px 18px 0;
+            position: relative;
+            border-radius: 18px;
+            overflow: hidden;
+            background: rgba(20, 18, 28, 0.6);
+            border: 1px solid rgba(138, 43, 226, 0.2);
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            box-shadow:
+                0 8px 32px rgba(0,0,0,0.35),
+                inset 0 1px 0 rgba(255,255,255,0.06),
+                0 0 0 1px rgba(138,43,226,0.08);
+            animation: sectionFadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) 0.1s both;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Ambient purple edge glow */
+        .ad-splice-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(138, 43, 226, 0.07) 0%,
+                transparent 50%,
+                rgba(229, 9, 20, 0.04) 100%
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Thin animated top shimmer line */
+        .ad-splice-banner::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(138,43,226,0.6), transparent);
+            animation: adSweep 4s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes adSweep {
+            0%   { left: -60%; }
+            100% { left: 160%; }
+        }
+
+        .ad-splice-banner .ad-inner {
+            width: 100%;
+            padding: 12px;
+            position: relative;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ad-splice-banner ins.adsbygoogle {
+            display: block !important;
+            width: 100% !important;
+        }
+
+        /* -------------------------------------------------------
+           AD 2 — CARD NATIVE (blends inside the recent grid)
+           Sits AS a card inside the 2-col grid. Same shape as
+           a drama card so it's seamless.
+        ------------------------------------------------------- */
+        .ad-native-card {
+            position: relative;
+            border-radius: 14px;
+            overflow: hidden;
+            background: linear-gradient(
+                160deg,
+                rgba(138, 43, 226, 0.12) 0%,
+                rgba(20, 18, 28, 0.7) 40%,
+                rgba(229, 9, 20, 0.06) 100%
+            );
+            border: 1px solid rgba(138, 43, 226, 0.22);
+            box-shadow:
+                0 8px 24px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+            aspect-ratio: 2/3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            animation: sectionFadeUp 0.5s cubic-bezier(0.25,1,0.5,1) 0.45s both;
+        }
+
+        /* Subtle animated diagonal shimmer */
+        .ad-native-card::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(
+                from 210deg,
+                transparent 0%,
+                rgba(138,43,226,0.06) 10%,
+                transparent 20%
+            );
+            animation: adCardSpin 12s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes adCardSpin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .ad-native-card .ad-inner {
+            width: 100%; height: 100%;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .ad-native-card ins.adsbygoogle {
+            display: block !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* -------------------------------------------------------
+           AD 3 — INTERSTITIAL STRIP (between sections)
+           Wider, more prominent mid-page banner with a
+           drama-poster-like framing effect.
+        ------------------------------------------------------- */
+        .ad-interstitial {
+            margin: 28px 18px 0;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            background: rgba(14, 12, 20, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            box-shadow:
+                0 20px 60px rgba(0,0,0,0.5),
+                inset 0 0 0 1px rgba(138,43,226,0.06);
+            animation: sectionFadeUp 0.7s cubic-bezier(0.25,1,0.5,1) 0.2s both;
+            min-height: 120px;
+        }
+
+        /* Left accent bar — mimics the drama card left-border style */
+        .ad-interstitial::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 0;
+            width: 3px;
+            height: 70%;
+            background: linear-gradient(to bottom, transparent, var(--primary-color), transparent);
+            border-radius: 0 2px 2px 0;
+            z-index: 5;
+        }
+
+        /* Diagonal gradient overlay */
+        .ad-interstitial::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to right,
+                rgba(138, 43, 226, 0.06) 0%,
+                transparent 40%
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .ad-interstitial .ad-inner {
+            width: 100%;
+            padding: 14px 16px;
+            position: relative;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+        }
+
+        .ad-interstitial ins.adsbygoogle {
+            display: block !important;
+            width: 100% !important;
+        }
+
+        /* "Sponsored" label for interstitial */
+        .ad-interstitial .ad-side-label {
+            position: absolute;
+            bottom: 10px;
+            right: 12px;
+            font-size: 0.55rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 5;
+        }
+        .ad-interstitial .ad-side-label::before {
+            content: '';
+            width: 14px; height: 1px;
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* -------------------------------------------------------
+           AD 4 — FOOTER BILLBOARD
+           Full-width, looks like a "More to watch" content shelf.
+           Relaxed ad that blends with footer area.
+        ------------------------------------------------------- */
+        .ad-footer-billboard {
+            margin: 28px 18px 0;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            background: linear-gradient(
+                180deg,
+                rgba(18, 15, 26, 0.8) 0%,
+                rgba(11, 12, 16, 0.9) 100%
+            );
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            animation: sectionFadeUp 0.7s cubic-bezier(0.25,1,0.5,1) 0.3s both;
+        }
+
+        .ad-footer-billboard .ad-shelf-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 16px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .ad-shelf-icon {
+            width: 24px; height: 24px;
+            border-radius: 6px;
+            background: rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            color: var(--primary-vivid);
+        }
+
+        .ad-shelf-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.5);
+            flex: 1;
+        }
+
+        .ad-shelf-badge {
+            font-size: 0.55rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 4px;
+            padding: 2px 7px;
+        }
+
+        .ad-footer-billboard .ad-inner {
+            padding: 12px 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px;
+        }
+
+        .ad-footer-billboard ins.adsbygoogle {
+            display: block !important;
+            width: 100% !important;
+        }
+
+        /* -------------------------------------------------------
+           AD 5 — IN-FEED FLUID (auto-format, below recent grid)
+           Completely invisible frame — looks like content itself.
+        ------------------------------------------------------- */
+        .ad-in-feed {
+            margin: 20px 18px 0;
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(138,43,226,0.12);
+            animation: sectionFadeUp 0.7s cubic-bezier(0.25,1,0.5,1) 0.25s both;
+            min-height: 80px;
+        }
+
+        .ad-in-feed .ad-inner {
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ad-in-feed ins.adsbygoogle {
+            display: block !important;
+            width: 100% !important;
+        }
+
+        /* Lite-mode ad simplification */
+        .lite-mode .ad-splice-banner,
+        .lite-mode .ad-native-card,
+        .lite-mode .ad-interstitial,
+        .lite-mode .ad-footer-billboard,
+        .lite-mode .ad-in-feed {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            animation: none !important;
+        }
+        .lite-mode .ad-splice-banner::after,
+        .lite-mode .ad-native-card::before { display: none; }
+
+        /* ============================================
+           RESPONSIVE — larger screens
+        ============================================ */
+        @media (min-width: 600px) {
+            .hero-feature-card { max-height: 600px; }
+            .hero-drama-title { font-size: 2.2rem; }
+            .reel-section, .recent-section { padding-left: 24px; padding-right: 24px; }
+        }
+
+        @media (min-width: 993px) { .bottom-nav { display: none !important; } }
+    </style>
+</head>
+<body>
+
+<!-- Dynamic blurred background -->
+<div id="page-bg"></div>
+
+<!-- ============ HEADER ============ -->
+<header class="ig-header">
+    <a href="index.html" class="ig-logo">Drama<span>Kan</span></a>
+    <div class="ig-header-badge">
+        <i class="fab fa-instagram"></i>
+        Featured Today
+    </div>
+</header>
+
+<!-- ============ MAIN CONTENT ============ -->
+<main>
+
+    <!-- FEATURED IN TODAY'S REEL -->
+    <section class="reel-section">
+        <div class="reel-label">
+            <span class="dot"></span>
+            Featured in Today's Reel
+        </div>
+
+        <!-- Loading Skeleton (visible before data loads) -->
+        <div id="hero-skeleton" class="skeleton skeleton-hero"></div>
+
+        <!-- Actual Hero Card (hidden until data loads) -->
+        <div id="hero-card" class="hero-feature-card" style="display:none;">
+            <div class="hero-glow-ring"></div>
+            <img id="hero-poster" class="hero-poster" src="" alt="" loading="eager">
+            <div class="hero-overlay-top"></div>
+            <div class="hero-overlay-gradient"></div>
+
+            <div class="hero-content-overlay">
+                <div id="hero-type-tag" class="hero-type-tag">
+                    <i class="fas fa-star"></i>
+                    <span>K-Drama</span>
+                </div>
+                <h1 id="hero-title" class="hero-drama-title">Loading...</h1>
+                <div class="hero-meta-row">
+                    <span id="hero-year" class="meta-chip"><i class="fas fa-calendar-alt"></i> 2024</span>
+                    <span id="hero-score" class="meta-chip imdb"><i class="fas fa-star"></i> —</span>
+                    <span id="hero-genre" class="meta-chip">Drama</span>
+                </div>
+                <a id="hero-watch-btn" href="watch.html" class="btn-watch-now">
+                    <span class="play-icon-wrap"><i class="fas fa-play"></i></span>
+                    <span>Watch Episode 1 Now</span>
+                    <i class="fas fa-chevron-right" style="margin-left: auto; opacity: 0.7; font-size: 0.8rem;"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- AD 1 — BANNER SPLICE (between hero & recent grid) -->
+    <div class="ad-splice-banner" aria-label="Advertisement">
+        <span class="ad-eyebrow">Sponsored</span>
+        <div class="ad-inner">
+            <ins class="adsbygoogle"
+                 style="display:block; width:100%;"
+                 data-ad-client="ca-pub-3854581977852778"
+                 data-ad-slot="8696644366"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+        </div>
+    </div>
+
+    <!-- RECENT REELS GRID -->
+    <section class="recent-section">
+        <div class="section-head">
+            <div class="section-title-ig">
+                <i class="fas fa-film"></i>
+                Recent Reels
+            </div>
+            <a href="index.html" class="section-view-all">
+                All Dramas <i class="fas fa-arrow-right" style="font-size: 0.65rem;"></i>
+            </a>
+        </div>
+
+        <!-- Skeleton placeholders -->
+        <div id="recent-skeleton" class="recent-grid">
+            <div class="skeleton skeleton-recent"></div>
+            <div class="skeleton skeleton-recent"></div>
+            <div class="skeleton skeleton-recent"></div>
+            <div class="skeleton skeleton-recent"></div>
+        </div>
+
+        <!-- Actual grid -->
+        <div id="recent-grid" class="recent-grid" style="display: none;"></div>
+    </section>
+
+    <!-- AD 3 — INTERSTITIAL STRIP (below recent grid) -->
+    <div class="ad-interstitial" aria-label="Advertisement">
+        <span class="ad-eyebrow">Sponsored</span>
+        <div class="ad-side-label">Ad</div>
+        <div class="ad-inner">
+            <ins class="adsbygoogle"
+                 style="display:block; width:100%;"
+                 data-ad-client="ca-pub-3854581977852778"
+                 data-ad-slot="2322807703"
+                 data-ad-format="fluid"
+                 data-ad-layout-key="+21+s4-18-23+8q"
+                 data-full-width-responsive="true"></ins>
+        </div>
+    </div>
+
+    <!-- AD 4 — IN-FEED (fluid native content-style) -->
+    <div class="ad-in-feed" aria-label="Advertisement">
+        <span class="ad-eyebrow">Sponsored</span>
+        <div class="ad-inner">
+            <ins class="adsbygoogle"
+                 style="display:block; width:100%;"
+                 data-ad-client="ca-pub-3854581977852778"
+                 data-ad-slot="6058038588"
+                 data-ad-format="autorelaxed"></ins>
+        </div>
+    </div>
+
+    <!-- AD 5 — FOOTER BILLBOARD (content-shelf style) -->
+    <div class="ad-footer-billboard" aria-label="Advertisement">
+        <div class="ad-shelf-header">
+            <div class="ad-shelf-icon"><i class="fas fa-play"></i></div>
+            <span class="ad-shelf-title">You might also enjoy</span>
+            <span class="ad-shelf-badge">Ad</span>
+        </div>
+        <div class="ad-inner">
+            <ins class="adsbygoogle"
+                 style="display:block; width:100%;"
+                 data-ad-client="ca-pub-3854581977852778"
+                 data-ad-slot="8696644366"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+        </div>
+    </div>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="ig-footer">
+    <div class="footer-logo">Drama<span>Kan</span></div>
+    <div class="footer-links">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+    </div>
+    <div class="footer-copy">
+        &copy; 2026 DramaKan. Stream Asian Dramas.
+        <br>
+        <small>System <span id="secret-007" title="">007</span></small>
+    </div>
+</footer>
+
+<!-- ============ BOTTOM NAV ============ -->
+<nav class="bottom-nav">
+    <a href="index.html" class="bottom-nav-item active">
+        <i class="fa-solid fa-house nav-icon"></i>
+        <span class="nav-label">Home</span>
+    </a>
+    <a href="community.html" class="bottom-nav-item">
+        <i class="fa-solid fa-bell nav-icon"></i>
+        <span class="nav-label">Updates</span>
+    </a>
+    <a href="mylist.html" class="bottom-nav-item">
+        <i class="fa-solid fa-bookmark nav-icon"></i>
+        <span class="nav-label">My List</span>
+    </a>
+    <a href="login.html" class="bottom-nav-item" id="bottomAuthBtn">
+        <i class="fa-solid fa-user nav-icon"></i>
+        <span class="nav-label">Profile</span>
+    </a>
+</nav>
+
+<!-- ============ ADMIN CONSOLE MODAL ============ -->
+<div id="admin-overlay">
+    <div id="admin-modal">
+        <div class="admin-modal-handle">
+            <div class="admin-modal-handle-bar"></div>
+        </div>
+
+        <div class="admin-modal-inner">
+            <div class="admin-modal-header">
+                <div class="admin-modal-title">
+                    <i class="fas fa-fingerprint"></i>
+                    IG Page Control
+                </div>
+                <button class="admin-close-btn" id="admin-close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- PIN ENTRY SCREEN -->
+            <div id="admin-pin-screen">
+                <p class="admin-section-label">Enter Access Pin</p>
+                <div class="pin-dots">
+                    <div class="pin-dot" id="pd-0"></div>
+                    <div class="pin-dot" id="pd-1"></div>
+                    <div class="pin-dot" id="pd-2"></div>
+                    <div class="pin-dot" id="pd-3"></div>
+                </div>
+
+                <div class="pin-keypad">
+                    <button class="pin-key" data-key="1">1</button>
+                    <button class="pin-key" data-key="2">2</button>
+                    <button class="pin-key" data-key="3">3</button>
+                    <button class="pin-key" data-key="4">4</button>
+                    <button class="pin-key" data-key="5">5</button>
+                    <button class="pin-key" data-key="6">6</button>
+                    <button class="pin-key" data-key="7">7</button>
+                    <button class="pin-key" data-key="8">8</button>
+                    <button class="pin-key" data-key="9">9</button>
+                    <button class="pin-key zero" data-key="0">0</button>
+                    <button class="pin-key delete" id="pin-delete"><i class="fas fa-delete-left"></i></button>
+                </div>
+                <p class="pin-hint">4-digit PIN required</p>
+            </div>
+
+            <!-- ADMIN DASHBOARD SCREEN -->
+            <div id="admin-dashboard-screen">
+                <div class="admin-status-bar">
+                    <i class="fas fa-shield-check"></i>
+                    <span>Access Granted — IG Page Manager</span>
+                </div>
+
+                <p class="admin-section-label">Search & Deploy</p>
+                <div class="admin-search-box">
+                    <input type="text" id="admin-search-input" placeholder="IMDb ID (e.g. tt1234567) or drama name...">
+                    <button class="admin-search-btn" id="admin-search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+
+                <div id="admin-result-card">
+                    <div class="result-card-inner">
+                        <div class="result-card-poster">
+                            <img id="result-poster-img" src="" alt="">
+                        </div>
+                        <div class="result-card-info">
+                            <div id="result-title" class="result-card-title"></div>
+                            <div id="result-sub" class="result-card-sub"></div>
+                            <div class="result-action-btns">
+                                <button class="btn-deploy main-feature" id="btn-set-feature">
+                                    <i class="fas fa-star"></i> Set as Feature
+                                </button>
+                                <button class="btn-deploy add-grid" id="btn-add-grid">
+                                    <i class="fas fa-plus"></i> Add to Grid
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="admin-toast" class="admin-toast"></div>
+
+                <hr class="admin-divider">
+
+                <p class="admin-section-label">Quick Actions</p>
+                <div class="quick-action-btns">
+                    <button class="qa-btn" id="qa-view-site" onclick="window.open('index.html','_blank')">
+                        <i class="fas fa-external-link-alt"></i>
+                        Live Site
+                    </button>
+                    <button class="qa-btn" id="qa-admin-panel" onclick="window.open('admin-dashboard.html','_blank')">
+                        <i class="fas fa-sliders-h"></i>
+                        Full Panel
+                    </button>
+                    <button class="qa-btn" id="qa-reload">
+                        <i class="fas fa-sync-alt"></i>
+                        Reload Page
+                    </button>
+                    <button class="qa-btn" id="qa-lock">
+                        <i class="fas fa-lock"></i>
+                        Lock Console
+                    </button>
+                </div>
+
+            </div><!-- /admin-dashboard-screen -->
+        </div><!-- /admin-modal-inner -->
+    </div><!-- /admin-modal -->
+</div><!-- /admin-overlay -->
+
+
+<!-- ============ SCRIPTS ============ -->
+<script type="module">
+// ==================================================
+// 0. LITE MODE DETECTION (from indexscript.js logic)
+// ==================================================
+(function() {
+    let isLowEnd = false;
+    if ('deviceMemory' in navigator && navigator.deviceMemory < 4) isLowEnd = true;
+    if ('hardwareConcurrency' in navigator && navigator.hardwareConcurrency <= 4) isLowEnd = true;
+    if ('connection' in navigator) {
+        const ect = navigator.connection.effectiveType;
+        if (ect === '3g' || ect === '2g') isLowEnd = true;
+    }
+    if (isLowEnd) document.documentElement.classList.add('lite-mode');
+
+    // Instagram in-app browser detection → force lite mode
+    const ua = navigator.userAgent || '';
+    if (ua.includes('Instagram') || ua.includes('FBAN') || ua.includes('FBAV')) {
+        document.documentElement.classList.add('lite-mode');
+    }
+})();
+
+// ==================================================
+// 1. FIREBASE SETUP
+// ==================================================
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, onSnapshot, serverTimestamp, collection, query, where, getDocs }
+    from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+const firebaseConfig = {
+    apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
+    authDomain: "dramakan007.firebaseapp.com",
+    projectId: "dramakan007",
+    storageBucket: "dramakan007.firebasestorage.app",
+    messagingSenderId: "1069933586213",
+    appId: "1:1069933586213:web:b28ab37436679a4906dccc"
+};
+
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const db = getFirestore(app);
+
+// ==================================================
+// 2. REAL-TIME PAGE CONFIG LISTENER
+//    Listens to Firestore doc: ig_page_config
+// ==================================================
+const IG_DOC_REF = doc(db, "ig_page_config", "current");
+
+const OMDB_KEY  = "7739fdec";
+const TMDB_KEY  = "014fbdbe962cb38379e09e31d0652459";
+
+let currentFetchedDrama = null; // holds API result for deploy
+
+function renderHero(data) {
+    if (!data || !data.feature) return;
+    const f = data.feature;
+
+    // Set blurred background
+    const bg = document.getElementById('page-bg');
+    if (f.img) bg.style.backgroundImage = `url('${f.img}')`;
+
+    // Show hero card
+    document.getElementById('hero-skeleton').style.display = 'none';
+    const card = document.getElementById('hero-card');
+    card.style.display = 'block';
+    card.style.animation = 'sectionFadeUp 0.6s cubic-bezier(0.25,1,0.5,1) both';
+
+    document.getElementById('hero-poster').src = f.img || '';
+    document.getElementById('hero-poster').alt = f.title || '';
+    document.getElementById('hero-title').textContent = f.title || 'Untitled';
+
+    const typeTag = document.getElementById('hero-type-tag');
+    typeTag.querySelector('span').textContent = f.type || 'Drama';
+
+    document.getElementById('hero-year').innerHTML = `<i class="fas fa-calendar-alt"></i> ${f.year || '—'}`;
+    document.getElementById('hero-score').innerHTML = `<i class="fas fa-star"></i> ${f.score || '—'}`;
+    document.getElementById('hero-genre').textContent = f.genre ? f.genre.split(',')[0].trim() : 'Drama';
+
+    // Build watch URL — use drama's Firestore ID as the id param
+    const watchUrl = f.dramaId ? `watch.html?id=${f.dramaId}` : (f.link || 'watch.html');
+    document.getElementById('hero-watch-btn').href = watchUrl;
+}
+
+function renderRecentGrid(data) {
+    if (!data || !data.recentGrid || !data.recentGrid.length) return;
+    const grid = document.getElementById('recent-grid');
+    grid.innerHTML = '';
+
+    const items = data.recentGrid.slice(0, 4);
+    items.forEach((item, i) => {
+        const watchUrl = item.dramaId ? `watch.html?id=${item.dramaId}` : (item.link || 'watch.html');
+        const card = document.createElement('a');
+        card.href = watchUrl;
+        card.className = 'recent-card';
+        card.style.animationDelay = `${0.2 + i * 0.1}s`;
+        card.innerHTML = `
+            <div class="recent-card-img">
+                <img src="${item.img || ''}" alt="${item.title || ''}" loading="lazy">
+                <div class="recent-card-ep-badge">${item.type || 'Drama'}</div>
+                <div class="recent-card-play-btn">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="recent-card-info">
+                <div class="recent-card-title">${item.title || 'Drama'}</div>
+                <div class="recent-card-meta">
+                    <span class="recent-card-type">${item.type || 'Drama'}</span>
+                    <span class="recent-card-ep-count">${item.totalEps ? item.totalEps + ' Eps' : ''}</span>
+                </div>
+            </div>
+        `;
+        grid.appendChild(card);
+
+        // Inject Ad 2 (native card) after the 2nd drama card
+        if (i === 1) {
+            const adCard = document.createElement('div');
+            adCard.className = 'ad-native-card';
+            adCard.setAttribute('aria-label', 'Advertisement');
+            adCard.innerHTML = `
+                <span class="ad-eyebrow">Sponsored</span>
+                <div class="ad-inner">
+                    <ins class="adsbygoogle"
+                         style="display:block; width:100%; height:100%;"
+                         data-ad-client="ca-pub-3854581977852778"
+                         data-ad-slot="2322807703"
+                         data-ad-format="fluid"
+                         data-ad-layout-key="+21+s4-18-23+8q"></ins>
+                </div>
+            `;
+            grid.appendChild(adCard);
+            // Push this ad unit
+            setTimeout(() => {
+                try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
+            }, 200);
+        }
+    });
+
+    document.getElementById('recent-skeleton').style.display = 'none';
+    grid.style.display = 'grid';
+    grid.style.animation = 'sectionFadeUp 0.5s cubic-bezier(0.25,1,0.5,1) 0.15s both';
+}
+
+// Real-time listener
+onSnapshot(IG_DOC_REF, (snap) => {
+    if (snap.exists()) {
+        const data = snap.data();
+        renderHero(data);
+        renderRecentGrid(data);
+    } else {
+        // Doc doesn't exist yet — show a default state
+        document.getElementById('hero-skeleton').style.display = 'none';
+        document.getElementById('hero-card').style.display = 'none';
+        document.getElementById('recent-skeleton').style.display = 'none';
+    }
+}, (err) => {
+    console.warn('Firestore listener error:', err);
+});
+
+// ==================================================
+// 3. SECRET 007 EASTER EGG TRIGGER
+// ==================================================
+const secretEl = document.getElementById('secret-007');
+let tapCount = 0;
+let tapTimer = null;
+
+secretEl.addEventListener('click', () => {
+    tapCount++;
+    secretEl.classList.add('tapped');
+
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(() => {
+        tapCount = 0;
+        secretEl.classList.remove('tapped');
+    }, 2000); // 2 second window for 5 taps
+
+    if (tapCount >= 5) {
+        tapCount = 0;
+        clearTimeout(tapTimer);
+        secretEl.classList.remove('tapped');
+        openAdminModal();
+    }
+});
+
+// Prevent long press menu on mobile
+secretEl.addEventListener('contextmenu', (e) => e.preventDefault());
+secretEl.addEventListener('touchstart', (e) => { /* just stop delay */ }, { passive: true });
+
+// ==================================================
+// 4. ADMIN MODAL LOGIC
+// ==================================================
+const overlay     = document.getElementById('admin-overlay');
+const closeBtn    = document.getElementById('admin-close-btn');
+const pinScreen   = document.getElementById('admin-pin-screen');
+const dashScreen  = document.getElementById('admin-dashboard-screen');
+const pinDots     = [0,1,2,3].map(i => document.getElementById(`pd-${i}`));
+
+const ADMIN_PIN = "0007"; // Change this to your desired PIN
+let pinBuffer = "";
+let isUnlocked = false;
+
+function openAdminModal() {
+    overlay.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+    if (!isUnlocked) {
+        pinScreen.style.display = 'block';
+        dashScreen.style.display = 'none';
+        resetPin();
+    } else {
+        pinScreen.style.display = 'none';
+        dashScreen.style.display = 'block';
+    }
+}
+
+function closeAdminModal() {
+    overlay.classList.remove('visible');
+    document.body.style.overflow = '';
+}
+
+closeBtn.addEventListener('click', closeAdminModal);
+overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeAdminModal();
+});
+
+function resetPin(isError = false) {
+    if (isError) {
+        pinDots.forEach(d => { d.classList.remove('filled'); d.classList.add('error'); });
+        setTimeout(() => {
+            pinDots.forEach(d => d.classList.remove('error'));
+            pinBuffer = "";
+            updatePinDots();
+        }, 600);
+    } else {
+        pinBuffer = "";
+        updatePinDots();
+    }
+}
+
+function updatePinDots() {
+    pinDots.forEach((d, i) => {
+        d.classList.toggle('filled', i < pinBuffer.length);
+    });
+}
+
+document.querySelectorAll('.pin-key[data-key]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (pinBuffer.length >= 4) return;
+        pinBuffer += btn.dataset.key;
+        updatePinDots();
+
+        if (pinBuffer.length === 4) {
+            setTimeout(() => {
+                if (pinBuffer === ADMIN_PIN) {
+                    isUnlocked = true;
+                    pinScreen.style.display = 'none';
+                    dashScreen.style.display = 'block';
+                    dashScreen.style.animation = 'shimmerIn 0.4s cubic-bezier(0.25,1,0.5,1) both';
+                } else {
+                    resetPin(true);
+                }
+            }, 200);
+        }
+    });
+});
+
+document.getElementById('pin-delete').addEventListener('click', () => {
+    pinBuffer = pinBuffer.slice(0, -1);
+    updatePinDots();
+});
+
+document.getElementById('qa-lock').addEventListener('click', () => {
+    isUnlocked = false;
+    closeAdminModal();
+});
+
+document.getElementById('qa-reload').addEventListener('click', () => {
+    closeAdminModal();
+    setTimeout(() => location.reload(), 300);
+});
+
+// ==================================================
+// 5. SEARCH & DEPLOY — OMDB + TMDB
+// ==================================================
+const searchInput  = document.getElementById('admin-search-input');
+const searchBtn    = document.getElementById('admin-search-btn');
+const resultCard   = document.getElementById('admin-result-card');
+const adminToast   = document.getElementById('admin-toast');
+
+function showToast(msg, type = 'success') {
+    adminToast.textContent = msg;
+    adminToast.className = `admin-toast ${type}`;
+    adminToast.style.display = 'block';
+    setTimeout(() => { adminToast.style.display = 'none'; }, 3500);
+}
+
+async function searchDrama() {
+    const queryTxt = searchInput.value.trim();
+    if (!queryTxt) return;
+
+    searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    resultCard.style.display = 'none';
+    currentFetchedDrama = null;
+
+    try {
+        let omdbUrl;
+        // Detect IMDb ID format
+        if (/^tt\d+$/i.test(queryTxt)) {
+            omdbUrl = `https://www.omdbapi.com/?i=${queryTxt}&plot=short&apikey=${OMDB_KEY}`;
+        } else {
+            omdbUrl = `https://www.omdbapi.com/?t=${encodeURIComponent(queryTxt)}&plot=short&apikey=${OMDB_KEY}`;
+        }
+
+        const res  = await fetch(omdbUrl);
+        const data = await res.json();
+
+        if (data.Response === "False") {
+            showToast("Not found: " + (data.Error || "No results"), "error");
+            return;
+        }
+
+        // Basic drama object from OMDB
+        currentFetchedDrama = {
+            title:   data.Title,
+            img:     data.Poster !== "N/A" ? data.Poster : "",
+            year:    parseInt(data.Year) || "",
+            score:   data.imdbRating || "—",
+            genre:   data.Genre || "",
+            type:    data.Type === "movie" ? "Movie" :
+                     (data.Country && data.Country.includes("Korea")) ? "K-Drama" :
+                     (data.Country && data.Country.includes("China")) ? "C-Drama" :
+                     (data.Country && data.Country.includes("Japan")) ? "J-Drama" : "Drama",
+            imdbId:  data.imdbID || "",
+            totalEps: data.totalSeasons ? parseInt(data.totalSeasons) * 16 : (data.Type === "movie" ? 1 : null),
+            dramaId: null,
+            link: null
+        };
+
+        // Try to get a higher-res poster & dramaId from TMDB
+        try {
+            const findRes  = await fetch(`https://api.themoviedb.org/3/find/${data.imdbID}?api_key=${TMDB_KEY}&external_source=imdb_id`);
+            const findData = await findRes.json();
+
+            const tvResult    = findData.tv_results?.[0];
+            const movieResult = findData.movie_results?.[0];
+            const item = tvResult || movieResult;
+
+            if (item && item.poster_path) {
+                currentFetchedDrama.img = `https://image.tmdb.org/t/p/w500${item.poster_path}`;
+            }
+        } catch(e) { console.warn("TMDB fetch skipped or failed."); }
+
+       // --- BULLETPROOF ID FINDER ---
+        try {
+            let foundId = null;
+            let foundLink = null;
+
+            // Layer 1: Check your local JSON structure first
+            try {
+                const jsonRes = await fetch('./dramas.json?t=' + new Date().getTime());
+                if (jsonRes.ok) {
+                    const json = await jsonRes.json();
+                    const list = Array.isArray(json) ? json : (json.dramas || Object.values(json));
+                    
+                    // Case-insensitive match for robust searching
+                    const match = list.find(d => 
+                        (d.imdbId && d.imdbId === currentFetchedDrama.imdbId) || 
+                        (d.title && d.title.toLowerCase() === currentFetchedDrama.title.toLowerCase())
+                    );
+                    
+                    if (match) {
+                        // Broader fallback for whatever key the JSON uses for the ID
+                        foundId = match.id || match.dramaId || match.imdbId;
+                        foundLink = match.link || `watch.html?id=${foundId}`;
+                    }
+                }
+            } catch(e) { console.warn("JSON check skipped or failed."); }
+
+            // Layer 2: If not in JSON, check live Firestore
+            if (!foundId) {
+                const dramasRef = collection(db, "dramas");
+                let matchedDoc = null;
+                
+                if (currentFetchedDrama.imdbId) {
+                    const q = query(dramasRef, where("imdbId", "==", currentFetchedDrama.imdbId));
+                    const snap = await getDocs(q);
+                    if (!snap.empty) matchedDoc = snap.docs[0];
+                }
+                
+                if (!matchedDoc && currentFetchedDrama.title) {
+                    const titleQ = query(dramasRef, where("title", "==", currentFetchedDrama.title));
+                    const titleSnap = await getDocs(titleQ);
+                    if (!titleSnap.empty) matchedDoc = titleSnap.docs[0];
+                }
+                
+                if (matchedDoc) {
+                    foundId = matchedDoc.id;
+                    const docData = matchedDoc.data();
+                    foundLink = docData.link || `watch.html?id=${foundId}`;
+                }
+            }
+
+            // Assign the found data
+            currentFetchedDrama.dramaId = foundId;
+            currentFetchedDrama.link = foundLink;
+
+        } catch(e) {
+            console.error("Critical ID fetch error:", e);
+            currentFetchedDrama.dramaId = null;
+        }
+        
+        // Show the result card
+        document.getElementById('result-poster-img').src = currentFetchedDrama.img;
+        document.getElementById('result-title').textContent = currentFetchedDrama.title;
+        document.getElementById('result-sub').textContent = `${currentFetchedDrama.type} • ${currentFetchedDrama.year}`;
+        
+        resultCard.style.display = 'block';
+
+    } catch(err) {
+        showToast("Error fetching drama: " + err.message, "error");
+    } finally {
+        searchBtn.innerHTML = '<i class="fas fa-search"></i>';
+    }
+}
+
+searchBtn.addEventListener('click', searchDrama);
+searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') searchDrama();
+});
+
+// SET AS MAIN FEATURE
+document.getElementById('btn-set-feature').addEventListener('click', async () => {
+    if (!currentFetchedDrama) return;
+    
+    // STRICT SAFEGUARD: Ensure valid ID before deploying
+    if (!currentFetchedDrama.dramaId || currentFetchedDrama.dramaId === "undefined") {
+        showToast("ERROR: Drama not in main DB! Add via Admin Panel first.", "error");
+        return;
+    }
+
+    try {
+        const btn = document.getElementById('btn-set-feature');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        
+        await setDoc(IG_DOC_REF, {
+            feature: {
+                title:   currentFetchedDrama.title,
+                img:     currentFetchedDrama.img,
+                year:    currentFetchedDrama.year,
+                score:   currentFetchedDrama.score,
+                genre:   currentFetchedDrama.genre,
+                type:    currentFetchedDrama.type,
+                dramaId: currentFetchedDrama.dramaId,
+                link:    currentFetchedDrama.link,
+                updatedAt: Date.now()
+            }
+        }, { merge: true });
+        
+        showToast(`✓ "${currentFetchedDrama.title}" set as main feature!`, "success");
+    } catch(err) {
+        showToast("Failed to update: " + err.message, "error");
+    } finally {
+        document.getElementById('btn-set-feature').innerHTML = '<i class="fas fa-star"></i> Set as Feature';
+    }
+});
+
+// ADD TO RECENT GRID
+document.getElementById('btn-add-grid').addEventListener('click', async () => {
+    if (!currentFetchedDrama) return;
+
+    // STRICT SAFEGUARD: Ensure valid ID before deploying
+    if (!currentFetchedDrama.dramaId || currentFetchedDrama.dramaId === "undefined") {
+        showToast("ERROR: Drama not in main DB! Add via Admin Panel first.", "error");
+        return;
+    }
+
+    try {
+        const btn = document.getElementById('btn-add-grid');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        const snap = await getDoc(IG_DOC_REF);
+        let currentGrid = (snap.exists() && snap.data().recentGrid) ? snap.data().recentGrid : [];
+
+        const newItem = {
+            title:   currentFetchedDrama.title,
+            img:     currentFetchedDrama.img,
+            year:    currentFetchedDrama.year,
+            type:    currentFetchedDrama.type,
+            totalEps: currentFetchedDrama.totalEps,
+            dramaId: currentFetchedDrama.dramaId,
+            link:    currentFetchedDrama.link 
+        };
+
+        // Add new item to front, filter out duplicates, keep max 4
+        currentGrid = [newItem, ...currentGrid.filter(i => i.title !== newItem.title)].slice(0, 4);
+
+        await setDoc(IG_DOC_REF, { recentGrid: currentGrid }, { merge: true });
+        showToast(`✓ Added "${currentFetchedDrama.title}" to the Recent Grid!`, "success");
+    } catch(err) {
+        showToast("Failed to update grid: " + err.message, "error");
+    } finally {
+        document.getElementById('btn-add-grid').innerHTML = '<i class="fas fa-plus"></i> Add to Grid';
+    }
+});
+// ==================================================
+// 6. TOUCH SWIPE DOWN TO CLOSE ADMIN MODAL
+// ==================================================
+const modal = document.getElementById('admin-modal');
+let touchStartY = 0;
+modal.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; }, { passive: true });
+modal.addEventListener('touchend', (e) => {
+    const diff = e.changedTouches[0].clientY - touchStartY;
+    if (diff > 80) closeAdminModal(); // Swipe down 80px = close
+}, { passive: true });
+// ==================================================
+// 7. PUSH ALL STATIC ADSENSE UNITS
+// ==================================================
+// Defer slightly so the DOM is fully painted first
+setTimeout(() => {
+    const staticAds = document.querySelectorAll('.adsbygoogle:not([data-adsbygoogle-status])');
+    staticAds.forEach(() => {
+        try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
+    });
+}, 900);
+
+</script>
+
+</body>
+</html>

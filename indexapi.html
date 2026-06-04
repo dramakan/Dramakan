@@ -8,36 +8,77 @@
     <meta name="title" content="Dramakan - Watch Korean, Japanese, Chinese Dramas Online">
     <meta name="description" content="Stream the latest Korean, Japanese, Chinese, and Filipino dramas online. Your ultimate destination for Asian entertainment with daily updates.">
     
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
-    <link rel="stylesheet" href="indexapi.css">
-    
-    <script src="indexapi.js" defer></script>
-    <script src="bottom-bar.js" defer></script>
-<script src="premium-manager.js" defer></script>
-    
-    <script src="admin_easter_egg.js" defer></script>
-    <script type="module" src="promo-banner.js"></script>
-    
-    <meta name="theme-color" content="#8A2BE2">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="indexstyle.css">
+    <link rel="stylesheet" href="bottom-bar.css">
 
     <style>
         /* --- PC HEADER & AnyKan TOGGLE STYLES --- */
         .site-switcher { display: flex; align-items: center; margin-left: 10px; }
         .switcher-track { display: flex; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 50px; padding: 4px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.3); }
-        .nav-links .switcher-track .switch-btn { padding: 6px 14px !important; border-radius: 50px !important; font-size: 0.85rem !important; font-weight: 600 !important; color: #a1a1aa !important; text-decoration: none !important; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important; background: transparent !important; display: inline-block; }
+        .nav-links .switcher-track .switch-btn { padding: 6px 14px !important; border-radius: 50px !important; font-size: 0.85rem !important; font-weight: 600 !important; color: #a1a1aa !important; text-decoration: none !important; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important; opacity: 1 !important; border: none !important; width: auto !important; background: transparent !important; display: inline-block; text-shadow: none !important; }
         .nav-links .switcher-track .switch-btn.active { background: linear-gradient(135deg, #8A2BE2 0%, #6a1b9a 100%) !important; color: #fff !important; box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4) !important; }
         .nav-links .switcher-track .switch-btn:not(.active):hover { color: #fff !important; background: rgba(255,255,255,0.08) !important; }
+
         @media (max-width: 992px) {
             .site-switcher { margin-top: 10px; width: 100%; margin-left: 0; }
             .switcher-track { width: 100%; display: flex; justify-content: space-between; }
             .nav-links .switcher-track .switch-btn { text-align: center; flex: 1; padding: 10px 15px !important; }
             .header-right { gap: 10px; }
+        }
+
+        /* --- GLASSMORPHISM SEARCH DROPDOWN --- */
+        .search-results {
+            position: absolute;
+            top: 110%;
+            left: 0;
+            width: 100%;
+            background: rgba(11, 12, 16, 0.75);
+            backdrop-filter: blur(25px) saturate(150%);
+            -webkit-backdrop-filter: blur(25px) saturate(150%);
+            border: 1px solid rgba(138, 43, 226, 0.25);
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            overflow: hidden;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .search-result-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        .search-result-item:last-child { border-bottom: none; }
+        
+        .search-result-item:hover {
+            background: rgba(138, 43, 226, 0.15);
+            border-left: 3px solid #8A2BE2;
+            padding-left: 15px;
+        }
+        
+        .search-result-item img {
+            border-radius: 6px;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .search-result-title {
+            color: #fff;
+            font-weight: 500;
+            font-size: 0.9rem;
+            line-height: 1.3;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
     </style>
 </head>
@@ -64,24 +105,28 @@
             </nav>
 
             <div class="header-right" style="display: flex; align-items: center;">
-                <div class="search-bar pc-search-bar">
+                <div class="search-bar pc-search-bar" style="position: relative;">
                     <i class="fas fa-search"></i>
                     <input id="searchInput" type="text" placeholder="Search drama...">
-                    <a href="filter.html" class="search-filter-link" title="Advanced Filter"><i class="fas fa-sliders-h"></i></a>
                     <div id="searchResults" class="search-results"></div>
                 </div>
-                <a href="subscription.html" id="headerVipBtn" class="vip-header-btn status-basic"><i class="fas fa-bolt"></i> Upgrade VIP</a>
-                <a href="login.html" class="header-profile-btn" id="topAuthBtn"><i class="fa-solid fa-user"></i> <span>Login</span></a>
+
+                <a href="subscription.html" id="headerVipBtn" class="vip-header-btn status-basic">
+                    <i class="fas fa-bolt"></i> Upgrade VIP
+                </a>
+                
+                <a href="login.html" class="header-profile-btn" id="topAuthBtn">
+                    <i class="fa-solid fa-user"></i> <span>Login</span>
+                </a>
             </div>
         </div>
 
-        <div class="mobile-search-container">
+        <div class="mobile-search-container" style="position: relative;">
             <div class="mobile-glass-search">
                 <i class="fas fa-search"></i>
                 <input id="mobileSearchInput" type="text" placeholder="Search drama...">
-                <a href="filter.html" class="search-filter-link"><i class="fas fa-sliders-h"></i></a>
             </div>
-            <div id="mobileSearchResults" class="search-results mobile-search-results-dropdown"></div>
+            <div id="mobileSearchResults" class="search-results"></div>
         </div>
     </header>
     
@@ -91,37 +136,33 @@
                 <source media="(max-width: 992px)" srcset="https://image.tmdb.org/t/p/original/5HwEcfYStj5g8qlD79sydwo3syC.jpg">
                 <img class="hero-image" src="https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/019cfeb4-fa51-71bf-b7ef-ed63313b522f/compose?format=webp&width=2560" alt="Perfect Crown">
             </picture>
+            
             <div class="hero-depth-shadow"></div>
             <div class="hero-vignette"></div>
+            
             <div class="hero-content">
-                <div class="series-badge"><i class="fas fa-play" style="color: var(--primary-color);"></i> SERIES</div>
+                <div class="series-badge">
+                    <i class="fas fa-play" style="color: var(--primary);"></i> SERIES
+                </div>
+                
                 <img src="https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/019cfeb4-fa17-716b-8677-aea8345fcff1/compose?format=webp&width=2880" alt="Perfect Crown" class="hero-title-graphic-img">
                 <h1 style="display:none;">PERFECT CROWN</h1> 
+                
                 <div class="hero-meta-tags">
                     <span>Show</span><span class="meta-dot">•</span><span>Thriller</span><span class="meta-dot">•</span><span>2026</span><span class="meta-dot">•</span><span>1 Season</span>
                 </div>
+                
                 <div class="hero-actions">
-                    <a href="watch.html?id=perfectcrown" class="btn-n btn-play"><i class="fas fa-play"></i> Play</a>
-                    <button class="btn-n btn-mylist" onclick="event.preventDefault(); window.toggleMyList(this, 'Perfect Crown', 'https://preview.redd.it/perfect-crown-episodes-1-2-v0-rccoh9yt38ug1.jpg', 'watch.html?id=perfectcrown')">
-                        <i class="fas fa-plus"></i> My List
-                    </button>
+                    <a href="watchapi.html?id=perfectcrown" class="btn-n btn-play">
+                        <i class="fas fa-play"></i> Play
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
     <main>
-        <section class="latest-episodes" id="continue-watching-section" style="display: none;">
-            <div class="container">
-                <div class="section-glass-box" style="background: rgba(var(--bg-rgb), 0.05); border-color: var(--primary-color);">
-                    <div class="section-header">
-                        <h2 class="section-title"><i class="fas fa-play-circle" style="color: var(--primary-color);"></i> Continue Watching</h2>
-                    </div>
-                    <div id="continue-watching-grid" class="drama-grid carousel-mode"></div>
-                </div>
-            </div>
-        </section>
-
+        <!-- LATEST GRID -->
         <section class="latest-episodes">
             <div class="container">
                 <div class="section-glass-box">
@@ -129,12 +170,12 @@
                         <h2 class="section-title">Latest Updates</h2>
                         <a href="latest.html" class="view-all-link">View All <i class="fas fa-chevron-right"></i></a>
                     </div>
-                    <div id="latest-grid" class="drama-grid carousel-mode">
-                        </div>
+                    <div id="latest-grid" class="drama-grid carousel-mode"></div>
                 </div>
             </div>
         </section>
 
+        <!-- POPULAR GRID -->
         <section class="latest-episodes">
             <div class="container">
                 <div class="section-glass-box">
@@ -147,6 +188,7 @@
             </div>
         </section>
 
+        <!-- ONGOING GRID -->
         <section class="latest-episodes">
             <div class="container">
                 <div class="section-glass-box">
@@ -159,6 +201,7 @@
             </div>
         </section>
 
+        <!-- UPCOMING GRID -->
         <section class="latest-episodes">
             <div class="container">
                 <div class="section-glass-box">
@@ -170,28 +213,49 @@
                 </div>
             </div>
         </section>
+    </main>
 
-        <button id="dramaRequestBtn" class="drama-fab"><span class="fab-text">Didn't find your drama?</span></button>
-        </main>
+    <footer class="main-footer" style="margin-top: 50px;">
+        <div class="container">
+            <div class="footer-content" style="display:flex; justify-content:space-between; align-items:center;">
+                <a href="#" class="logo">Drama<span>Kan</span></a>
+            </div>
+            <div class="footer-bottom" style="text-align:center; padding-top:20px; color:#a1a1aa; font-size:0.85rem;">&copy; 2026 Dramakan. All rights reserved.</div>
+        </div>
+    </footer>
 
     <nav class="bottom-nav">
-        </nav>
+        <a href="index.html" class="bottom-nav-item active"><i class="fa-solid fa-house nav-icon"></i><span class="nav-label">Home</span></a>
+        <a href="community.html" class="bottom-nav-item"><i class="fa-solid fa-bell nav-icon"></i><span class="nav-label">Updates</span></a>
+        <a href="mylist.html" class="bottom-nav-item"><i class="fa-solid fa-bookmark nav-icon"></i><span class="nav-label">My List</span></a>
+        <a href="login.html" class="bottom-nav-item" id="bottomAuthBtn"><i class="fa-solid fa-user nav-icon"></i></a>
+    </nav>
 
+    <!-- Essential Scripts -->
+    <script src="indexapi.js" defer></script>
+    <script src="bottom-bar.js" defer></script>
+    
+    <!-- Sync Mobile/Desktop Search Input -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const mSearch = document.getElementById('mobileSearchInput');
             const mResults = document.getElementById('mobileSearchResults');
             const pcSearch = document.getElementById('searchInput');
             const pcResults = document.getElementById('searchResults');
+            
             if(mSearch && pcSearch) {
+                // Pipe mobile typing directly into desktop logic
                 mSearch.addEventListener('input', (e) => {
                     pcSearch.value = e.target.value;
                     pcSearch.dispatchEvent(new Event('input')); 
                 });
+                
+                // Watch for desktop logic injecting results and mirror it to mobile
                 const observer = new MutationObserver(() => {
                     mResults.innerHTML = pcResults.innerHTML;
                     mResults.style.display = pcResults.style.display;
                 });
+                
                 if(pcResults) observer.observe(pcResults, { childList: true, attributes: true, subtree: true });
             }
         });
