@@ -25,12 +25,26 @@
         .header h1 { font-size: 2rem; letter-spacing: -1px; }
         .header span { color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); }
 
+        /* Auth Lock Overlay */
+        .full-overlay { position: fixed; inset: 0; background: rgba(11,12,16,0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; text-align: center; }
+
         .stats-bar { 
             display: flex; justify-content: space-around; background: var(--bg-surface); 
             backdrop-filter: var(--glass-blur); padding: 20px; border-radius: 20px; 
             border: 1px solid var(--border-subtle); margin-bottom: 30px; 
         }
         .stat-item b { font-size: 1.4rem; color: var(--primary); }
+
+        .deploy-bar { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 30px; }
+        .btn-group { display: flex; gap: 15px; }
+        
+        .deploy-btn { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); font-family: 'Poppins'; font-size: 1rem; }
+        .deploy-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5); }
+        .deploy-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .autofix-btn { background: linear-gradient(135deg, var(--primary), #6a1b9a); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--primary-glow); font-family: 'Poppins'; font-size: 1rem; }
+        .autofix-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(138, 43, 226, 0.6); }
+        .autofix-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
         .drama-card { 
             background: var(--bg-surface); border: 1px solid var(--border-subtle); 
@@ -45,7 +59,7 @@
         .info p { margin: 5px 0 0; font-size: 0.8rem; color: var(--text-muted); }
 
         .inputs { display: flex; flex-direction: column; gap: 8px; }
-        .input-row { display: flex; gap: 10px; }
+        .input-row { display: flex; gap: 10px; align-items: center; }
         
         input { 
             background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); 
@@ -54,32 +68,52 @@
         }
         input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
         
+        .action-btn { background: rgba(138, 43, 226, 0.15); color: var(--primary); border: 1px solid var(--primary); border-radius: 12px; padding: 0 15px; height: 43px; cursor: pointer; transition: 0.3s; }
+        .action-btn:hover { background: var(--primary); color: #fff; }
+
         .save-btn { 
             background: var(--primary); color: white; border: none; 
             height: 50px; border-radius: 12px; cursor: pointer; 
             font-weight: 600; transition: 0.3s; box-shadow: 0 4px 15px var(--primary-glow);
         }
-        .save-btn:hover { background: #9d4edd; transform: scale(1.05); }
+        .save-btn:hover:not(:disabled) { background: #9d4edd; transform: scale(1.05); }
         .save-btn.done { background: var(--success); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+        .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        #loading { text-align: center; padding: 100px; font-size: 1.2rem; color: var(--text-muted); }
+        #loading { text-align: center; padding: 100px; font-size: 1.2rem; color: var(--text-muted); display: none; }
+        
+        @media (max-width: 900px) {
+            .drama-card { grid-template-columns: 1fr; text-align: center; }
+            .drama-card img { margin: 0 auto; }
+            .btn-group { flex-direction: column; width: 100%; }
+        }
     </style>
-<script src="bottom-bar.js" defer></script><script src="lightmode.js"></script> 
-    
-    
-    <link rel="stylesheet" href="lightmode.css"> 
 </head>
 <body>
+
+<div id="authLock" class="full-overlay">
+    <i class="fas fa-fingerprint" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
+    <h2>Verifying Identity...</h2>
+    <p style="color: #aaa;">Connecting to secure admin server.</p>
+</div>
 
 <div class="container">
     <div class="header">
         <h1>Drama<span>Kan</span> Data Fixer</h1>
-        <p>Correcting IMDB IDs, Seasons, and Episodes</p>
+        <p>Correcting IMDB IDs, TMDB IDs, Seasons, and Episodes</p>
+    </div>
+
+    <div class="deploy-bar">
+        <div class="btn-group">
+            <button id="autoFixBtn" class="autofix-btn" onclick="triggerAutoFixAll()"><i class="fas fa-magic"></i> Auto-Fix All Possible</button>
+            <button id="deployBtn" class="deploy-btn" onclick="triggerNetlifyBuild()"><i class="fas fa-rocket"></i> Publish Changes to Live Site</button>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">Run "Auto-Fix All" first, then manually correct leftovers, and finally Publish.</p>
     </div>
 
     <div class="stats-bar">
-        <div class="stat-item">Total: <b id="totalCount">0</b></div>
-        <div class="stat-item">Needs IMDB: <b id="needFixCount">0</b></div>
+        <div class="stat-item">Total Titles: <b id="totalCount">0</b></div>
+        <div class="stat-item">Needs Fixing: <b id="needFixCount">0</b></div>
     </div>
 
     <div id="loading"><i class="fas fa-circle-notch fa-spin"></i> Accessing Firestore...</div>
@@ -89,8 +123,8 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-    // Same config as your admin dashboard
     const firebaseConfig = { 
         apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", 
         authDomain: "dramakan007.firebaseapp.com", 
@@ -99,10 +133,46 @@
     
     const app = initializeApp(firebaseConfig); 
     const db = getFirestore(app);
+    const auth = getAuth(app);
 
     const dramaListEl = document.getElementById('dramaList');
     const loadingEl = document.getElementById('loading');
+    
+    // Global cache for broken dramas to power the Auto-Fix loop
+    window.brokenDramasCache = [];
 
+    // TMDB API KEY
+    const tmdbKey = "014fbdbe962cb38379e09e31d0652459";
+
+    // --- Authentication Check ---
+    onAuthStateChanged(auth, (user) => {
+        const lock = document.getElementById('authLock');
+        if (user && user.email === "zabaazcreations@gmail.com") {
+            lock.style.display = 'none';
+            loadingEl.style.display = 'block';
+            loadBrokenDramas();
+        } else {
+            // If not logged in, prompt for admin password
+            lock.innerHTML = `
+                <i class="fas fa-lock" style="color: #EF4444; font-size: 3rem; margin-bottom:20px;"></i>
+                <h2 style="color:#EF4444;">Admin Access Required</h2>
+                <input type="password" id="adminPwd" placeholder="Enter Admin Password" style="margin-top:20px; max-width:300px; text-align:center; padding:15px; border-radius:12px;">
+                <button class="save-btn" onclick="window.loginAdmin()" style="margin-top:15px; padding: 0 40px;">Authenticate</button>
+            `;
+        }
+    });
+
+    window.loginAdmin = () => {
+        const pwd = document.getElementById('adminPwd').value;
+        const btn = document.querySelector('#authLock button');
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+        signInWithEmailAndPassword(auth, "zabaazcreations@gmail.com", pwd).catch(e => {
+            alert("Authentication Failed: " + e.message);
+            btn.innerHTML = 'Authenticate';
+        });
+    };
+
+    // --- Load Data ---
     async function loadBrokenDramas() {
         try {
             const snap = await getDocs(collection(db, "dramas"));
@@ -111,26 +181,36 @@
 
             document.getElementById('totalCount').innerText = allDramas.length;
             
-            // Filter: Shows anything missing IMDB or having 0 episodes
-            const broken = allDramas.filter(d => !d.imdbId || d.imdbId === "" || d.imdbId === "N/A" || !d.totalEps);
-            document.getElementById('needFixCount').innerText = broken.length;
+            // Filter: Missing IMDB, Missing TMDB, or 0 episodes
+            window.brokenDramasCache = allDramas.filter(d => 
+                !d.imdbId || d.imdbId === "" || d.imdbId === "N/A" || 
+                !d.tmdbId || d.tmdbId === "" || 
+                !d.totalEps
+            );
+            
+            document.getElementById('needFixCount').innerText = window.brokenDramasCache.length;
 
             loadingEl.style.display = 'none';
             dramaListEl.innerHTML = '';
 
-            broken.forEach(drama => {
+            window.brokenDramasCache.forEach(drama => {
                 const seasonString = (drama.seasons || []).join(', ');
                 const card = document.createElement('div');
                 card.className = 'drama-card';
+                card.id = `card-${drama.id}`;
                 card.innerHTML = `
                     <img src="${drama.img}" alt="Poster">
                     <div class="info">
                         <h4>${drama.title}</h4>
-                        <p>ID: ${drama.id}</p>
+                        <p>Type: ${drama.type}</p>
                     </div>
                     <div class="inputs">
-                        <input type="text" placeholder="IMDB ID (e.g. tt1234567)" id="imdb-${drama.id}" value="${drama.imdbId || ''}">
                         <div class="input-row">
+                            <input type="text" placeholder="IMDB ID (e.g. tt1234567)" id="imdb-${drama.id}" value="${drama.imdbId || ''}">
+                            <button class="action-btn" onclick="fetchTmdb('${drama.id}')" title="Auto-find TMDB ID using IMDB ID"><i class="fas fa-magic"></i></button>
+                        </div>
+                        <div class="input-row">
+                            <input type="text" placeholder="TMDB ID (e.g. 278573)" id="tmdb-${drama.id}" value="${drama.tmdbId || ''}">
                             <input type="text" placeholder="Seasons (e.g. 16, 12)" id="sea-${drama.id}" value="${seasonString || drama.totalEps || '16'}">
                         </div>
                     </div>
@@ -145,14 +225,116 @@
         }
     }
 
+    // --- Bulk Auto-Fix Logic ---
+    window.triggerAutoFixAll = async () => {
+        const autoBtn = document.getElementById('autoFixBtn');
+        autoBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing Collection...';
+        autoBtn.disabled = true;
+
+        let successCount = 0;
+        let skipCount = 0;
+
+        for (const drama of window.brokenDramasCache) {
+            const docId = drama.id;
+            const imdbInput = document.getElementById(`imdb-${docId}`);
+            const tmdbInput = document.getElementById(`tmdb-${docId}`);
+            const btn = document.getElementById(`btn-${docId}`);
+
+            // Skip if the user already saved this one manually during the session
+            if (!btn || btn.disabled) continue;
+
+            const imdbId = imdbInput.value.trim();
+            
+            // If IMDB ID is empty or invalid, we can't search TMDB. Skip it.
+            if (!imdbId || imdbId === "N/A") {
+                skipCount++;
+                continue; 
+            }
+
+            try {
+                tmdbInput.value = "Fetching API...";
+                const res = await fetch(`https://api.themoviedb.org/3/find/${imdbId}?api_key=${tmdbKey}&external_source=imdb_id`);
+                const data = await res.json();
+                
+                let foundId = "";
+                if (data.tv_results && data.tv_results.length > 0) {
+                    foundId = data.tv_results[0].id;
+                } else if (data.movie_results && data.movie_results.length > 0) {
+                    foundId = data.movie_results[0].id;
+                }
+
+                if (foundId) {
+                    tmdbInput.value = foundId;
+                    // Trigger the save function directly
+                    await window.saveData(docId);
+                    successCount++;
+                } else {
+                    tmdbInput.value = "";
+                    skipCount++; 
+                }
+            } catch (e) {
+                tmdbInput.value = "";
+                skipCount++;
+            }
+
+            // 250ms Delay to prevent TMDB from rate-limiting the API requests
+            await new Promise(resolve => setTimeout(resolve, 250));
+        }
+
+        alert(`Auto-Fix Complete!\n\nSuccessfully Updated: ${successCount}\nLeft for Manual Entry: ${skipCount}\n\nAny remaining titles require you to manually find their TMDB ID.`);
+        
+        autoBtn.innerHTML = '<i class="fas fa-check"></i> Auto-Fix Complete';
+        setTimeout(() => {
+            autoBtn.innerHTML = '<i class="fas fa-magic"></i> Auto-Fix All Possible';
+            autoBtn.disabled = false;
+        }, 3000);
+    };
+
+    // --- Single Auto-Fetch TMDB Logic ---
+    window.fetchTmdb = async (docId) => {
+        const imdbId = document.getElementById(`imdb-${docId}`).value.trim();
+        const tmdbInput = document.getElementById(`tmdb-${docId}`);
+        
+        if (!imdbId || imdbId === "N/A") return alert("Please enter a valid IMDB ID first!");
+        
+        tmdbInput.value = "Searching...";
+        
+        try {
+            const res = await fetch(`https://api.themoviedb.org/3/find/${imdbId}?api_key=${tmdbKey}&external_source=imdb_id`);
+            const data = await res.json();
+            
+            let foundId = "";
+            if (data.tv_results && data.tv_results.length > 0) {
+                foundId = data.tv_results[0].id;
+            } else if (data.movie_results && data.movie_results.length > 0) {
+                foundId = data.movie_results[0].id;
+            }
+
+            if (foundId) {
+                tmdbInput.value = foundId;
+            } else {
+                tmdbInput.value = "";
+                alert("Could not find a TMDB ID for that IMDB ID. You may need to find it manually.");
+            }
+        } catch (e) {
+            tmdbInput.value = "";
+            alert("API Error: Could not connect to TMDB.");
+        }
+    };
+
+    // --- Save Data Logic ---
     window.saveData = async (docId) => {
         const btn = document.getElementById(`btn-${docId}`);
         const imdb = document.getElementById(`imdb-${docId}`).value.trim();
+        const tmdb = document.getElementById(`tmdb-${docId}`).value.trim();
         const seasonInput = document.getElementById(`sea-${docId}`).value.trim();
 
-        if (!imdb) return alert("IMDB ID is required for the player to work!");
+        if (!imdb && !tmdb) {
+            alert("You must provide at least an IMDB or TMDB ID!");
+            return;
+        }
 
-        // Convert "16, 12" string into [16, 12] array for watch.html logic
+        // Convert "16, 12" string into [16, 12] array
         const seasonsArr = seasonInput.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
         const total = seasonsArr.reduce((a, b) => a + b, 0);
 
@@ -162,6 +344,7 @@
         try {
             await updateDoc(doc(db, "dramas", docId), {
                 imdbId: imdb,
+                tmdbId: tmdb,
                 seasons: seasonsArr,
                 totalEps: total
             });
@@ -170,20 +353,47 @@
             btn.innerHTML = '<i class="fas fa-check"></i>';
             
             // Fade out the fixed item
-            setTimeout(() => {
-                const card = btn.closest('.drama-card');
+            const card = document.getElementById(`card-${docId}`);
+            if (card) {
                 card.style.opacity = '0.3';
                 card.style.pointerEvents = 'none';
-            }, 800);
+            }
+
+            // Update Counter
+            const counter = document.getElementById('needFixCount');
+            const currentCount = parseInt(counter.innerText);
+            if(currentCount > 0) counter.innerText = currentCount - 1;
 
         } catch (err) {
-            alert("Update Failed: " + err.message);
+            console.error(err);
+            if (!window.autoFixRunning) alert("Update Failed: " + err.message);
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-save"></i>';
         }
     };
 
-    loadBrokenDramas();
+    // --- Netlify Rebuild Trigger ---
+    window.triggerNetlifyBuild = async () => {
+        const deployBtn = document.getElementById('deployBtn');
+        deployBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Triggering Build...';
+        deployBtn.disabled = true;
+        
+        try {
+            await fetch('https://api.netlify.com/build_hooks/69faaba323e4ac38b9e03773', { method: 'POST' });
+            deployBtn.innerHTML = '<i class="fas fa-check"></i> Build Started! Check live site in 1-2 mins';
+            deployBtn.style.background = '#10b981';
+            
+            setTimeout(() => {
+                deployBtn.innerHTML = '<i class="fas fa-rocket"></i> Publish Changes to Live Site';
+                deployBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                deployBtn.disabled = false;
+            }, 5000);
+        } catch (e) {
+            alert("Failed to trigger build.");
+            deployBtn.innerHTML = '<i class="fas fa-rocket"></i> Publish Changes to Live Site';
+            deployBtn.disabled = false;
+        }
+    };
 </script>
 
 </body>

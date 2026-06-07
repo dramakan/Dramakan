@@ -253,8 +253,8 @@
             
             <div class="main-column">
                 <div class="video-player-container">
-                    <iframe id="video-player-iframe" src="" allowfullscreen></iframe>
-                </div>
+            <iframe id="video-player-iframe" src="" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="true" frameborder="0" scrolling="no"></iframe>
+        </div>
 <div class="ad-wrapper-glass" style="margin-top: 20px; margin-bottom: 20px; background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px; text-align: center; overflow: hidden; min-height: 100px; display: flex; align-items: center; justify-content: center; position: relative;">
     <span style="position: absolute; top: 5px; left: 10px; font-size: 0.65rem; color: var(--text-muted); font-weight: 500; letter-spacing: 1px; text-transform: uppercase;">Advertisement</span>
     
@@ -271,9 +271,9 @@
                     <div class="control-panel">
                         <h4 class="panel-title"><i class="fas fa-bolt"></i> Choose Server</h4>
                         <div class="server-list">
-                            <button class="server-btn active" data-server="vsrc">S1 <span>Vsrc HQ</span></button>
-                            <button class="server-btn" data-server="hindi">S2 <span>Hindi Dub</span></button>
-                            <button class="server-btn" data-server="2embed">S3 <span>2embed Alt</span></button>
+                            <button class="server-btn active" data-server="2embed">S1 <span>2embed VIP</span></button>
+                            <button class="server-btn" data-server="vsrc">S2 <span>Vidsrc FYI</span></button>
+                            <button class="server-btn" data-server="hindi">S3 <span>Hindi Dub</span></button>
                         </div>
                     </div>
                     <div class="control-panel">
@@ -383,7 +383,7 @@
     const db = getFirestore(app);
     const auth = getAuth(app); 
 
-    let currentServer = 'vsrc'; 
+    let currentServer = '2embed'; 
     let currentUser = null;
     const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
 
@@ -507,19 +507,43 @@
 
                 const videoPlayer = document.getElementById('video-player-iframe');
 
-                window.loadEpisode = async function(season, ep) {
+               window.loadEpisode = async function(season, ep) {
                     window.currentSeason = parseInt(season);
                     window.currentEpisode = parseInt(ep);
                     document.getElementById('bread-ep').textContent = `Episode ${ep}`;
                     
                     let embedLink = '';
-                    if (currentServer === 'vsrc') {
-                        embedLink = data.type?.toLowerCase().includes('movie') ? `https://vidsrc.fyi/embed/movie/${data.imdbId}` : `https://vidsrc.fyi/embed/tv/${data.imdbId}/${season}/${ep}`;
+                    
+                    // Pulling both IDs from your dramas.json
+                    const tmdb = data.tmdbId;
+                    const imdb = data.imdbId;
+                    const isMovie = data.type?.toLowerCase().includes('movie');
+
+                    if (currentServer === '2embed') {
+                        // Primary Server: player.2embed.win (Strictly prefers TMDB)
+                        const targetId = tmdb ? tmdb : imdb;
+                        if (isMovie) {
+                            embedLink = `https://player.2embed.win/vip/movie/${targetId}`;
+                        } else {
+                            embedLink = `https://player.2embed.win/vip/tv/${targetId}-${season}-${ep}`;
+                        }
+                        
+                    } else if (currentServer === 'vsrc') {
+                        // Fallback Server: Vidsrc.fyi 
+                        // Explicitly uses the IMDB path format you verified works!
+                        if (imdb) {
+                            embedLink = isMovie ? `https://vidsrc.fyi/embed/movie/${imdb}` : `https://vidsrc.fyi/embed/tv/${imdb}/${season}/${ep}`;
+                        } else {
+                            // Only if IMDB is missing, it falls back to Vidsrc's TMDB query format
+                            embedLink = isMovie ? `https://vidsrc.fyi/embed/movie?tmdb=${tmdb}` : `https://vidsrc.fyi/embed/tv?tmdb=${tmdb}&season=${season}&episode=${ep}`;
+                        }
+                        
                     } else if (currentServer === 'hindi') {
-                        embedLink = `https://loffe414wil.com/play/${data.imdbId}`;
-                    } else {
-                        embedLink = data.type?.toLowerCase().includes('movie') ? `https://www.2embed.cc/embed/${data.imdbId}` : `https://www.2embed.cc/embedtv/${data.imdbId}&s=${season}&e=${ep}`;
+                        // Hindi Dub Server
+                        const targetId = imdb ? imdb : tmdb;
+                        embedLink = `https://loffe414wil.com/play/${targetId}`;
                     }
+                    
                     videoPlayer.src = embedLink;
                     updateActiveButton();
                     
