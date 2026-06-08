@@ -28,25 +28,32 @@
             .switcher-avatar-img { width: 100px; height: 100px; font-size: 3rem; }
         }
         
-        /* AD CARD STYLES FOR GRIDS */
+        /* PREMIUM LIQUID GLASS AD CARD STYLES FOR GRIDS */
         .ad-card-wrapper {
             position: relative;
-            background: rgba(255,255,255,0.03); 
-            border: 1px solid rgba(138,43,226,0.3);
-            border-radius: 12px;
+            background: rgba(26, 26, 29, 0.45); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 8px;
             display: flex; 
             align-items: center; 
             justify-content: center;
             overflow: hidden;
-            min-height: 200px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            aspect-ratio: 2/3; 
         }
         .ad-card-wrapper::before {
             content: 'Ad';
             position: absolute;
-            top: 2px;
-            left: 5px;
-            font-size: 0.6rem;
-            color: rgba(255,255,255,0.4);
+            top: 6px;
+            left: 8px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.6);
+            background: rgba(0,0,0,0.5);
+            padding: 2px 6px;
+            border-radius: 4px;
             z-index: 10;
         }
     `;
@@ -148,15 +155,32 @@ document.addEventListener('DOMContentLoaded', function () {
             // --- IN-FEED AD INJECTION LOGIC ---
             // Injects specific In-Feed units natively inside the carousel/grid after the 3rd item
             if (index === 2) {
-                if (elementId === 'kdrama-grid') {
+                if (['trending-grid', 'kdrama-grid', 'cdrama-grid', 'jdrama-grid', 'Movie-grid'].includes(elementId)) {
+                    
+                    let adSlot = "8531757983"; 
+                    let layoutKey = "-6t+ed+2i-1n-4w"; 
+                    
+                    // Preserving your existing known specific slots
+                    if (elementId === 'kdrama-grid') {
+                        adSlot = "2322807703"; layoutKey = "+21+s4-18-23+8q";
+                    } else if (elementId === 'jdrama-grid') {
+                        adSlot = "6975017511"; layoutKey = "+2a+rx+1+2-3";
+                    } else if (elementId === 'cdrama-grid') {
+                        adSlot = "[INSERT_CDRAMA_INFEED_ID_HERE]";
+                    } else if (elementId === 'trending-grid') {
+                        adSlot = "[INSERT_TRENDING_INFEED_ID_HERE]";
+                    } else if (elementId === 'Movie-grid') {
+                        adSlot = "[INSERT_MOVIE_INFEED_ID_HERE]";
+                    }
+
                     htmlContent += `
                     <div class="drama-card ad-card-wrapper">
-                        <ins class="adsbygoogle" style="display:block; width:100%; height:100%;" data-ad-format="fluid" data-ad-layout-key="+21+s4-18-23+8q" data-ad-client="ca-pub-3854581977852778" data-ad-slot="2322807703"></ins>
-                    </div>`;
-                } else if (elementId === 'jdrama-grid') {
-                    htmlContent += `
-                    <div class="drama-card ad-card-wrapper">
-                        <ins class="adsbygoogle" style="display:block; width:100%; height:100%;" data-ad-format="fluid" data-ad-layout-key="+2a+rx+1+2-3" data-ad-client="ca-pub-3854581977852778" data-ad-slot="6975017511"></ins>
+                        <ins class="adsbygoogle" 
+                            style="display:block; width:100%; height:100%;" 
+                            data-ad-format="fluid" 
+                            data-ad-layout-key="${layoutKey}" 
+                            data-ad-client="ca-pub-3854581977852778" 
+                            data-ad-slot="${adSlot}"></ins>
                     </div>`;
                 }
             }

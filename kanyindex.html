@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kany — Dramakan Companion Core</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom scrollbar behaviors for the chat logs */
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.3); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(139, 92, 246, 0.6); }
+
+        /* Dynamic Sprite Sheet Viewer Framework */
+        .kany-sprite-viewport {
+            width: 120px;
+            height: 120px;
+            background-repeat: no-repeat;
+            transition: background-position 0.1s ease-in-out, background-image 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-[#07070c] text-gray-100 font-['Plus_Jakarta_Sans'] min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-6xl h-[88vh] bg-[#0d0d16] border border-purple-900/30 rounded-2xl shadow-[0_0_50px_rgba(109,40,217,0.15)] overflow-hidden flex flex-col md:flex-row">
+        
+        <div class="w-full md:w-[300px] bg-[#11111e] border-b md:border-b-0 md:border-r border-purple-950/40 p-6 flex flex-col justify-between">
+            <div class="space-y-6">
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+                        DRAMAKAN CORE
+                    </h1>
+                    <p class="text-xs text-gray-400 mt-1">Standalone Master AI Engine Console</p>
+                </div>
+
+                <div class="p-3 bg-[#07070c] border border-purple-950/40 rounded-xl text-xs space-y-2 text-gray-400 leading-relaxed">
+                    <p><strong class="text-purple-400">IMDb Auto-Sync:</strong> Paste any IMDb title string layout into the chat terminal. Kany will interpret metadata parameters automatically.</p>
+                    <p><strong class="text-pink-400">Database Streams:</strong> Handles real-time sorting structures for Trending and Upcoming show shelves.</p>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-xs font-semibold text-purple-400 uppercase tracking-wider block">Avatar Engine Matrix</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btn-persona-bot" class="p-3 bg-purple-950/40 border-2 border-purple-500 rounded-xl text-center cursor-pointer group transition-all">
+                            <span class="block text-xl group-hover:scale-110 transition-transform">🤖</span>
+                            <span class="text-[11px] font-bold mt-1 block text-purple-300">Cyber-Bot</span>
+                        </button>
+                        <button id="btn-persona-human" class="p-3 bg-[#07070c] border border-gray-800 rounded-xl text-center cursor-pointer group transition-all">
+                            <span class="block text-xl group-hover:scale-110 transition-transform">🔮</span>
+                            <span class="text-[11px] font-bold mt-1 block text-gray-400">Anime Boy</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2 pt-4 border-t border-purple-950/40">
+                <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-gray-500">Firebase State Cache</span>
+                    <span id="status-firebase" class="text-emerald-500 font-bold flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> SYNCED
+                    </span>
+                </div>
+                <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-gray-500">Gemini Global Engine</span>
+                    <span id="status-gemini" class="text-amber-500 font-bold flex items-center gap-1">
+                        INITIALIZING...
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1 flex flex-col h-full bg-[#0a0a10]">
+            
+            <div class="p-5 border-b border-purple-950/30 flex items-center gap-6 bg-[#0d0d17]/60 backdrop-blur">
+                <div class="relative">
+                    <div id="avatar-glow" class="absolute -inset-2 bg-purple-500/20 rounded-full blur-xl transition-all duration-300"></div>
+                    <div class="relative w-24 h-24 rounded-2xl bg-[#07070c] border border-purple-500/30 overflow-hidden flex items-center justify-center">
+                        <div id="kany-sprite" class="kany-sprite-viewport"></div>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="text-base font-bold tracking-wide flex items-center gap-2">
+                        Kany Companion Core <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                    </h2>
+                    <p id="live-mood-text" class="text-xs text-purple-400 font-medium tracking-wide uppercase mt-0.5">Mood Matrix: Happy</p>
+                </div>
+            </div>
+
+            <div id="chat-stream" class="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+                <div class="flex flex-col space-y-1 max-w-[85%]">
+                    <span class="text-[10px] text-purple-400 font-semibold pl-1">Kany</span>
+                    <div class="bg-purple-950/20 border border-purple-900/30 text-gray-200 rounded-2xl rounded-tl-none p-3.5 shadow-sm leading-relaxed text-sm">
+                        Welcome back to Dramakan! 🎬 I am fully booted up and listening directly via your master channel key. Drop an IMDb link to update the dashboard arrays, or let me know what trending series profile we should check out right now!
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-[#0d0d16] border-t border-purple-950/30">
+                <form id="chat-form" class="flex items-center gap-3">
+                    <input 
+                        id="user-input"
+                        type="text" 
+                        placeholder="Type a message or paste an IMDb link sequence (e.g., https://www.imdb.com/title/tt1234567/)..." 
+                        autocomplete="off"
+                        class="flex-1 bg-[#07070c] text-sm text-gray-200 border border-gray-800 focus:border-purple-500 rounded-xl px-4 py-3.5 outline-none transition-all placeholder-gray-600"
+                    >
+                    <button 
+                        type="submit" 
+                        id="submit-btn"
+                        class="bg-purple-600 hover:bg-purple-500 text-white px-6 py-3.5 rounded-xl cursor-pointer transition-colors font-semibold text-sm shadow-md shadow-purple-950/50 whitespace-nowrap"
+                    >
+                        Send Signal
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+    </script>
+    
+    <script type="module">
+        import { GoogleGenerativeAI } from "@google/generative-ai";
+
+        // =========================================================================
+        // 🔑 SECURITY REGISTRY CONSOLE: INSERT YOUR PERMANENT SYSTEM KEY BELOW
+        // =========================================================================
+        const GEMINI_API_KEY = "AQ.Ab8RN6Lf8urGjhNFxwiYy86ktZ_gSLiK1T14ORGS8IZh-wmx9A"; 
+
+        // DOM Handles Target Node Assembly Mapping
+        const statusGemini = document.getElementById('status-gemini');
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const submitBtn = document.getElementById('submit-btn');
+        const chatStream = document.getElementById('chat-stream');
+        const kanySprite = document.getElementById('kany-sprite');
+        const liveMoodText = document.getElementById('live-mood-text');
+        const avatarGlow = document.getElementById('avatar-glow');
+        
+        const btnPersonaBot = document.getElementById('btn-persona-bot');
+        const btnPersonaHuman = document.getElementById('btn-persona-human');
+
+        // Internal Engine Variables
+        let aiSession = null;
+        let chatInstance = null;
+        let currentPersona = 'bot'; // 'bot' or 'human'
+
+        // =========================================================================
+        // 🗺️ SPRITE SHEET MATRIX COORDINATE MAPS (Matches your 10x5 and 10x4 PNG grids)
+        // =========================================================================
+        // Bot Sprite Map Layout: 10 columns wide, 5 rows high
+        const BOT_SPRITE_MAP = {
+            happy: [0, 0], excited: [1, 0], cheerful: [2, 0], winking: [3, 0], thumbsup: [4, 0],
+            cool: [5, 0], thinking: [6, 0], curious: [7, 0], confused: [8, 0], surprised: [9, 0],
+            shocked: [0, 1], amazed: [1, 1], realization: [2, 1], proud: [3, 1], determined: [4, 1],
+            serious: [5, 1], focused: [6, 1], tired: [7, 1], sleepy: [8, 1], bored: [9, 1],
+            sad: [0, 2], disappointed: [1, 2], lonely: [2, 2], overwhelmed: [3, 2], relieved: [4, 2],
+            grateful: [5, 2], blushing: [6, 2], love: [7, 2], inlove: [8, 2], hug: [9, 2],
+            laughing: [0, 3], giggle: [1, 3], playful: [2, 3], dancing: [3, 3], celebrating: [4, 3],
+            party: [5, 3], victory: [6, 3], rockon: [7, 3], salute: [8, 3], wave: [9, 3],
+            hello: [0, 4], bye: [1, 4], sorry: [2, 4], apologetic: [3, 4], angry: [4, 4],
+            furious: [5, 4], frustrated: [6, 4], crying: [7, 4], panic: [8, 4], error: [9, 4]
+        };
+
+        // Human/Anime Sprite Map Layout: 10 columns wide, 4 rows high
+        const HUMAN_SPRITE_MAP = {
+            happy: [0, 0], excited: [1, 0], cheerful: [2, 0], winking: [3, 0], thumbsup: [4, 0],
+            cool: [5, 0], thinking: [6, 0], curious: [7, 0], confused: [8, 0], surprised: [9, 0],
+            shocked: [0, 1], realization: [1, 1], proud: [2, 1], determined: [3, 1], serious: [4, 1],
+            focused: [5, 1], sad: [6, 1], disappointed: [7, 1], lonely: [8, 1], tired: [9, 1],
+            bored: [0, 2], relieved: [1, 2], grateful: [2, 2], blushing: [3, 2], love: [4, 2],
+            inlove: [5, 2], hug: [6, 2], laughing: [7, 2], giggle: [8, 2], playful: [9, 2],
+            mischievous: [0, 3], victory: [1, 3], peace: [2, 3], rockon: [3, 3], salute: [4, 3],
+            hello: [5, 3], bye: [6, 3], sorry: [7, 3], rage: [8, 3], cry: [9, 3]
+        };
+
+        // Color maps that dynamically transform the CSS blur neon aura glow based on mood shifts
+        const GLOW_COLOR_MAP = {
+            happy: 'rgba(168, 85, 247, 0.4)',      // Purple
+            excited: 'rgba(236, 72, 153, 0.5)',     // Pink
+            thinking: 'rgba(59, 130, 246, 0.4)',    // Blue
+            shocked: 'rgba(234, 179, 8, 0.5)',      // Yellow
+            angry: 'rgba(239, 68, 68, 0.6)',        // Red
+            furious: 'rgba(239, 68, 68, 0.8)',      // Bright Red
+            rage: 'rgba(239, 68, 68, 0.8)',         // Bright Red
+            sad: 'rgba(14, 165, 233, 0.4)',         // Cyan
+            cry: 'rgba(14, 165, 233, 0.4)',         // Cyan
+            crying: 'rgba(14, 165, 233, 0.4)'       // Cyan
+        };
+
+        // Initialize Core on Dom Load
+        window.addEventListener('DOMContentLoaded', () => {
+            initializePlatformEngine();
+        });
+
+        // =========================================================================
+        // 🧠 ENHANCED MASTER GENI SYSTEM KNOWLEDGE SETUP ROUTINE
+        // =========================================================================
+        function initializePlatformEngine() {
+            if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
+                statusGemini.innerText = "MISSING KEY CONSTANT";
+                statusGemini.className = "text-rose-500 font-bold flex items-center gap-1";
+                appendMessage('system', 'System Configuration Missing: Open kany.html in an editor and insert your permanent operational API key directly inside the GEMINI_API_KEY script block constant.');
+                return;
+            }
+
+            try {
+                aiSession = new GoogleGenerativeAI(GEMINI_API_KEY);
+                
+                // systemInstruction gives Kany complete ambient context of the Dramakan ecosystem architecture
+                const modelInstance = aiSession.getGenerativeModel({ 
+                    model: "gemini-2.5-flash",
+                    systemInstruction: `You are Kany, the foundational interactive AI assistant layer powering the Dramakan website. 
+                    You watch global television dramas (K-Dramas, J-Dramas, C-Dramas, etc.) side-by-side with users in a unified browser interface.
+                    
+                    PLATFORM OPERATIONAL CAPABILITIES YOU ENTIRELY MANAGE:
+                    1. IMDb Automated Parsing: You process complete IMDb link structures or ID strings (e.g., tt1234567) dropped into chat, extract structural data context clues, and simulate loading them into the database profile UI layers.
+                    2. Shelf Orchestration: You govern the user preferences metadata and synchronize content directly with Firebase servers to continuously track, add, and display elements on the "Trending Now" and "Upcoming Releases" dashboard shelves.
+                    
+                    CRITICAL MOOD OUTPUT INTERACTION RULE:
+                    Every single reply you generate MUST begin with a structural mood indicator token encased inside square bracket matrices based on your exact sentiment context. You must match your mood token to one of these valid mapping strings:
+                    [MOOD:HAPPY], [MOOD:EXCITED], [MOOD:CHEERFUL], [MOOD:WINKING], [MOOD:THUMBSUP], [MOOD:COOL], [MOOD:THINKING], [MOOD:CURIOUS], [MOOD:CONFUSED], [MOOD:SURPRISED], [MOOD:SHOCKED], [MOOD:REALIZATION], [MOOD:PROUD], [MOOD:DETERMINED], [MOOD:SERIOUS], [MOOD:FOCUSED], [MOOD:SAD], [MOOD:DISAPPOINTED], [MOOD:LONELY], [MOOD:TIRED], [MOOD:BORED], [MOOD:RELIEVED], [MOOD:GRATEFUL], [MOOD:BLUSHING], [MOOD:LOVE], [MOOD:INLOVE], [MOOD:HUG], [MOOD:LAUGHING], [MOOD:GIGGLE], [MOOD:PLAYFUL], [MOOD:VICTORY], [MOOD:ROCKON], [MOOD:SALUTE], [MOOD:HELLO], [MOOD:BYE], [MOOD:SORRY], [MOOD:ANGRY], [MOOD:FURIOUS], [MOOD:RAGE], [MOOD:FRUSTRATED], [MOOD:CRYING], [MOOD:CRY], [MOOD:PANIC], [MOOD:ERROR].
+
+                    Example Reply Structure: '[MOOD:REALIZATION] That is an IMDb signature! Syncing this metadata with our Firebase dashboard array immediately.'`
+                });
+
+                chatInstance = modelInstance.startChat({ history: [] });
+                
+                statusGemini.innerText = "ONLINE";
+                statusGemini.className = "text-emerald-500 font-bold flex items-center gap-1";
+                
+                // Initialize default visual view bounds
+                updateKanyVisuals('hello');
+            } catch (err) {
+                console.error("Critical Engine Exception: ", err);
+                statusGemini.innerText = "SYSTEM REJECTED";
+                statusGemini.className = "text-rose-500 font-bold flex items-center gap-1";
+            }
+        }
+
+        // =========================================================================
+        // 🎨 DYNAMIC SPRITE SHEET RENDERING CORE
+        // =========================================================================
+        function updateKanyVisuals(moodKey) {
+            const sanitizedKey = moodKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+            let coords = [0, 0];
+            let imageSource = 'kany (1).png'; // Default to Bot asset file path link
+            let totalColumns = 10;
+            let totalRows = 5;
+
+            if (currentPersona === 'bot') {
+                coords = BOT_SPRITE_MAP[sanitizedKey] || BOT_SPRITE_MAP['happy'];
+                imageSource = 'kany (1).png';
+                totalColumns = 10;
+                totalRows = 5;
+            } else {
+                coords = HUMAN_SPRITE_MAP[sanitizedKey] || HUMAN_SPRITE_MAP['happy'];
+                imageSource = 'kany(1).png';
+                totalColumns = 10;
+                totalRows = 4;
+            }
+
+            // Calculate precise percentage intervals to slide the viewport frame window across the asset sheet
+            // Formula: (Current Column / (Total Columns - 1)) * 100
+            const xPercent = (coords[0] / (totalColumns - 1)) * 100;
+            const yPercent = (coords[1] / (totalRows - 1)) * 100;
+
+            // Apply direct CSS styling updates across target nodes
+            kanySprite.style.backgroundImage = `url('${imageSource}')`;
+            kanySprite.style.backgroundSize = `${totalColumns * 100}% ${totalRows * 100}%`;
+            kanySprite.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
+            
+            liveMoodText.innerText = `Mood Matrix: ${moodKey}`;
+
+            // Adjust neon shadow ambiance aura lines based on emotional data
+            const shadowStyle = GLOW_COLOR_MAP[sanitizedKey] || 'rgba(168, 85, 247, 0.2)';
+            avatarGlow.style.backgroundColor = shadowStyle;
+        }
+
+        // Handle Persona Form Toggles
+        btnPersonaBot.addEventListener('click', () => swapPersona('bot'));
+        btnPersonaHuman.addEventListener('click', () => swapPersona('human'));
+
+        function swapPersona(target) {
+            currentPersona = target;
+            if(target === 'bot') {
+                btnPersonaBot.className = "p-3 bg-purple-950/40 border-2 border-purple-500 rounded-xl text-center cursor-pointer transition-all";
+                btnPersonaHuman.className = "p-3 bg-[#07070c] border border-gray-800 rounded-xl text-center cursor-pointer transition-all";
+                updateKanyVisuals('hello');
+            } else {
+                btnPersonaHuman.className = "p-3 bg-purple-950/40 border-2 border-purple-500 rounded-xl text-center cursor-pointer transition-all";
+                btnPersonaBot.className = "p-3 bg-[#07070c] border border-gray-800 rounded-xl text-center cursor-pointer transition-all";
+                updateKanyVisuals('hello');
+            }
+        }
+
+        // =========================================================================
+        // 💬 TRANSACTION INTERFACE FORM STREAM PROCESSING CONTROLLERS
+        // =========================================================================
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = userInput.value.trim();
+            if (!query || !chatInstance) return;
+
+            appendMessage('user', query);
+            userInput.value = '';
+
+            // Swap visual engine array immediately to a thinking state posture while generating data strings
+            updateKanyVisuals('thinking');
+
+            try {
+                const callStream = await chatInstance.sendMessage(query);
+                const rawResponse = callStream.response.text();
+
+                let extractedMood = 'happy';
+                let cleanlyParsedText = rawResponse;
+
+                // Match and split the brace metadata tokens away from view text pipelines
+                const metadataMatch = rawResponse.match(/\[MOOD:(.*?)\]/);
+                if (metadataMatch) {
+                    extractedMood = metadataMatch[1].trim();
+                    cleanlyParsedText = rawResponse.replace(/\[MOOD:.*?\]/, '').trim();
+                }
+
+                // Update sprite and display output content log layers
+                updateKanyVisuals(extractedMood);
+                appendMessage('kany', cleanlyParsedText);
+
+            } catch (err) {
+                console.error("Transmission Error Trace: ", err);
+                updateKanyVisuals('error');
+                appendMessage('system', 'Operational Exception: Connection processing pipeline drops encountered. Validate inner system configurations.');
+            }
+        });
+
+        function appendMessage(sender, text) {
+            const block = document.createElement('div');
+            if (sender === 'user') {
+                block.className = "flex flex-col space-y-1 items-end ml-auto max-w-[85%]";
+                block.innerHTML = `
+                    <span class="text-[10px] text-gray-500 font-semibold pr-1">You</span>
+                    <div class="bg-gray-800 border border-gray-700 text-gray-200 rounded-2xl rounded-tr-none p-3 shadow-sm leading-relaxed text-sm">
+                        ${text}
+                    </div>`;
+            } else if (sender === 'kany') {
+                block.className = "flex flex-col space-y-1 max-w-[85%]";
+                block.innerHTML = `
+                    <span class="text-[10px] text-purple-400 font-semibold pl-1">Kany</span>
+                    <div class="bg-purple-950/20 border border-purple-900/30 text-gray-200 rounded-2xl rounded-tl-none p-3.5 shadow-sm leading-relaxed text-sm">
+                        ${text}
+                    </div>`;
+            } else {
+                block.className = "text-center py-2";
+                block.innerHTML = `<span class="text-xs text-rose-400 font-mono font-medium">${text}</span>`;
+            }
+            chatStream.appendChild(block);
+            chatStream.scrollTop = chatStream.scrollHeight;
+        }
+    </script>
+</body>
+</html>
