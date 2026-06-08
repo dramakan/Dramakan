@@ -413,27 +413,47 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 /* =====================================================
-   4. PLATFORMS MARQUEE (GLASS PILLS)
+   4. PLATFORMS SECTION (STATIC PREMIUM LOGOS)
 ===================================================== */
-.platforms-section { background: var(--background-color); padding: 30px 0 10px; border-bottom: 1px solid var(--glass-border); position: relative; z-index: 2; margin: 0; }
-.platforms-title { text-align: center; font-size: 0.85rem; color: var(--text-muted-color); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
-.marquee-container { width: 100%; overflow: hidden; white-space: nowrap; position: relative; }
-.marquee-container::before, .marquee-container::after { content: ''; position: absolute; top: 0; width: 100px; height: 100%; z-index: 2; pointer-events: none;}
-.marquee-container::before { left: 0; background: linear-gradient(to right, var(--background-color), transparent); }
-.marquee-container::after { right: 0; background: linear-gradient(to left, var(--background-color), transparent); }
+.platforms-section { background: var(--background-color); padding: 30px 0 35px; border-bottom: 1px solid var(--glass-border); position: relative; z-index: 2; margin: 0; }
+.platforms-title { text-align: center; font-size: 0.85rem; color: var(--text-muted-color); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; }
 
-.marquee-content { display: inline-block; animation: scroll 25s linear infinite; }
-.marquee-content:hover { animation-play-state: paused; }
-@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.platforms-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
 
 .platform-link {
-  display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; margin: 0 8px;
-  background: var(--glass-bg); border-radius: 50px; border: 1px solid var(--glass-border); transition: all 0.3s ease;
+  display: inline-flex; align-items: center; justify-content: center; padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.03); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 50px; border: 1px solid var(--glass-border); 
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
-.platform-link img { height: 22px; width: auto; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.7; transition: all 0.3s ease; }
-:root.light-mode .platform-link img { filter: none; opacity: 0.8; } 
-.platform-link:hover img { filter: brightness(1) invert(0); opacity: 1; transform: scale(1.1); }
 
+.platform-link img { 
+    height: 24px; width: auto; object-fit: contain; 
+    filter: brightness(0) invert(1); opacity: 0.5; 
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); 
+}
+
+:root.light-mode .platform-link img { filter: none; opacity: 0.7; } 
+
+.platform-link:hover { 
+    transform: translateY(-3px); 
+    background: rgba(255, 255, 255, 0.08); 
+    border-color: rgba(138, 43, 226, 0.4); 
+    box-shadow: 0 8px 25px rgba(138, 43, 226, 0.2); 
+}
+
+.platform-link:hover img { 
+    filter: brightness(1) invert(0); 
+    opacity: 1; 
+    transform: scale(1.05); 
+}
 
 /* =====================================================
    5. DRAMA SECTIONS & CARDS (NETFLIX ROUNDED POSTER STYLE)
