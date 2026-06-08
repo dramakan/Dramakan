@@ -82,13 +82,42 @@
         .action-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(138, 43, 226, 0.4); }
         .btn-primary { background: var(--primary); border-color: var(--primary); }
         .btn-primary:hover { background: var(--primary-rich); box-shadow: 0 4px 15px var(--primary-glow); }
+        
+        .btn-favorite-active { background: rgba(255, 71, 87, 0.15); border-color: #ff4757; color: #ff4757; }
+        .btn-favorite-active:hover { background: rgba(255, 71, 87, 0.25); border-color: #ff4757; box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3); }
 
         /* --- VIDEO PLAYER --- */
         .video-player-container {
             position: relative; background: #000; border-radius: 16px; overflow: hidden;
             aspect-ratio: 16/9; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
         }
         .video-player-container iframe { width: 100%; height: 100%; border: none; position: absolute; top:0; left:0; }
+
+        /* Custom Server 1 Fullscreen Button */
+        #custom-fs-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(20, 20, 25, 0.8);
+            color: #fff;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            display: none; /* hidden by default */
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        #custom-fs-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
 
         /* --- SERVERS & QUICK ACTIONS --- */
         .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -114,13 +143,80 @@
         .q-action:hover { color: #fff; }
         .q-action:hover i { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
 
+        /* --- QUICK ACTION SPECIFIC FIXES --- */
+        .q-action.disabled { opacity: 0.3 !important; pointer-events: none !important; }
+
+        #light-off-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 990;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+        }
+        #light-off-overlay.active { opacity: 1; pointer-events: auto; cursor: pointer; }
+        .video-player-container.light-on { z-index: 995; position: relative; box-shadow: 0 0 50px rgba(138, 43, 226, 0.2); }
+
+        .video-player-container.pip-mode {
+            position: fixed; bottom: 80px; right: 20px; width: 350px; height: 197px; 
+            z-index: 2000; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            border: 2px solid var(--primary); animation: popIn 0.3s ease;
+        }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0;} 100% { transform: scale(1); opacity: 1;} }
+
+        /* Report Modal Styles */
+        .drama-modal-overlay {
+            position: fixed; inset: 0; background: rgba(5,5,7,0.85); backdrop-filter: blur(5px);
+            z-index: 9999; display: none; align-items: center; justify-content: center;
+        }
+        .drama-modal-card {
+            background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 20px;
+            padding: 30px; width: 90%; max-width: 450px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .drama-modal-close {
+            position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 1.5rem;
+            color: var(--text-muted); cursor: pointer; transition: 0.3s;
+        }
+        .drama-modal-close:hover { color: #fff; }
+        .drama-input {
+            width: 100%; padding: 12px 15px; border-radius: 10px; background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border); color: #fff; outline: none; margin-bottom: 15px; font-family: inherit;
+        }
+        .drama-input:focus { border-color: var(--primary); }
+        
+        /* Dropdown options so they don't default to a white background */
+        .drama-input option {
+            background-color: var(--bg-panel);
+            color: #fff;
+            padding: 10px;
+        }
+        .drama-submit-btn {
+            width: 100%; padding: 12px; background: var(--primary); border: none; border-radius: 10px;
+            color: #fff; font-weight: 600; cursor: pointer; transition: 0.3s; font-family: inherit; font-size: 0.95rem;
+        }
+        .drama-submit-btn:hover { background: var(--primary-rich); }
+
+        /* --- AD CONTAINERS --- */
+        .ad-wrapper-glass {
+            width: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
+            background: var(--bg-panel);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
         /* --- ABOUT THIS DRAMA --- */
         .about-drama { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; gap: 20px; }
         .about-poster { width: 140px; border-radius: 12px; object-fit: cover; flex-shrink: 0; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .about-info { flex: 1; }
         .about-info h3 { margin: 0 0 10px 0; font-size: 1rem; color: #fff; }
         .about-info p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin: 0 0 15px 0; }
-        .meta-grid { display: grid; grid-template-columns: auto 1fr; gap: x 15px; font-size: 0.85rem; row-gap: 8px; }
+        .meta-grid { display: grid; grid-template-columns: auto 1fr; gap: 15px; font-size: 0.85rem; row-gap: 8px; }
         .meta-label { color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
         .meta-val { color: #fff; font-weight: 500; }
         .tag-pill { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 2px 8px; border-radius: 50px; font-size: 0.75rem; color: var(--text-muted); margin-right: 5px; display: inline-block; }
@@ -158,21 +254,58 @@
         
         @media (max-width: 1024px) {
             .watch-grid { display: flex; flex-direction: column; }
-            .sidebar-column { order: 2; width: 100%; }
-            .controls-grid { grid-template-columns: 1fr; }
-            .about-drama { flex-direction: column; }
+            .main-column { display: contents; }
+            .sidebar-column { display: contents; }
+            
+            .video-player-container { order: 1; }
+            .ad-wrapper-glass { order: 2; width: 100%; overflow: hidden; box-sizing: border-box; }
+            .controls-grid { order: 3; width: 100%; grid-template-columns: 1fr; }
+            
+            .video-player-container.pip-mode { width: 250px; height: 140px; bottom: 85px; right: 10px; }
+
+            /* Vertical Scroll Episodes Below Quick Actions */
+            .sidebar-widget.episodes-widget { 
+                order: 4; 
+                background: var(--bg-panel); 
+                border: 1px solid var(--glass-border); 
+                padding: 20px; 
+                margin-top: 10px; 
+                width: 100%;
+                box-sizing: border-box;
+                border-radius: 16px;
+            }
+            .episodes-timeline { 
+                flex-direction: column; 
+                overflow-y: auto; 
+                overflow-x: hidden; 
+                max-height: 300px; 
+                gap: 10px; 
+                padding-bottom: 0;
+            }
+            .ep-timeline-item { 
+                flex-direction: row; 
+                min-width: 0; 
+                background: transparent; 
+                border: none; 
+                padding: 10px; 
+                justify-content: flex-start; 
+                text-align: left; 
+            }
+            .ep-timeline-item:hover { background: rgba(255,255,255,0.03); }
+            .ep-timeline-item.active { background: rgba(138,43,226,0.1); border: 1px solid rgba(138,43,226,0.3); }
+            .ep-icon { display: flex; } 
+            .ep-duration { display: block; }
+            .ep-info-text h4 { font-size: 0.9rem; font-weight: 500; }
+            
+            .about-drama { order: 5; flex-direction: column; margin-top: 10px; width: 100%; box-sizing: border-box; }
             .about-poster { width: 100%; height: 200px; object-position: top; }
+            
+            .control-panel.comments-widget { order: 6; margin-top: 10px; width: 100%; box-sizing: border-box; }
+            
+            .sidebar-widget:not(.episodes-widget) { order: 7; margin-top: 10px; width: 100%; box-sizing: border-box; }
+            
             .title-actions { width: 100%; justify-content: space-between; }
             .action-btn { flex: 1; justify-content: center; }
-            
-            /* Episodes become horizontal scroll on mobile */
-            .sidebar-widget.episodes-widget { order: -1; background: transparent; border: none; padding: 0; margin-top: 10px; }
-            .episodes-timeline { flex-direction: row; overflow-x: auto; max-height: none; gap: 10px; padding-bottom: 10px; }
-            .ep-timeline-item { flex-direction: column; min-width: 80px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 15px 10px; justify-content: center; text-align: center; }
-            .ep-timeline-item.active { background: rgba(138,43,226,0.15); }
-            .ep-icon { display: none; } /* Hide timeline dots on mobile */
-            .ep-duration { display: none; }
-            .ep-info-text h4 { font-size: 1rem; font-weight: 600; }
         }
 
        /* --- APPLE LIQUID GLASS BOTTOM BAR (Matches Index) --- */
@@ -207,10 +340,11 @@
         @media (min-width: 993px) { .bottom-nav { display: none !important; } }
     </style>
     
-    
     <script src="bottom-bar.js" defer></script>
 </head>
 <body>
+
+    <div id="light-off-overlay"></div>
 
     <div id="page-loader" style="position: fixed; inset: 0; background: var(--bg-base); z-index: 10000; display: flex; justify-content: center; align-items: center; flex-direction: column; color: #fff;">
         <div style="width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.05); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;"></div>
@@ -245,27 +379,29 @@
             </div>
             <div class="title-actions">
                 <button class="action-btn" id="add-to-list-btn"><i class="fas fa-plus"></i> <span>My List</span></button>
-                <button class="action-btn btn-primary"><i class="far fa-heart"></i> <span>Favorite</span></button>
+                <button class="action-btn" id="favorite-btn"><i class="far fa-heart"></i> <span>Favorite</span></button>
             </div>
         </div>
 
         <div class="watch-grid">
             
             <div class="main-column">
-                <div class="video-player-container">
-            <iframe id="video-player-iframe" src="" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="true" frameborder="0" scrolling="no"></iframe>
-        </div>
-<div class="ad-wrapper-glass" style="margin-top: 20px; margin-bottom: 20px; background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px; text-align: center; overflow: hidden; min-height: 100px; display: flex; align-items: center; justify-content: center; position: relative;">
-    <span style="position: absolute; top: 5px; left: 10px; font-size: 0.65rem; color: var(--text-muted); font-weight: 500; letter-spacing: 1px; text-transform: uppercase;">Advertisement</span>
-    
-    <ins class="adsbygoogle"
-         style="display:block; width: 100%; height: auto;"
-         data-ad-client="ca-pub-3854581977852778"
-         data-ad-slot="9077417426" 
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
-</div>
+                <div class="video-player-container" id="video-wrapper">
+                    <iframe id="video-player-iframe" src="" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" referrerpolicy="no-referrer" frameborder="0" scrolling="no"></iframe>
+                    
+                    <button id="custom-fs-btn" title="Fullscreen"><i class="fas fa-expand"></i></button>
+                </div>
+                
+                <div class="ad-wrapper-glass" style="margin-top: 20px; margin-bottom: 20px;">
+                    <span style="position: absolute; top: 5px; left: 10px; font-size: 0.65rem; color: var(--text-muted); font-weight: 500; letter-spacing: 1px; text-transform: uppercase;">Advertisement</span>
+                    <ins class="adsbygoogle"
+                         style="display:block; width: 100%; height: auto;"
+                         data-ad-client="ca-pub-3854581977852778"
+                         data-ad-slot="9077417426" 
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
+                </div>
 
                 <div class="controls-grid">
                     <div class="control-panel">
@@ -279,10 +415,11 @@
                     <div class="control-panel">
                         <h4 class="panel-title"><i class="fas fa-bolt"></i> Quick Actions</h4>
                         <div class="quick-actions">
-                            <button class="q-action"><i class="fas fa-step-forward"></i><span>Auto Next</span></button>
-                            <button class="q-action"><i class="fas fa-moon"></i><span>Light Off</span></button>
-                            <button class="q-action"><i class="fas fa-clone"></i><span>PIP Mode</span></button>
-                            <button class="q-action"><i class="fas fa-exclamation-triangle"></i><span>Report</span></button>
+                            <button class="q-action disabled" id="btn-prev-ep"><i class="fas fa-step-backward"></i><span>Prev</span></button>
+                            <button class="q-action" id="btn-next-ep"><i class="fas fa-step-forward"></i><span>Next</span></button>
+                            <button class="q-action" id="btn-light-off"><i class="fas fa-moon"></i><span>Light Off</span></button>
+                            <button class="q-action" id="btn-pip"><i class="fas fa-clone"></i><span>PIP</span></button>
+                            <button class="q-action" id="btn-report"><i class="fas fa-exclamation-triangle"></i><span>Report</span></button>
                         </div>
                     </div>
                 </div>
@@ -326,17 +463,18 @@
                     <div class="episodes-timeline" id="episodes-list-container">
                         </div>
                 </div>
-<div class="sidebar-widget" style="padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 250px; position: relative;">
-    <span style="position: absolute; top: 5px; left: 10px; font-size: 0.65rem; color: var(--text-muted); font-weight: 500; letter-spacing: 1px; text-transform: uppercase;">Advertisement</span>
-    
-    <ins class="adsbygoogle"
-         style="display:block; width: 100%;"
-         data-ad-client="ca-pub-3854581977852778"
-         data-ad-slot="6215450369"
-         data-ad-format="rectangle"
-         data-full-width-responsive="true"></ins>
-    <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
-</div>
+                
+                <div class="sidebar-widget" style="padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 250px; position: relative;">
+                    <span style="position: absolute; top: 5px; left: 10px; font-size: 0.65rem; color: var(--text-muted); font-weight: 500; letter-spacing: 1px; text-transform: uppercase;">Advertisement</span>
+                    <ins class="adsbygoogle"
+                         style="display:block; width: 100%;"
+                         data-ad-client="ca-pub-3854581977852778"
+                         data-ad-slot="6215450369"
+                         data-ad-format="rectangle"
+                         data-full-width-responsive="true"></ins>
+                    <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
+                </div>
+                
                 <div class="sidebar-widget">
                     <h3 class="sidebar-title">You Might Like</h3>
                     <div class="rec-list" id="ui-recs">
@@ -347,6 +485,29 @@
             
         </div>
     </main>
+
+    <div id="reportModal" class="drama-modal-overlay">
+        <div class="drama-modal-card">
+            <button class="drama-modal-close" id="closeReportModal">&times;</button>
+            <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 1.2rem; color: #fff; margin-bottom: 5px;">Report Broken Link</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Is the video not playing or subtitle missing? Let us know.</p>
+            </div>
+            <form id="reportForm">
+                <select id="reportIssue" class="drama-input" required>
+                    <option value="" disabled selected>Select an issue...</option>
+                    <option value="Video not playing">Video not playing</option>
+                    <option value="Wrong episode/drama">Wrong episode/drama</option>
+                    <option value="Subtitles missing or out of sync">Subtitles missing or out of sync</option>
+                    <option value="Audio missing">Audio missing</option>
+                    <option value="Other">Other</option>
+                </select>
+                <textarea id="reportDetails" class="drama-input" rows="3" placeholder="Additional details (optional)..." style="resize: none;"></textarea>
+                <button type="submit" class="drama-submit-btn" id="reportSubmitBtn">Send Report</button>
+            </form>
+            <div id="reportStatusMessage" style="margin-top: 15px; font-size: 0.85rem; display: none;"></div>
+        </div>
+    </div>
 
    <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item">
@@ -369,7 +530,8 @@
 
    <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, doc, getDoc, collection, getDocs, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    // NOTE: Added updateDoc to imports
+    import { getFirestore, doc, getDoc, collection, getDocs, addDoc, serverTimestamp, query, orderBy, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
     // --- FIREBASE CONFIGURATION ---
@@ -463,6 +625,105 @@
                 loadRecommendations(dramaId);
                 initCommentSystem(dramaId); 
 
+                // --- WATCHLIST / MY LIST LOGIC ---
+                const addToListBtn = document.getElementById('add-to-list-btn');
+                let watchlistObj = JSON.parse(localStorage.getItem('dramakan_watchlist')) || {};
+                let profileMyList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
+
+                const updateWatchlistUI = () => {
+                    const inList = profileMyList.some(item => String(item.id) === String(dramaId));
+                    if (inList) {
+                        addToListBtn.innerHTML = '<i class="fas fa-check"></i> <span>In List</span>';
+                        addToListBtn.classList.add('btn-primary');
+                    } else {
+                        addToListBtn.innerHTML = '<i class="fas fa-plus"></i> <span>My List</span>';
+                        addToListBtn.classList.remove('btn-primary');
+                    }
+                };
+
+                addToListBtn.addEventListener('click', () => {
+                    let inListIdx = profileMyList.findIndex(item => String(item.id) === String(dramaId));
+                    if (inListIdx > -1) {
+                        profileMyList.splice(inListIdx, 1);
+                        delete watchlistObj[dramaId];
+                    } else {
+                        const itemData = {
+                            id: dramaId,
+                            title: data.title || data.dramaName,
+                            img: data.img,
+                            link: `watch.html?id=${dramaId}`,
+                            timestamp: Date.now()
+                        };
+                        profileMyList.push(itemData);
+                        watchlistObj[dramaId] = itemData;
+                    }
+                    localStorage.setItem('dramakan_mylist', JSON.stringify(profileMyList));
+                    localStorage.setItem('dramakan_watchlist', JSON.stringify(watchlistObj));
+                    updateWatchlistUI();
+                });
+                
+                updateWatchlistUI();
+
+                // --- ADD TO FAVORITES LOGIC ---
+                const favoriteBtn = document.getElementById('favorite-btn');
+                let profileFavorites = JSON.parse(localStorage.getItem('dramakan_favorites')) || [];
+
+                const updateFavoriteUI = () => {
+                    const isFav = profileFavorites.some(item => String(item.id) === String(dramaId));
+                    if (isFav) {
+                        favoriteBtn.innerHTML = '<i class="fas fa-heart"></i> <span>Favorited</span>';
+                        favoriteBtn.classList.add('btn-favorite-active');
+                    } else {
+                        favoriteBtn.innerHTML = '<i class="far fa-heart"></i> <span>Favorite</span>';
+                        favoriteBtn.classList.remove('btn-favorite-active');
+                    }
+                };
+
+                favoriteBtn.addEventListener('click', async () => {
+                    let inFavIdx = profileFavorites.findIndex(item => String(item.id) === String(dramaId));
+                    if (inFavIdx > -1) {
+                        profileFavorites.splice(inFavIdx, 1);
+                    } else {
+                        const itemData = {
+                            id: dramaId,
+                            title: data.title || data.dramaName,
+                            img: data.img,
+                            link: `watch.html?id=${dramaId}`,
+                            timestamp: Date.now()
+                        };
+                        profileFavorites.push(itemData);
+                    }
+                    
+                    // Save to local storage for profile page fallback
+                    localStorage.setItem('dramakan_favorites', JSON.stringify(profileFavorites));
+                    updateFavoriteUI();
+
+                    // If user is logged in, sync to Firebase profile
+                    if (currentUser) {
+                        try {
+                            const userDocRef = doc(db, "users", currentUser.uid);
+                            const userSnap = await getDoc(userDocRef);
+                            if (userSnap.exists()) {
+                                let userData = userSnap.data();
+                                if (userData.profiles && userData.profiles.length > 0) {
+                                    // Find current active profile
+                                    let activeProfileId = localStorage.getItem('dramakan_active_profile_id');
+                                    let pIndex = userData.profiles.findIndex(p => p.id === activeProfileId);
+                                    if (pIndex === -1) pIndex = 0; 
+                                    
+                                    // Update the favorites array for that specific profile
+                                    userData.profiles[pIndex].favorites = profileFavorites;
+                                    await updateDoc(userDocRef, { profiles: userData.profiles });
+                                }
+                            }
+                        } catch (err) {
+                            console.error("Error syncing favorites to Firebase:", err);
+                        }
+                    }
+                });
+
+                updateFavoriteUI();
+
                 // --- EPISODES SETUP & UI RULES ---
                 let seasonsArr = data.seasons || [data.totalEps || 1];
                 window.currentSeason = 1;
@@ -496,6 +757,24 @@
                     updateActiveButton();
                 }
 
+                function updateQuickActionStates() {
+                    const btnPrev = document.getElementById('btn-prev-ep');
+                    const btnNext = document.getElementById('btn-next-ep');
+                    const epsInSeason = seasonsArr[window.currentSeason - 1] || 1;
+
+                    if (window.currentEpisode <= 1) {
+                        btnPrev.classList.add('disabled');
+                    } else {
+                        btnPrev.classList.remove('disabled');
+                    }
+
+                    if (window.currentEpisode >= epsInSeason) {
+                        btnNext.classList.add('disabled');
+                    } else {
+                        btnNext.classList.remove('disabled');
+                    }
+                }
+
                 function updateActiveButton() {
                     document.querySelectorAll('.ep-timeline-item').forEach((item) => {
                         const isMatch = parseInt(item.dataset.season) === window.currentSeason && item.getAttribute('data-index') === `${window.currentSeason}-${window.currentEpisode}`;
@@ -506,6 +785,7 @@
                 }
 
                 const videoPlayer = document.getElementById('video-player-iframe');
+                const fsBtn = document.getElementById('custom-fs-btn');
 
                window.loadEpisode = async function(season, ep) {
                     window.currentSeason = parseInt(season);
@@ -520,7 +800,9 @@
                     const isMovie = data.type?.toLowerCase().includes('movie');
 
                     if (currentServer === '2embed') {
-                        // Primary Server: player.2embed.win (Strictly prefers TMDB)
+                        // SHOW FULLSCREEN OVERLAY ONLY FOR SERVER 1
+                        fsBtn.style.display = 'flex';
+                        
                         const targetId = tmdb ? tmdb : imdb;
                         if (isMovie) {
                             embedLink = `https://player.2embed.win/vip/movie/${targetId}`;
@@ -529,28 +811,175 @@
                         }
                         
                     } else if (currentServer === 'vsrc') {
-                        // Fallback Server: Vidsrc.fyi 
-                        // Explicitly uses the IMDB path format you verified works!
+                        fsBtn.style.display = 'none'; // HIDE ON OTHER SERVERS
                         if (imdb) {
                             embedLink = isMovie ? `https://vidsrc.fyi/embed/movie/${imdb}` : `https://vidsrc.fyi/embed/tv/${imdb}/${season}/${ep}`;
                         } else {
-                            // Only if IMDB is missing, it falls back to Vidsrc's TMDB query format
                             embedLink = isMovie ? `https://vidsrc.fyi/embed/movie?tmdb=${tmdb}` : `https://vidsrc.fyi/embed/tv?tmdb=${tmdb}&season=${season}&episode=${ep}`;
                         }
                         
                     } else if (currentServer === 'hindi') {
-                        // Hindi Dub Server
+                        fsBtn.style.display = 'none'; // HIDE ON OTHER SERVERS
                         const targetId = imdb ? imdb : tmdb;
                         embedLink = `https://loffe414wil.com/play/${targetId}`;
                     }
                     
                     videoPlayer.src = embedLink;
                     updateActiveButton();
+                    updateQuickActionStates();
                     
                     localStorage.setItem(`dramakan_ep_${dramaId}`, `${season}-${ep}`);
+                    
+                    // SAVE CONTINUE WATCHING HISTORY
+                    const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                    historyObj[dramaId] = {
+                        title: data.title || data.dramaName,
+                        img: data.img,
+                        link: `watch.html?id=${dramaId}`,
+                        timestamp: Date.now(),
+                        season: season,
+                        episode: ep
+                    };
+                    localStorage.setItem('dramakan_history', JSON.stringify(historyObj));
+                    window.dispatchEvent(new Event('historySynced'));
                 }
 
                 renderEpisodeGrid(1);
+
+                // --- NEXT / PREV BUTTON LOGIC ---
+                document.getElementById('btn-prev-ep').addEventListener('click', () => {
+                    if (window.currentEpisode > 1) {
+                        window.loadEpisode(window.currentSeason, window.currentEpisode - 1);
+                    }
+                });
+
+                document.getElementById('btn-next-ep').addEventListener('click', () => {
+                    const epsInSeason = seasonsArr[window.currentSeason - 1];
+                    if (window.currentEpisode < epsInSeason) {
+                        window.loadEpisode(window.currentSeason, window.currentEpisode + 1);
+                    }
+                });
+
+                // --- NEW: SERVER 1 FULLSCREEN LOGIC ---
+                const videoWrapper = document.getElementById('video-wrapper');
+                
+                fsBtn.addEventListener('click', () => {
+                    if (!document.fullscreenElement) {
+                        if (videoWrapper.requestFullscreen) videoWrapper.requestFullscreen();
+                        else if (videoWrapper.webkitRequestFullscreen) videoWrapper.webkitRequestFullscreen();
+                        else if (videoWrapper.msRequestFullscreen) videoWrapper.msRequestFullscreen();
+                    } else {
+                        if (document.exitFullscreen) document.exitFullscreen();
+                        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                        else if (document.msExitFullscreen) document.msExitFullscreen();
+                    }
+                });
+
+                document.addEventListener('fullscreenchange', () => {
+                    if (document.fullscreenElement) {
+                        fsBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                    } else {
+                        fsBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                    }
+                });
+
+                // --- LIGHT OFF LOGIC ---
+                const lightOffBtn = document.getElementById('btn-light-off');
+                const lightOffOverlay = document.getElementById('light-off-overlay');
+                const playerContainer = document.querySelector('.video-player-container');
+                
+                const toggleLights = () => {
+                    const isActive = lightOffOverlay.classList.contains('active');
+                    if (isActive) {
+                        lightOffOverlay.classList.remove('active');
+                        playerContainer.classList.remove('light-on');
+                        lightOffBtn.innerHTML = '<i class="fas fa-moon"></i><span>Light Off</span>';
+                        lightOffBtn.style.color = "";
+                    } else {
+                        lightOffOverlay.classList.add('active');
+                        playerContainer.classList.add('light-on');
+                        lightOffBtn.innerHTML = '<i class="fas fa-sun"></i><span>Light On</span>';
+                        lightOffBtn.style.color = "#f1c40f";
+                    }
+                };
+                lightOffBtn.addEventListener('click', toggleLights);
+                lightOffOverlay.addEventListener('click', toggleLights);
+
+                // --- PIP (FLOATING PLAYER) LOGIC ---
+                const pipBtn = document.getElementById('btn-pip');
+                pipBtn.addEventListener('click', () => {
+                    playerContainer.classList.toggle('pip-mode');
+                    if (playerContainer.classList.contains('pip-mode')) {
+                        pipBtn.style.color = "var(--primary)";
+                    } else {
+                        pipBtn.style.color = "";
+                    }
+                });
+
+                // --- REPORT BUG LOGIC ---
+                const reportBtn = document.getElementById('btn-report');
+                const reportModal = document.getElementById('reportModal');
+                const closeReportModal = document.getElementById('closeReportModal');
+                const reportForm = document.getElementById('reportForm');
+
+                reportBtn.addEventListener('click', () => {
+                    if (!currentUser) {
+                        alert("Please log in to report an issue.");
+                        return;
+                    }
+                    reportModal.style.display = 'flex';
+                });
+
+                closeReportModal.addEventListener('click', () => {
+                    reportModal.style.display = 'none';
+                });
+
+                reportForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const submitBtn = document.getElementById('reportSubmitBtn');
+                    const statusMsg = document.getElementById('reportStatusMessage');
+                    const issueType = document.getElementById('reportIssue').value;
+                    const details = document.getElementById('reportDetails').value.trim();
+
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                    submitBtn.disabled = true;
+
+                    try {
+                        await addDoc(collection(db, "reports"), {
+                            userId: currentUser.uid,
+                            userEmail: currentUser.email || "No email",
+                            username: currentUser.displayName || "User",
+                            dramaId: dramaId,
+                            dramaName: data.title || data.dramaName,
+                            season: window.currentSeason,
+                            episode: window.currentEpisode,
+                            issue: issueType,
+                            details: details,
+                            server: currentServer,
+                            timestamp: serverTimestamp(),
+                            status: "Pending"
+                        });
+
+                        statusMsg.style.display = "block";
+                        statusMsg.style.color = "#10b981";
+                        statusMsg.innerHTML = "<i class='fas fa-check-circle'></i> Report sent successfully! We'll fix it ASAP.";
+                        reportForm.reset();
+                        
+                        setTimeout(() => {
+                            reportModal.style.display = 'none';
+                            statusMsg.style.display = 'none';
+                        }, 2500);
+
+                    } catch (err) {
+                        statusMsg.style.display = "block";
+                        statusMsg.style.color = "#ef4444";
+                        statusMsg.innerHTML = "<i class='fas fa-exclamation-circle'></i> Error: " + err.message;
+                    } finally {
+                        submitBtn.innerHTML = "Send Report";
+                        submitBtn.disabled = false;
+                    }
+                });
+
 
                 setTimeout(() => {
                     const savedEpRaw = localStorage.getItem(`dramakan_ep_${dramaId}`);
