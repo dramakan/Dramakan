@@ -411,19 +411,30 @@ img { max-width: 100%; height: auto; display: block; }
       box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4), inset 0 0 10px rgba(255,255,255,0.1);
   }
 }
-
 /* =====================================================
-   4. PLATFORMS SECTION (STATIC PREMIUM LOGOS)
+   4. PLATFORMS SECTION (PC GRID & MOBILE MARQUEE)
 ===================================================== */
 .platforms-section { background: var(--background-color); padding: 30px 0 35px; border-bottom: 1px solid var(--glass-border); position: relative; z-index: 2; margin: 0; }
 .platforms-title { text-align: center; font-size: 0.85rem; color: var(--text-muted-color); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; }
 
-.platforms-grid {
+/* Wrapper ensures nothing spills out */
+.platforms-marquee-wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Default PC View: Static Grid */
+.platforms-marquee-track {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     gap: 15px;
+}
+
+/* Hide the duplicate logos on PC to keep the grid clean */
+@media (min-width: 769px) {
+    .platforms-marquee-track .platform-link[aria-hidden="true"] { display: none; }
 }
 
 .platform-link {
@@ -432,6 +443,7 @@ img { max-width: 100%; height: auto; display: block; }
   border-radius: 50px; border: 1px solid var(--glass-border); 
   transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  flex-shrink: 0;
 }
 
 .platform-link img { 
@@ -450,9 +462,42 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .platform-link:hover img { 
-    filter: brightness(1) invert(0); 
-    opacity: 1; 
-    transform: scale(1.05); 
+    filter: brightness(1) invert(0); opacity: 1; transform: scale(1.05); 
+}
+
+/* --- Mobile View: Sliding Marquee --- */
+@media (max-width: 768px) {
+    .platforms-section { padding: 20px 0 25px; overflow: hidden; }
+    .platforms-title { margin-bottom: 15px; font-size: 0.75rem; }
+    
+    /* Adds a premium fade effect to the edges of the screen on mobile */
+    .platforms-marquee-wrapper {
+        -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    }
+
+    .platforms-marquee-track {
+        flex-wrap: nowrap; /* Force single row */
+        justify-content: flex-start;
+        width: max-content; /* Allow the track to be wider than the screen */
+        gap: 10px;
+        animation: slideMarquee 20s linear infinite; /* Smooth, CSS-only slide */
+    }
+
+    /* Pause animation if the user touches/holds a pill */
+    .platforms-marquee-wrapper:hover .platforms-marquee-track,
+    .platforms-marquee-wrapper:active .platforms-marquee-track {
+        animation-play-state: paused;
+    }
+
+    .platform-link { padding: 8px 16px; }
+    .platform-link img { height: 18px; }
+}
+
+/* Perfect 50% slide animation because we duplicated the items */
+@keyframes slideMarquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-50% - 5px)); } 
 }
 
 /* =====================================================
@@ -661,12 +706,9 @@ img { max-width: 100%; height: auto; display: block; }
   
   .hero-content { padding-bottom: 20px; }
   
-  /* Hero Graphic increased significantly for mobile pop */
+  /* Hide Hero Graphic in mobile view */
   .hero-title-graphic-img { 
-      max-width: 340px; 
-      height: 95px;
-      margin: 0 auto 15px auto; 
-      object-position: center bottom;
+      display: none !important;
   }
   
   .hero-actions { 
