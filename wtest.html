@@ -640,10 +640,10 @@
 
     let currentServer = '2embed'; 
     let currentUser = null;
-    let seasonsArr = [1]; // Global season array to hold eps per season
-    let activeImdbId = null; // Global for easy access across functions
+    let seasonsArr = [1]; 
+    let activeImdbId = null; 
     let activeTmdbId = null;
-    let activeData = null; // Global reference to the fully built data object
+    let activeData = null; 
 
     const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
 
@@ -653,7 +653,6 @@
 
         if (!dramaId) { window.location.replace('index.html'); return; }
 
-        // --- AUTHENTICATION STATE ---
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
             const avatarImg = document.getElementById('current-user-avatar');
@@ -664,7 +663,6 @@
             }
         });
 
-        // --- SERVER SELECTION ---
         const serverBtns = document.querySelectorAll('.server-btn');
         serverBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -677,7 +675,6 @@
             });
         });
 
-        // --- MOBILE PLAY BUTTON SCROLL ---
         const mobilePlayBtn = document.getElementById('mobile-play-btn');
         if (mobilePlayBtn) {
             mobilePlayBtn.addEventListener('click', () => {
@@ -687,7 +684,7 @@
 
         try {
             // =========================================================
-            // 1. FETCH FIREBASE DOC FOR IDs ONLY
+            // 1. FETCH FIREBASE DOC FOR IDs
             // =========================================================
             const docSnap = await getDoc(doc(db, "dramas", dramaId));
             if (!docSnap.exists()) {
@@ -704,77 +701,99 @@
                 return;
             }
 
-            // Create our base data object that we'll populate entirely from the 2embed API
-            activeData = { id: dramaId };
+            // Ensure IMDb ID uses standard "tt" prefix format
+            if (!activeImdbId.toString().startsWith('tt')) {
+                activeImdbId = 'tt' + activeImdbId;
+            }
 
             // =========================================================
-            // 2. FETCH DETAILS AND SIMILAR DATA CONCURRENTLY FROM 2EMBED
+            // 2. INITIALIZE SAFE FALLBACK DATA (Prevents any crashing)
             // =========================================================
+            activeData = {
+                id: dramaId,
+                title: firebaseData.title || firebaseData.dramaName || "Unknown Title",
+                synopsis: firebaseData.synopsis || "No synopsis available.",
+                img: firebaseData.img || "default-poster.jpg",
+                year: firebaseData.year || "Unknown",
+                status: firebaseData.status || "Ongoing",
+                genre: firebaseData.genre || "Drama",
+                totalEps: firebaseData.totalEps || 1,
+                seasons: firebaseData.seasons || [firebaseData.totalEps || 1],
+                actors: firebaseData.actors || [],
+                director: firebaseData.director || "Unknown",
+                type: firebaseData.type || "tv",
+                similar: []
+            };
+
+            // =========================================================
+            // 3. FETCH DETAILS & SIMILAR INDEPENDENTLY 
+            // =========================================================
+            
+            // 3A. Main Details Fetch
             try {
-                const [tmdbRes, simRes] = await Promise.all([
-                    fetch(`https://api.2embed.cc/tv?imdb_id=${activeImdbId}`),
-                    fetch(`https://api.2embed.cc/similartv?imdb_id=${activeImdbId}&page=1`)
-                ]);
-
+                const tmdbRes = await fetch(`https://api.2embed.cc/tv?imdb_id=${activeImdbId}`);
                 if (tmdbRes.ok) {
                     const tmdbData = await tmdbRes.json();
                     
-                    activeData.title = tmdbData.name || tmdbData.title || "Unknown Title";
-                    activeData.synopsis = tmdbData.overview || "No synopsis available.";
-                    activeData.img = tmdbData.poster_path ? `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}` : 'default-poster.jpg';
-                    activeData.year = tmdbData.first_air_date ? tmdbData.first_air_date.substring(0, 4) : 'Unknown';
-                    activeData.status = tmdbData.status || "Ongoing";
+                    if (tmdbData.name || tmdbData.title) activeData.title = tmdbData.name || tmdbData.title;
+                    if (tmdbData.overview) activeData.synopsis = tmdbData.overview;
                     
-                    // Genres Array -> String
-                    if (tmdbData.genres && tmdbData.genres.length > 0) {
-                        activeData.genre = tmdbData.genres.map(g => g.name).join(', ');
-                    } else {
-                        activeData.genre = 'Drama';
+                    // JSON response gives direct link via 'poster' (not poster_path)
+                    if (tmdbData.poster) activeData.img = tmdbData.poster;
+                    
+                    if (tmdbData.first_air_date) activeData.year = tmdbData.first_air_date.substring(0, 4);
+                    if (tmdbData.status) activeData.status = tmdbData.status;
+                    
+                    // Genres is an array of strings in the 2embed API: ["Drama", "Romance"]
+                    if (tmdbData.genres && Array.isArray(tmdbData.genres)) {
+                        activeData.genre = tmdbData.genres.join(', ');
                     }
                     
-                    activeData.totalEps = tmdbData.number_of_episodes || 1;
-                    
-                    // Seasons Map
-                    if (tmdbData.seasons && tmdbData.seasons.length > 0) {
+                    if (tmdbData.seasons && Array.isArray(tmdbData.seasons)) {
                         const actualSeasons = tmdbData.seasons.filter(s => s.season_number > 0);
                         if (actualSeasons.length > 0) {
-                            activeData.seasons = actualSeasons.map(s => s.episode_count);
+                            activeData.seasons = actualSeasons.map(s => s.episode_count || 1);
+                            activeData.totalEps = activeData.seasons.reduce((a, b) => a + b, 0);
                         }
+                    } else if (tmdbData.number_of_episodes) {
+                        activeData.totalEps = tmdbData.number_of_episodes;
                     }
 
-                    // Cast and Crew (Full mapping without limits)
-                    let castList = [];
-                    if (tmdbData.credits && tmdbData.credits.cast) {
-                        castList = tmdbData.credits.cast.map(c => c.name);
-                    } else if (tmdbData.cast) {
-                        castList = tmdbData.cast.map(c => c.name || c);
+                    // Cast mapping directly from array of objects
+                    if (tmdbData.cast && Array.isArray(tmdbData.cast)) {
+                        activeData.actors = tmdbData.cast.map(c => c.name);
                     }
-                    activeData.actors = castList;
 
-                    let directors = [];
-                    if (tmdbData.credits && tmdbData.credits.crew) {
-                        directors = tmdbData.credits.crew.filter(c => c.job === 'Director' || c.department === 'Directing').map(c => c.name);
-                    } else if (tmdbData.crew) {
-                        directors = tmdbData.crew.filter(c => c.job === 'Director' || c.department === 'Directing').map(c => c.name || c);
+                    // Directors mapping from crew
+                    if (tmdbData.crew && Array.isArray(tmdbData.crew)) {
+                        const directors = tmdbData.crew.filter(c => c.job === 'Director' || c.department === 'Directing').map(c => c.name);
+                        if (directors.length > 0) activeData.director = directors.join(', ');
                     }
-                    activeData.director = directors.length ? directors.join(', ') : 'Unknown';
 
-                    // Internal type check for stream routing
-                    activeData.type = tmdbData.number_of_seasons ? "tv" : "movie"; 
+                    if (tmdbData.number_of_seasons !== undefined) activeData.type = tmdbData.number_of_seasons ? "tv" : "movie"; 
                 }
+            } catch (err) {
+                console.warn("Could not fetch 2embed TV details API data.", err);
+            }
 
-                // Process Similar Data for Recommendations sidebar
+            // 3B. Similar TV Fetch (Does not crash main layout if it fails)
+            try {
+                const simRes = await fetch(`https://api.2embed.cc/similartv?imdb_id=${activeImdbId}&page=1`);
                 if (simRes.ok) {
                     const simData = await simRes.json();
                     activeData.similar = simData.results || simData || [];
                 }
-
             } catch (err) {
-                console.error("Failed to fetch extended TV data from 2embed API:", err);
+                console.warn("Could not fetch 2embed Similar API data.", err);
+            }
+
+            // Ensure genre is a string fallback to prevent any remaining split crashes
+            if (typeof activeData.genre !== 'string') {
+                activeData.genre = "Drama";
             }
 
             // =========================================================
-            // 3. POPULATE UI & SEO WITH NEW API DATA
+            // 4. POPULATE UI & SEO 
             // =========================================================
             
             updateSEO(activeData, dramaId);
@@ -787,12 +806,11 @@
             document.getElementById('ui-status').textContent = activeData.status;
             document.getElementById('ui-genre').textContent = activeData.genre;
             document.getElementById('ui-year').textContent = activeData.year;
-            document.getElementById('ui-country').textContent = activeData.country || "Asia"; // Using static Asia if api doesn't yield specific origin countries cleanly
+            document.getElementById('ui-country').textContent = activeData.country || "Asia"; 
             
             document.getElementById('ui-director').textContent = activeData.director || "Unknown";
             
             if (activeData.actors && activeData.actors.length > 0) {
-                // UI limit removed, injecting full joined string (CSS auto-scroll handles height overflow)
                 document.getElementById('ui-cast').textContent = activeData.actors.join(', ');
             } else {
                 document.getElementById('ui-cast').textContent = "Unknown";
@@ -830,7 +848,7 @@
                         id: dramaId,
                         title: activeData.title,
                         img: activeData.img,
-                        link: `watch.html?id=${dramaId}`,
+                        link: `wtest.html?id=${dramaId}`,
                         timestamp: Date.now()
                     };
                     profileMyList.push(itemData);
@@ -867,7 +885,7 @@
                         id: dramaId,
                         title: activeData.title,
                         img: activeData.img,
-                        link: `watch.html?id=${dramaId}`,
+                        link: `wtest.html?id=${dramaId}`,
                         timestamp: Date.now()
                     };
                     profileFavorites.push(itemData);
@@ -932,7 +950,7 @@
                             if (seasonDetails.episodes) {
                                 episodesData = seasonDetails.episodes;
                                 epsInThisSeason = episodesData.length;
-                                seasonsArr[window.currentSeason - 1] = epsInThisSeason; // Keep accurate length
+                                seasonsArr[window.currentSeason - 1] = epsInThisSeason; 
                             }
                         }
                     } catch(err) {
@@ -1000,7 +1018,6 @@
                 
                 const isMovie = activeData.type?.toLowerCase().includes('movie');
 
-                // FULLSCREEN BUTTON ALWAYS VISIBLE
                 fsBtn.style.display = 'flex';
 
                 if (currentServer === '2embed') {
@@ -1029,12 +1046,11 @@
                 
                 localStorage.setItem(`dramakan_ep_${dramaId}`, `${season}-${ep}`);
                 
-                // SAVE CONTINUE WATCHING HISTORY
                 const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
                 historyObj[dramaId] = {
                     title: activeData.title,
                     img: activeData.img,
-                    link: `watch.html?id=${dramaId}`,
+                    link: `wtest.html?id=${dramaId}`,
                     timestamp: Date.now(),
                     season: season,
                     episode: ep
@@ -1042,14 +1058,11 @@
                 localStorage.setItem('dramakan_history', JSON.stringify(historyObj));
                 window.dispatchEvent(new Event('historySynced'));
 
-                // Keep SEO/meta/JSON-LD in sync with the currently playing episode
                 updateSEO(activeData, dramaId, season, ep);
             }
 
-            // Initial episode render mapping
             await window.renderEpisodeGrid(1);
 
-            // --- NEXT / PREV BUTTON LOGIC ---
             document.getElementById('btn-prev-ep').addEventListener('click', () => {
                 if (window.currentEpisode > 1) {
                     window.loadEpisode(window.currentSeason, window.currentEpisode - 1);
@@ -1063,7 +1076,6 @@
                 }
             });
 
-            // --- SERVER 1 FULLSCREEN LOGIC ---
             const videoWrapper = document.getElementById('video-wrapper');
             
             fsBtn.addEventListener('click', () => {
@@ -1086,7 +1098,6 @@
                 }
             });
 
-            // --- SHARE LOGIC ---
             const shareBtn = document.getElementById('btn-share');
             const playerContainer = document.querySelector('.video-player-container');
 
@@ -1179,7 +1190,6 @@
                 });
             });
 
-            // --- PIP (FLOATING PLAYER) LOGIC ---
             const pipBtn = document.getElementById('btn-pip');
             pipBtn.addEventListener('click', () => {
                 playerContainer.classList.toggle('pip-mode');
@@ -1190,7 +1200,6 @@
                 }
             });
 
-            // --- REPORT BUG LOGIC ---
             const reportBtn = document.getElementById('btn-report');
             const reportModal = document.getElementById('reportModal');
             const closeReportModal = document.getElementById('closeReportModal');
@@ -1349,15 +1358,21 @@
         if (similarItems && similarItems.length > 0) {
             const resultsArray = similarItems.slice(0, 4);
             recsContainer.innerHTML = resultsArray.map(rec => {
-                const poster = rec.poster_path ? `https://image.tmdb.org/t/p/w200${rec.poster_path}` : 'default-poster.jpg';
+                // If the poster is a direct URL like in the TV endpoint, use it directly.
+                // Otherwise append TMDB path if it's a relative path.
+                let poster = 'default-poster.jpg';
+                if (rec.poster) {
+                    poster = rec.poster;
+                } else if (rec.poster_path) {
+                    poster = `https://image.tmdb.org/t/p/w200${rec.poster_path}`;
+                }
+                
                 const title = rec.name || rec.title || "Unknown";
                 const year = rec.first_air_date ? rec.first_air_date.substring(0, 4) : '';
                 const rating = rec.vote_average ? rec.vote_average.toFixed(1) : 'N/A';
                 
-                // Routes to the watch page with the TMDB id for the similar item. 
-                // Assumes your index/app handles standard tmdb ids too.
                 return `
-                <a href="watch.html?id=${rec.id}" class="rec-card">
+                <a href="wtest.html?id=${rec.id}" class="rec-card">
                     <img src="${poster}" alt="Poster" onerror="this.src='default-poster.jpg'">
                     <div class="rec-info">
                         <h4>${title}</h4>
@@ -1395,7 +1410,6 @@
 
             const metaDescription = `Watch ${title} online for free in HD on ${siteName}. ${synopsis}`.slice(0, 300);
 
-            // --- KEYWORD GENERATION ---
             const genreList = genre ? genre.split(',').map(g => g.trim()).filter(Boolean) : [];
             const baseKeywords = [
                 title,
@@ -1418,11 +1432,9 @@
             ];
             const keywords = [...baseKeywords, ...genreList].filter(Boolean).join(', ');
 
-            // --- TITLE ---
             document.getElementById('seo-title').textContent = pageTitle;
             document.title = pageTitle;
 
-            // --- STANDARD META ---
             document.getElementById('seo-description').setAttribute('content', metaDescription);
             document.getElementById('seo-keywords').setAttribute('content', keywords);
             document.getElementById('seo-robots').setAttribute('content', 'index, follow, max-image-preview:large');
@@ -1432,7 +1444,6 @@
             document.getElementById('seo-alternate').setAttribute('href', currentUrl);
             document.getElementById('html-root').setAttribute('lang', 'en');
 
-            // --- OPEN GRAPH ---
             document.getElementById('og-type').setAttribute('content', isMovie ? 'video.movie' : 'video.tv_show');
             document.getElementById('og-site-name').setAttribute('content', siteName);
             document.getElementById('og-title').setAttribute('content', pageTitle);
@@ -1441,13 +1452,11 @@
             document.getElementById('og-url').setAttribute('content', currentUrl);
             document.getElementById('og-locale').setAttribute('content', 'en_US');
 
-            // --- TWITTER CARD ---
             document.getElementById('tw-card').setAttribute('content', 'summary_large_image');
             document.getElementById('tw-title').setAttribute('content', pageTitle);
             document.getElementById('tw-description').setAttribute('content', metaDescription);
             document.getElementById('tw-image').setAttribute('content', poster);
 
-            // --- JSON-LD STRUCTURED DATA ---
             const jsonLd = {
                 "@context": "https://schema.org",
                 "@type": isMovie ? "Movie" : "TVSeries",
@@ -1477,7 +1486,6 @@
                 };
             }
 
-            // Ensure JSON-LD actors arrays works with our string array
             if (Array.isArray(data.actors) && data.actors.length) {
                 jsonLd.actor = data.actors.map(name => ({ "@type": "Person", "name": name }));
             }

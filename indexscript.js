@@ -238,37 +238,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // --- START: NEW 2EMBED TRENDING API ---
             try {
-                // Fetching the trending TV shows
-                const trendResponse = await fetch('https://api.2embed.cc/trendingtv?time_window=week&page=1');
+                const trendResponse = await fetch('https://api.2embed.cc/trendingtv');
                 
                 if (!trendResponse.ok) throw new Error(`HTTP error! status: ${trendResponse.status}`);
                 const trendData = await trendResponse.json();
                 
-                // Flexible parsing: Some APIs return {results: []}, others return {data: []}, or just a raw Array []
-                const resultsArray = Array.isArray(trendData) ? trendData : (trendData.results || trendData.data || []);
+                // Using the 'results' array as shown in your uploaded screenshots
+                const resultsArray = trendData.results || [];
                 
-                if (!resultsArray || resultsArray.length === 0) {
-                    throw new Error("API returned an empty array or unknown format.");
+                if (resultsArray.length === 0) {
+                    throw new Error("No results found in API response.");
                 }
 
-                // Map the payload to your grid format. We use tmdb=1 so your watch page knows to use an external API source.
+                // Mapping the API data to your grid format
                 const apiTrendingItems = resultsArray.slice(0, 15).map(item => ({
-                    title: item.name || item.title || item.original_name || "Unknown Title",
-                    img: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Image',
-                    link: `watch.html?id=${item.id}&api=tmdb&type=${item.media_type || 'tv'}`, // Appending API tags so watch.html knows it's a TMDB ID
-                    type: item.media_type === 'movie' ? "Trending Movie" : "Trending TV"
+                    title: item.name || item.title || "Unknown Title",
+                    img: item.poster || 'https://via.placeholder.com/500x750?text=No+Image',
+                    // Using the direct embed_tmdb link provided in the API
+                    link: item.embed_tmdb || `watch.html?id=${item.tmdb_id}`, 
+                    type: "Trending TV"
                 }));
                 
                 populateGrid('trending-grid', apiTrendingItems);
                 
             } catch (err) {
-                console.error("2embed API failed (Likely blocked by Adblocker or CORS). Using fallback:", err);
+                console.error("2embed API failed, using fallback:", err);
                 
-                // Bulletproof Fallback: If `d.Trend === "T"` doesn't exist in your JSON, grab the first 15 items so the grid is NEVER empty!
+                // Fallback to your local database
                 let fallbackItems = data.filter(d => d.Trend === "T" || d.trending === true);
-                if (fallbackItems.length === 0) {
-                    fallbackItems = data; // If no "Trend" property exists, use standard local data
-                }
+                if (fallbackItems.length === 0) fallbackItems = data;
                 
                 populateGrid('trending-grid', fallbackItems.slice(0, 15));
             }
