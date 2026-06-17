@@ -7,7 +7,6 @@
 
     <meta http-equiv="x-dns-prefetch-control" content="off">
 
-    <!-- === DYNAMIC SEO META SYSTEM (auto-updated by JS once drama data loads) === -->
     <meta id="seo-description" name="description" content="Watch your favorite Korean, Chinese, and Japanese dramas online in HD with English subtitles on DramaKan.">
     <meta id="seo-keywords" name="keywords" content="watch drama online, kdrama, chinese drama, japanese drama, asian drama, english sub, hindi dub, dramakan, hd streaming, latest episodes">
     <meta id="seo-robots" name="robots" content="index, follow, max-image-preview:large">
@@ -16,7 +15,6 @@
     <link id="seo-canonical" rel="canonical" href="">
     <link id="seo-alternate" rel="alternate" hreflang="en" href="">
 
-    <!-- Open Graph -->
     <meta id="og-type" property="og:type" content="video.tv_show">
     <meta id="og-site-name" property="og:site_name" content="DramaKan">
     <meta id="og-title" property="og:title" content="Watch Drama - DramaKan">
@@ -25,13 +23,11 @@
     <meta id="og-url" property="og:url" content="">
     <meta id="og-locale" property="og:locale" content="en_US">
 
-    <!-- Twitter Card -->
     <meta id="tw-card" name="twitter:card" content="summary_large_image">
     <meta id="tw-title" name="twitter:title" content="Watch Drama - DramaKan">
     <meta id="tw-description" name="twitter:description" content="Watch your favorite Korean, Chinese, and Japanese dramas online in HD with English subtitles on DramaKan.">
     <meta id="tw-image" name="twitter:image" content="">
 
-    <!-- JSON-LD Structured Data (populated dynamically) -->
     <script type="application/ld+json" id="seo-jsonld">{}</script>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -248,7 +244,7 @@
         .about-info h3 { margin: 0 0 10px 0; font-size: 1rem; color: #fff; }
         .about-info p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin: 0 0 15px 0; }
         .meta-grid { display: grid; grid-template-columns: auto 1fr; gap: 15px; font-size: 0.85rem; row-gap: 8px; }
-        .meta-label { color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+        .meta-label { color: var(--text-muted); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
         .meta-val { color: #fff; font-weight: 500; }
         .tag-pill { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 2px 8px; border-radius: 50px; font-size: 0.75rem; color: var(--text-muted); margin-right: 5px; display: inline-block; }
 
@@ -379,7 +375,7 @@
 
     <div id="page-loader" style="position: fixed; inset: 0; background: var(--bg-base); z-index: 10000; display: flex; justify-content: center; align-items: center; flex-direction: column; color: #fff;">
         <div style="width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.05); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;"></div>
-        <p style="font-weight: 500; letter-spacing: 0.5px;">Loading Drama...</p>
+        <p style="font-weight: 500; letter-spacing: 0.5px;" id="loader-text">Loading Drama...</p>
     </div>
     <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 
@@ -402,10 +398,10 @@
             <div class="title-left">
                 <h1 id="ui-title">Loading...</h1>
                 <div class="meta-tags">
-                    <span id="ui-year">2024</span>
-                    <span id="ui-country">South Korea</span>
-                    <span id="ui-genre">Romance</span>
-                    <span id="ui-total-eps-top">16 Episodes</span>
+                    <span id="ui-year"></span>
+                    <span id="ui-country"></span>
+                    <span id="ui-genre"></span>
+                    <span id="ui-total-eps-top"></span>
                 </div>
             </div>
             <div class="title-actions">
@@ -462,9 +458,14 @@
                         <p id="synopsis-text">Loading synopsis...</p>
                         <div class="meta-grid">
                             <div class="meta-label"><i class="far fa-user"></i> Director</div>
-                            <div class="meta-val">Unknown</div>
+                            <div class="meta-val" id="ui-director">Unknown</div>
+                            
+                            <div class="meta-label"><i class="fas fa-users"></i> Cast</div>
+                            <div class="meta-val" id="ui-cast" style="max-height: 80px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--primary) transparent; line-height: 1.5;">Unknown</div>
+
                             <div class="meta-label"><i class="fas fa-tags"></i> Genres</div>
                             <div class="meta-val" id="ui-genre-tags"></div>
+
                             <div class="meta-label"><i class="far fa-calendar"></i> Status</div>
                             <div class="meta-val" id="ui-status">Ongoing</div>
                         </div>
@@ -492,7 +493,7 @@
                     <select id="season-selector" style="display: none; width: 100%; background: #14151a; color: #fff; padding: 10px; border: 1px solid var(--glass-border); border-radius: 8px; margin-bottom: 15px; outline: none;"></select>
                     
                     <div class="episodes-timeline" id="episodes-list-container">
-                        </div>
+                    </div>
                 </div>
                 
                 <div class="sidebar-widget" style="padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 250px; position: relative;">
@@ -623,7 +624,6 @@
 
    <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    // NOTE: Added updateDoc to imports
     import { getFirestore, doc, getDoc, collection, getDocs, addDoc, serverTimestamp, query, orderBy, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
@@ -640,6 +640,11 @@
 
     let currentServer = '2embed'; 
     let currentUser = null;
+    let seasonsArr = [1]; // Global season array to hold eps per season
+    let activeImdbId = null; // Global for easy access across functions
+    let activeTmdbId = null;
+    let activeData = null; // Global reference to the fully built data object
+
     const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -681,507 +686,591 @@
         }
 
         try {
-            // --- DATA FETCHING (Optimized: JSON first, then Firestore) ---
-            let data = null;
+            // =========================================================
+            // 1. FETCH FIREBASE DOC FOR IDs ONLY
+            // =========================================================
+            const docSnap = await getDoc(doc(db, "dramas", dramaId));
+            if (!docSnap.exists()) {
+                document.getElementById('loader-text').textContent = "Drama not found in database.";
+                return;
+            }
+
+            const firebaseData = docSnap.data();
+            activeImdbId = firebaseData.imdbId || firebaseData.imdb_id || firebaseData.imdb;
+            activeTmdbId = firebaseData.tmdbId || firebaseData.tmdb_id || firebaseData.tmdb;
+
+            if (!activeImdbId) {
+                document.getElementById('loader-text').textContent = "IMDb ID missing. Cannot load details.";
+                return;
+            }
+
+            // Create our base data object that we'll populate entirely from the 2embed API
+            activeData = { id: dramaId };
+
+            // =========================================================
+            // 2. FETCH DETAILS AND SIMILAR DATA CONCURRENTLY FROM 2EMBED
+            // =========================================================
             try {
-                const response = await fetch('./dramas.json?t=' + new Date().getTime()); 
-                if (response.ok) {
-                    const jsonData = await response.json();
-                    if (Array.isArray(jsonData)) data = jsonData.find(d => String(d.id) === String(dramaId));
-                    else if (jsonData[dramaId]) { data = jsonData[dramaId]; data.id = dramaId; }
-                    else if (jsonData.dramas) data = jsonData.dramas.find(d => String(d.id) === String(dramaId));
-                }
-            } catch(e) {
-                console.warn("Could not fetch local JSON, falling back to Firestore.");
-            }
+                const [tmdbRes, simRes] = await Promise.all([
+                    fetch(`https://api.2embed.cc/tv?imdb_id=${activeImdbId}`),
+                    fetch(`https://api.2embed.cc/similartv?imdb_id=${activeImdbId}&page=1`)
+                ]);
 
-            if (!data) {
-                const docSnap = await getDoc(doc(db, "dramas", dramaId));
-                if (docSnap.exists()) { data = docSnap.data(); data.id = docSnap.id; }
-            }
-
-            if (data) {
-                // --- DYNAMIC SEO + META + JSON-LD SYSTEM ---
-                updateSEO(data, dramaId);
-
-                // --- POPULATE UI ---
-                document.getElementById('bread-title').textContent = data.title;
-                document.getElementById('ui-title').textContent = data.title;
-                document.getElementById('ui-poster').src = data.img;
-                document.getElementById('synopsis-text').textContent = data.synopsis;
-                document.getElementById('ui-total-eps-top').textContent = `${data.totalEps} Episodes`;
-                document.getElementById('ui-status').textContent = data.status;
-                document.getElementById('ui-genre').textContent = data.genre;
-                
-                const tagsHTML = data.genre.split(',').map(g => `<span class="tag-pill">${g.trim()}</span>`).join('');
-                document.getElementById('ui-genre-tags').innerHTML = tagsHTML;
-
-                loadRecommendations(dramaId);
-                initCommentSystem(dramaId); 
-
-                // --- WATCHLIST / MY LIST LOGIC ---
-                const addToListBtn = document.getElementById('add-to-list-btn');
-                let watchlistObj = JSON.parse(localStorage.getItem('dramakan_watchlist')) || {};
-                let profileMyList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
-
-                const updateWatchlistUI = () => {
-                    const inList = profileMyList.some(item => String(item.id) === String(dramaId));
-                    if (inList) {
-                        addToListBtn.innerHTML = '<i class="fas fa-check"></i> <span>In List</span>';
-                        addToListBtn.classList.add('btn-primary');
+                if (tmdbRes.ok) {
+                    const tmdbData = await tmdbRes.json();
+                    
+                    activeData.title = tmdbData.name || tmdbData.title || "Unknown Title";
+                    activeData.synopsis = tmdbData.overview || "No synopsis available.";
+                    activeData.img = tmdbData.poster_path ? `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}` : 'default-poster.jpg';
+                    activeData.year = tmdbData.first_air_date ? tmdbData.first_air_date.substring(0, 4) : 'Unknown';
+                    activeData.status = tmdbData.status || "Ongoing";
+                    
+                    // Genres Array -> String
+                    if (tmdbData.genres && tmdbData.genres.length > 0) {
+                        activeData.genre = tmdbData.genres.map(g => g.name).join(', ');
                     } else {
-                        addToListBtn.innerHTML = '<i class="fas fa-plus"></i> <span>My List</span>';
-                        addToListBtn.classList.remove('btn-primary');
-                    }
-                };
-
-                addToListBtn.addEventListener('click', () => {
-                    let inListIdx = profileMyList.findIndex(item => String(item.id) === String(dramaId));
-                    if (inListIdx > -1) {
-                        profileMyList.splice(inListIdx, 1);
-                        delete watchlistObj[dramaId];
-                    } else {
-                        const itemData = {
-                            id: dramaId,
-                            title: data.title || data.dramaName,
-                            img: data.img,
-                            link: `watch.html?id=${dramaId}`,
-                            timestamp: Date.now()
-                        };
-                        profileMyList.push(itemData);
-                        watchlistObj[dramaId] = itemData;
-                    }
-                    localStorage.setItem('dramakan_mylist', JSON.stringify(profileMyList));
-                    localStorage.setItem('dramakan_watchlist', JSON.stringify(watchlistObj));
-                    updateWatchlistUI();
-                });
-                
-                updateWatchlistUI();
-
-                // --- ADD TO FAVORITES LOGIC ---
-                const favoriteBtn = document.getElementById('favorite-btn');
-                let profileFavorites = JSON.parse(localStorage.getItem('dramakan_favorites')) || [];
-
-                const updateFavoriteUI = () => {
-                    const isFav = profileFavorites.some(item => String(item.id) === String(dramaId));
-                    if (isFav) {
-                        favoriteBtn.innerHTML = '<i class="fas fa-heart"></i> <span>Favorited</span>';
-                        favoriteBtn.classList.add('btn-favorite-active');
-                    } else {
-                        favoriteBtn.innerHTML = '<i class="far fa-heart"></i> <span>Favorite</span>';
-                        favoriteBtn.classList.remove('btn-favorite-active');
-                    }
-                };
-
-                favoriteBtn.addEventListener('click', async () => {
-                    let inFavIdx = profileFavorites.findIndex(item => String(item.id) === String(dramaId));
-                    if (inFavIdx > -1) {
-                        profileFavorites.splice(inFavIdx, 1);
-                    } else {
-                        const itemData = {
-                            id: dramaId,
-                            title: data.title || data.dramaName,
-                            img: data.img,
-                            link: `watch.html?id=${dramaId}`,
-                            timestamp: Date.now()
-                        };
-                        profileFavorites.push(itemData);
+                        activeData.genre = 'Drama';
                     }
                     
-                    // Save to local storage for profile page fallback
-                    localStorage.setItem('dramakan_favorites', JSON.stringify(profileFavorites));
-                    updateFavoriteUI();
-
-                    // If user is logged in, sync to Firebase profile
-                    if (currentUser) {
-                        try {
-                            const userDocRef = doc(db, "users", currentUser.uid);
-                            const userSnap = await getDoc(userDocRef);
-                            if (userSnap.exists()) {
-                                let userData = userSnap.data();
-                                if (userData.profiles && userData.profiles.length > 0) {
-                                    // Find current active profile
-                                    let activeProfileId = localStorage.getItem('dramakan_active_profile_id');
-                                    let pIndex = userData.profiles.findIndex(p => p.id === activeProfileId);
-                                    if (pIndex === -1) pIndex = 0; 
-                                    
-                                    // Update the favorites array for that specific profile
-                                    userData.profiles[pIndex].favorites = profileFavorites;
-                                    await updateDoc(userDocRef, { profiles: userData.profiles });
-                                }
-                            }
-                        } catch (err) {
-                            console.error("Error syncing favorites to Firebase:", err);
+                    activeData.totalEps = tmdbData.number_of_episodes || 1;
+                    
+                    // Seasons Map
+                    if (tmdbData.seasons && tmdbData.seasons.length > 0) {
+                        const actualSeasons = tmdbData.seasons.filter(s => s.season_number > 0);
+                        if (actualSeasons.length > 0) {
+                            activeData.seasons = actualSeasons.map(s => s.episode_count);
                         }
                     }
-                });
 
+                    // Cast and Crew (Full mapping without limits)
+                    let castList = [];
+                    if (tmdbData.credits && tmdbData.credits.cast) {
+                        castList = tmdbData.credits.cast.map(c => c.name);
+                    } else if (tmdbData.cast) {
+                        castList = tmdbData.cast.map(c => c.name || c);
+                    }
+                    activeData.actors = castList;
+
+                    let directors = [];
+                    if (tmdbData.credits && tmdbData.credits.crew) {
+                        directors = tmdbData.credits.crew.filter(c => c.job === 'Director' || c.department === 'Directing').map(c => c.name);
+                    } else if (tmdbData.crew) {
+                        directors = tmdbData.crew.filter(c => c.job === 'Director' || c.department === 'Directing').map(c => c.name || c);
+                    }
+                    activeData.director = directors.length ? directors.join(', ') : 'Unknown';
+
+                    // Internal type check for stream routing
+                    activeData.type = tmdbData.number_of_seasons ? "tv" : "movie"; 
+                }
+
+                // Process Similar Data for Recommendations sidebar
+                if (simRes.ok) {
+                    const simData = await simRes.json();
+                    activeData.similar = simData.results || simData || [];
+                }
+
+            } catch (err) {
+                console.error("Failed to fetch extended TV data from 2embed API:", err);
+            }
+
+            // =========================================================
+            // 3. POPULATE UI & SEO WITH NEW API DATA
+            // =========================================================
+            
+            updateSEO(activeData, dramaId);
+
+            document.getElementById('bread-title').textContent = activeData.title;
+            document.getElementById('ui-title').textContent = activeData.title;
+            document.getElementById('ui-poster').src = activeData.img;
+            document.getElementById('synopsis-text').textContent = activeData.synopsis;
+            document.getElementById('ui-total-eps-top').textContent = `${activeData.totalEps} Episodes`;
+            document.getElementById('ui-status').textContent = activeData.status;
+            document.getElementById('ui-genre').textContent = activeData.genre;
+            document.getElementById('ui-year').textContent = activeData.year;
+            document.getElementById('ui-country').textContent = activeData.country || "Asia"; // Using static Asia if api doesn't yield specific origin countries cleanly
+            
+            document.getElementById('ui-director').textContent = activeData.director || "Unknown";
+            
+            if (activeData.actors && activeData.actors.length > 0) {
+                // UI limit removed, injecting full joined string (CSS auto-scroll handles height overflow)
+                document.getElementById('ui-cast').textContent = activeData.actors.join(', ');
+            } else {
+                document.getElementById('ui-cast').textContent = "Unknown";
+            }
+
+            const tagsHTML = activeData.genre.split(',').map(g => `<span class="tag-pill">${g.trim()}</span>`).join('');
+            document.getElementById('ui-genre-tags').innerHTML = tagsHTML;
+
+            renderRecommendations(activeData.similar);
+            initCommentSystem(dramaId); 
+
+            // --- WATCHLIST / MY LIST LOGIC ---
+            const addToListBtn = document.getElementById('add-to-list-btn');
+            let watchlistObj = JSON.parse(localStorage.getItem('dramakan_watchlist')) || {};
+            let profileMyList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
+
+            const updateWatchlistUI = () => {
+                const inList = profileMyList.some(item => String(item.id) === String(dramaId));
+                if (inList) {
+                    addToListBtn.innerHTML = '<i class="fas fa-check"></i> <span>In List</span>';
+                    addToListBtn.classList.add('btn-primary');
+                } else {
+                    addToListBtn.innerHTML = '<i class="fas fa-plus"></i> <span>My List</span>';
+                    addToListBtn.classList.remove('btn-primary');
+                }
+            };
+
+            addToListBtn.addEventListener('click', () => {
+                let inListIdx = profileMyList.findIndex(item => String(item.id) === String(dramaId));
+                if (inListIdx > -1) {
+                    profileMyList.splice(inListIdx, 1);
+                    delete watchlistObj[dramaId];
+                } else {
+                    const itemData = {
+                        id: dramaId,
+                        title: activeData.title,
+                        img: activeData.img,
+                        link: `watch.html?id=${dramaId}`,
+                        timestamp: Date.now()
+                    };
+                    profileMyList.push(itemData);
+                    watchlistObj[dramaId] = itemData;
+                }
+                localStorage.setItem('dramakan_mylist', JSON.stringify(profileMyList));
+                localStorage.setItem('dramakan_watchlist', JSON.stringify(watchlistObj));
+                updateWatchlistUI();
+            });
+            
+            updateWatchlistUI();
+
+            // --- ADD TO FAVORITES LOGIC ---
+            const favoriteBtn = document.getElementById('favorite-btn');
+            let profileFavorites = JSON.parse(localStorage.getItem('dramakan_favorites')) || [];
+
+            const updateFavoriteUI = () => {
+                const isFav = profileFavorites.some(item => String(item.id) === String(dramaId));
+                if (isFav) {
+                    favoriteBtn.innerHTML = '<i class="fas fa-heart"></i> <span>Favorited</span>';
+                    favoriteBtn.classList.add('btn-favorite-active');
+                } else {
+                    favoriteBtn.innerHTML = '<i class="far fa-heart"></i> <span>Favorite</span>';
+                    favoriteBtn.classList.remove('btn-favorite-active');
+                }
+            };
+
+            favoriteBtn.addEventListener('click', async () => {
+                let inFavIdx = profileFavorites.findIndex(item => String(item.id) === String(dramaId));
+                if (inFavIdx > -1) {
+                    profileFavorites.splice(inFavIdx, 1);
+                } else {
+                    const itemData = {
+                        id: dramaId,
+                        title: activeData.title,
+                        img: activeData.img,
+                        link: `watch.html?id=${dramaId}`,
+                        timestamp: Date.now()
+                    };
+                    profileFavorites.push(itemData);
+                }
+                
+                localStorage.setItem('dramakan_favorites', JSON.stringify(profileFavorites));
                 updateFavoriteUI();
 
-                // --- EPISODES SETUP & UI RULES ---
-                let seasonsArr = data.seasons || [data.totalEps || 1];
-                window.currentSeason = 1;
-                window.currentEpisode = 1;
-
-                const grid = document.getElementById('episodes-list-container');
-                const seasonSelector = document.getElementById('season-selector');
-
-                if (seasonsArr.length > 1) {
-                    seasonSelector.style.display = 'block';
-                    seasonSelector.innerHTML = seasonsArr.map((_, idx) => `<option value="${idx + 1}">Season ${idx + 1}</option>`).join('');
-                }
-
-                function renderEpisodeGrid(seasonNum) {
-                    window.currentSeason = parseInt(seasonNum);
-                    const epsInThisSeason = seasonsArr[window.currentSeason - 1];
-                    
-                    let buttonsHtml = '';
-                    for (let i = 1; i <= epsInThisSeason; i++) {
-                        buttonsHtml += `
-                            <div class="ep-timeline-item" data-season="${window.currentSeason}" data-index="${window.currentSeason}-${i}" onclick="loadEpisode(${window.currentSeason}, ${i})">
-                                <div class="ep-icon"><i class="fas fa-play"></i></div>
-                                <div class="ep-info-text">
-                                    <h4>Episode ${i}</h4>
-                                    <p style="display:none; color: var(--primary); margin:0; font-size:0.75rem;" class="now-playing-text">Now Playing</p>
-                                </div>
-                                <div class="ep-duration">45:00</div>
-                            </div>`;
-                    }
-                    grid.innerHTML = buttonsHtml;
-                    updateActiveButton();
-                }
-
-                function updateQuickActionStates() {
-                    const btnPrev = document.getElementById('btn-prev-ep');
-                    const btnNext = document.getElementById('btn-next-ep');
-                    const epsInSeason = seasonsArr[window.currentSeason - 1] || 1;
-
-                    if (window.currentEpisode <= 1) {
-                        btnPrev.classList.add('disabled');
-                    } else {
-                        btnPrev.classList.remove('disabled');
-                    }
-
-                    if (window.currentEpisode >= epsInSeason) {
-                        btnNext.classList.add('disabled');
-                    } else {
-                        btnNext.classList.remove('disabled');
-                    }
-                }
-
-                function updateActiveButton() {
-                    document.querySelectorAll('.ep-timeline-item').forEach((item) => {
-                        const isMatch = parseInt(item.dataset.season) === window.currentSeason && item.getAttribute('data-index') === `${window.currentSeason}-${window.currentEpisode}`;
-                        item.classList.toggle('active', isMatch);
-                        const textP = item.querySelector('.now-playing-text');
-                        if(textP) textP.style.display = isMatch ? 'block' : 'none';
-                    });
-                }
-
-                const videoPlayer = document.getElementById('video-player-iframe');
-                const fsBtn = document.getElementById('custom-fs-btn');
-
-               window.loadEpisode = async function(season, ep) {
-                    window.currentSeason = parseInt(season);
-                    window.currentEpisode = parseInt(ep);
-                    document.getElementById('bread-ep').textContent = `Episode ${ep}`;
-                    
-                    let embedLink = '';
-                    
-                    // Pulling both IDs from your dramas.json
-                    const tmdb = data.tmdbId;
-                    const imdb = data.imdbId;
-                    const isMovie = data.type?.toLowerCase().includes('movie');
-
-                    // FULLSCREEN BUTTON ALWAYS VISIBLE — WORKS ON EVERY SERVER
-                    fsBtn.style.display = 'flex';
-
-                    if (currentServer === '2embed') {
-                        const targetId = tmdb ? tmdb : imdb;
-                        if (isMovie) {
-                            embedLink = `https://player.2embed.win/vip/movie/${targetId}`;
-                        } else {
-                            embedLink = `https://player.2embed.win/vip/tv/${targetId}-${season}-${ep}`;
-                        }
-                        
-                    } else if (currentServer === 'vsrc') {
-                        if (imdb) {
-                            embedLink = isMovie ? `https://vidsrc.fyi/embed/movie/${imdb}` : `https://vidsrc.fyi/embed/tv/${imdb}/${season}/${ep}`;
-                        } else {
-                            embedLink = isMovie ? `https://vidsrc.fyi/embed/movie?tmdb=${tmdb}` : `https://vidsrc.fyi/embed/tv?tmdb=${tmdb}&season=${season}&episode=${ep}`;
-                        }
-                        
-                    } else if (currentServer === 'hindi') {
-                        const targetId = imdb ? imdb : tmdb;
-                        embedLink = `https://loffe414wil.com/play/${targetId}`;
-                    }
-                    
-                    videoPlayer.src = embedLink;
-                    updateActiveButton();
-                    updateQuickActionStates();
-                    
-                    localStorage.setItem(`dramakan_ep_${dramaId}`, `${season}-${ep}`);
-                    
-                    // SAVE CONTINUE WATCHING HISTORY
-                    const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-                    historyObj[dramaId] = {
-                        title: data.title || data.dramaName,
-                        img: data.img,
-                        link: `watch.html?id=${dramaId}`,
-                        timestamp: Date.now(),
-                        season: season,
-                        episode: ep
-                    };
-                    localStorage.setItem('dramakan_history', JSON.stringify(historyObj));
-                    window.dispatchEvent(new Event('historySynced'));
-
-                    // Keep SEO/meta/JSON-LD in sync with the currently playing episode
-                    updateSEO(data, dramaId, season, ep);
-                }
-
-                renderEpisodeGrid(1);
-
-                // --- NEXT / PREV BUTTON LOGIC ---
-                document.getElementById('btn-prev-ep').addEventListener('click', () => {
-                    if (window.currentEpisode > 1) {
-                        window.loadEpisode(window.currentSeason, window.currentEpisode - 1);
-                    }
-                });
-
-                document.getElementById('btn-next-ep').addEventListener('click', () => {
-                    const epsInSeason = seasonsArr[window.currentSeason - 1];
-                    if (window.currentEpisode < epsInSeason) {
-                        window.loadEpisode(window.currentSeason, window.currentEpisode + 1);
-                    }
-                });
-
-                // --- NEW: SERVER 1 FULLSCREEN LOGIC ---
-                const videoWrapper = document.getElementById('video-wrapper');
-                
-                fsBtn.addEventListener('click', () => {
-                    if (!document.fullscreenElement) {
-                        if (videoWrapper.requestFullscreen) videoWrapper.requestFullscreen();
-                        else if (videoWrapper.webkitRequestFullscreen) videoWrapper.webkitRequestFullscreen();
-                        else if (videoWrapper.msRequestFullscreen) videoWrapper.msRequestFullscreen();
-                    } else {
-                        if (document.exitFullscreen) document.exitFullscreen();
-                        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-                        else if (document.msExitFullscreen) document.msExitFullscreen();
-                    }
-                });
-
-                document.addEventListener('fullscreenchange', () => {
-                    if (document.fullscreenElement) {
-                        fsBtn.innerHTML = '<i class="fas fa-compress"></i>';
-                    } else {
-                        fsBtn.innerHTML = '<i class="fas fa-expand"></i>';
-                    }
-                });
-
-                // --- SHARE LOGIC ---
-                const shareBtn = document.getElementById('btn-share');
-                const playerContainer = document.querySelector('.video-player-container');
-
-                function buildShareData() {
-                    const shareUrl = window.location.href;
-                    const epLabel = `Episode ${window.currentEpisode || 1}`;
-                    const title = data.title || data.dramaName || 'Drama';
-                    const shareText = `Watch ${title} - ${epLabel} on DramaKan`;
-                    return { shareUrl, epLabel, title, shareText };
-                }
-
-                shareBtn.addEventListener('click', async () => {
-                    const { shareUrl, shareText, title } = buildShareData();
-
-                    if (navigator.share) {
-                        try {
-                            await navigator.share({
-                                title: `${title} - DramaKan`,
-                                text: shareText,
-                                url: shareUrl
-                            });
-                            return;
-                        } catch (err) {
-                            // User cancelled native share or it failed — fall back to custom card
-                            if (err && err.name === 'AbortError') return;
-                        }
-                    }
-
-                    openShareCard();
-                });
-
-                function openShareCard() {
-                    const { shareUrl, epLabel, title } = buildShareData();
-                    const overlay = document.getElementById('shareCardOverlay');
-                    document.getElementById('share-card-poster').src = data.img || '';
-                    document.getElementById('share-card-title').textContent = title;
-                    document.getElementById('share-card-ep').textContent = epLabel;
-                    document.getElementById('share-card-genre').textContent = data.genre || '';
-                    document.getElementById('share-card-year').textContent = data.year || '';
-                    document.getElementById('share-card-desc').textContent = data.synopsis || '';
-                    document.getElementById('share-card-url').value = shareUrl;
-                    overlay.style.display = 'flex';
-                }
-
-                document.getElementById('closeShareCard').addEventListener('click', () => {
-                    document.getElementById('shareCardOverlay').style.display = 'none';
-                });
-                document.getElementById('shareCardOverlay').addEventListener('click', (e) => {
-                    if (e.target.id === 'shareCardOverlay') {
-                        document.getElementById('shareCardOverlay').style.display = 'none';
-                    }
-                });
-
-                document.getElementById('share-copy-link').addEventListener('click', () => {
-                    const { shareUrl } = buildShareData();
-                    navigator.clipboard.writeText(shareUrl).then(() => {
-                        const btn = document.getElementById('share-copy-link');
-                        const original = btn.innerHTML;
-                        btn.innerHTML = '<i class="fas fa-check"></i><span>Copied!</span>';
-                        setTimeout(() => { btn.innerHTML = original; }, 2000);
-                    }).catch(() => {
-                        const urlInput = document.getElementById('share-card-url');
-                        urlInput.select();
-                        document.execCommand('copy');
-                    });
-                });
-
-                document.querySelectorAll('.share-social-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const { shareUrl, shareText } = buildShareData();
-                        const network = btn.getAttribute('data-network');
-                        const encodedUrl = encodeURIComponent(shareUrl);
-                        const encodedText = encodeURIComponent(shareText);
-                        let link = '';
-
-                        switch (network) {
-                            case 'whatsapp':
-                                link = `https://api.whatsapp.com/send?text=${encodedText}%20${encodedUrl}`;
-                                break;
-                            case 'facebook':
-                                link = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
-                                break;
-                            case 'telegram':
-                                link = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`;
-                                break;
-                            case 'twitter':
-                                link = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`;
-                                break;
-                            case 'reddit':
-                                link = `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedText}`;
-                                break;
-                            case 'email':
-                                link = `mailto:?subject=${encodeURIComponent(data.title || 'Drama')}&body=${encodedText}%20${encodedUrl}`;
-                                break;
-                            case 'instagram':
-                                // Instagram has no direct web share intent; copy link as fallback for pasting into DM/story
-                                navigator.clipboard.writeText(shareUrl).catch(() => {});
-                                link = `https://www.instagram.com/`;
-                                break;
-                            case 'discord':
-                                // Discord has no direct web share intent; copy link as fallback for pasting into a channel/DM
-                                navigator.clipboard.writeText(shareUrl).catch(() => {});
-                                link = `https://discord.com/app`;
-                                break;
-                        }
-
-                        if (link) window.open(link, '_blank', 'noopener,noreferrer');
-                    });
-                });
-
-                // --- PIP (FLOATING PLAYER) LOGIC ---
-                const pipBtn = document.getElementById('btn-pip');
-                pipBtn.addEventListener('click', () => {
-                    playerContainer.classList.toggle('pip-mode');
-                    if (playerContainer.classList.contains('pip-mode')) {
-                        pipBtn.style.color = "var(--primary)";
-                    } else {
-                        pipBtn.style.color = "";
-                    }
-                });
-
-                // --- REPORT BUG LOGIC ---
-                const reportBtn = document.getElementById('btn-report');
-                const reportModal = document.getElementById('reportModal');
-                const closeReportModal = document.getElementById('closeReportModal');
-                const reportForm = document.getElementById('reportForm');
-
-                reportBtn.addEventListener('click', () => {
-                    if (!currentUser) {
-                        alert("Please log in to report an issue.");
-                        return;
-                    }
-                    reportModal.style.display = 'flex';
-                });
-
-                closeReportModal.addEventListener('click', () => {
-                    reportModal.style.display = 'none';
-                });
-
-                reportForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const submitBtn = document.getElementById('reportSubmitBtn');
-                    const statusMsg = document.getElementById('reportStatusMessage');
-                    const issueType = document.getElementById('reportIssue').value;
-                    const details = document.getElementById('reportDetails').value.trim();
-
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-                    submitBtn.disabled = true;
-
+                if (currentUser) {
                     try {
-                        await addDoc(collection(db, "reports"), {
-                            userId: currentUser.uid,
-                            userEmail: currentUser.email || "No email",
-                            username: currentUser.displayName || "User",
-                            dramaId: dramaId,
-                            dramaName: data.title || data.dramaName,
-                            season: window.currentSeason,
-                            episode: window.currentEpisode,
-                            issue: issueType,
-                            details: details,
-                            server: currentServer,
-                            timestamp: serverTimestamp(),
-                            status: "Pending"
-                        });
-
-                        statusMsg.style.display = "block";
-                        statusMsg.style.color = "#10b981";
-                        statusMsg.innerHTML = "<i class='fas fa-check-circle'></i> Report sent successfully! We'll fix it ASAP.";
-                        reportForm.reset();
-                        
-                        setTimeout(() => {
-                            reportModal.style.display = 'none';
-                            statusMsg.style.display = 'none';
-                        }, 2500);
-
+                        const userDocRef = doc(db, "users", currentUser.uid);
+                        const userSnap = await getDoc(userDocRef);
+                        if (userSnap.exists()) {
+                            let userData = userSnap.data();
+                            if (userData.profiles && userData.profiles.length > 0) {
+                                let activeProfileId = localStorage.getItem('dramakan_active_profile_id');
+                                let pIndex = userData.profiles.findIndex(p => p.id === activeProfileId);
+                                if (pIndex === -1) pIndex = 0; 
+                                userData.profiles[pIndex].favorites = profileFavorites;
+                                await updateDoc(userDocRef, { profiles: userData.profiles });
+                            }
+                        }
                     } catch (err) {
-                        statusMsg.style.display = "block";
-                        statusMsg.style.color = "#ef4444";
-                        statusMsg.innerHTML = "<i class='fas fa-exclamation-circle'></i> Error: " + err.message;
-                    } finally {
-                        submitBtn.innerHTML = "Send Report";
-                        submitBtn.disabled = false;
+                        console.error("Error syncing favorites to Firebase:", err);
                     }
-                });
+                }
+            });
 
+            updateFavoriteUI();
 
-                setTimeout(() => {
-                    const savedEpRaw = localStorage.getItem(`dramakan_ep_${dramaId}`);
-                    if (savedEpRaw && savedEpRaw !== "0") {
-                        if (savedEpRaw.includes('-')) {
-                            const parts = savedEpRaw.split('-');
-                            window.loadEpisode(parts[0], parts[1]);
-                        } else { window.loadEpisode(1, savedEpRaw); }
-                    } else { window.loadEpisode(1, 1); }
-                }, 500);
+            // --- EPISODES SETUP & API FETCH LOGIC ---
+            seasonsArr = activeData.seasons || [activeData.totalEps || 1];
+            window.currentSeason = 1;
+            window.currentEpisode = 1;
 
-                // Hide loader, show content
-                document.getElementById('page-loader').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
+            const seasonSelector = document.getElementById('season-selector');
+
+            if (seasonsArr.length > 1) {
+                seasonSelector.style.display = 'block';
+                seasonSelector.innerHTML = seasonsArr.map((_, idx) => `<option value="${idx + 1}">Season ${idx + 1}</option>`).join('');
             }
+
+            seasonSelector.addEventListener('change', (e) => {
+                renderEpisodeGrid(e.target.value);
+            });
+
+            window.renderEpisodeGrid = async function(seasonNum) {
+                window.currentSeason = parseInt(seasonNum);
+                const grid = document.getElementById('episodes-list-container');
+                
+                grid.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Loading episodes...</div>';
+
+                let epsInThisSeason = seasonsArr[window.currentSeason - 1] || 1;
+                let episodesData = null;
+
+                // === Fetch precise episode data using API Season Endpoint ===
+                if (activeImdbId) {
+                    try {
+                        const seasonRes = await fetch(`https://api.2embed.cc/season?imdb_id=${activeImdbId}&season=${window.currentSeason}`);
+                        if (seasonRes.ok) {
+                            const seasonDetails = await seasonRes.json();
+                            if (seasonDetails.episodes) {
+                                episodesData = seasonDetails.episodes;
+                                epsInThisSeason = episodesData.length;
+                                seasonsArr[window.currentSeason - 1] = epsInThisSeason; // Keep accurate length
+                            }
+                        }
+                    } catch(err) {
+                        console.warn("Failed to load season details from API", err);
+                    }
+                }
+
+                let buttonsHtml = '';
+                for (let i = 1; i <= epsInThisSeason; i++) {
+                    const epInfo = episodesData ? episodesData[i-1] : null;
+                    const epTitle = epInfo && epInfo.name ? epInfo.name : `Episode ${i}`;
+                    const runtime = epInfo && epInfo.runtime ? `${epInfo.runtime}m` : '45:00';
+
+                    buttonsHtml += `
+                        <div class="ep-timeline-item" data-season="${window.currentSeason}" data-index="${window.currentSeason}-${i}" onclick="loadEpisode(${window.currentSeason}, ${i})">
+                            <div class="ep-icon"><i class="fas fa-play"></i></div>
+                            <div class="ep-info-text">
+                                <h4>${epTitle}</h4>
+                                <p style="display:none; color: var(--primary); margin:0; font-size:0.75rem;" class="now-playing-text">Now Playing</p>
+                            </div>
+                            <div class="ep-duration">${runtime}</div>
+                        </div>`;
+                }
+                grid.innerHTML = buttonsHtml;
+                updateActiveButton();
+                updateQuickActionStates();
+            }
+
+            function updateQuickActionStates() {
+                const btnPrev = document.getElementById('btn-prev-ep');
+                const btnNext = document.getElementById('btn-next-ep');
+                const epsInSeason = seasonsArr[window.currentSeason - 1] || 1;
+
+                if (window.currentEpisode <= 1) {
+                    btnPrev.classList.add('disabled');
+                } else {
+                    btnPrev.classList.remove('disabled');
+                }
+
+                if (window.currentEpisode >= epsInSeason) {
+                    btnNext.classList.add('disabled');
+                } else {
+                    btnNext.classList.remove('disabled');
+                }
+            }
+
+            function updateActiveButton() {
+                document.querySelectorAll('.ep-timeline-item').forEach((item) => {
+                    const isMatch = parseInt(item.dataset.season) === window.currentSeason && item.getAttribute('data-index') === `${window.currentSeason}-${window.currentEpisode}`;
+                    item.classList.toggle('active', isMatch);
+                    const textP = item.querySelector('.now-playing-text');
+                    if(textP) textP.style.display = isMatch ? 'block' : 'none';
+                });
+            }
+
+            const videoPlayer = document.getElementById('video-player-iframe');
+            const fsBtn = document.getElementById('custom-fs-btn');
+
+            window.loadEpisode = async function(season, ep) {
+                window.currentSeason = parseInt(season);
+                window.currentEpisode = parseInt(ep);
+                document.getElementById('bread-ep').textContent = `Episode ${ep}`;
+                
+                let embedLink = '';
+                
+                const isMovie = activeData.type?.toLowerCase().includes('movie');
+
+                // FULLSCREEN BUTTON ALWAYS VISIBLE
+                fsBtn.style.display = 'flex';
+
+                if (currentServer === '2embed') {
+                    const targetId = activeTmdbId ? activeTmdbId : activeImdbId;
+                    if (isMovie) {
+                        embedLink = `https://player.2embed.win/vip/movie/${targetId}`;
+                    } else {
+                        embedLink = `https://player.2embed.win/vip/tv/${targetId}-${season}-${ep}`;
+                    }
+                    
+                } else if (currentServer === 'vsrc') {
+                    if (activeImdbId) {
+                        embedLink = isMovie ? `https://vidsrc.fyi/embed/movie/${activeImdbId}` : `https://vidsrc.fyi/embed/tv/${activeImdbId}/${season}/${ep}`;
+                    } else {
+                        embedLink = isMovie ? `https://vidsrc.fyi/embed/movie?tmdb=${activeTmdbId}` : `https://vidsrc.fyi/embed/tv?tmdb=${activeTmdbId}&season=${season}&episode=${ep}`;
+                    }
+                    
+                } else if (currentServer === 'hindi') {
+                    const targetId = activeImdbId ? activeImdbId : activeTmdbId;
+                    embedLink = `https://loffe414wil.com/play/${targetId}`;
+                }
+                
+                videoPlayer.src = embedLink;
+                updateActiveButton();
+                updateQuickActionStates();
+                
+                localStorage.setItem(`dramakan_ep_${dramaId}`, `${season}-${ep}`);
+                
+                // SAVE CONTINUE WATCHING HISTORY
+                const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                historyObj[dramaId] = {
+                    title: activeData.title,
+                    img: activeData.img,
+                    link: `watch.html?id=${dramaId}`,
+                    timestamp: Date.now(),
+                    season: season,
+                    episode: ep
+                };
+                localStorage.setItem('dramakan_history', JSON.stringify(historyObj));
+                window.dispatchEvent(new Event('historySynced'));
+
+                // Keep SEO/meta/JSON-LD in sync with the currently playing episode
+                updateSEO(activeData, dramaId, season, ep);
+            }
+
+            // Initial episode render mapping
+            await window.renderEpisodeGrid(1);
+
+            // --- NEXT / PREV BUTTON LOGIC ---
+            document.getElementById('btn-prev-ep').addEventListener('click', () => {
+                if (window.currentEpisode > 1) {
+                    window.loadEpisode(window.currentSeason, window.currentEpisode - 1);
+                }
+            });
+
+            document.getElementById('btn-next-ep').addEventListener('click', () => {
+                const epsInSeason = seasonsArr[window.currentSeason - 1];
+                if (window.currentEpisode < epsInSeason) {
+                    window.loadEpisode(window.currentSeason, window.currentEpisode + 1);
+                }
+            });
+
+            // --- SERVER 1 FULLSCREEN LOGIC ---
+            const videoWrapper = document.getElementById('video-wrapper');
+            
+            fsBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    if (videoWrapper.requestFullscreen) videoWrapper.requestFullscreen();
+                    else if (videoWrapper.webkitRequestFullscreen) videoWrapper.webkitRequestFullscreen();
+                    else if (videoWrapper.msRequestFullscreen) videoWrapper.msRequestFullscreen();
+                } else {
+                    if (document.exitFullscreen) document.exitFullscreen();
+                    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                    else if (document.msExitFullscreen) document.msExitFullscreen();
+                }
+            });
+
+            document.addEventListener('fullscreenchange', () => {
+                if (document.fullscreenElement) {
+                    fsBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                } else {
+                    fsBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                }
+            });
+
+            // --- SHARE LOGIC ---
+            const shareBtn = document.getElementById('btn-share');
+            const playerContainer = document.querySelector('.video-player-container');
+
+            function buildShareData() {
+                const shareUrl = window.location.href;
+                const epLabel = `Episode ${window.currentEpisode || 1}`;
+                const title = activeData.title || 'Drama';
+                const shareText = `Watch ${title} - ${epLabel} on DramaKan`;
+                return { shareUrl, epLabel, title, shareText };
+            }
+
+            shareBtn.addEventListener('click', async () => {
+                const { shareUrl, shareText, title } = buildShareData();
+
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: `${title} - DramaKan`,
+                            text: shareText,
+                            url: shareUrl
+                        });
+                        return;
+                    } catch (err) {
+                        if (err && err.name === 'AbortError') return;
+                    }
+                }
+                openShareCard();
+            });
+
+            function openShareCard() {
+                const { shareUrl, epLabel, title } = buildShareData();
+                const overlay = document.getElementById('shareCardOverlay');
+                document.getElementById('share-card-poster').src = activeData.img || '';
+                document.getElementById('share-card-title').textContent = title;
+                document.getElementById('share-card-ep').textContent = epLabel;
+                document.getElementById('share-card-genre').textContent = activeData.genre || '';
+                document.getElementById('share-card-year').textContent = activeData.year || '';
+                document.getElementById('share-card-desc').textContent = activeData.synopsis || '';
+                document.getElementById('share-card-url').value = shareUrl;
+                overlay.style.display = 'flex';
+            }
+
+            document.getElementById('closeShareCard').addEventListener('click', () => {
+                document.getElementById('shareCardOverlay').style.display = 'none';
+            });
+            document.getElementById('shareCardOverlay').addEventListener('click', (e) => {
+                if (e.target.id === 'shareCardOverlay') {
+                    document.getElementById('shareCardOverlay').style.display = 'none';
+                }
+            });
+
+            document.getElementById('share-copy-link').addEventListener('click', () => {
+                const { shareUrl } = buildShareData();
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                    const btn = document.getElementById('share-copy-link');
+                    const original = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-check"></i><span>Copied!</span>';
+                    setTimeout(() => { btn.innerHTML = original; }, 2000);
+                }).catch(() => {
+                    const urlInput = document.getElementById('share-card-url');
+                    urlInput.select();
+                    document.execCommand('copy');
+                });
+            });
+
+            document.querySelectorAll('.share-social-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const { shareUrl, shareText } = buildShareData();
+                    const network = btn.getAttribute('data-network');
+                    const encodedUrl = encodeURIComponent(shareUrl);
+                    const encodedText = encodeURIComponent(shareText);
+                    let link = '';
+
+                    switch (network) {
+                        case 'whatsapp': link = `https://api.whatsapp.com/send?text=${encodedText}%20${encodedUrl}`; break;
+                        case 'facebook': link = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`; break;
+                        case 'telegram': link = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`; break;
+                        case 'twitter': link = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`; break;
+                        case 'reddit': link = `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedText}`; break;
+                        case 'email': link = `mailto:?subject=${encodeURIComponent(activeData.title || 'Drama')}&body=${encodedText}%20${encodedUrl}`; break;
+                        case 'instagram':
+                            navigator.clipboard.writeText(shareUrl).catch(() => {});
+                            link = `https://www.instagram.com/`; break;
+                        case 'discord':
+                            navigator.clipboard.writeText(shareUrl).catch(() => {});
+                            link = `https://discord.com/app`; break;
+                    }
+
+                    if (link) window.open(link, '_blank', 'noopener,noreferrer');
+                });
+            });
+
+            // --- PIP (FLOATING PLAYER) LOGIC ---
+            const pipBtn = document.getElementById('btn-pip');
+            pipBtn.addEventListener('click', () => {
+                playerContainer.classList.toggle('pip-mode');
+                if (playerContainer.classList.contains('pip-mode')) {
+                    pipBtn.style.color = "var(--primary)";
+                } else {
+                    pipBtn.style.color = "";
+                }
+            });
+
+            // --- REPORT BUG LOGIC ---
+            const reportBtn = document.getElementById('btn-report');
+            const reportModal = document.getElementById('reportModal');
+            const closeReportModal = document.getElementById('closeReportModal');
+            const reportForm = document.getElementById('reportForm');
+
+            reportBtn.addEventListener('click', () => {
+                if (!currentUser) {
+                    alert("Please log in to report an issue.");
+                    return;
+                }
+                reportModal.style.display = 'flex';
+            });
+
+            closeReportModal.addEventListener('click', () => {
+                reportModal.style.display = 'none';
+            });
+
+            reportForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitBtn = document.getElementById('reportSubmitBtn');
+                const statusMsg = document.getElementById('reportStatusMessage');
+                const issueType = document.getElementById('reportIssue').value;
+                const details = document.getElementById('reportDetails').value.trim();
+
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                submitBtn.disabled = true;
+
+                try {
+                    await addDoc(collection(db, "reports"), {
+                        userId: currentUser.uid,
+                        userEmail: currentUser.email || "No email",
+                        username: currentUser.displayName || "User",
+                        dramaId: dramaId,
+                        dramaName: activeData.title,
+                        season: window.currentSeason,
+                        episode: window.currentEpisode,
+                        issue: issueType,
+                        details: details,
+                        server: currentServer,
+                        timestamp: serverTimestamp(),
+                        status: "Pending"
+                    });
+
+                    statusMsg.style.display = "block";
+                    statusMsg.style.color = "#10b981";
+                    statusMsg.innerHTML = "<i class='fas fa-check-circle'></i> Report sent successfully! We'll fix it ASAP.";
+                    reportForm.reset();
+                    
+                    setTimeout(() => {
+                        reportModal.style.display = 'none';
+                        statusMsg.style.display = 'none';
+                    }, 2500);
+
+                } catch (err) {
+                    statusMsg.style.display = "block";
+                    statusMsg.style.color = "#ef4444";
+                    statusMsg.innerHTML = "<i class='fas fa-exclamation-circle'></i> Error: " + err.message;
+                } finally {
+                    submitBtn.innerHTML = "Send Report";
+                    submitBtn.disabled = false;
+                }
+            });
+
+            setTimeout(() => {
+                const savedEpRaw = localStorage.getItem(`dramakan_ep_${dramaId}`);
+                if (savedEpRaw && savedEpRaw !== "0") {
+                    if (savedEpRaw.includes('-')) {
+                        const parts = savedEpRaw.split('-');
+                        window.loadEpisode(parts[0], parts[1]);
+                    } else { window.loadEpisode(1, savedEpRaw); }
+                } else { window.loadEpisode(1, 1); }
+            }, 500);
+
+            // Hide loader, show content
+            document.getElementById('page-loader').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+
         } catch (error) { 
             console.error("Critical Load Error:", error);
-            document.getElementById('page-loader').innerHTML = "<p>Error loading drama details.</p>";
+            document.getElementById('page-loader').innerHTML = "<p style='color:var(--danger);'>Error loading drama details.</p>";
         }
 
         // --- FIREBASE COMMENT SYSTEM ---
@@ -1190,16 +1279,11 @@
             const commentInput = document.getElementById('comment-text-input');
             const commentsList = document.getElementById('comments-list');
             
-            // 1. Post a new comment
             commentForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const text = commentInput.value.trim();
                 
-                if (!currentUser) {
-                    alert("Please log in to post a comment.");
-                    return;
-                }
-                
+                if (!currentUser) { alert("Please log in to post a comment."); return; }
                 if (text === "") return;
 
                 const submitBtn = document.getElementById('submit-comment-btn');
@@ -1207,7 +1291,6 @@
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
                 try {
-                    // Adds to a 'comments' subcollection for this specific drama
                     await addDoc(collection(db, "dramas", dramaId, "comments"), {
                         text: text,
                         userId: currentUser.uid,
@@ -1225,28 +1308,22 @@
                 }
             });
 
-            // 2. Real-time listener for comments
             const commentsQuery = query(collection(db, "dramas", dramaId, "comments"), orderBy("timestamp", "desc"));
             
             onSnapshot(commentsQuery, (snapshot) => {
-                commentsList.innerHTML = ''; // Clear list
-                
+                commentsList.innerHTML = ''; 
                 if (snapshot.empty) {
                     commentsList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; text-align: center;">No comments yet. Be the first!</p>';
                     return;
                 }
-
                 snapshot.forEach((doc) => {
                     const commentData = doc.data();
-                    
-                    // Format timestamp
                     let timeAgo = "Just now";
                     if (commentData.timestamp) {
                         const date = commentData.timestamp.toDate();
                         timeAgo = date.toLocaleDateString() + " " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     }
 
-                    // Build premium glassmorphism comment UI
                     const commentHTML = `
                         <div style="display: flex; gap: 15px; animation: fadeIn 0.3s ease;">
                             <img src="${commentData.userAvatar}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">
@@ -1265,29 +1342,32 @@
         }
     });
 
-    // --- SIDEBAR RECOMMENDATIONS ---
-    async function loadRecommendations(currentId) {
+    // --- SIDEBAR RECOMMENDATIONS (API POWERED) ---
+    function renderRecommendations(similarItems) {
         const recsContainer = document.getElementById('ui-recs');
-        try {
-            const response = await fetch('./dramas.json');
-            let allDramas = await response.json();
-            
-            // Handle both Array and Object structures
-            let dramasArray = Array.isArray(allDramas) ? allDramas : (allDramas.dramas || Object.values(allDramas));
-            
-            dramasArray = dramasArray.filter(d => String(d.id) !== String(currentId)).slice(0, 4); 
-            
-            recsContainer.innerHTML = dramasArray.map(rec => `
+        
+        if (similarItems && similarItems.length > 0) {
+            const resultsArray = similarItems.slice(0, 4);
+            recsContainer.innerHTML = resultsArray.map(rec => {
+                const poster = rec.poster_path ? `https://image.tmdb.org/t/p/w200${rec.poster_path}` : 'default-poster.jpg';
+                const title = rec.name || rec.title || "Unknown";
+                const year = rec.first_air_date ? rec.first_air_date.substring(0, 4) : '';
+                const rating = rec.vote_average ? rec.vote_average.toFixed(1) : 'N/A';
+                
+                // Routes to the watch page with the TMDB id for the similar item. 
+                // Assumes your index/app handles standard tmdb ids too.
+                return `
                 <a href="watch.html?id=${rec.id}" class="rec-card">
-                    <img src="${rec.img}" alt="Poster">
+                    <img src="${poster}" alt="Poster" onerror="this.src='default-poster.jpg'">
                     <div class="rec-info">
-                        <h4>${rec.title || rec.dramaName}</h4>
-                        <p>${rec.year || '2024'} • ${rec.totalEps || '16'} Eps</p>
-                        <span class="rating"><i class="fas fa-star"></i> ${rec.imdb || '9.0'}</span>
+                        <h4>${title}</h4>
+                        <p>${year}</p>
+                        <span class="rating"><i class="fas fa-star"></i> ${rating}</span>
                     </div>
                 </a>
-            `).join('');
-        } catch(e) {
+                `;
+            }).join('');
+        } else {
             recsContainer.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">Could not load recommendations.</p>';
         }
     }
@@ -1296,7 +1376,7 @@
     function updateSEO(data, dramaId, season, ep) {
         try {
             const siteName = "DramaKan";
-            const title = data.title || data.dramaName || "Drama";
+            const title = data.title || "Drama";
             const year = data.year || "";
             const country = data.country || "";
             const genre = data.genre || "";
@@ -1397,8 +1477,9 @@
                 };
             }
 
+            // Ensure JSON-LD actors arrays works with our string array
             if (Array.isArray(data.actors) && data.actors.length) {
-                jsonLd.actor = data.actors.map(a => ({ "@type": "Person", "name": a }));
+                jsonLd.actor = data.actors.map(name => ({ "@type": "Person", "name": name }));
             }
 
             if (!isMovie) {
@@ -1427,7 +1508,6 @@
                 ]
             };
 
-            // Strip undefined keys before serializing
             const cleanJsonLd = JSON.parse(JSON.stringify(jsonLd));
             document.getElementById('seo-jsonld').textContent = JSON.stringify(cleanJsonLd);
 
