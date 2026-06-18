@@ -107,47 +107,47 @@
             .header-right { gap: 10px; }
         }
 
-        /* --- PREMIUM LIQUID GLASS AD CONTAINERS --- */
-        .premium-ad-container {
-            margin: 30px auto; 
-            width: 95%; 
-            max-width: 1200px;
-            background: rgba(26, 26, 29, 0.45); 
-            border: 1px solid rgba(138, 43, 226, 0.2);
-            border-radius: 16px; 
-            padding: 15px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(16px); 
-            -webkit-backdrop-filter: blur(16px);
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-            overflow: hidden; 
+        /* --- PREMIUM HERO SLIDER CONTROLS --- */
+        .hero-slider-container {
             position: relative;
-            z-index: 1;
+            width: 100%;
+            overflow: hidden;
         }
-        .premium-ad-container::before {
-            content: 'ADVERTISEMENT'; 
-            position: absolute; 
-            top: 4px; 
-            left: 15px;
-            font-size: 0.55rem; 
-            color: rgba(255,255,255,0.3); 
-            letter-spacing: 2px;
+        .hero-slider-wrapper {
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        /* Height Locks to prevent Layout Shift */
-        .top-ad-container { min-height: 120px; }
-        .in-article-container { min-height: 250px; border-color: rgba(0, 195, 255, 0.2); }
-        .multiplex-container { 
-            min-height: 350px; 
-            margin-bottom: 80px; 
-            background: transparent; 
-            border: none; 
-            box-shadow: none; 
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
+        .hero-slide {
+            flex: 0 0 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
-        .multiplex-container::before { display: none; }
+        /* FIX: Absolutely positioned dots to prevent layout hijacking */
+        .dk-slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            z-index: 50;
+        }
+        .dk-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .dk-dot.active {
+            background: var(--primary-color);
+            width: 24px;
+            border-radius: 4px;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
     </style>
 </head>
 <body>
@@ -161,7 +161,7 @@
             <nav class="nav-links pc-nav" id="navLinks">
                 <ul>
                     <li><a href="index.html" class="active">Home</a></li>
-                    <li><a href="community.html">Updates</a></li>
+                    <li><a href="community.html">Community</a></li>
                     <li><a href="mylist.html">My List</a></li>
                     <li class="site-switcher">
                         <div class="switcher-track">
@@ -203,42 +203,17 @@
     </header>
     
     <section class="netflix-hero">
-        <div class="hero-card">
-            <picture class="hero-image-wrapper">
-                <source id="hero-source-mobile" media="(max-width: 992px)" srcset="">
-                <img id="hero-image-main" class="hero-image" src="" alt="Loading Title...">
-            </picture>
-            
-            <div class="hero-depth-shadow"></div>
-            <div class="hero-vignette"></div>
-            
-            <div class="hero-content">
-                <div class="series-badge" id="hero-type-badge">
-                    <i class="fas fa-play" style="color: var(--primary-color);"></i> LOADING
-                </div>
-                
-                <h1 id="hero-title-text" style="font-size: 2.8rem; font-weight: 800; margin-bottom: 10px; color: #fff; text-shadow: 0 4px 12px rgba(0,0,0,0.5); text-align: center;"></h1> 
-                
-                <div class="hero-meta-tags" id="hero-meta-container"></div>
-                
-                <div class="hero-actions">
-                    <a id="hero-play-link" href="#" class="btn-n btn-play">
-                        <i class="fas fa-play"></i> Play
-                    </a>
-                    <button id="hero-mylist-btn" class="btn-n btn-mylist">
-                        <i class="fas fa-plus"></i> My List
-                    </button>
+        <div class="hero-slider-container">
+            <div class="hero-slider-wrapper" id="hero-slider-wrapper">
+                <div class="hero-slide">
+                    <div class="hero-card" style="display: flex; justify-content: center; align-items: center; background: rgba(255,255,255,0.02);">
+                        <i class="fas fa-spinner fa-spin fa-3x" style="color: var(--primary-color);"></i>
+                    </div>
                 </div>
             </div>
+            <div class="dk-slider-dots" id="hero-slider-dots"></div>
         </div>
     </section>
-
-    <div class="premium-ad-container top-ad-container">
-        <ins class="adsbygoogle"
-            style="display:inline-block; width:100%; height:90px;"
-            data-ad-client="ca-pub-3854581977852778"
-            data-ad-slot="3893519291"></ins>
-    </div>
 
     <section class="platforms-section">
         <div class="container">
@@ -316,15 +291,6 @@
             </div>
         </section>
 
-        <div class="premium-ad-container in-article-container">
-            <ins class="adsbygoogle"
-                style="display:block; text-align:center; width:100%;"
-                data-ad-layout="in-article"
-                data-ad-format="fluid"
-                data-ad-client="ca-pub-3854581977852778"
-                data-ad-slot="9750001118"></ins>
-        </div>
-
         <section class="latest-episodes">
             <div class="container">
                 <div class="section-glass-box">
@@ -396,14 +362,6 @@
                 </div>
             </div>
         </section>
-     
-        <div class="premium-ad-container multiplex-container">
-            <ins class="adsbygoogle"
-                style="display:block; width:100%;"
-                data-ad-format="autorelaxed"
-                data-ad-client="ca-pub-3854581977852778"
-                data-ad-slot="4689246127"></ins>
-        </div>
 
         <button id="dramaRequestBtn" class="drama-fab">
             <span class="fab-text">Didn't find your drama?</span>
@@ -565,34 +523,116 @@
         async function initializeDramaSite() {
             try {
                 // =========================================================
-                // 1. DYNAMICALLY FETCH MOST TRENDING SHOW FOR MAIN HERO BANNER
+                // 1. DYNAMIC MULTI-LANGUAGE HERO BANNER SLIDER
                 // =========================================================
-                const heroRes = await fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${tmdbKey}`);
-                if (heroRes.ok) {
-                    const heroData = await heroRes.json();
-                    // Filter out animation (genre 16) to keep only live-action dramas
-                    const premiumFeatured = heroData.results.find(i => !(i.genre_ids && i.genre_ids.includes(16))) || heroData.results[0];
-                    if (premiumFeatured) {
-                        const bgImg = `https://image.tmdb.org/t/p/original${premiumFeatured.backdrop_path || premiumFeatured.poster_path}`;
-                        const mobileImg = `https://image.tmdb.org/t/p/w780${premiumFeatured.poster_path || premiumFeatured.backdrop_path}`;
-                        const titleText = premiumFeatured.name || premiumFeatured.title || "Featured Show";
-                        const releaseYear = (premiumFeatured.first_air_date || premiumFeatured.release_date || "2026").substring(0, 4);
+                const [koRes, zhRes, usRes, jaRes] = await Promise.all([
+                    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=ko&sort_by=popularity.desc&without_genres=16&page=1`),
+                    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=zh&sort_by=popularity.desc&without_genres=16&page=1`),
+                    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=en&with_origin_country=US&sort_by=popularity.desc&without_genres=16&page=1`),
+                    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=ja&sort_by=popularity.desc&without_genres=16&page=1`)
+                ]);
 
-                        document.getElementById('hero-source-mobile').setAttribute('srcset', mobileImg);
-                        document.getElementById('hero-image-main').setAttribute('src', bgImg);
-                        document.getElementById('hero-image-main').setAttribute('alt', titleText);
-                        document.getElementById('hero-title-text').textContent = titleText;
-                        document.getElementById('hero-type-badge').innerHTML = `<i class="fas fa-play" style="color: var(--primary-color);"></i> TRENDING`;
-                        
-                        document.getElementById('hero-meta-container').innerHTML = `
-                            <span>Trending</span><span class="meta-dot">•</span>
-                            <span>Rating: ${premiumFeatured.vote_average.toFixed(1)}</span><span class="meta-dot">•</span>
-                            <span>${releaseYear}</span>
-                        `;
-                        document.getElementById('hero-play-link').setAttribute('href', `watch.html?id=${premiumFeatured.id}`);
-                        document.getElementById('hero-mylist-btn').setAttribute('onclick', `event.preventDefault(); window.toggleMyList(this, '${encodeURIComponent(titleText)}', '${encodeURIComponent(mobileImg)}', 'watch.html?id=${premiumFeatured.id}')`);
-                    }
+                const koData = await koRes.json();
+                const zhData = await zhRes.json();
+                const usData = await usRes.json();
+                const jaData = await jaRes.json();
+
+                let bannerItems = [
+                    { data: koData.results[0], label: "K-DRAMA" },
+                    { data: zhData.results[0], label: "C-DRAMA" },
+                    { data: usData.results[8], label: "US-DRAMA" },
+                    { data: jaData.results[1], label: "J-DRAMA" }
+                ].filter(item => item.data); 
+
+                bannerItems.sort(() => Math.random() - 1.5);
+
+                const wrapper = document.getElementById('hero-slider-wrapper');
+                const dotsContainer = document.getElementById('hero-slider-dots');
+                
+                wrapper.innerHTML = '';
+                dotsContainer.innerHTML = '';
+
+                bannerItems.forEach((item, index) => {
+                    const d = item.data;
+                    const bgImg = `https://image.tmdb.org/t/p/original${d.backdrop_path || d.poster_path}`;
+                    const mobileImg = `https://image.tmdb.org/t/p/w780${d.poster_path || d.backdrop_path}`;
+                    const titleText = d.name || d.title || "Featured Show";
+                    const releaseYear = (d.first_air_date || d.release_date || "2026").substring(0, 4);
+                    
+                    wrapper.innerHTML += `
+                        <div class="hero-slide">
+                            <div class="hero-card">
+                                <picture class="hero-image-wrapper">
+                                    <source media="(max-width: 992px)" srcset="${mobileImg}">
+                                    <img class="hero-image" src="${bgImg}" alt="${titleText}">
+                                </picture>
+                                <div class="hero-depth-shadow"></div>
+                                <div class="hero-vignette"></div>
+                                <div class="hero-content">
+                                    <div class="series-badge"><i class="fas fa-play" style="color: var(--primary-color);"></i> ${item.label}</div>
+                                    <h1 style="font-size: 2.8rem; font-weight: 800; margin-bottom: 10px; color: #fff; text-shadow: 0 4px 12px rgba(0,0,0,0.5); text-align: center;">${titleText}</h1>
+                                    <div class="hero-meta-tags">
+                                        <span>Trending</span><span class="meta-dot">•</span>
+                                        <span>Rating: ${d.vote_average.toFixed(1)}</span><span class="meta-dot">•</span>
+                                        <span>${releaseYear}</span>
+                                    </div>
+                                    <div class="hero-actions">
+                                        <a href="watch.html?id=${d.id}" class="btn-n btn-play"><i class="fas fa-play"></i> Play</a>
+                                        <button class="btn-n btn-mylist" onclick="event.preventDefault(); window.toggleMyList(this, '${encodeURIComponent(titleText)}', '${encodeURIComponent(mobileImg)}', 'watch.html?id=${d.id}')"><i class="fas fa-plus"></i> My List</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    dotsContainer.innerHTML += `<div class="dk-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></div>`;
+                });
+
+                // Attach Slider Logic
+                let currentSlide = 0;
+                const totalSlides = bannerItems.length;
+                let slideInterval;
+
+                function goToSlide(n) {
+                    currentSlide = (n + totalSlides) % totalSlides;
+                    wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+                    document.querySelectorAll('.dk-dot').forEach((dot, idx) => {
+                        dot.classList.toggle('active', idx === currentSlide);
+                    });
                 }
+
+                function nextSlide() { goToSlide(currentSlide + 1); }
+                function startSlideShow() { clearInterval(slideInterval); slideInterval = setInterval(nextSlide, 5000); }
+
+                document.querySelectorAll('.dk-dot').forEach(dot => {
+                    dot.addEventListener('click', (e) => {
+                        goToSlide(parseInt(e.target.getAttribute('data-index')));
+                        startSlideShow();
+                    });
+                });
+
+                let startX = 0;
+                let isDragging = false;
+                
+                wrapper.addEventListener('touchstart', e => {
+                    startX = e.touches[0].clientX;
+                    isDragging = true;
+                    clearInterval(slideInterval);
+                }, {passive: true});
+                
+                wrapper.addEventListener('touchmove', e => {
+                    if(!isDragging) return;
+                }, {passive: true});
+                
+                wrapper.addEventListener('touchend', e => {
+                    if(!isDragging) return;
+                    isDragging = false;
+                    let diffX = startX - e.changedTouches[0].clientX;
+                    if(diffX > 50) nextSlide();
+                    else if(diffX < -50) goToSlide(currentSlide - 1);
+                    startSlideShow();
+                });
+
+                startSlideShow();
 
                 // =========================================================
                 // 2. FETCH GRIDS & MAP TO ACCURATE REGIONAL TMDB ENDPOINTS
@@ -600,7 +640,6 @@
                 const trendRes = await fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${tmdbKey}`);
                 if (trendRes.ok) {
                     const dataTrend = await trendRes.json();
-                    // Exclude anime/animation from the trending grid
                     const items = (dataTrend.results || [])
                         .filter(i => !(i.genre_ids && i.genre_ids.includes(16)))
                         .slice(0, 15).map(i => ({
@@ -613,7 +652,6 @@
                     fuse = new Fuse(items, { keys: ['title'], threshold: 0.4 });
                 }
 
-                // Configuration grid items mapping schema (Anime excluded via without_genres=16)
                 const gridConfigs = [
                     { id: 'kdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=ko&sort_by=popularity.desc&without_genres=16`, label: "K-Drama" },
                     { id: 'cdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=zh&sort_by=popularity.desc&without_genres=16`, label: "C-Drama" },
@@ -654,7 +692,6 @@
                     if (el) gridObserver.observe(el);
                 });
 
-                // Continue Watching system execution
                 renderContinueWatching();
                 window.addEventListener('historySynced', renderContinueWatching);
 
@@ -688,29 +725,28 @@
             } catch(e) { console.error("CW Engine exception", e); }
         }
 
-        // --- UNIFIED SEARCH HANDLER FOR PC & MOBILE ---
-        const bindSearch = (inputId, resultsId) => {
-            const inputEl = document.getElementById(inputId);
-            const resultsEl = document.getElementById(resultsId);
-            
-            if (inputEl && resultsEl) {
+        // --- FIXED SEARCH CONTROLLER WITH ANIME FILTER SCHEMAS ---
+        const bindDynamicSearch = (inputId, resultsId) => {
+            const searchInput = document.getElementById(inputId);
+            const searchResults = document.getElementById(resultsId);
+
+            if (searchInput && searchResults) {
                 let debounceTimer; 
-                inputEl.addEventListener('input', () => {
+                searchInput.addEventListener('input', () => {
                     clearTimeout(debounceTimer); 
                     debounceTimer = setTimeout(async () => {
-                        const queryStr = inputEl.value.trim();
-                        if (queryStr.length < 1) { resultsEl.style.display = 'none'; return; }
+                        const queryStr = searchInput.value.trim();
+                        if (queryStr.length < 1) { searchResults.style.display = 'none'; return; }
                         
                         try {
                             const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(queryStr)}`);
                             if (searchRes.ok) {
                                 const searchData = await searchRes.json();
-                                // Exclude genre 16 (Animation/Anime) and restrict purely to TV/Movies
                                 const resultsMapped = (searchData.results || [])
                                     .filter(i => (i.media_type === 'tv' || i.media_type === 'movie') && !(i.genre_ids && i.genre_ids.includes(16)))
                                     .slice(0, 8);
                                 
-                                resultsEl.innerHTML = resultsMapped.map(item => {
+                                searchResults.innerHTML = resultsMapped.map(item => {
                                     const title = item.name || item.title;
                                     const poster = item.poster_path ? `https://image.tmdb.org/t/p/w92${item.poster_path}` : 'default-poster.jpg';
                                     return `
@@ -719,7 +755,7 @@
                                         <div><div class="search-result-title">${title}</div><small style="color:var(--primary-color);">${item.media_type.toUpperCase()}</small></div>
                                     </a>`;
                                 }).join('');
-                                resultsEl.style.display = 'block';
+                                searchResults.style.display = 'block';
                             }
                         } catch (e) { console.error("Search API crash", e); }
                     }, 300); 
@@ -727,10 +763,8 @@
             }
         };
 
-        // Initialize Search for both viewports
-        bindSearch('searchInput', 'searchResults');           // Desktop
-        bindSearch('mobileSearchInput', 'mobileSearchResults'); // Mobile
-
+        bindDynamicSearch('searchInput', 'searchResults');
+        bindDynamicSearch('mobileSearchInput', 'mobileSearchResults');
 
         // --- FIREBASE ACCOUNT SYNC SYSTEMS ---
         function createProfileSwitcher(profiles) {
@@ -792,6 +826,8 @@
                 const { auth, db, firestoreModule, authModule } = await getFirebase();
                 const { doc, getDoc } = firestoreModule;
                 onAuthStateChanged(auth, async (user) => {
+                    const headerVipBtn = document.getElementById('headerVipBtn');
+                    
                     if (user) {
                         const docSnap = await getDoc(doc(db, "users", user.uid));
                         let userProfiles = [];
@@ -801,6 +837,19 @@
                             const data = docSnap.data();
                             if (data.avatarUrl) legacyAvatar = data.avatarUrl;
                             userProfiles = data.profiles && data.profiles.length > 0 ? data.profiles : [{ id: 'prof_default', name: data.username || "User", avatar: legacyAvatar }];
+                            
+                            const now = Date.now();
+                            let activePlan = "Basic";
+                            if (data.isPremium && data.premiumExpiry > now) {
+                                activePlan = data.premiumPlan || "";
+                            }
+                            if (headerVipBtn) {
+                                if (activePlan.includes('Crown')) {
+                                    headerVipBtn.style.display = 'none';
+                                } else {
+                                    headerVipBtn.style.display = 'inline-flex';
+                                }
+                            }
                         }
 
                         if (localStorage.getItem('dramakan_profile_prompt_date') !== new Date().toDateString() && userProfiles.length > 0) {
@@ -808,14 +857,91 @@
                         } else { updateHeaderAvatar(userProfiles); }
 
                         window.addEventListener('profileSelected', () => { updateHeaderAvatar(userProfiles); });
+                    } else {
+                        if (headerVipBtn) headerVipBtn.style.display = 'inline-flex';
                     }
                 });
             } catch (e) { console.warn("Authentication configuration sync failed", e); }
         }
 
+        // --- INTENT CONTROLLER FOR REQS SYSTEM PROMPTS ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const modal = document.getElementById("dramaModal");
+            const openBtn = document.getElementById("dramaRequestBtn");
+            const closeBtn = document.getElementById("closeDramaModal");
+            const form = document.getElementById("dramaRequestForm");
+
+            if(openBtn && modal) {
+                openBtn.onclick = async () => {
+                    const { auth } = await getFirebase();
+                    // Block execution flows early if visitor token context is missing
+                    if (!auth.currentUser) {
+                        alert("Please log in to request a drama. Redirecting to Login panel...");
+                        window.location.href = "login.html";
+                    } else { modal.style.display = "flex"; }
+                };
+                closeBtn.onclick = () => modal.style.display = "none";
+                window.onclick = (e) => { if(e.target === modal) modal.style.display = "none"; }
+            }
+
+            if(form) {
+                form.onsubmit = async (e) => {
+                    e.preventDefault();
+                    const submitBtn = document.getElementById("submitBtn");
+                    const status = document.getElementById("statusMessage");
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                    submitBtn.disabled = true;
+
+                    try {
+                        const { auth, db, firestoreModule } = await getFirebase();
+                        const { collection, addDoc } = firestoreModule;
+                        const user = auth.currentUser;
+                        
+                        if (!user) throw new Error("Session expired. Authenticate to proceed.");
+                        
+                        const dramaName = document.getElementById("dramaName").value.trim();
+                        await addDoc(collection(db, "requests"), {
+                            userId: user.uid,
+                            userEmail: user.email || "Anonymous profile", 
+                            dramaName: dramaName,
+                            status: "Pending",
+                            notified: false, 
+                            createdAt: Date.now()
+                        });
+
+                        status.style.display = "block";
+                        status.style.color = "#10b981";
+                        status.innerHTML = "<i class='fas fa-check-circle'></i> Dispatched safely to Dashboard! Track progress on profile page.";
+                        form.reset();
+                        setTimeout(() => { modal.style.display = "none"; status.style.display = "none"; }, 2000);
+
+                    } catch (err) {
+                        status.style.display = "block";
+                        status.style.color = "#ef4444";
+                        status.innerHTML = "<i class='fas fa-exclamation-circle'></i> Error: " + err.message;
+                    } finally {
+                        submitBtn.innerText = "Send Request";
+                        submitBtn.disabled = false;
+                    }
+                };
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             initializeDramaSite();
             initAuthSync();
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mSearch = document.getElementById('mobileSearchInput');
+            const pcSearch = document.getElementById('searchInput');
+            if(mSearch && pcSearch) {
+                mSearch.addEventListener('input', (e) => {
+                    pcSearch.value = e.target.value;
+                    pcSearch.dispatchEvent(new Event('input')); 
+                });
+            }
         });
     </script>
 </body>
