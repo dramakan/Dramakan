@@ -36,7 +36,6 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3854581977852778" crossorigin="anonymous"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
-    <script src="indexscript.js" defer></script>
     <script src="bottom-bar.js" defer></script>
     <script src="admin_easter_egg.js" defer></script>
     <script type="module" src="promo-banner.js"></script>
@@ -206,30 +205,27 @@
     <section class="netflix-hero">
         <div class="hero-card">
             <picture class="hero-image-wrapper">
-                <source media="(max-width: 992px)" srcset="https://m.media-amazon.com/images/M/MV5BOTVmZjJlYjQtZDI1My00MzIxLTliYTMtMGE5MjY0YjE5YzUzXkEyXkFqcGc@._V1_.jpg">
-                <img class="hero-image" src="https://occ-0-8407-92.1.nflxso.net/dnm/api/v6/MgXQGyNr1xbI8tJSYiMWv5kXg5g/AAAABd6XpF5O6A0Nn1N6DFN1APYNhe6Q_ZWBvavB5-5E1qS8xoJMlxyOvJt31--gJ6xBAmHKivxXUh0n9x_AKWZptC7da3tWHXBAfSRafyqOwIt17HFOwzWD2DXS3Q.jpg?r=00e" alt="The Wonderfools">
+                <source id="hero-source-mobile" media="(max-width: 992px)" srcset="">
+                <img id="hero-image-main" class="hero-image" src="" alt="Loading Title...">
             </picture>
             
             <div class="hero-depth-shadow"></div>
             <div class="hero-vignette"></div>
             
             <div class="hero-content">
-                <div class="series-badge">
-                    <i class="fas fa-play" style="color: var(--primary-color);"></i> SERIES
+                <div class="series-badge" id="hero-type-badge">
+                    <i class="fas fa-play" style="color: var(--primary-color);"></i> LOADING
                 </div>
                 
-                <img src="https://occ-0-8407-114.1.nflxso.net/dnm/api/v6/S4oi7EPZbv2UEPaukW54OORa0S8/AAAABRGAAtlduMvgp8otXi11dd3Pb5p52nnenldt_51jXeF9MPHbgbr1KWKuS1vGGME2Ne0Rq5NCmNGhCfUwtX6_B6J7bbhtAckVEQ.png?r=e4d" alt="The Wonderfools" class="hero-title-graphic-img">
-                <h1 style="display:none;">The Wonderfools</h1> 
+                <h1 id="hero-title-text" style="font-size: 2.8rem; font-weight: 800; margin-bottom: 10px; color: #fff; text-shadow: 0 4px 12px rgba(0,0,0,0.5); text-align: center;"></h1> 
                 
-                <div class="hero-meta-tags">
-                    <span>Show</span><span class="meta-dot">•</span><span>Thriller</span><span class="meta-dot">•</span><span>2026</span><span class="meta-dot">•</span><span>1 Season</span>
-                </div>
+                <div class="hero-meta-tags" id="hero-meta-container"></div>
                 
                 <div class="hero-actions">
-                    <a href="watch.html?id=4ZLbqevF7uHghbfNqrpP" class="btn-n btn-play">
+                    <a id="hero-play-link" href="#" class="btn-n btn-play">
                         <i class="fas fa-play"></i> Play
                     </a>
-                    <button class="btn-n btn-mylist" onclick="event.preventDefault(); window.toggleMyList(this, 'The Wonderfools', 'https://preview.redd.it/perfect-crown-episodes-1-2-v0-rccoh9yt38ug1.jpg', 'watch.html?id=4ZLbqevF7uHghbfNqrpP')">
+                    <button id="hero-mylist-btn" class="btn-n btn-mylist">
                         <i class="fas fa-plus"></i> My List
                     </button>
                 </div>
@@ -473,32 +469,377 @@
         </a>
     </nav>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const mSearch = document.getElementById('mobileSearchInput');
-            const mResults = document.getElementById('mobileSearchResults');
-            const pcSearch = document.getElementById('searchInput');
-            const pcResults = document.getElementById('searchResults');
-            if(mSearch && pcSearch) {
-                mSearch.addEventListener('input', (e) => {
-                    pcSearch.value = e.target.value;
-                    pcSearch.dispatchEvent(new Event('input')); 
-                });
-                const observer = new MutationObserver(() => {
-                    mResults.innerHTML = pcResults.innerHTML;
-                    mResults.style.display = pcResults.style.display;
-                });
-                if(pcResults) observer.observe(pcResults, { childList: true, attributes: true, subtree: true });
-            }
+    <!-- --- SEAMLESS EMBEDDED ENGINE TO POPULATE API DATA --- -->
+    <script type="module">
+        // --- 0. THEME, HARDWARE & CSS FIXES ---
+        (function initUI() {
+            const injectedStyles = document.createElement('style');
+            injectedStyles.innerHTML = `
+                #searchInput { padding: 10px 40px 10px 40px !important; }
+                .search-bar i.fa-search, .search-filter-link { pointer-events: none; z-index: 2; }
+                
+                #home-profile-switcher-overlay {
+                    position: fixed; inset: 0; background: var(--bg-base, #050507); z-index: 999999;
+                    display: flex; flex-direction: column; justify-content: center; align-items: center;
+                    transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1), opacity 0.8s ease;
+                    font-family: 'Poppins', sans-serif;
+                }
+                #home-profile-switcher-overlay.hidden { transform: scale(1.1); opacity: 0; pointer-events: none; }
+                .switcher-title { font-size: 2.5rem; font-weight: 500; margin-bottom: 40px; letter-spacing: 1px; color: #fff; text-shadow: 0 4px 20px rgba(0,0,0,0.5); text-align: center;}
+                .profiles-list { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; max-width: 800px;}
+                .profile-select-card { display: flex; flex-direction: column; align-items: center; gap: 15px; cursor: pointer; transition: all 0.3s ease; opacity: 0; transform: translateY(20px); animation: fadeUp 0.6s ease forwards 0.2s; }
+                .profile-select-card:hover .switcher-avatar-img { border-color: #fff; transform: scale(1.05); }
+                .profile-select-card:hover .switcher-name { color: #fff; }
+                .switcher-avatar-img { width: 140px; height: 140px; border-radius: 16px; object-fit: cover; border: 3px solid transparent; transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.5); background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 4rem; color: #fff;}
+                .switcher-name { color: #9CA3AF; font-size: 1.1rem; transition: color 0.3s ease; font-weight: 500;}
+                
+                @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+                @media (max-width: 768px) {
+                    .switcher-title { font-size: 1.8rem; }
+                    .switcher-avatar-img { width: 100px; height: 100px; font-size: 3rem; }
+                }
+                
+                .ad-card-wrapper {
+                    position: relative; background: rgba(26, 26, 29, 0.45); 
+                    border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px;
+                    display: flex; align-items: center; justify-content: center;
+                    overflow: hidden; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+                    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); aspect-ratio: 2/3; 
+                }
+                .ad-card-wrapper::before {
+                    content: 'Ad'; position: absolute; top: 6px; left: 8px;
+                    font-size: 0.65rem; font-weight: 600; color: rgba(255,255,255,0.6);
+                    background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px; z-index: 10;
+                }
+            `;
+            document.head.appendChild(injectedStyles);
 
-            // Push all static ads present on load
+            let isLowEnd = false;
+            if ('deviceMemory' in navigator && navigator.deviceMemory < 4) isLowEnd = true;
+            if ('hardwareConcurrency' in navigator && navigator.hardwareConcurrency <= 4) isLowEnd = true;
+            if ('connection' in navigator && (navigator.connection.effectiveType === '3g' || navigator.connection.effectiveType === '2g')) isLowEnd = true;
+
+            if (isLowEnd) {
+                document.documentElement.classList.add('lite-mode');
+            }
+        })();
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
+            authDomain: "dramakan007.firebaseapp.com",
+            projectId: "dramakan007"
+        };
+
+        let firebaseInstance = null;
+        async function getFirebase() {
+            if (firebaseInstance) return firebaseInstance;
+            const [appModule, authModule, firestoreModule] = await Promise.all([
+                import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"),
+                import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"),
+                import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js")
+            ]);
+            const app = !appModule.getApps().length ? appModule.initializeApp(firebaseConfig) : appModule.getApp();
+            const auth = authModule.getAuth(app);
+            const db = firestoreModule.getFirestore(app);
+            firebaseInstance = { app, auth, db, appModule, authModule, firestoreModule };
+            return firebaseInstance;
+        }
+
+        const tmdbKey = "014fbdbe962cb38379e09e31d0652459";
+        let fuse;
+
+        function populateGrid(elementId, items) {
+            const grid = document.getElementById(elementId);
+            if (!grid) return;
+            
+            let htmlContent = '';
+            
+            items.forEach((drama, index) => {
+                const safeTitle = encodeURIComponent(drama.title);
+                const safeImg = encodeURIComponent(drama.img);
+                const safeLink = encodeURIComponent(drama.link);
+                
+                htmlContent += `
+                <a href="${drama.link}" class="drama-card">
+                    <div class="drama-card-img"><img src="${drama.img}" alt="${drama.title}" loading="lazy" decoding="async"></div>
+                    <div class="drama-card-info">
+                        <h3 class="drama-card-title">${drama.title}</h3>
+                        <p class="drama-card-meta">${drama.type}</p>
+                    </div>
+                    <button class="bookmark-btn" onclick="event.preventDefault(); window.toggleMyList(this, '${safeTitle}', '${safeImg}', '${safeLink}')" title="Add to My List">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </a>
+                `;
+
+                if (index === 2) {
+                    if (['trending-grid', 'kdrama-grid', 'cdrama-grid', 'jdrama-grid', 'Movie-grid'].includes(elementId)) {
+                        let adSlot = "8531757983"; 
+                        let layoutKey = "-6t+ed+2i-1n-4w"; 
+                        
+                        if (elementId === 'kdrama-grid') { adSlot = "2322807703"; layoutKey = "+21+s4-18-23+8q"; }
+                        else if (elementId === 'jdrama-grid') { adSlot = "6975017511"; layoutKey = "+2a+rx+1+2-3"; }
+
+                        htmlContent += `
+                        <div class="drama-card ad-card-wrapper">
+                            <ins class="adsbygoogle" 
+                                style="display:block; width:100%; height:100%;" 
+                                data-ad-format="fluid" 
+                                data-ad-layout-key="${layoutKey}" 
+                                data-ad-client="ca-pub-3854581977852778" 
+                                data-ad-slot="${adSlot}"></ins>
+                        </div>`;
+                    }
+                }
+            });
+
+            grid.innerHTML = htmlContent;
+
             setTimeout(() => {
-                const staticAds = document.querySelectorAll('.adsbygoogle');
-                staticAds.forEach(() => {
+                const uninitializedAds = grid.querySelectorAll('.adsbygoogle:not([data-adsbygoogle-status="done"])');
+                uninitializedAds.forEach(() => {
                     try { (adsbygoogle = window.adsbygoogle || []).push({}); } 
-                    catch (e) { console.error("Static Ad Init Error", e); }
+                    catch (e) { console.error("Dynamic Ad Init Error", e); }
                 });
-            }, 800);
+            }, 500);
+        }
+
+        async function initializeDramaSite() {
+            try {
+                // =========================================================
+                // 1. DYNAMICALLY FETCH MOST TRENDING SHOW FOR MAIN HERO BANNER
+                // =========================================================
+                const heroRes = await fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${tmdbKey}`);
+                if (heroRes.ok) {
+                    const heroData = await heroRes.json();
+                    const premiumFeatured = heroData.results[0];
+                    if (premiumFeatured) {
+                        const bgImg = `https://image.tmdb.org/t/p/original${premiumFeatured.backdrop_path || premiumFeatured.poster_path}`;
+                        const mobileImg = `https://image.tmdb.org/t/p/w780${premiumFeatured.poster_path || premiumFeatured.backdrop_path}`;
+                        const titleText = premiumFeatured.name || premiumFeatured.title || "Featured Show";
+                        const releaseYear = (premiumFeatured.first_air_date || premiumFeatured.release_date || "2026").substring(0, 4);
+
+                        document.getElementById('hero-source-mobile').setAttribute('srcset', mobileImg);
+                        document.getElementById('hero-image-main').setAttribute('src', bgImg);
+                        document.getElementById('hero-image-main').setAttribute('alt', titleText);
+                        document.getElementById('hero-title-text').textContent = titleText;
+                        document.getElementById('hero-type-badge').innerHTML = `<i class="fas fa-play" style="color: var(--primary-color);"></i> TRENDING`;
+                        
+                        document.getElementById('hero-meta-container').innerHTML = `
+                            <span>Trending</span><span class="meta-dot">•</span>
+                            <span>Rating: ${premiumFeatured.vote_average.toFixed(1)}</span><span class="meta-dot">•</span>
+                            <span>${releaseYear}</span>
+                        `;
+                        document.getElementById('hero-play-link').setAttribute('href', `watch.html?id=${premiumFeatured.id}`);
+                        document.getElementById('hero-mylist-btn').setAttribute('onclick', `event.preventDefault(); window.toggleMyList(this, '${encodeURIComponent(titleText)}', '${encodeURIComponent(mobileImg)}', 'watch.html?id=${premiumFeatured.id}')`);
+                    }
+                }
+
+                // =========================================================
+                // 2. FETCH GRIDS & MAP TO ACCURATE REGIONAL TMDB ENDPOINTS
+                // =========================================================
+                const trendRes = await fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${tmdbKey}`);
+                if (trendRes.ok) {
+                    const dataTrend = await trendRes.json();
+                    const items = (dataTrend.results || []).slice(0, 15).map(i => ({
+                        title: i.name || i.title,
+                        img: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : 'default-poster.jpg',
+                        link: `watch.html?id=${i.id}`,
+                        type: "Trending Now"
+                    }));
+                    populateGrid('trending-grid', items);
+                    fuse = new Fuse(items, { keys: ['title'], threshold: 0.4 });
+                }
+
+                // Configuration grid items mapping schema
+                const gridConfigs = [
+                    { id: 'kdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=ko&sort_by=popularity.desc`, label: "K-Drama" },
+                    { id: 'cdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=zh&sort_by=popularity.desc`, label: "C-Drama" },
+                    { id: 'jdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=ja&sort_by=popularity.desc`, label: "J-Drama" },
+                    { id: 'pdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=tl&sort_by=popularity.desc`, label: "P-Drama" },
+                    { id: 'tdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=th&sort_by=popularity.desc`, label: "T-Drama" },
+                    { id: 'turkishdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=tr&sort_by=popularity.desc`, label: "Turkish-Drama" },
+                    { id: 'usdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=en&with_origin_country=US&sort_by=popularity.desc`, label: "US-Drama" },
+                    { id: 'Movie-grid', url: `https://api.themoviedb.org/3/discover/movie?api_key=${tmdbKey}&sort_by=popularity.desc`, label: "Movie" }
+                ];
+
+                const gridObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(async entry => {
+                        if (entry.isIntersecting) {
+                            const config = gridConfigs.find(c => c.id === entry.target.id);
+                            if (config) {
+                                try {
+                                    const sectionRes = await fetch(config.url);
+                                    if (sectionRes.ok) {
+                                        const resData = await sectionRes.json();
+                                        const cleanMapped = (resData.results || []).slice(0, 15).map(i => ({
+                                            title: i.name || i.title,
+                                            img: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : 'default-poster.jpg',
+                                            link: `watch.html?id=${i.id}`,
+                                            type: config.label
+                                        }));
+                                        populateGrid(config.id, cleanMapped);
+                                    }
+                                } catch (e) { console.warn("Section load error", e); }
+                                observer.unobserve(entry.target);
+                            }
+                        }
+                    });
+                }, { rootMargin: '300px' });
+
+                gridConfigs.forEach(config => {
+                    const el = document.getElementById(config.id);
+                    if (el) gridObserver.observe(el);
+                });
+
+                // Continue Watching system execution
+                renderContinueWatching();
+                window.addEventListener('historySynced', renderContinueWatching);
+
+            } catch (err) { console.error("Database connection exception", err); }
+        }
+
+        function renderContinueWatching() {
+            try {
+                const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                const historyArr = Object.values(historyObj)
+                    .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
+                    .sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
+                
+                const cwSection = document.getElementById('continue-watching-section');
+                const cwGrid = document.getElementById('continue-watching-grid');
+                
+                if (cwSection && cwGrid) {
+                    if(historyArr.length > 0) {
+                        cwSection.style.display = 'block';
+                        cwGrid.innerHTML = historyArr.map(item => `
+                            <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
+                                <div class="drama-card-img"><img src="${item.img}" alt="${item.title}" loading="lazy" decoding="async"></div>
+                                <div class="drama-card-info">
+                                    <h3 class="drama-card-title">${item.title}</h3>
+                                    <p class="drama-card-meta" style="color: var(--primary-color);"><i class="fas fa-play"></i> Resume</p>
+                                </div>
+                            </a>
+                        `).join('');
+                    } else { cwSection.style.display = 'none'; }
+                }
+            } catch(e) { console.error("CW Engine exception", e); }
+        }
+
+        if (searchInput) {
+            let debounceTimer; 
+            searchInput.addEventListener('input', () => {
+                clearTimeout(debounceTimer); 
+                debounceTimer = setTimeout(async () => {
+                    const queryStr = searchInput.value.trim();
+                    if (queryStr.length < 1) { searchResults.style.display = 'none'; return; }
+                    
+                    try {
+                        const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(queryStr)}`);
+                        if (searchRes.ok) {
+                            const searchData = await searchRes.json();
+                            const resultsMapped = (searchData.results || []).slice(0, 8).filter(i => i.media_type === 'tv' || i.media_type === 'movie');
+                            
+                            searchResults.innerHTML = resultsMapped.map(item => {
+                                const title = item.name || item.title;
+                                const poster = item.poster_path ? `https://image.tmdb.org/t/p/w92${item.poster_path}` : 'default-poster.jpg';
+                                return `
+                                <a href="watch.html?id=${item.id}" class="search-result-item">
+                                    <img src="${poster}" width="45" height="60" loading="lazy" decoding="async">
+                                    <div><div class="search-result-title">${title}</div><small style="color:var(--primary-color);">${item.media_type.toUpperCase()}</small></div>
+                                </a>`;
+                            }).join('');
+                            searchResults.style.display = 'block';
+                        }
+                    } catch (e) { console.error("Search API crash", e); }
+                }, 300); 
+            });
+        }
+
+        // --- FIREBASE ACCOUNT SYNC SYSTEMS ---
+        function createProfileSwitcher(profiles) {
+            if (document.getElementById('home-profile-switcher-overlay')) return;
+            const overlayContainer = document.createElement('div');
+            overlayContainer.id = 'home-profile-switcher-overlay';
+            
+            let profilesHtml = '';
+            profiles.forEach((prof) => {
+                const isEmoji = prof.avatar && prof.avatar.length <= 10 && !prof.avatar.includes('http') && !prof.avatar.includes('data:image');
+                const avatarHtml = isEmoji ? `<div class="switcher-avatar-img">${prof.avatar}</div>` : `<img class="switcher-avatar-img" src="${prof.avatar}" alt="${prof.name}">`;
+                profilesHtml += `<div class="profile-select-card" data-id="${prof.id}">${avatarHtml}<span class="switcher-name">${prof.name}</span></div>`;
+            });
+
+            overlayContainer.innerHTML = `<h2 class="switcher-title">Who's watching?</h2><div class="profiles-list">${profilesHtml}</div>`;
+            document.body.appendChild(overlayContainer);
+
+            overlayContainer.querySelectorAll('.profile-select-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    localStorage.setItem('dramakan_profile_prompt_date', new Date().toDateString());
+                    localStorage.setItem('dramakan_active_profile_id', card.getAttribute('data-id'));
+                    overlayContainer.classList.add('hidden');
+                    setTimeout(() => overlayContainer.remove(), 800);
+                    window.dispatchEvent(new CustomEvent('profileSelected'));
+                });
+            });
+        }
+
+        function updateHeaderAvatar(profiles) {
+            const activeId = localStorage.getItem('dramakan_active_profile_id');
+            let activeProf = profiles[0]; 
+            if (activeId) { const found = profiles.find(p => p.id === activeId); if (found) activeProf = found; }
+
+            const avatarUrl = activeProf.avatar;
+            const authBtn = document.getElementById('topAuthBtn'); 
+            const bottomAuthBtn = document.getElementById('bottomAuthBtn');
+
+            let avatarHtml = (avatarUrl && avatarUrl.length <= 10 && !avatarUrl.includes('http') && !avatarUrl.includes('data:image'))
+                ? `<div style="width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #fff;">${avatarUrl}</div>`
+                : `<img src="${avatarUrl}" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color);">`;
+
+            if (authBtn) {
+                authBtn.href = "profile.html"; authBtn.innerHTML = avatarHtml; 
+                authBtn.style.padding = "0"; authBtn.style.background = "transparent"; authBtn.style.border = "none";
+            }
+            if (bottomAuthBtn) {
+                const navIcon = bottomAuthBtn.querySelector('.nav-icon');
+                if (navIcon) {
+                    navIcon.outerHTML = (avatarUrl && avatarUrl.length <= 10 && !avatarUrl.includes('http') && !avatarUrl.includes('data:image'))
+                        ? `<div class="nav-icon" style="width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin-bottom: 4px; border: 1px solid var(--primary-color); color: #fff;">${avatarUrl}</div>`
+                        : `<img src="${avatarUrl}" class="nav-icon" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; margin-bottom: 4px; border: 1px solid var(--primary-color);">`;
+                }
+                bottomAuthBtn.href = "profile.html";
+            }
+        }
+
+        async function initAuthSync() {
+            try {
+                const { auth, db, firestoreModule, authModule } = await getFirebase();
+                const { doc, getDoc } = firestoreModule;
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        const docSnap = await getDoc(doc(db, "users", user.uid));
+                        let userProfiles = [];
+                        let legacyAvatar = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(user.displayName || user.email || "User")}`;
+                        
+                        if (docSnap.exists()) {
+                            const data = docSnap.data();
+                            if (data.avatarUrl) legacyAvatar = data.avatarUrl;
+                            userProfiles = data.profiles && data.profiles.length > 0 ? data.profiles : [{ id: 'prof_default', name: data.username || "User", avatar: legacyAvatar }];
+                        }
+
+                        if (localStorage.getItem('dramakan_profile_prompt_date') !== new Date().toDateString() && userProfiles.length > 0) {
+                            createProfileSwitcher(userProfiles);
+                        } else { updateHeaderAvatar(userProfiles); }
+
+                        window.addEventListener('profileSelected', () => { updateHeaderAvatar(userProfiles); });
+                    }
+                });
+            } catch (e) { console.warn("Authentication configuration sync failed", e); }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeDramaSite();
+            initAuthSync();
         });
     </script>
 </body>
