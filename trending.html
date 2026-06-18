@@ -3,63 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trending Dramas - DramaKan</title>
+    
+    <title>Trending Dramas - Dramakan</title>
+    <meta name="title" content="Trending Dramas - Dramakan">
+    <meta name="description" content="Stream the most popular trending Asian dramas online in HD. Free streaming with daily updates on DramaKan.">
+    <meta name="keywords" content="kdrama, cdrama, jdrama, trending dramas, watch dramas online, Asian dramas, Dramakan">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://dramakan.site/trending.html">
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="global.css">
-    <script src="bottom-bar.js" defer></script><script src="lightmode.js"></script> 
     
+    <link rel="stylesheet" href="indexstyle.css">
     
-    <link rel="stylesheet" href="lightmode.css"> 
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3854581977852778" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
+    <script src="indexscript.js" defer></script>
+    <script src="bottom-bar.js" defer></script>
+    <script src="admin_easter_egg.js" defer></script>
+    <script type="module" src="promo-banner.js"></script>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Dramakan">
+    <meta name="theme-color" content="#8A2BE2">
+    
+    <style>
+        /* --- PC HEADER & AnyKan TOGGLE STYLES --- */
+        .site-switcher {
+            display: flex;
+            align-items: center;
+            margin-left: 10px;
+        }
+        .switcher-track {
+            display: flex;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 4px;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+        }
+        
+        .nav-links .switcher-track .switch-btn {
+            padding: 6px 14px !important;
+            border-radius: 50px !important;
+            font-size: 0.85rem !important;
+            font-weight: 600 !important;
+            color: #a1a1aa !important;
+            text-decoration: none !important;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
+            opacity: 1 !important;
+            border: none !important;
+            width: auto !important;
+            background: transparent !important;
+            display: inline-block;
+            text-shadow: none !important;
+        }
+        .nav-links .switcher-track .switch-btn.active {
+            background: linear-gradient(135deg, #8A2BE2 0%, #6a1b9a 100%) !important;
+            color: #fff !important;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4) !important;
+        }
+        .nav-links .switcher-track .switch-btn:not(.active):hover {
+            color: #fff !important;
+            background: rgba(255,255,255,0.08) !important;
+        }
+
+        /* Responsive Page Padding Correction for Title Page View */
+        .trending-page-wrapper {
+            padding-top: 140px;
+        }
+
+        /* Full Grid Layout instead of Carousel View for View-All Mode */
+        .grid-layout-view {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+            gap: 20px 12px !important;
+            padding: 0 4% 40px 4% !important;
+        }
+
+        @media (min-width: 768px) {
+            .grid-layout-view {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+                gap: 25px 20px !important;
+            }
+            .trending-page-wrapper {
+                padding-top: 100px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .site-switcher {
+                margin-top: 10px;
+                width: 100%;
+                margin-left: 0;
+            }
+            .switcher-track {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+            }
+            .nav-links .switcher-track .switch-btn {
+                text-align: center;
+                flex: 1;
+                padding: 10px 15px !important;
+            }
+            .header-right { gap: 10px; }
+        }
+
+        /* --- PREMIUM LIQUID GLASS AD CONTAINERS --- */
+        .premium-ad-container {
+            margin: 30px auto; 
+            width: 95%; 
+            max-width: 1200px;
+            background: rgba(26, 26, 29, 0.45); 
+            border: 1px solid rgba(138, 43, 226, 0.2);
+            border-radius: 16px; 
+            padding: 15px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            overflow: hidden; 
+            position: relative;
+            z-index: 1;
+        }
+        .premium-ad-container::before {
+            content: 'ADVERTISEMENT'; 
+            position: absolute; 
+            top: 4px; 
+            left: 15px;
+            font-size: 0.55rem; 
+            color: rgba(255,255,255,0.3); 
+            letter-spacing: 2px;
+        }
+        .top-ad-container { min-height: 120px; }
+        .multiplex-container { 
+            min-height: 350px; 
+            margin-bottom: 80px; 
+            background: transparent; 
+            border: none; 
+            box-shadow: none; 
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+    </style>
 </head>
 <body>
+
     <header class="main-header">
-        <div class="container">
-            <div class="header-top-row">
+        <div class="header-container">
+            <div class="header-left">
                 <a href="index.html" class="logo">Drama<span>Kan</span></a>
-                <a href="login.html" class="header-download-btn" id="topAuthBtn"><i class="fa-solid fa-user-plus"></i> Login</a>
             </div>
+
+            <nav class="nav-links pc-nav" id="navLinks">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="community.html">Community</a></li>
+                    <li><a href="mylist.html">My List</a></li>
+                    <li class="site-switcher">
+                        <div class="switcher-track">
+                            <span class="switch-btn active">Dramakan</span>
+                            <a href="https://AnyKan.fun" class="switch-btn">Anykan</a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="header-right" style="display: flex; align-items: center;">
+                <div class="search-bar pc-search-bar">
+                    <i class="fas fa-search"></i>
+                    <input id="searchInput" type="text" placeholder="Search drama...">
+                    <a href="filter.html" class="search-filter-link" title="Advanced Filter">
+                        <i class="fas fa-sliders-h"></i>
+                    </a>
+                    <div id="searchResults" class="search-results"></div>
+                </div>
+
+                <a href="subscription.html" id="headerVipBtn" class="vip-header-btn status-basic">
+                    <i class="fas fa-bolt"></i> Upgrade VIP
+                </a>
+                
+                <a href="login.html" class="header-profile-btn" id="topAuthBtn">
+                    <i class="fa-solid fa-user"></i> <span>Login / Sign Up</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="mobile-search-container">
+            <div class="mobile-glass-search">
+                <i class="fas fa-search"></i>
+                <input id="mobileSearchInput" type="text" placeholder="Search drama...">
+                <a href="filter.html" class="search-filter-link"><i class="fas fa-sliders-h"></i></a>
+            </div>
+            <div id="mobileSearchResults" class="search-results mobile-search-results-dropdown"></div>
         </div>
     </header>
 
-    <main class="container" style="padding-top: 30px; padding-bottom: 80px;">
-        <section class="category-header">
-            <h1 class="category-title"><span>Trending</span> Dramas</h1>
-        </section>
-        <div id="category-grid" class="drama-grid">
-            <div style="grid-column: 1/-1; text-align: center; padding: 50px 0;"><i class="fas fa-circle-notch fa-spin fa-2x" style="color: var(--primary-color);"></i></div>
+    <div class="trending-page-wrapper">
+        <div class="premium-ad-container top-ad-container">
+            <ins class="adsbygoogle"
+                style="display:inline-block; width:100%; height:90px;"
+                data-ad-client="ca-pub-3854581977852778"
+                data-ad-slot="3893519291"></ins>
         </div>
-    </main>
+
+        <main>
+            <section class="latest-episodes">
+                <div class="container">
+                    <div class="section-glass-box">
+                        <div class="section-header">
+                            <h2 class="section-title"><i class="fas fa-fire" style="color: #9D4EDD; margin-right: 8px;"></i> Trending Now</h2>
+                        </div>
+                        <div id="trendingGrid" class="drama-grid grid-layout-view">
+                            <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted-color);">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 10px;"></i>
+                                <p>Fetching trends from database...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="premium-ad-container multiplex-container">
+                <ins class="adsbygoogle"
+                    style="display:block; width:100%;"
+                    data-ad-format="autorelaxed"
+                    data-ad-client="ca-pub-3854581977852778"
+                    data-ad-slot="4689246127"></ins>
+            </div>
+        </main>
+    </div>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <a href="#" class="logo">Drama<span>Kan</span></a>
+                <div class="footer-socials">
+                    <a href="contact.html"><i class="fas fa-address-book"></i></a>
+                    <a href="privacy.html"><i class="fas fa-file-alt"></i></a>
+                    <a href="terms.html"><i class="fas fa-file-contract"></i></a>
+                    <a href="disclaimer.html"><i class="fas fa-shield-alt"></i></a>
+                </div>
+            </div>
+            <div class="footer-bottom">&copy; 2026 Dramakan. All rights reserved.</div>
+        </div>
+    </footer>
 
     <nav class="bottom-nav">
-        <a href="index.html" class="bottom-nav-item"><i class="fa-solid fa-house nav-icon"></i><span class="nav-label">Home</span></a>
-        <a href="community.html" class="bottom-nav-item"><i class="fa-solid fa-users nav-icon"></i><span class="nav-label">Community</span></a>
-        <a href="mylist.html" class="bottom-nav-item"><i class="fa-solid fa-bookmark nav-icon"></i><span class="nav-label">My List</span></a>
-        <a href="login.html" class="bottom-nav-item" id="bottomAuthBtn"><i class="fa-solid fa-user nav-icon"></i><span class="nav-label">Profile</span></a>
+        <a href="index.html" class="bottom-nav-item">
+            <i class="fa-solid fa-house nav-icon"></i>
+            <span class="nav-label">Home</span>
+        </a>
+       <a href="community.html" class="bottom-nav-item">
+            <i class="fa-solid fa-bell nav-icon"></i>
+            <span class="nav-label">Updates</span>
+        </a>
+        <a href="mylist.html" class="bottom-nav-item">
+            <i class="fa-solid fa-bookmark nav-icon"></i>
+            <span class="nav-label">My List</span>
+        </a>
+        <a href="login.html" class="bottom-nav-item" id="bottomAuthBtn">
+            <i class="fa-solid fa-user nav-icon"></i>
+        </a>
     </nav>
 
-    <script type="module">
-        const firebaseConfig = { apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", authDomain: "dramakan007.firebaseapp.com", projectId: "dramakan007" };
-        async function loadCategory() {
-            const grid = document.getElementById('category-grid'); let data = [];
-            const cached = localStorage.getItem('dramakan_master_db');
-            if(cached) { data = JSON.parse(cached); } else {
-                try {
-                    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
-                    const { getFirestore, collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
-                    const app = initializeApp(firebaseConfig); const db = getFirestore(app);
-                    const snap = await getDocs(collection(db, "dramas"));
-                    snap.forEach(d => data.push(d.data())); localStorage.setItem('dramakan_master_db', JSON.stringify(data));
-                } catch(e) {}
+    <script>
+        async function fetchTrending() {
+            const grid = document.getElementById('trendingGrid');
+            const API_KEY = '014fbdbe962cb38379e09e31d0652459';
+            const url = `https://api.themoviedb.org/3/trending/tv/week?api_key=${API_KEY}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.results && data.results.length > 0) {
+                    grid.innerHTML = data.results.map(item => {
+                        const poster = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'default-poster.jpg';
+                        const title = item.name || item.title || "Unknown Title";
+                        const rating = item.vote_average ? item.vote_average.toFixed(1) : "N/A";
+                        const year = (item.first_air_date || item.release_date || "N/A").substring(0, 4);
+
+                        return `
+                            <a href="watch.html?id=${item.id}" class="drama-card">
+                                <div class="drama-card-img">
+                                    <img src="${poster}" alt="${title}" onerror="this.src='default-poster.jpg'">
+                                </div>
+                                <div class="drama-card-info">
+                                    <h3 class="drama-card-title">${title}</h3>
+                                    <div class="drama-card-meta">
+                                        <span>${year}</span> • <span><i class="fas fa-star" style="color: #fbbf24;"></i> ${rating}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        `;
+                    }).join('');
+                } else {
+                    grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:var(--text-muted-color);">No trending items found.</p>';
+                }
+            } catch (err) {
+                grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:var(--text-muted-color);">Error loading content from TMDB API.</p>';
             }
-            const filtered = data.filter(d => d.Trend === "T"); // Filter by Trend key
-            if(filtered.length === 0) { grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted-color);">No trending dramas right now.</div>'; return; }
-            grid.innerHTML = filtered.map(drama => {
-                const safeTitle = encodeURIComponent(drama.title); const safeImg = encodeURIComponent(drama.img); const safeLink = encodeURIComponent(drama.link);
-                return `<a href="${drama.link}" class="drama-card"><div class="drama-card-img"><img src="${drama.img}" loading="lazy"></div><div class="drama-card-info"><h3 class="drama-card-title">${drama.title}</h3><p class="drama-card-meta">${drama.type}</p></div><button class="bookmark-btn" onclick="event.preventDefault(); window.toggleMyList(this, '${safeTitle}', '${safeImg}', '${safeLink}')"><i class="fas fa-plus"></i></button></a>`;
-            }).join('');
         }
-        document.addEventListener('DOMContentLoaded', loadCategory);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchTrending();
+
+            const mSearch = document.getElementById('mobileSearchInput');
+            const mResults = document.getElementById('mobileSearchResults');
+            const pcSearch = document.getElementById('searchInput');
+            const pcResults = document.getElementById('searchResults');
+            
+            if(mSearch && pcSearch) {
+                mSearch.addEventListener('input', (e) => {
+                    pcSearch.value = e.target.value;
+                    pcSearch.dispatchEvent(new Event('input')); 
+                });
+                const observer = new MutationObserver(() => {
+                    mResults.innerHTML = pcResults.innerHTML;
+                    mResults.style.display = pcResults.style.display;
+                });
+                if(pcResults) observer.observe(pcResults, { childList: true, attributes: true, subtree: true });
+            }
+
+            // Fire layout ad calls
+            setTimeout(() => {
+                const staticAds = document.querySelectorAll('.adsbygoogle');
+                staticAds.forEach(() => {
+                    try { (adsbygoogle = window.adsbygoogle || []).push({}); } 
+                    catch (e) { console.error("Ad block rendering exception", e); }
+                });
+            }, 800);
+        });
     </script>
 </body>
 </html>

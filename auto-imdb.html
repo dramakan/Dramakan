@@ -106,6 +106,7 @@
     <div class="deploy-bar">
         <div class="btn-group">
             <button id="autoFixBtn" class="autofix-btn" onclick="triggerAutoFixAll()"><i class="fas fa-magic"></i> Auto-Fix All Possible</button>
+            <button id="migrateBtn" class="autofix-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);" onclick="triggerIDMigration()"><i class="fas fa-exchange-alt"></i> Migrate Docs to TMDB ID</button>
             <button id="deployBtn" class="deploy-btn" onclick="triggerNetlifyBuild()"><i class="fas fa-rocket"></i> Publish Changes to Live Site</button>
         </div>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">Run "Auto-Fix All" first, then manually correct leftovers, and finally Publish.</p>
@@ -122,7 +123,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, updateDoc, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
     const firebaseConfig = { 
@@ -370,6 +371,51 @@
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-save"></i>';
         }
+    };
+
+    // --- Document ID to TMDB ID Migration Logic ---
+    window.triggerIDMigration = async () => {
+        const btn = document.getElementById('migrateBtn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Migrating...';
+        btn.disabled = true;
+
+        try {
+            const snap = await getDocs(collection(db, "dramas"));
+            let migratedCount = 0;
+            let skippedCount = 0;
+
+            const docsToProcess = [];
+            snap.forEach(d => docsToProcess.push({ id: d.id, data: d.data() }));
+
+            for (const item of docsToProcess) {
+                const oldId = item.id;
+                const data = item.data;
+                const tmdbIdStr = data.tmdbId ? String(data.tmdbId).trim() : "";
+
+                // If TMDB ID exists and doesn't already match the current Document ID
+                if (tmdbIdStr && tmdbIdStr !== oldId && tmdbIdStr !== "N/A" && tmdbIdStr !== "Fetching API...") {
+                    // 1. Create a new document using the TMDB ID as the Document ID
+                    await setDoc(doc(db, "dramas", tmdbIdStr), data);
+                    // 2. Delete the old document
+                    await deleteDoc(doc(db, "dramas", oldId));
+                    migratedCount++;
+                } else {
+                    skippedCount++; // Skips if the ID is already correct or missing
+                }
+            }
+
+            alert(`Migration Complete!\n\nSuccessfully Migrated: ${migratedCount} titles\nSkipped (Already correct or missing TMDB ID): ${skippedCount}`);
+            
+            // Reload the broken dramas list to reflect the new database state
+            loadBrokenDramas();
+
+        } catch (e) {
+            alert("Migration Error: " + e.message);
+            console.error("Migration failed:", e);
+        }
+
+        btn.innerHTML = '<i class="fas fa-exchange-alt"></i> Migrate Docs to TMDB ID';
+        btn.disabled = false;
     };
 
     // --- Netlify Rebuild Trigger ---
