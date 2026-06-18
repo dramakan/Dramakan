@@ -129,7 +129,7 @@ onSnapshot(bannerRef, (docSnap) => {
         if (!existsInHub) {
             notifHistory.unshift({
                 id: promoId,
-                title: "Announcement",
+                title: "🔔 Announcement",
                 body: data.message,
                 timestamp: Date.now(),
                 read: false,
