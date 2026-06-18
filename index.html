@@ -88,25 +88,6 @@
             background: rgba(255,255,255,0.08) !important;
         }
 
-        @media (max-width: 992px) {
-            .site-switcher {
-                margin-top: 10px;
-                width: 100%;
-                margin-left: 0;
-            }
-            .switcher-track {
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-            }
-            .nav-links .switcher-track .switch-btn {
-                text-align: center;
-                flex: 1;
-                padding: 10px 15px !important;
-            }
-            .header-right { gap: 10px; }
-        }
-
         /* --- PREMIUM HERO SLIDER CONTROLS --- */
         .hero-slider-container {
             position: relative;
@@ -123,7 +104,6 @@
             display: flex;
             justify-content: center;
         }
-        /* FIX: Absolutely positioned dots to prevent layout hijacking */
         .dk-slider-dots {
             display: flex;
             justify-content: center;
@@ -143,11 +123,138 @@
             transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
         .dk-dot.active {
-            background: var(--primary-color);
+            background: var(--primary-color, #8A2BE2);
             width: 24px;
             border-radius: 4px;
-            box-shadow: 0 0 10px var(--primary-glow);
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.4);
         }
+        
+        .btn-n.active {
+            background: rgba(138, 43, 226, 0.15) !important; 
+            border: 1px solid var(--primary-color) !important; 
+            color: var(--primary-color) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        /* --- MOBILE RESPONSIVE TWEAKS & BOTTOM BAR --- */
+        @media (max-width: 992px) {
+            .site-switcher {
+                margin-top: 10px;
+                width: 100%;
+                margin-left: 0;
+            }
+            .switcher-track {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+            }
+            .nav-links .switcher-track .switch-btn {
+                text-align: center;
+                flex: 1;
+                padding: 10px 15px !important;
+            }
+            .header-right { gap: 10px; }
+
+            /* Hide Text & Visuals on Mobile Hero */
+            .hero-content h1,
+            .hero-content .series-badge,
+            .hero-content .hero-meta-tags,
+            .hero-vignette,
+            .hero-depth-shadow {
+                display: none !important;
+            }
+
+            /* Restructure Mobile Hero Banner to show complete image & place actions below */
+            .hero-card {
+                display: flex !important;
+                flex-direction: column !important;
+                height: auto !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                border-radius: 12px !important;
+            }
+            .hero-image-wrapper {
+                position: relative !important;
+                height: auto !important; 
+                width: 100% !important;
+                display: block !important;
+            }
+            .hero-image {
+                height: auto !important;
+                width: 100% !important;
+                object-fit: cover !important;
+                display: block !important;
+            }
+            .hero-content {
+                position: relative !important;
+                width: 100% !important;
+                padding: 0 !important;
+                background: transparent !important;
+                bottom: auto !important;
+                left: auto !important;
+            }
+            /* Action Bar - Completely below the image */
+            .hero-actions {
+                position: relative !important;
+                display: flex !important;
+                justify-content: center !important;
+                gap: 15px !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 20px 15px 35px 15px !important; /* Bottom padding makes room for dots */
+                background: rgba(20, 20, 25, 0.4) !important;
+                backdrop-filter: blur(25px) saturate(250%) !important;
+                -webkit-backdrop-filter: blur(25px) saturate(250%) !important;
+                border-top: none !important;
+                z-index: 10 !important;
+                box-sizing: border-box !important;
+            }
+            .hero-actions .btn-n {
+                flex: 1 !important;
+                justify-content: center !important;
+                padding: 12px 0 !important;
+            }
+            .dk-slider-dots {
+                bottom: 12px !important; /* Move dots onto the action bar */
+                z-index: 20 !important;
+            }
+
+            /* --- APPLE LIQUID GLASS BOTTOM BAR FIX --- */
+            .bottom-nav {
+                display: flex !important; 
+                position: fixed !important; 
+                bottom: 15px !important; 
+                left: 50% !important; 
+                transform: translateX(-50%) !important;
+                width: 90% !important; 
+                max-width: 400px !important; 
+                background: rgba(20, 20, 25, 0.65) !important; 
+                backdrop-filter: blur(40px) saturate(180%) !important;
+                -webkit-backdrop-filter: blur(40px) saturate(180%) !important; 
+                border: 1px solid rgba(255, 255, 255, 0.08) !important; 
+                border-radius: 50px !important;
+                z-index: 999999 !important; /* Ensure it floats above absolutely everything */
+                padding: 5px 10px !important; 
+                box-shadow: 0 25px 50px rgba(0,0,0,0.5) !important;
+            }
+            .bottom-nav-item { 
+                flex: 1; 
+                display: flex; 
+                flex-direction: column; 
+                align-items: center; 
+                justify-content: center; 
+                padding: 6px 0; 
+                color: rgba(255, 255, 255, 0.5); 
+                text-decoration: none; 
+                transition: all 0.4s ease; 
+            }
+            .bottom-nav-item.active { color: #fff; }
+            .bottom-nav-item .nav-icon { font-size: 1.35rem; margin-bottom: 4px; transition: transform 0.4s ease; }
+            .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-4px) scale(1.15); color: var(--primary-color, #8A2BE2); }
+            .bottom-nav-item .nav-label { font-size: 0.65rem; font-weight: 500; }
+            body { padding-bottom: 100px; }
+        }
+        @media (min-width: 993px) { .bottom-nav { display: none !important; } }
     </style>
 </head>
 <body>
@@ -207,7 +314,7 @@
             <div class="hero-slider-wrapper" id="hero-slider-wrapper">
                 <div class="hero-slide">
                     <div class="hero-card" style="display: flex; justify-content: center; align-items: center; background: rgba(255,255,255,0.02);">
-                        <i class="fas fa-spinner fa-spin fa-3x" style="color: var(--primary-color);"></i>
+                        <i class="fas fa-spinner fa-spin fa-3x" style="color: var(--primary-color, #8A2BE2);"></i>
                     </div>
                 </div>
             </div>
@@ -427,6 +534,7 @@
         </a>
     </nav>
 
+    <!-- --- SEAMLESS EMBEDDED ENGINE TO POPULATE API DATA --- -->
     <script type="module">
         // --- 0. THEME, HARDWARE & CSS FIXES ---
         (function initUI() {
@@ -525,27 +633,28 @@
                 // =========================================================
                 // 1. DYNAMIC MULTI-LANGUAGE HERO BANNER SLIDER
                 // =========================================================
-                const [koRes, zhRes, usRes, jaRes] = await Promise.all([
+                // Fetch top trending results from Korean and Chinese
+                const [koRes, zhRes] = await Promise.all([
                     fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=ko&sort_by=popularity.desc&without_genres=16&page=1`),
-                    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=zh&sort_by=popularity.desc&without_genres=16&page=1`),
-                    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=en&with_origin_country=US&sort_by=popularity.desc&without_genres=16&page=1`),
-                    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=ja&sort_by=popularity.desc&without_genres=16&page=1`)
+                    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=zh&sort_by=popularity.desc&without_genres=16&page=1`)
                 ]);
 
                 const koData = await koRes.json();
                 const zhData = await zhRes.json();
-                const usData = await usRes.json();
-                const jaData = await jaRes.json();
 
+                // Select the required items (Korean and Chinese)
                 let bannerItems = [
                     { data: koData.results[0], label: "K-DRAMA" },
                     { data: zhData.results[0], label: "C-DRAMA" }
                 ].filter(item => item.data); 
 
-                bannerItems.sort(() => Math.random() - 1.5);
+                bannerItems.sort(() => Math.random() - 0.5);
 
                 const wrapper = document.getElementById('hero-slider-wrapper');
                 const dotsContainer = document.getElementById('hero-slider-dots');
+                
+                // Read local profile to see if things are stored
+                const profileMyList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
                 
                 wrapper.innerHTML = '';
                 dotsContainer.innerHTML = '';
@@ -557,6 +666,12 @@
                     const titleText = d.name || d.title || "Featured Show";
                     const releaseYear = (d.first_air_date || d.release_date || "2026").substring(0, 4);
                     
+                    // Check if drama exists in user's "My List"
+                    const inList = profileMyList.some(listObj => String(listObj.id) === String(d.id));
+                    const listBtnClass = inList ? "btn-n btn-mylist active" : "btn-n btn-mylist";
+                    const listBtnIcon = inList ? "fa-check" : "fa-plus";
+                    const listBtnText = inList ? "In List" : "My List";
+
                     wrapper.innerHTML += `
                         <div class="hero-slide">
                             <div class="hero-card">
@@ -576,7 +691,9 @@
                                     </div>
                                     <div class="hero-actions">
                                         <a href="watch.html?id=${d.id}" class="btn-n btn-play"><i class="fas fa-play"></i> Play</a>
-                                        <button class="btn-n btn-mylist" onclick="event.preventDefault(); window.toggleMyList(this, '${encodeURIComponent(titleText)}', '${encodeURIComponent(mobileImg)}', 'watch.html?id=${d.id}')"><i class="fas fa-plus"></i> My List</button>
+                                        <button class="${listBtnClass}" id="hero-list-btn-${d.id}" onclick="event.preventDefault(); window.toggleMyList(this, '${encodeURIComponent(titleText)}', '${encodeURIComponent(mobileImg)}', 'watch.html?id=${d.id}', '${d.id}')">
+                                            <i class="fas ${listBtnIcon}"></i> <span>${listBtnText}</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -584,6 +701,38 @@
                     `;
                     dotsContainer.innerHTML += `<div class="dk-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></div>`;
                 });
+
+                // --- ATTACH GLOBAL TOGGLE HANDLER OVERRIDE ---
+                // Re-write window.toggleMyList to handle UI swap exactly like watch.html logic for hero banners
+                window.toggleMyList = function(btnElement, titleSafe, imgSafe, linkSafe, rawId) {
+                    let profileMyList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
+                    let watchlistObj = JSON.parse(localStorage.getItem('dramakan_watchlist')) || {};
+
+                    const title = decodeURIComponent(titleSafe);
+                    const img = decodeURIComponent(imgSafe);
+                    const link = decodeURIComponent(linkSafe);
+                    
+                    let inListIdx = profileMyList.findIndex(item => String(item.id) === String(rawId));
+                    
+                    if (inListIdx > -1) {
+                        // Remove from list
+                        profileMyList.splice(inListIdx, 1);
+                        delete watchlistObj[rawId];
+                        btnElement.classList.remove('active');
+                        btnElement.innerHTML = `<i class="fas fa-plus"></i> <span>My List</span>`;
+                    } else {
+                        // Add to list
+                        const itemData = {
+                            id: rawId, title: title, img: img, link: link, timestamp: Date.now()
+                        };
+                        profileMyList.push(itemData);
+                        watchlistObj[rawId] = itemData;
+                        btnElement.classList.add('active');
+                        btnElement.innerHTML = `<i class="fas fa-check"></i> <span>In List</span>`;
+                    }
+                    localStorage.setItem('dramakan_mylist', JSON.stringify(profileMyList));
+                    localStorage.setItem('dramakan_watchlist', JSON.stringify(watchlistObj));
+                };
 
                 // Attach Slider Logic
                 let currentSlide = 0;
@@ -638,6 +787,7 @@
                 const trendRes = await fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${tmdbKey}`);
                 if (trendRes.ok) {
                     const dataTrend = await trendRes.json();
+                    // FILTER: Restrict trending to exclude animation (genre 16)
                     const items = (dataTrend.results || [])
                         .filter(i => !(i.genre_ids && i.genre_ids.includes(16)))
                         .slice(0, 15).map(i => ({
@@ -650,6 +800,7 @@
                     fuse = new Fuse(items, { keys: ['title'], threshold: 0.4 });
                 }
 
+                // Configuration grid items mapping schema
                 const gridConfigs = [
                     { id: 'kdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=ko&sort_by=popularity.desc&without_genres=16`, label: "K-Drama" },
                     { id: 'cdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=zh&sort_by=popularity.desc&without_genres=16`, label: "C-Drama" },
@@ -740,6 +891,7 @@
                             const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(queryStr)}`);
                             if (searchRes.ok) {
                                 const searchData = await searchRes.json();
+                                // FILTER: Exclude genre 16 (Animation/Anime) and restrict strictly to live-action TV or Movie structures
                                 const resultsMapped = (searchData.results || [])
                                     .filter(i => (i.media_type === 'tv' || i.media_type === 'movie') && !(i.genre_ids && i.genre_ids.includes(16)))
                                     .slice(0, 8);
