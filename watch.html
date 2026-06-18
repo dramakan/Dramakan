@@ -126,19 +126,18 @@
         }
         #custom-fs-btn:hover { background: var(--primary); border-color: var(--primary); transform: scale(1.1); }
 
+        /* Server Notice Banner */
+        .server-notice {
+            background: rgba(138, 43, 226, 0.1); border-left: 4px solid var(--primary); color: #e2e8f0;
+            padding: 12px 15px; border-radius: 0 8px 8px 0; margin-top: 15px; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .server-notice i { color: var(--primary); font-size: 1.1rem; }
+
         /* --- SERVERS & QUICK ACTIONS --- */
         .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .control-panel { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; }
         .panel-title { color: var(--primary); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px; }
-        
-        .server-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .server-btn {
-            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
-            color: var(--text-muted); padding: 12px; border-radius: 8px; cursor: pointer;
-            font-family: 'Poppins'; font-weight: 500; transition: all 0.3s ease; text-align: left; display: flex; flex-direction: column; gap: 4px;
-        }
-        .server-btn span { font-size: 0.7rem; color: rgba(255,255,255,0.3); }
-        .server-btn.active { background: rgba(138,43,226,0.15); border-color: var(--primary); color: #fff; }
         
         .quick-actions { display: flex; justify-content: space-between; align-items: center; }
         .q-action { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); background: none; border: none; cursor: pointer; transition: 0.3s; }
@@ -181,6 +180,16 @@
         .meta-val { color: #fff; font-weight: 500; }
         .tag-pill { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 2px 8px; border-radius: 50px; font-size: 0.75rem; color: var(--text-muted); margin-right: 5px; display: inline-block; }
 
+        /* --- CAST SCROLLER SECTION --- */
+        .cast-scroller { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 12px; scrollbar-width: thin; scrollbar-color: var(--primary) rgba(255,255,255,0.05); }
+        .cast-scroller::-webkit-scrollbar { height: 6px; }
+        .cast-scroller::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .cast-scroller::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        .cast-card { flex: 0 0 100px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; }
+        .cast-img { width: 90px; height: 120px; border-radius: 12px; object-fit: cover; border: 1px solid var(--glass-border); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .cast-name { font-size: 0.8rem; color: #fff; font-weight: 500; line-height: 1.2; margin-top: 4px; }
+        .cast-char { font-size: 0.7rem; color: var(--text-muted); line-height: 1.2; }
+
         /* --- SIDEBAR: EPISODES (PC) --- */
         .sidebar-widget { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; }
         .sidebar-title { font-size: 1rem; font-weight: 600; color: #fff; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; }
@@ -215,20 +224,22 @@
             .watch-grid { display: flex; flex-direction: column; }
             .main-column, .sidebar-column { display: contents; }
             .video-player-container { order: 1; }
-            .ad-wrapper-glass { order: 2; width: 100%; }
-            .controls-grid { order: 3; width: 100%; grid-template-columns: 1fr; }
+            .server-notice { order: 2; margin-top: -10px; margin-bottom: 10px; }
+            .ad-wrapper-glass { order: 3; width: 100%; margin-top: 10px; }
+            .controls-grid { order: 4; width: 100%; grid-template-columns: 1fr; }
             .video-player-container.pip-mode { width: 250px; height: 140px; bottom: 85px; right: 10px; }
-            .sidebar-widget.episodes-widget { order: 4; margin-top: 10px; width: 100%; box-sizing: border-box; }
+            .sidebar-widget.episodes-widget { order: 5; margin-top: 10px; width: 100%; box-sizing: border-box; }
             .episodes-timeline { flex-direction: column; max-height: 300px; gap: 10px; padding-bottom: 0; }
             .ep-timeline-item { flex-direction: row; min-width: 0; background: transparent; border: none; padding: 10px; justify-content: flex-start; text-align: left; }
             .ep-timeline-item:hover { background: rgba(255,255,255,0.03); }
             .ep-timeline-item.active { background: rgba(138,43,226,0.1); border: 1px solid rgba(138,43,226,0.3); }
             .ep-icon { display: flex; } .ep-duration { display: block; }
             .ep-info-text h4 { font-size: 0.9rem; font-weight: 500; }
-            .about-drama { order: 5; flex-direction: column; margin-top: 10px; width: 100%; box-sizing: border-box; }
+            .about-drama { order: 6; flex-direction: column; margin-top: 10px; width: 100%; box-sizing: border-box; }
             .about-poster { width: 100%; height: 200px; object-position: top; }
-            .control-panel.comments-widget { order: 6; margin-top: 10px; width: 100%; box-sizing: border-box; }
-            .sidebar-widget:not(.episodes-widget) { order: 7; margin-top: 10px; width: 100%; box-sizing: border-box; }
+            .cast-section { order: 7; margin-top: 10px; width: 100%; box-sizing: border-box; }
+            .control-panel.comments-widget { order: 8; margin-top: 10px; width: 100%; box-sizing: border-box; }
+            .sidebar-widget:not(.episodes-widget) { order: 9; margin-top: 10px; width: 100%; box-sizing: border-box; }
             .title-actions { width: 100%; justify-content: space-between; }
             .action-btn { flex: 1; justify-content: center; }
         }
@@ -299,6 +310,10 @@
                     <iframe id="video-player-iframe" src="" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" referrerpolicy="no-referrer" frameborder="0" scrolling="no"></iframe>
                     <button id="custom-fs-btn" title="Fullscreen"><i class="fas fa-expand"></i></button>
                 </div>
+
+                <div class="server-notice">
+                    <i class="fas fa-info-circle"></i> <span>If the video is not playing or buffering, please try switching to a different server below.</span>
+                </div>
                 
                 <div class="ad-wrapper-glass" style="margin-top: 20px; margin-bottom: 20px;">
                     <span style="position: absolute; top: 5px; left: 10px; font-size: 0.65rem; color: var(--text-muted); font-weight: 500; letter-spacing: 1px; text-transform: uppercase;">Advertisement</span>
@@ -314,11 +329,12 @@
                 <div class="controls-grid">
                     <div class="control-panel">
                         <h4 class="panel-title"><i class="fas fa-bolt"></i> Choose Server</h4>
-                        <div class="server-list">
-                            <button class="server-btn active" data-server="2embed">S1 <span>2embed VIP</span></button>
-                            <button class="server-btn" data-server="vsrc">S2 <span>Vidsrc FYI</span></button>
-                            <button class="server-btn" data-server="hindi">S3 <span>Hindi Dub</span></button>
-                        </div>
+                        <select id="server-selector-dropdown" class="drama-input" style="margin-bottom: 0; padding: 12px; font-size: 0.9rem; cursor: pointer; width: 100%;">
+                            <option value="nxsha" selected>Server 1 - Multi Lang</option>
+                            <option value="2embed">Server 2 - 2embed Fast</option>
+                            <option value="vsrc">Server 3 - Vidsrc Backup</option>
+                            <option value="hindi">Server 4 - Hindi Dubbed</option>
+                        </select>
                     </div>
                     <div class="control-panel">
                         <h4 class="panel-title"><i class="fas fa-bolt"></i> Quick Actions</h4>
@@ -350,6 +366,13 @@
                             <div class="meta-label"><i class="far fa-calendar"></i> Status</div>
                             <div class="meta-val" id="ui-status">Ongoing</div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="cast-section control-panel" style="margin-top: 15px;">
+                    <h4 class="panel-title"><i class="fas fa-users" style="color: var(--primary);"></i> Top Cast</h4>
+                    <div class="cast-scroller" id="ui-cast-scroller">
+                        <p style="color:var(--text-muted); font-size:0.85rem;">Loading cast...</p>
                     </div>
                 </div>
 
@@ -517,7 +540,7 @@
     const db = getFirestore(app);
     const auth = getAuth(app); 
 
-    let currentServer = '2embed'; 
+    let currentServer = 'nxsha'; 
     let currentUser = null;
     let seasonsArr = [1]; 
     let activeImdbId = null; 
@@ -579,6 +602,32 @@
         };
     }
 
+    // --- DYNAMIC VISUAL CAST SCROLLER ---
+    function renderCastSection(castArray) {
+        const container = document.getElementById('ui-cast-scroller');
+        if (!castArray || castArray.length === 0) {
+            container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">Cast information not available.</p>';
+            return;
+        }
+        
+        const topCast = castArray.slice(0, 15);
+        container.innerHTML = topCast.map(actor => {
+            const fallbackInitial = encodeURIComponent(actor.name.charAt(0));
+            const fallbackColor = "14151a";
+            const imgUrl = actor.profile_path 
+                ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` 
+                : `https://via.placeholder.com/185x278/${fallbackColor}/8A2BE2?text=${fallbackInitial}`;
+            
+            return `
+            <div class="cast-card">
+                <img src="${imgUrl}" alt="${actor.name}" class="cast-img" loading="lazy">
+                <span class="cast-name">${actor.name}</span>
+                <span class="cast-char">${actor.character || "Unknown"}</span>
+            </div>
+            `;
+        }).join('');
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
         const urlParams = new URLSearchParams(window.location.search);
         const dramaId = urlParams.get('id');
@@ -595,17 +644,15 @@
             }
         });
 
-        const serverBtns = document.querySelectorAll('.server-btn');
-        serverBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                serverBtns.forEach(b => b.classList.remove('active'));
-                e.currentTarget.classList.add('active');
-                currentServer = e.currentTarget.getAttribute('data-server');
+        const serverDropdown = document.getElementById('server-selector-dropdown');
+        if (serverDropdown) {
+            serverDropdown.addEventListener('change', (e) => {
+                currentServer = e.target.value;
                 if (window.currentSeason && window.currentEpisode) {
                     window.loadEpisode(window.currentSeason, window.currentEpisode);
                 }
             });
-        });
+        }
 
         try {
             // =========================================================
@@ -647,17 +694,26 @@
             activeImdbId = activeData.imdbId || activeData.imdb_id || activeData.imdb;
 
             // =========================================================
-            // 2. FETCH SIMILAR RECOMMENDATIONS (From TMDB natively)
+            // 2. FETCH SIMILAR RECOMMENDATIONS & FULL CAST (From TMDB)
             // =========================================================
             try {
                 const isMovie = activeData.type?.toLowerCase().includes('movie') ? 'movie' : 'tv';
+                
+                // Fetch Similar
                 const simRes = await fetch(`https://api.themoviedb.org/3/${isMovie}/${activeTmdbId}/similar?api_key=${tmdbKey}&page=1`);
                 if (simRes.ok) {
                     const simData = await simRes.json();
                     activeData.similar = simData.results || [];
                 }
+                
+                // Fetch Credits/Cast
+                const castRes = await fetch(`https://api.themoviedb.org/3/${isMovie}/${activeTmdbId}/credits?api_key=${tmdbKey}`);
+                if (castRes.ok) {
+                    const castData = await castRes.json();
+                    activeData.fullCast = castData.cast || [];
+                }
             } catch (err) {
-                console.warn("Could not fetch Similar TMDB API data.", err);
+                console.warn("Could not fetch extra TMDB API data.", err);
             }
 
             // Ensure genre is a string fallback
@@ -689,7 +745,9 @@
             const tagsHTML = activeData.genre.split(',').map(g => `<span class="tag-pill">${g.trim()}</span>`).join('');
             document.getElementById('ui-genre-tags').innerHTML = tagsHTML;
 
+            // Render extra visual widgets
             renderRecommendations(activeData.similar);
+            renderCastSection(activeData.fullCast);
             initCommentSystem(dramaId); 
 
             // --- WATCHLIST / MY LIST LOGIC ---
@@ -889,7 +947,13 @@
                 let embedLink = '';
                 fsBtn.style.display = 'flex';
 
-                if (currentServer === '2embed') {
+                if (currentServer === 'nxsha') {
+                    if (isMovie) {
+                        embedLink = `https://web.nxsha.app/embed/movie/${activeTmdbId}`;
+                    } else {
+                        embedLink = `https://web.nxsha.app/embed/tv/${activeTmdbId}/${season}/${ep}`;
+                    }
+                } else if (currentServer === '2embed') {
                     if (isMovie) {
                         embedLink = `https://player.2embed.win/vip/movie/${activeTmdbId}`;
                     } else {
