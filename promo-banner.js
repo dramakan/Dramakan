@@ -104,9 +104,9 @@ onSnapshot(bannerRef, (docSnap) => {
 
         // Render Bottom Toast
         promoContainer.innerHTML = `
-            <div class="promo-toast-icon"><i class="fas fa-gift"></i></div>
+            <div class="promo-toast-icon"><i class="fas fa-bell"></i></div>
             <div class="promo-toast-content">
-                <div class="promo-toast-title">Special Offer</div>
+                <div class="promo-toast-title">Announcement</div>
                 <div class="promo-toast-desc">${data.message}</div>
             </div>
             <button class="promo-toast-close" id="closeBottomPromo"><i class="fas fa-times"></i></button>
