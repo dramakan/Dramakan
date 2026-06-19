@@ -435,8 +435,6 @@
                     <div class="episodes-timeline" id="episodes-list-container"></div>
                 </div>
                 
-                
-                
                 <div class="sidebar-widget">
                     <h3 class="sidebar-title">You Might Like</h3>
                     <div class="rec-list" id="ui-recs">
@@ -573,7 +571,7 @@
     let activeImdbId = null; 
     let activeTmdbId = null;
     let activeData = null; 
-    let cloudSynced = false; 
+    let initialPageLoad = true; // REPLACES cloudSynced
 
     // Cloud First Synchronized Arrays
     let profileMyList = [];
@@ -724,25 +722,24 @@
                     }
                 });
 
-                // --- FETCH CLOUD HISTORY CROSS-DEVICE SYNC ---
+                // --- REAL-TIME CLOUD HISTORY CROSS-DEVICE SYNC ---
                 if (dramaId) {
-                    try {
-                        const historyRef = doc(db, "users", user.uid, "history", String(dramaId));
-                        const historySnap = await getDoc(historyRef);
-                        
+                    const historyRef = doc(db, "users", user.uid, "history", String(dramaId));
+                    onSnapshot(historyRef, (historySnap) => {
                         if (historySnap.exists()) {
                             const cloudData = historySnap.data();
-                            const cloudSeason = cloudData.season;
-                            const cloudEp = cloudData.episode;
+                            const cloudSeason = parseInt(cloudData.season);
+                            const cloudEp = parseInt(cloudData.episode);
                             
-                            if ((cloudSeason != window.currentSeason || cloudEp != window.currentEpisode) && !cloudSynced) {
-                                cloudSynced = true; 
-                                window.loadEpisode(cloudSeason, cloudEp);
+                            // If cloud state differs from local state, load it!
+                            if (cloudSeason && cloudEp && (cloudSeason !== window.currentSeason || cloudEp !== window.currentEpisode)) {
+                                console.log("Cross-device sync detected. Switching to S" + cloudSeason + " E" + cloudEp);
+                                window.loadEpisode(cloudSeason, cloudEp, true); // true = bypass cloud write
                             }
                         }
-                    } catch (err) {
+                    }, (err) => {
                         console.warn("Cloud history sync error:", err);
-                    }
+                    });
                 }
             } else {
                 avatarImg.src = defaultAvatar;
@@ -944,14 +941,22 @@
             let initSeason = 1;
             let initEp = 1;
             
-            const savedEpRaw = localStorage.getItem(`dramakan_ep_${dramaId}`);
-            if (savedEpRaw && savedEpRaw !== "0") {
-                if (savedEpRaw.includes('-')) {
-                    const parts = savedEpRaw.split('-');
-                    initSeason = parseInt(parts[0]);
-                    initEp = parseInt(parts[1]);
-                } else { 
-                    initEp = parseInt(savedEpRaw); 
+            // 1. Prioritize globally synced cloud cache to prevent local overrides
+            const globalHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+            if (globalHistory[dramaId] && globalHistory[dramaId].season && globalHistory[dramaId].episode) {
+                initSeason = parseInt(globalHistory[dramaId].season);
+                initEp = parseInt(globalHistory[dramaId].episode);
+            } else {
+                // 2. Fallback to older legacy local storage
+                const savedEpRaw = localStorage.getItem(`dramakan_ep_${dramaId}`);
+                if (savedEpRaw && savedEpRaw !== "0") {
+                    if (savedEpRaw.includes('-')) {
+                        const parts = savedEpRaw.split('-');
+                        initSeason = parseInt(parts[0]);
+                        initEp = parseInt(parts[1]);
+                    } else { 
+                        initEp = parseInt(savedEpRaw); 
+                    }
                 }
             }
 
@@ -1047,7 +1052,7 @@
             // =========================================================
             // CORE FEATURE INTERFACE: EPISODE X-RAY AND DYNAMIC ADAPTATION
             // =========================================================
-            window.loadEpisode = async function(season, ep) {
+            window.loadEpisode = async function(season, ep, fromCloudSync = false) {
                 const targetSeason = parseInt(season);
                 const targetEp = parseInt(ep);
                 
@@ -1148,8 +1153,25 @@
                 localStorage.setItem('dramakan_history', JSON.stringify(historyObj));
                 window.dispatchEvent(new Event('historySynced'));
 
-                if (currentUser) {
+                if (currentUser && !fromCloudSync) {
                     try {
+                        if (initialPageLoad) {
+                            const historyRef = doc(db, "users", currentUser.uid, "history", String(dramaId));
+                            const snap = await getDoc(historyRef);
+                            if (snap.exists()) {
+                                const cloudData = snap.data();
+                                const cloudSeason = parseInt(cloudData.season);
+                                const cloudEp = parseInt(cloudData.episode);
+                                // Prevent overwriting a more advanced cloud save on initial load
+                                if (cloudSeason > targetSeason || (cloudSeason === targetSeason && cloudEp > targetEp)) {
+                                    initialPageLoad = false;
+                                    return; // Allow onSnapshot to automatically correct the UI in a moment
+                                }
+                            }
+                        }
+                        
+                        initialPageLoad = false;
+                        
                         await setDoc(doc(db, "users", currentUser.uid, "history", String(dramaId)), {
                             id: String(dramaId),
                             dramaId: String(dramaId),
@@ -1162,7 +1184,8 @@
                         }, { merge: true });
                     } catch(err) { console.warn("Could not save progress to cloud:", err); }
                 }
-
+                
+                initialPageLoad = false;
                 updateSEO(activeData, dramaId, targetSeason, targetEp);
             }
 
