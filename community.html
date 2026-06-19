@@ -119,7 +119,6 @@
         .notif-title { font-size: 1.1rem; font-weight: 600; color: #fff; margin: 0; line-height: 1.3;}
         .notif-time { font-size: 0.8rem; color: #777; white-space: nowrap;}
         
-        /* Snippet hides overflow to keep main feed clean */
         .notif-msg-snippet { 
             font-size: 0.95rem; color: var(--text-muted); margin: 0 0 12px 0; line-height: 1.5; 
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
@@ -221,7 +220,7 @@
         <div id="page-notifications-list" class="notif-list">
             <div style="text-align: center; padding: 50px; color: var(--text-muted);">
                 <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px;"></i>
-                <p>Syncing secure inbox...</p>
+                <p>Fetching latest updates...</p>
             </div>
         </div>
     </main>
@@ -259,12 +258,9 @@
         </a>
     </nav>
 
-    <!-- Import the global notifier script to ensure background tasks still run -->
-    <script type="module" src="anykan-notifier.js"></script>
-
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, updateDoc, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, updateDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -278,10 +274,7 @@
         const auth = getAuth(app);
 
         const listEl = document.getElementById('page-notifications-list');
-
-        // CLOUD-FIRST STATE
         let activePageNotifs = [];
-        let currentUserDocRef = null;
 
         function timeAgo(timestamp) {
             if(!timestamp) return "Just now";
@@ -305,9 +298,9 @@
             if (activePageNotifs.length === 0) {
                 listEl.innerHTML = `
                     <div class="empty-state">
-                        <i class="fas fa-bell-slash"></i>
-                        <h3>You're all caught up!</h3>
-                        <p>No new updates or alerts to display right now.</p>
+                        <i class="fas fa-newspaper"></i>
+                        <h3>No updates yet!</h3>
+                        <p>Check back later for news, features, and announcements.</p>
                     </div>
                 `;
                 return;
@@ -317,6 +310,7 @@
                 let iconClass = "fa-bullhorn";
                 if(n.title.toLowerCase().includes("vip") || n.title.includes("🎉") || n.title.includes("🎁")) iconClass = "fa-crown";
                 if(n.title.toLowerCase().includes("warning") || n.title.includes("⚠️")) iconClass = "fa-exclamation-triangle";
+                if(n.title.includes("🚀") || n.title.toLowerCase().includes("patch")) iconClass = "fa-rocket";
 
                 return `
                     <div class="notif-card" id="page-card-${n.id}">
@@ -366,52 +360,66 @@
             if(e.target === modal) modal.style.display = 'none';
         });
 
-        // Live Feed Fetcher
-        function fetchLiveUpdates(user) {
-            const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"), limit(50));
-            onSnapshot(q, (snapshot) => {
-                activePageNotifs = [];
+        // --- ONE-TIME FETCH ENGINE (1 HOUR CACHE) ---
+        async function fetchUpdates() {
+            try {
+                const cached = localStorage.getItem('Dramakan_Community_Cache');
+                const cacheTime = localStorage.getItem('Dramakan_Community_Time');
+                const now = Date.now();
+
+                // Check if cache exists and is younger than 1 hour (3600000 ms)
+                if (cached && cacheTime && (now - parseInt(cacheTime) < 3600000)) {
+                    activePageNotifs = JSON.parse(cached);
+                    renderPageNotifications();
+                    return;
+                }
+
+                // If cache is missing or expired, fetch freshly from Firestore
+                const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"), limit(30));
+                const snapshot = await getDocs(q);
                 
+                activePageNotifs = [];
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
-                    const notifId = docSnap.id;
                     
-                    const target = data.target || 'all';
-                    const isForMe = target === 'all' || target === 'viewers' || (user && (target === user.uid || target === user.email));
-
-                    // Items are now permanent on this feed. No deletion check occurs.
-                    if (isForMe) {
+                    // STRICT FILTER: Only show global Community Updates, never direct targeted alerts.
+                    if (data.target === 'all' || data.target === 'viewers') {
+                        const ts = data.createdAt ? (typeof data.createdAt === 'number' ? data.createdAt : (data.createdAt.toMillis ? data.createdAt.toMillis() : Date.now())) : Date.now();
+                        
                         activePageNotifs.push({
-                            id: notifId,
-                            title: data.title || "Broadcast",
+                            id: docSnap.id,
+                            title: data.title || "Update",
                             body: data.message || data.body || "",
                             link: data.link || "",
-                            timestamp: data.createdAt ? (data.createdAt.toMillis ? data.createdAt.toMillis() : data.createdAt) : Date.now()
+                            timestamp: ts
                         });
                     }
                 });
+
+                // Update Browser Cache
+                localStorage.setItem('Dramakan_Community_Cache', JSON.stringify(activePageNotifs));
+                localStorage.setItem('Dramakan_Community_Time', now.toString());
+
                 renderPageNotifications();
-            });
+
+            } catch (error) {
+                console.error("Fetch error:", error);
+                listEl.innerHTML = `<div class="empty-state"><h3>Unable to load updates. Check connection.</h3></div>`;
+            }
         }
 
+        // Fire fetch instantly regardless of auth state to prevent loading stalls
+        fetchUpdates();
+
+        // --- MARK AS READ LOGIC ---
+        // Runs passively in the background so the dropdown bell drops its red dot
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                currentUserDocRef = doc(db, "users", user.uid);
-                
-                onSnapshot(currentUserDocRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        // Automatically mark everything as read just by visiting this page
-                        // This ensures the red notification bell drops off for the user
-                        if (docSnap.data().lastReadTime !== Date.now()) {
-                            try { updateDoc(currentUserDocRef, { lastReadTime: Date.now() }); } catch(e){}
-                        }
-                    }
-                    fetchLiveUpdates(user);
-                });
+                try {
+                    updateDoc(doc(db, "users", user.uid), { lastReadTime: Date.now() });
+                } catch(e) {}
             } else {
-                // Automatically mark as read for guests
                 localStorage.setItem('Anykan_Last_Read', Date.now());
-                fetchLiveUpdates(null);
             }
         });
 
