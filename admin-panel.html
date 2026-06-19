@@ -935,10 +935,11 @@
                     const data = docSnap.data();
                     const dateStr = new Date(data.createdAt).toLocaleString();
                     
-                    const safeTarget = (data.target || '').replace(/'/g, "\\'");
-                    const safeTitle = (data.title || '').replace(/'/g, "\\'");
-                    const safeMsg = (data.message || '').replace(/'/g, "\\'");
-                    const safeLink = (data.link || '').replace(/'/g, "\\'");
+                    // Regex fix: Escaping new lines so they don't break the inline edit function
+                    const safeTarget = (data.target || '').replace(/'/g, "\\'").replace(/\n/g, "\\n");
+                    const safeTitle = (data.title || '').replace(/'/g, "\\'").replace(/\n/g, "\\n");
+                    const safeMsg = (data.message || '').replace(/'/g, "\\'").replace(/\n/g, "\\n");
+                    const safeLink = (data.link || '').replace(/'/g, "\\'").replace(/\n/g, "\\n");
 
                     const cardHtml = `
                         <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
@@ -947,7 +948,7 @@
                                     <strong style="color: #8A2BE2; font-size: 0.95rem;">${data.title}</strong>
                                     <span style="font-size: 0.75rem; color: #777; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 20px;">Target: ${data.target}</span>
                                 </div>
-                                <div style="font-size: 0.85rem; color: #ccc; margin-bottom: 8px;">${data.message}</div>
+                                <div style="font-size: 0.85rem; color: #ccc; margin-bottom: 8px; white-space: pre-wrap; line-height: 1.6; max-height: 150px; overflow-y: auto;">${data.message}</div>
                                 <div style="font-size: 0.7rem; color: #555;">Sent: ${dateStr}</div>
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
