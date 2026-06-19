@@ -534,7 +534,6 @@
         </a>
     </nav>
 
-    <!-- --- SEAMLESS EMBEDDED ENGINE TO POPULATE API DATA --- -->
     <script type="module">
         // --- 0. THEME, HARDWARE & CSS FIXES ---
         (function initUI() {
@@ -583,6 +582,8 @@
         };
 
         let firebaseInstance = null;
+        let unsubscribeHistory = null; // Store listener globally to handle cleanup
+
         async function getFirebase() {
             if (firebaseInstance) return firebaseInstance;
             const [appModule, authModule, firestoreModule] = await Promise.all([
@@ -618,7 +619,7 @@
                         <h3 class="drama-card-title">${drama.title}</h3>
                         <p class="drama-card-meta">${drama.type}</p>
                     </div>
-                    <button class="bookmark-btn" onclick="event.preventDefault(); window.toggleMyList(this, '${safeTitle}', '${safeImg}', '${safeLink}')" title="Add to My List">
+                    <button class="bookmark-btn" onclick="event.preventDefault(); window.toggleMyList(this, '${safeTitle}', '${safeImg}', '${safeLink}', '${drama.id || ''}')" title="Add to My List">
                         <i class="fas fa-plus"></i>
                     </button>
                 </a>
@@ -628,12 +629,41 @@
             grid.innerHTML = htmlContent;
         }
 
+        // --- NEW CLOUD-FIRST CONTINUE WATCHING RENDERER ---
+        function renderContinueWatching(cloudHistoryArr = null) {
+            try {
+                let historyArr = cloudHistoryArr;
+                
+                // Fallback to local storage only if cloud isn't passed (guest user)
+                if (!historyArr) {
+                    const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                    historyArr = Object.values(historyObj)
+                        .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
+                        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 10);
+                }
+                
+                const cwSection = document.getElementById('continue-watching-section');
+                const cwGrid = document.getElementById('continue-watching-grid');
+                
+                if (cwSection && cwGrid) {
+                    if(historyArr.length > 0) {
+                        cwSection.style.display = 'block';
+                        cwGrid.innerHTML = historyArr.map(item => `
+                            <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
+                                <div class="drama-card-img"><img src="${item.img}" alt="${item.title}" loading="lazy" decoding="async"></div>
+                                <div class="drama-card-info">
+                                    <h3 class="drama-card-title">${item.title}</h3>
+                                    <p class="drama-card-meta" style="color: var(--primary-color);"><i class="fas fa-play"></i> Resume S${item.season || 1}:E${item.episode || 1}</p>
+                                </div>
+                            </a>
+                        `).join('');
+                    } else { cwSection.style.display = 'none'; }
+                }
+            } catch(e) { console.error("CW Engine exception", e); }
+        }
+
         async function initializeDramaSite() {
             try {
-                // =========================================================
-                // 1. DYNAMIC MULTI-LANGUAGE HERO BANNER SLIDER
-                // =========================================================
-                // Fetch top trending results from Korean and Chinese
                 const [koRes, zhRes] = await Promise.all([
                     fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=ko&sort_by=popularity.desc&without_genres=16&page=1`),
                     fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=zh&sort_by=popularity.desc&without_genres=16&page=1`)
@@ -642,7 +672,6 @@
                 const koData = await koRes.json();
                 const zhData = await zhRes.json();
 
-                // Select the required items (Korean and Chinese)
                 let bannerItems = [
                     { data: koData.results[0], label: "K-DRAMA" },
                     { data: zhData.results[0], label: "C-DRAMA" }
@@ -652,8 +681,6 @@
 
                 const wrapper = document.getElementById('hero-slider-wrapper');
                 const dotsContainer = document.getElementById('hero-slider-dots');
-                
-                // Read local profile to see if things are stored
                 const profileMyList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
                 
                 wrapper.innerHTML = '';
@@ -666,7 +693,6 @@
                     const titleText = d.name || d.title || "Featured Show";
                     const releaseYear = (d.first_air_date || d.release_date || "2026").substring(0, 4);
                     
-                    // Check if drama exists in user's "My List"
                     const inList = profileMyList.some(listObj => String(listObj.id) === String(d.id));
                     const listBtnClass = inList ? "btn-n btn-mylist active" : "btn-n btn-mylist";
                     const listBtnIcon = inList ? "fa-check" : "fa-plus";
@@ -702,9 +728,10 @@
                     dotsContainer.innerHTML += `<div class="dk-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></div>`;
                 });
 
-                // --- ATTACH GLOBAL TOGGLE HANDLER OVERRIDE ---
-                // Re-write window.toggleMyList to handle UI swap exactly like watch.html logic for hero banners
-                window.toggleMyList = function(btnElement, titleSafe, imgSafe, linkSafe, rawId) {
+                // --- CLOUD-FIRST GLOBAL MY LIST TOGGLE ---
+                window.toggleMyList = async function(btnElement, titleSafe, imgSafe, linkSafe, rawId) {
+                    if(!rawId) return; // Fail safe
+                    
                     let profileMyList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
                     let watchlistObj = JSON.parse(localStorage.getItem('dramakan_watchlist')) || {};
 
@@ -715,15 +742,13 @@
                     let inListIdx = profileMyList.findIndex(item => String(item.id) === String(rawId));
                     
                     if (inListIdx > -1) {
-                        // Remove from list
                         profileMyList.splice(inListIdx, 1);
                         delete watchlistObj[rawId];
                         btnElement.classList.remove('active');
                         btnElement.innerHTML = `<i class="fas fa-plus"></i> <span>My List</span>`;
                     } else {
-                        // Add to list
                         const itemData = {
-                            id: rawId, title: title, img: img, link: link, timestamp: Date.now()
+                            id: String(rawId), title: title, img: img, link: link, timestamp: Date.now()
                         };
                         profileMyList.push(itemData);
                         watchlistObj[rawId] = itemData;
@@ -732,9 +757,31 @@
                     }
                     localStorage.setItem('dramakan_mylist', JSON.stringify(profileMyList));
                     localStorage.setItem('dramakan_watchlist', JSON.stringify(watchlistObj));
+                    
+                    // Instantly sync up to Firebase as the absolute source of truth
+                    if (firebaseInstance && firebaseInstance.auth.currentUser) {
+                        try {
+                            const user = firebaseInstance.auth.currentUser;
+                            const { doc, getDoc, updateDoc } = firebaseInstance.firestoreModule;
+                            const userRef = doc(firebaseInstance.db, "users", user.uid);
+                            
+                            const snap = await getDoc(userRef);
+                            if(snap.exists()) {
+                                let data = snap.data();
+                                if(data.profiles && data.profiles.length > 0) {
+                                    let activeId = localStorage.getItem('dramakan_active_profile_id');
+                                    let pIdx = data.profiles.findIndex(p => p.id === activeId);
+                                    if(pIdx === -1) pIdx = 0;
+                                    data.profiles[pIdx].myList = profileMyList;
+                                    await updateDoc(userRef, { profiles: data.profiles });
+                                } else {
+                                    await updateDoc(userRef, { myList: profileMyList });
+                                }
+                            }
+                        } catch(err) { console.error("Cloud list sync failed", err); }
+                    }
                 };
 
-                // Attach Slider Logic
                 let currentSlide = 0;
                 const totalSlides = bannerItems.length;
                 let slideInterval;
@@ -781,16 +828,13 @@
 
                 startSlideShow();
 
-                // =========================================================
-                // 2. FETCH GRIDS & MAP TO ACCURATE REGIONAL TMDB ENDPOINTS
-                // =========================================================
                 const trendRes = await fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${tmdbKey}`);
                 if (trendRes.ok) {
                     const dataTrend = await trendRes.json();
-                    // FILTER: Restrict trending to exclude animation (genre 16)
                     const items = (dataTrend.results || [])
                         .filter(i => !(i.genre_ids && i.genre_ids.includes(16)))
                         .slice(0, 15).map(i => ({
+                        id: String(i.id),
                         title: i.name || i.title,
                         img: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : 'default-poster.jpg',
                         link: `watch.html?id=${i.id}`,
@@ -800,7 +844,6 @@
                     fuse = new Fuse(items, { keys: ['title'], threshold: 0.4 });
                 }
 
-                // Configuration grid items mapping schema
                 const gridConfigs = [
                     { id: 'kdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=ko&sort_by=popularity.desc&without_genres=16`, label: "K-Drama" },
                     { id: 'cdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=zh&sort_by=popularity.desc&without_genres=16`, label: "C-Drama" },
@@ -822,6 +865,7 @@
                                     if (sectionRes.ok) {
                                         const resData = await sectionRes.json();
                                         const cleanMapped = (resData.results || []).slice(0, 15).map(i => ({
+                                            id: String(i.id),
                                             title: i.name || i.title,
                                             img: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : 'default-poster.jpg',
                                             link: `watch.html?id=${i.id}`,
@@ -841,40 +885,9 @@
                     if (el) gridObserver.observe(el);
                 });
 
-                renderContinueWatching();
-                window.addEventListener('historySynced', renderContinueWatching);
-
             } catch (err) { console.error("Database connection exception", err); }
         }
 
-        function renderContinueWatching() {
-            try {
-                const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-                const historyArr = Object.values(historyObj)
-                    .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
-                    .sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
-                
-                const cwSection = document.getElementById('continue-watching-section');
-                const cwGrid = document.getElementById('continue-watching-grid');
-                
-                if (cwSection && cwGrid) {
-                    if(historyArr.length > 0) {
-                        cwSection.style.display = 'block';
-                        cwGrid.innerHTML = historyArr.map(item => `
-                            <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
-                                <div class="drama-card-img"><img src="${item.img}" alt="${item.title}" loading="lazy" decoding="async"></div>
-                                <div class="drama-card-info">
-                                    <h3 class="drama-card-title">${item.title}</h3>
-                                    <p class="drama-card-meta" style="color: var(--primary-color);"><i class="fas fa-play"></i> Resume</p>
-                                </div>
-                            </a>
-                        `).join('');
-                    } else { cwSection.style.display = 'none'; }
-                }
-            } catch(e) { console.error("CW Engine exception", e); }
-        }
-
-        // --- FIXED SEARCH CONTROLLER WITH ANIME FILTER SCHEMAS ---
         const bindDynamicSearch = (inputId, resultsId) => {
             const searchInput = document.getElementById(inputId);
             const searchResults = document.getElementById(resultsId);
@@ -891,7 +904,6 @@
                             const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(queryStr)}`);
                             if (searchRes.ok) {
                                 const searchData = await searchRes.json();
-                                // FILTER: Exclude genre 16 (Animation/Anime) and restrict strictly to live-action TV or Movie structures
                                 const resultsMapped = (searchData.results || [])
                                     .filter(i => (i.media_type === 'tv' || i.media_type === 'movie') && !(i.genre_ids && i.genre_ids.includes(16)))
                                     .slice(0, 8);
@@ -916,7 +928,6 @@
         bindDynamicSearch('searchInput', 'searchResults');
         bindDynamicSearch('mobileSearchInput', 'mobileSearchResults');
 
-        // --- FIREBASE ACCOUNT SYNC SYSTEMS ---
         function createProfileSwitcher(profiles) {
             if (document.getElementById('home-profile-switcher-overlay')) return;
             const overlayContainer = document.createElement('div');
@@ -974,7 +985,9 @@
         async function initAuthSync() {
             try {
                 const { auth, db, firestoreModule, authModule } = await getFirebase();
-                const { doc, getDoc } = firestoreModule;
+                const { doc, getDoc, collection, onSnapshot } = firestoreModule;
+                const { onAuthStateChanged } = authModule;
+
                 onAuthStateChanged(auth, async (user) => {
                     const headerVipBtn = document.getElementById('headerVipBtn');
                     
@@ -1007,14 +1020,46 @@
                         } else { updateHeaderAvatar(userProfiles); }
 
                         window.addEventListener('profileSelected', () => { updateHeaderAvatar(userProfiles); });
+
+                        // --- REAL-TIME CLOUD HISTORY SYNC ---
+                        const historyRef = collection(db, "users", user.uid, "history");
+                        if(unsubscribeHistory) unsubscribeHistory(); // Clear older bindings
+                        
+                        unsubscribeHistory = onSnapshot(historyRef, (snapshot) => {
+                            let cloudHistory = {};
+                            snapshot.forEach(doc => {
+                                const histData = doc.data();
+                                // Clean up any malformed legacy strings, force TMDB string ID mapping
+                                if(histData && histData.dramaId) {
+                                    histData.id = String(histData.dramaId);
+                                    cloudHistory[histData.id] = histData;
+                                }
+                            });
+                            
+                            // Synchronize the browser cache down to match the cloud
+                            localStorage.setItem('dramakan_history', JSON.stringify(cloudHistory));
+                            
+                            // Immediately refresh the Continue Watching layout
+                            const historyArr = Object.values(cloudHistory)
+                                .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
+                                .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 10);
+                            
+                            renderContinueWatching(historyArr);
+                        });
+
                     } else {
                         if (headerVipBtn) headerVipBtn.style.display = 'inline-flex';
+                        if (unsubscribeHistory) {
+                            unsubscribeHistory();
+                            unsubscribeHistory = null;
+                        }
+                        // Render default unauthenticated layout using pure local cache
+                        renderContinueWatching();
                     }
                 });
             } catch (e) { console.warn("Authentication configuration sync failed", e); }
         }
 
-        // --- INTENT CONTROLLER FOR REQS SYSTEM PROMPTS ---
         document.addEventListener("DOMContentLoaded", () => {
             const modal = document.getElementById("dramaModal");
             const openBtn = document.getElementById("dramaRequestBtn");
@@ -1024,7 +1069,6 @@
             if(openBtn && modal) {
                 openBtn.onclick = async () => {
                     const { auth } = await getFirebase();
-                    // Block execution flows early if visitor token context is missing
                     if (!auth.currentUser) {
                         alert("Please log in to request a drama. Redirecting to Login panel...");
                         window.location.href = "login.html";

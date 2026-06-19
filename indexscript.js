@@ -77,6 +77,8 @@ const firebaseConfig = {
 };
 
 let firebaseInstance = null;
+let unsubscribeHistory = null; // Store listener globally to handle cleanup
+
 async function getFirebase() {
     if (firebaseInstance) return firebaseInstance;
     const [appModule, authModule, firestoreModule] = await Promise.all([
@@ -89,6 +91,41 @@ async function getFirebase() {
     const db = firestoreModule.getFirestore(app);
     firebaseInstance = { app, auth, db, appModule, authModule, firestoreModule };
     return firebaseInstance;
+}
+
+// --- NEW CLOUD-FIRST CONTINUE WATCHING RENDERER ---
+function renderContinueWatching(cloudHistoryArr = null) {
+    try {
+        let historyArr = cloudHistoryArr;
+        
+        // Fallback to local storage only if cloud isn't passed (guest user)
+        if (!historyArr) {
+            const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+            historyArr = Object.values(historyObj)
+                .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
+                .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 10);
+        }
+        
+        const cwSection = document.getElementById('continue-watching-section');
+        const cwGrid = document.getElementById('continue-watching-grid');
+        
+        if (cwSection && cwGrid) {
+            if(historyArr.length > 0) {
+                cwSection.style.display = 'block';
+                cwGrid.innerHTML = historyArr.map(item => `
+                    <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
+                        <div class="drama-card-img"><img src="${item.img}" alt="${item.title}" loading="lazy" decoding="async"></div>
+                        <div class="drama-card-info">
+                            <h3 class="drama-card-title">${item.title}</h3>
+                            <p class="drama-card-meta" style="color: var(--primary-color);"><i class="fas fa-play"></i> Resume S${item.season || 1}:E${item.episode || 1}</p>
+                        </div>
+                    </a>
+                `).join('');
+            } else {
+                cwSection.style.display = 'none';
+            }
+        }
+    } catch(e) { console.error("CW Render Error:", e); }
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -138,7 +175,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const safeImg = encodeURIComponent(drama.img);
             const safeLink = encodeURIComponent(drama.link);
             
-            // Standard Drama Card
             htmlContent += `
             <a href="${drama.link}" class="drama-card">
                 <div class="drama-card-img"><img src="${drama.img}" alt="${drama.title}" loading="lazy" decoding="async"></div>
@@ -146,16 +182,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     <h3 class="drama-card-title">${drama.title}</h3>
                     <p class="drama-card-meta">${drama.type}</p>
                 </div>
-                <button class="bookmark-btn" onclick="event.preventDefault(); window.toggleMyList(this, '${safeTitle}', '${safeImg}', '${safeLink}')" title="Add to My List">
+                <button class="bookmark-btn" onclick="event.preventDefault(); window.toggleMyList(this, '${safeTitle}', '${safeImg}', '${safeLink}', '${drama.id || drama.tmdbId || ''}')" title="Add to My List">
                     <i class="fas fa-plus"></i>
                 </button>
             </a>
             `;
 
-            // --- IN-FEED AD INJECTION LOGIC ---
             if (index === 2) {
                 if (['trending-grid', 'kdrama-grid', 'cdrama-grid', 'jdrama-grid', 'Movie-grid'].includes(elementId)) {
-                    
                     let adSlot = "8531757983"; 
                     let layoutKey = "-6t+ed+2i-1n-4w"; 
                     
@@ -195,6 +229,60 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 500);
     }
 
+    // --- CLOUD-FIRST GLOBAL MY LIST TOGGLE ---
+    window.toggleMyList = async function(btnElement, titleSafe, imgSafe, linkSafe, rawId) {
+        if(!rawId) return; // Fail safe
+        
+        let profileMyList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
+        let watchlistObj = JSON.parse(localStorage.getItem('dramakan_watchlist')) || {};
+
+        const title = decodeURIComponent(titleSafe);
+        const img = decodeURIComponent(imgSafe);
+        const link = decodeURIComponent(linkSafe);
+        
+        let inListIdx = profileMyList.findIndex(item => String(item.id) === String(rawId));
+        
+        if (inListIdx > -1) {
+            profileMyList.splice(inListIdx, 1);
+            delete watchlistObj[rawId];
+            btnElement.classList.remove('active');
+            btnElement.innerHTML = `<i class="fas fa-plus"></i> <span>My List</span>`;
+        } else {
+            const itemData = {
+                id: String(rawId), title: title, img: img, link: link, timestamp: Date.now()
+            };
+            profileMyList.push(itemData);
+            watchlistObj[rawId] = itemData;
+            btnElement.classList.add('active');
+            btnElement.innerHTML = `<i class="fas fa-check"></i> <span>In List</span>`;
+        }
+        localStorage.setItem('dramakan_mylist', JSON.stringify(profileMyList));
+        localStorage.setItem('dramakan_watchlist', JSON.stringify(watchlistObj));
+        
+        // Instantly sync up to Firebase as the absolute source of truth
+        if (firebaseInstance && firebaseInstance.auth.currentUser) {
+            try {
+                const user = firebaseInstance.auth.currentUser;
+                const { doc, getDoc, updateDoc } = firebaseInstance.firestoreModule;
+                const userRef = doc(firebaseInstance.db, "users", user.uid);
+                
+                const snap = await getDoc(userRef);
+                if(snap.exists()) {
+                    let data = snap.data();
+                    if(data.profiles && data.profiles.length > 0) {
+                        let activeId = localStorage.getItem('dramakan_active_profile_id');
+                        let pIdx = data.profiles.findIndex(p => p.id === activeId);
+                        if(pIdx === -1) pIdx = 0;
+                        data.profiles[pIdx].myList = profileMyList;
+                        await updateDoc(userRef, { profiles: data.profiles });
+                    } else {
+                        await updateDoc(userRef, { myList: profileMyList });
+                    }
+                }
+            } catch(err) { console.error("Cloud list sync failed", err); }
+        }
+    };
+
     async function initializeDramaSite() {
         let data = [];
         try {
@@ -203,58 +291,19 @@ document.addEventListener('DOMContentLoaded', function () {
             
             localStorage.setItem('dramakan_master_db', JSON.stringify(data));
             fuse = new Fuse(data, { keys: ['title'], threshold: 0.4 });
-
-            function renderContinueWatching() {
-                try {
-                    const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-                    const historyArr = Object.values(historyObj)
-                        .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
-                        .sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
-                    
-                    const cwSection = document.getElementById('continue-watching-section');
-                    const cwGrid = document.getElementById('continue-watching-grid');
-                    
-                    if (cwSection && cwGrid) {
-                        if(historyArr.length > 0) {
-                            cwSection.style.display = 'block';
-                            cwGrid.innerHTML = historyArr.map(item => `
-                                <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
-                                    <div class="drama-card-img"><img src="${item.img}" alt="${item.title}" loading="lazy" decoding="async"></div>
-                                    <div class="drama-card-info">
-                                        <h3 class="drama-card-title">${item.title}</h3>
-                                        <p class="drama-card-meta" style="color: var(--primary-color);"><i class="fas fa-play"></i> Resume</p>
-                                    </div>
-                                </a>
-                            `).join('');
-                        } else {
-                            cwSection.style.display = 'none';
-                        }
-                    }
-                } catch(e) { console.error("CW Render Error:", e); }
-            }
             
-            renderContinueWatching(); 
-            window.addEventListener('historySynced', renderContinueWatching);
-
-            // --- START: NEW 2EMBED TRENDING API ---
             try {
                 const trendResponse = await fetch('https://api.2embed.cc/trendingtv');
-                
                 if (!trendResponse.ok) throw new Error(`HTTP error! status: ${trendResponse.status}`);
                 const trendData = await trendResponse.json();
                 
-                // Using the 'results' array as shown in your uploaded screenshots
                 const resultsArray = trendData.results || [];
-                
-                if (resultsArray.length === 0) {
-                    throw new Error("No results found in API response.");
-                }
+                if (resultsArray.length === 0) throw new Error("No results found in API response.");
 
-                // Mapping the API data to your grid format
                 const apiTrendingItems = resultsArray.slice(0, 15).map(item => ({
+                    id: String(item.tmdb_id),
                     title: item.name || item.title || "Unknown Title",
                     img: item.poster || 'https://via.placeholder.com/500x750?text=No+Image',
-                    // Using the direct embed_tmdb link provided in the API
                     link: item.embed_tmdb || `watch.html?id=${item.tmdb_id}`, 
                     type: "Trending TV"
                 }));
@@ -263,14 +312,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 
             } catch (err) {
                 console.error("2embed API failed, using fallback:", err);
-                
-                // Fallback to your local database
                 let fallbackItems = data.filter(d => d.Trend === "T" || d.trending === true);
                 if (fallbackItems.length === 0) fallbackItems = data;
-                
                 populateGrid('trending-grid', fallbackItems.slice(0, 15));
             }
-            // --- END: NEW 2EMBED TRENDING API ---
 
             const gridConfigs = [
                 { id: 'kdrama-grid', filterType: "K-Drama" },
@@ -298,7 +343,9 @@ document.addEventListener('DOMContentLoaded', function () {
                                 sectionData = shuffleArray(data.filter(d => d.type === config.filterType)).slice(0, 15);
                             }
                             
-                            populateGrid(targetId, sectionData);
+                            // Map existing JSON data ids explicitly as strings
+                            const safeSectionData = sectionData.map(item => ({...item, id: String(item.id || item.tmdbId)}));
+                            populateGrid(targetId, safeSectionData);
                             observer.unobserve(entry.target);
                         }
                     }
@@ -645,7 +692,7 @@ function updateHeaderAvatar(profiles) {
 async function initAuthSync() {
     try {
         const { auth, db, firestoreModule, authModule } = await getFirebase();
-        const { doc, getDoc } = firestoreModule;
+        const { doc, getDoc, collection, onSnapshot } = firestoreModule;
         const { onAuthStateChanged } = authModule;
 
         onAuthStateChanged(auth, async (user) => {
@@ -713,13 +760,36 @@ async function initAuthSync() {
 
                     window.addEventListener('profileSelected', () => {
                         updateHeaderAvatar(userProfiles);
-                        window.dispatchEvent(new Event('historySynced')); 
+                    });
+
+                    // --- REAL-TIME CLOUD HISTORY SYNC ---
+                    const historyRef = collection(db, "users", user.uid, "history");
+                    if(unsubscribeHistory) unsubscribeHistory(); // Clear older bindings
+                    
+                    unsubscribeHistory = onSnapshot(historyRef, (snapshot) => {
+                        let cloudHistory = {};
+                        snapshot.forEach(doc => {
+                            const histData = doc.data();
+                            if(histData && histData.dramaId) {
+                                // Clean up old structures and enforce string IDs for TMDB compatibility
+                                histData.id = String(histData.dramaId);
+                                cloudHistory[histData.id] = histData;
+                            }
+                        });
+                        
+                        localStorage.setItem('dramakan_history', JSON.stringify(cloudHistory));
+                        
+                        const historyArr = Object.values(cloudHistory)
+                            .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
+                            .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 10);
+                        
+                        renderContinueWatching(historyArr);
                     });
 
                 } catch (error) {
                     console.error("Auth UI Error:", error);
                 }
-         } else {
+            } else {
                 const authBtn = document.getElementById('topAuthBtn');
                 if (authBtn) {
                     authBtn.href = "login.html";
@@ -730,6 +800,12 @@ async function initAuthSync() {
                     authBtn.style.border = "";
                     authBtn.style.borderRadius = "";
                 }
+                
+                if(unsubscribeHistory) {
+                    unsubscribeHistory();
+                    unsubscribeHistory = null;
+                }
+                renderContinueWatching(); 
             }
         });
     } catch (err) {

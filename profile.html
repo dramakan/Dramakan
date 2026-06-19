@@ -225,8 +225,8 @@
         .section-title-wrap { display: flex; align-items: center; gap: 10px; }
         .title-accent { width: 4px; height: 20px; background: var(--primary-color); border-radius: 10px; box-shadow: 0 0 10px var(--primary-glow); }
         .section-header h2 { font-size: 1.3rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
-        .section-header span { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 5px; }
-        .section-header span:hover { color: var(--primary-color); transform: translateX(3px); }
+        .section-header .see-all-link { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 5px; text-decoration: none;}
+        .section-header .see-all-link:hover { color: var(--primary-color); transform: translateX(3px); }
 
         .h-scroll { display: flex; gap: 16px; overflow-x: auto; padding: 5px 5% 15px 5%; scroll-behavior: smooth; scrollbar-width: none; }
         .h-scroll::-webkit-scrollbar { display: none; }
@@ -405,6 +405,9 @@
 
             /* Smaller buttons for single line fit on mobile */
             .stat-pill, .btn-upgrade-hero, .btn-switch-profile { padding: 6px 12px; font-size: 0.75rem; }
+            
+            /* Always show remove button on mobile devices */
+            .remove-card-btn { opacity: 1 !important; transform: scale(1) !important; top: 5px; right: 5px; background: rgba(239, 68, 68, 0.9); }
         }
 
         @media (max-width: 992px) {
@@ -492,7 +495,10 @@
                         <div class="title-accent"></div>
                         <h2>Continue Watching</h2>
                     </div>
-                    <span>See All <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i></span>
+                    <div style="display:flex; gap:15px; align-items:center;">
+                        <button id="clear-history-btn" onclick="clearHistory()" style="display:none; color:#ef4444; background:none; border:none; cursor:pointer; font-size:0.85rem; font-weight:600;"><i class="fas fa-trash-alt"></i> Clear All</button>
+                        <a href="mylist.html" class="see-all-link">See All <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i></a>
+                    </div>
                 </div>
                 <div class="h-scroll" id="history-container">
                     <p class="empty-text">Your watch history is empty.</p>
@@ -505,7 +511,7 @@
                         <div class="title-accent" style="background: #10b981; box-shadow: 0 0 10px rgba(16,185,129,0.4);"></div>
                         <h2>My List</h2>
                     </div>
-                    <span>See All <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i></span>
+                    <a href="mylist.html" class="see-all-link">See All <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i></a>
                 </div>
                 <div class="h-scroll" id="mylist-container">
                     <p class="empty-text">Your list is empty.</p>
@@ -518,7 +524,7 @@
                         <div class="title-accent" style="background: #e11d48; box-shadow: 0 0 10px rgba(225,29,72,0.4);"></div>
                         <h2>Favorites</h2>
                     </div>
-                    <span>See All <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i></span>
+                    <a href="mylist.html" class="see-all-link">See All <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i></a>
                 </div>
                 <div class="h-scroll" id="favorites-container">
                     <p class="empty-text">Your favorites list is empty.</p>
@@ -531,7 +537,7 @@
                         <div class="title-accent" style="background: #f59e0b; box-shadow: 0 0 10px rgba(245,158,11,0.4);"></div>
                         <h2>Requested Content</h2>
                     </div>
-                    <span>See All <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i></span>
+                    <a href="mylist.html" class="see-all-link">See All <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i></a>
                 </div>
                 <div class="h-scroll" id="requests-container">
                     <p class="empty-text">You haven't requested any content yet.</p>
@@ -650,7 +656,7 @@
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, updatePassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, setDoc, onSnapshot, orderBy, limit, deleteField } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, setDoc, onSnapshot, orderBy, limit, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // CRITICAL FIX: Dramakan Firebase Config
         const firebaseConfig = {
@@ -669,7 +675,9 @@
         let activeProfileIndex = 0; 
         let cachedMyList = [];
         let cachedFavs = [];
-        let pendingAvatarUrl = null; 
+        let pendingAvatarUrl = null;
+        let unsubscribeUser = null;
+        let unsubscribeHistory = null; 
 
         // =====================================
         // UI MODAL TOGGLES
@@ -755,70 +763,25 @@
             document.getElementById('headerName').textContent = activeProf.name || 'User';
         }
 
-        function refreshProfileData() {
-            const activeProf = userProfiles[activeProfileIndex];
-            
-            // 1. My List Render
-            let localMyList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
-            let dbMyList = activeProf.myList || [];
-            
-            if (activeProfileIndex === 0 && localMyList.length > dbMyList.length) {
-                cachedMyList = localMyList;
-            } else {
-                cachedMyList = dbMyList;
-            }
-            renderPosterRow('mylist-container', cachedMyList, 'mylist');
-            const listCountEl = document.getElementById('stat-list-count');
-            if (listCountEl) listCountEl.innerHTML = `<i class="fas fa-bookmark"></i> ${cachedMyList.length} in list`;
-            
-            // 2. Favorites Render
-            let localFavs = JSON.parse(localStorage.getItem('dramakan_favorites')) || [];
-            let dbFavs = activeProf.favorites || [];
-            
-            if (activeProfileIndex === 0 && localFavs.length > dbFavs.length) {
-                cachedFavs = localFavs;
-            } else {
-                cachedFavs = dbFavs;
-            }
-            renderPosterRow('favorites-container', cachedFavs, 'favorites');
-
-            // 3. History Render
-            let historyObj = {};
-            const specificHistoryKey = 'dramakan_history_' + activeProf.id;
-            const globalHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-            
-            if (activeProfileIndex === 0) {
-                historyObj = globalHistory;
-                localStorage.setItem(specificHistoryKey, JSON.stringify(historyObj)); 
-            } else {
-                historyObj = JSON.parse(localStorage.getItem(specificHistoryKey)) || {};
-            }
-
-            if(typeof historyObj !== 'object' || Array.isArray(historyObj)) historyObj = {};
-
-            const historyArr = Object.entries(historyObj)
-                .filter(([key, item]) => item && item.link) 
-                .map(([key, item]) => ({ 
-                    ...item, 
-                    id: key, 
-                    title: item.title || "Continue Watching" 
-                }))
-                .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                
-            renderPosterRow('history-container', historyArr, 'history');
-        }
-
         window.switchProfile = (idx) => {
             activeProfileIndex = idx;
             const activeProf = userProfiles[activeProfileIndex];
             localStorage.setItem('dramakan_active_profile_id', activeProf.id);
             renderProfiles();
-            refreshProfileData();
+            
+            // Re-render specifically based on this profile's cloud data
+            cachedMyList = activeProf.myList || [];
+            cachedFavs = activeProf.favorites || [];
+            
+            renderPosterRow('mylist-container', cachedMyList, 'mylist');
+            const listCountEl = document.getElementById('stat-list-count');
+            if (listCountEl) listCountEl.innerHTML = `<i class="fas fa-bookmark"></i> ${cachedMyList.length} in list`;
+            renderPosterRow('favorites-container', cachedFavs, 'favorites');
+            
             closeModal('profilesModal');
         };
 
         window.openAddProfileModal = async () => {
-            // 1. Check if user actively purchased VIP
             let isPremium = false;
             if (currentUserDocRef) {
                 const snap = await getDoc(currentUserDocRef);
@@ -827,7 +790,6 @@
                 }
             }
             
-            // 2. Check if they are in the 30-Day Early Adopter Trial
             let isEarlyAdopterTrial = false;
             if (auth.currentUser) {
                 const creationTime = new Date(auth.currentUser.metadata.creationTime).getTime();
@@ -837,7 +799,6 @@
                 }
             }
 
-            // Lock it down if they have neither
             if (!isPremium && !isEarlyAdopterTrial) {
                 alert("Multiple profiles are only available for Elite & Crown VIP members. Upgrade today to unlock!");
                 window.location.href = 'subscription.html';
@@ -964,60 +925,53 @@
             `}).join('');
         }
 
+        // --- CLOUD-FIRST CARD REMOVAL LOGIC ---
         window.removeCard = async (type, identifier) => {
+            if (!auth.currentUser) return;
+            const uid = auth.currentUser.uid;
             const activeProf = userProfiles[activeProfileIndex];
 
             if (type === 'history') {
-                const specificHistoryKey = 'dramakan_history_' + activeProf.id;
-                let historyObj = JSON.parse(localStorage.getItem(specificHistoryKey)) || {};
-                
-                if (activeProfileIndex === 0) {
-                    let globalHist = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-                    delete globalHist[identifier];
-                    localStorage.setItem('dramakan_history', JSON.stringify(globalHist));
-                    historyObj = globalHist;
+                try {
+                    await deleteDoc(doc(db, "users", uid, "history", String(identifier)));
+                    // UI handles itself via onSnapshot listener
+                } catch(e) { console.error("Error deleting history doc:", e); }
+            } else if (type === 'mylist' || type === 'favorites') {
+                let updatedList = [];
+                if (type === 'mylist') {
+                    updatedList = cachedMyList.filter(item => String(item.id) !== String(identifier) && item.link !== identifier);
+                    activeProf.myList = updatedList;
                 } else {
-                    delete historyObj[identifier]; 
-                    localStorage.setItem(specificHistoryKey, JSON.stringify(historyObj));
+                    updatedList = cachedFavs.filter(item => String(item.id) !== String(identifier) && item.link !== identifier);
+                    activeProf.favorites = updatedList;
                 }
-                
-                const historyArr = Object.entries(historyObj)
-                    .filter(([key, item]) => item && item.link)
-                    .map(([key, item]) => ({ ...item, id: key, title: item.title || "Continue Watching" }))
-                    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                renderPosterRow('history-container', historyArr, 'history');
-                
-            } else if (type === 'mylist') {
-                cachedMyList = cachedMyList.filter(item => item.link !== identifier && item.id !== identifier);
-                activeProf.myList = cachedMyList; 
-                
-                if (activeProfileIndex === 0) {
-                    localStorage.setItem('dramakan_mylist', JSON.stringify(cachedMyList));
-                }
-                
+
                 if (currentUserDocRef) {
-                    try { await updateDoc(currentUserDocRef, { profiles: userProfiles }); } 
-                    catch(e) { console.error("Error DB", e); }
+                    try {
+                        let updateData = { profiles: userProfiles };
+                        if(activeProfileIndex === 0 && (!userProfiles || userProfiles.length <= 1)) {
+                           if(type === 'mylist') updateData.myList = updatedList;
+                           if(type === 'favorites') updateData.favorites = updatedList;
+                        }
+                        await updateDoc(currentUserDocRef, updateData);
+                    } catch(e) { console.error("Error updating lists:", e); }
                 }
-                
-                renderPosterRow('mylist-container', cachedMyList, 'mylist');
-                const listCountEl = document.getElementById('stat-list-count');
-                if (listCountEl) listCountEl.innerHTML = `<i class="fas fa-bookmark"></i> ${cachedMyList.length} in list`;
-                
-            } else if (type === 'favorites') {
-                cachedFavs = cachedFavs.filter(item => item.link !== identifier && item.id !== identifier);
-                activeProf.favorites = cachedFavs; 
-                
-                if (activeProfileIndex === 0) {
-                    localStorage.setItem('dramakan_favorites', JSON.stringify(cachedFavs));
-                }
-                
-                if (currentUserDocRef) {
-                    try { await updateDoc(currentUserDocRef, { profiles: userProfiles }); } 
-                    catch(e) { console.error("Error DB", e); }
-                }
-                
-                renderPosterRow('favorites-container', cachedFavs, 'favorites');
+            }
+        };
+
+        // --- GLOBAL CLOUD-FIRST CLEAR HISTORY LOGIC ---
+        window.clearHistory = async () => {
+            if(!auth.currentUser) return;
+            if(!confirm("Are you sure you want to clear your entire watch history? This cannot be undone.")) return;
+            
+            const uid = auth.currentUser.uid;
+            try {
+                const historySnap = await getDocs(collection(db, "users", uid, "history"));
+                historySnap.forEach(async (docSnap) => {
+                    await deleteDoc(doc(db, "users", uid, "history", docSnap.id));
+                });
+            } catch(e) {
+                console.error("Error clearing history", e);
             }
         };
 
@@ -1052,7 +1006,7 @@
         }
 
         // =====================================
-        // AUTH INIT & REALTIME SYNC
+        // AUTH INIT & CLOUD-FIRST REALTIME SYNC
         // =====================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -1060,80 +1014,123 @@
                     document.getElementById('edit-email').value = user.email;
                     currentUserDocRef = doc(db, "users", user.uid);
 
-                    const docSnap = await getDoc(currentUserDocRef);
-
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        
-                        const fallbackAvatar = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(data.username || "User")}`;
-                        const legacyAvatar = data.avatarUrl || fallbackAvatar;
-                        
-                        if(data.profiles && data.profiles.length > 0) {
-                            userProfiles = data.profiles;
+                    // --- 1. REAL-TIME USER DOC SYNC (Profiles, My List, Favorites) ---
+                    if(unsubscribeUser) unsubscribeUser();
+                    unsubscribeUser = onSnapshot(currentUserDocRef, async (docSnap) => {
+                        if (docSnap.exists()) {
+                            const data = docSnap.data();
                             
-                            if (userProfiles[0].avatar.includes('Netflix-avatar.png') || !userProfiles[0].avatar) {
-                                userProfiles[0].avatar = legacyAvatar;
+                            const fallbackAvatar = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(data.username || "User")}`;
+                            const legacyAvatar = data.avatarUrl || fallbackAvatar;
+                            
+                            if(data.profiles && data.profiles.length > 0) {
+                                userProfiles = data.profiles;
+                                
+                                if (userProfiles[0].avatar.includes('Netflix-avatar.png') || !userProfiles[0].avatar) {
+                                    userProfiles[0].avatar = legacyAvatar;
+                                    updateDoc(currentUserDocRef, { profiles: userProfiles }).catch(()=>{});
+                                }
+                            } else {
+                                userProfiles = [{
+                                    id: 'prof_default',
+                                    name: user.displayName || data.username || "User", 
+                                    avatar: legacyAvatar,
+                                    myList: data.myList || JSON.parse(localStorage.getItem('dramakan_mylist')) || [],
+                                    favorites: data.favorites || JSON.parse(localStorage.getItem('dramakan_favorites')) || []
+                                }];
                                 updateDoc(currentUserDocRef, { profiles: userProfiles }).catch(()=>{});
                             }
-                        } else {
-                            userProfiles = [{
-                                id: 'prof_default',
-                                name: user.displayName || data.username || "User", 
-                                avatar: legacyAvatar,
-                                myList: data.myList || JSON.parse(localStorage.getItem('dramakan_mylist')) || [],
-                                favorites: data.favorites || JSON.parse(localStorage.getItem('dramakan_favorites')) || []
-                            }];
-                            updateDoc(currentUserDocRef, { profiles: userProfiles }).catch(()=>{});
+
+                            const savedActiveId = localStorage.getItem('dramakan_active_profile_id');
+                            if (savedActiveId) {
+                                const foundIdx = userProfiles.findIndex(p => p.id === savedActiveId);
+                                if (foundIdx > -1) activeProfileIndex = foundIdx;
+                            }
+
+                            renderProfiles();
+
+                            const activeProf = userProfiles[activeProfileIndex];
+                            cachedMyList = activeProf.myList || [];
+                            cachedFavs = activeProf.favorites || [];
+                            
+                            // Passive backup to local storage
+                            if (activeProfileIndex === 0) {
+                                localStorage.setItem('dramakan_mylist', JSON.stringify(cachedMyList));
+                                localStorage.setItem('dramakan_favorites', JSON.stringify(cachedFavs));
+                            }
+                            
+                            // Instantly render UI directly from Firebase payload
+                            renderPosterRow('mylist-container', cachedMyList, 'mylist');
+                            const listCountEl = document.getElementById('stat-list-count');
+                            if (listCountEl) listCountEl.innerHTML = `<i class="fas fa-bookmark"></i> ${cachedMyList.length} in list`;
+                            
+                            renderPosterRow('favorites-container', cachedFavs, 'favorites');
+
+                            // VIP Status UI Sync
+                            const now = Date.now();
+                            let activePlan = "Basic";
+                            if (data.isPremium && data.premiumExpiry > now) {
+                                activePlan = data.premiumPlan || "Elite_VIP_35";
+                            }
+
+                            const statVipStatus = document.getElementById('stat-vip-status');
+                            const heroUpgradeBtn = document.getElementById('heroUpgradeBtn');
+
+                            if (activePlan.includes('Crown')) {
+                                if(statVipStatus) {
+                                    statVipStatus.innerHTML = '<i class="fas fa-crown"></i> Crown VIP';
+                                    statVipStatus.className = 'stat-pill stat-crown';
+                                }
+                                if(heroUpgradeBtn) heroUpgradeBtn.style.display = 'none'; 
+                            } else if (activePlan.includes('Elite')) {
+                                if(statVipStatus) {
+                                    statVipStatus.innerHTML = '<i class="fas fa-gem"></i> Elite VIP';
+                                    statVipStatus.className = 'stat-pill stat-elite';
+                                }
+                                if(heroUpgradeBtn) {
+                                    heroUpgradeBtn.style.display = 'inline-flex';
+                                    heroUpgradeBtn.innerHTML = '<i class="fas fa-arrow-up"></i> Upgrade Crown';
+                                    heroUpgradeBtn.className = 'btn-upgrade-hero upgrade-crown';
+                                }
+                            } else {
+                                if(statVipStatus) {
+                                    statVipStatus.innerHTML = '<i class="fas fa-user"></i> Basic Plan';
+                                    statVipStatus.className = 'stat-pill stat-basic';
+                                }
+                                if(heroUpgradeBtn) {
+                                    heroUpgradeBtn.style.display = 'inline-flex';
+                                    heroUpgradeBtn.innerHTML = '<i class="fas fa-bolt"></i> Upgrade VIP';
+                                    heroUpgradeBtn.className = 'btn-upgrade-hero upgrade-elite';
+                                }
+                            }
                         }
+                    });
 
-                        const savedActiveId = localStorage.getItem('dramakan_active_profile_id');
-                        if (savedActiveId) {
-                            const foundIdx = userProfiles.findIndex(p => p.id === savedActiveId);
-                            if (foundIdx > -1) activeProfileIndex = foundIdx;
+                    // --- 2. REAL-TIME HISTORY SUBCOLLECTION SYNC ---
+                    if(unsubscribeHistory) unsubscribeHistory();
+                    unsubscribeHistory = onSnapshot(collection(db, "users", user.uid, "history"), (snapshot) => {
+                        let cloudHistory = {};
+                        snapshot.forEach(doc => {
+                            const histData = doc.data();
+                            if(histData && histData.dramaId) {
+                                histData.id = String(histData.dramaId);
+                                cloudHistory[histData.id] = histData;
+                            }
+                        });
+                        
+                        localStorage.setItem('dramakan_history', JSON.stringify(cloudHistory));
+                        
+                        const historyArr = Object.values(cloudHistory)
+                            .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
+                            .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                        
+                        renderPosterRow('history-container', historyArr, 'history');
+
+                        const clearBtn = document.getElementById('clear-history-btn');
+                        if (clearBtn) {
+                            clearBtn.style.display = historyArr.length > 0 ? 'inline-flex' : 'none';
                         }
-
-                        renderProfiles();
-                        refreshProfileData();
-
-                        // --- VIP STATUS UI SYNC ---
-                        const now = Date.now();
-                        let activePlan = "Basic";
-                        if (data.isPremium && data.premiumExpiry > now) {
-                            activePlan = data.premiumPlan || "Elite_VIP_35";
-                        }
-
-                        // Update the VIP Banner Elements
-                        const statVipStatus = document.getElementById('stat-vip-status');
-                        const heroUpgradeBtn = document.getElementById('heroUpgradeBtn');
-
-                        if (activePlan.includes('Crown')) {
-                            if(statVipStatus) {
-                                statVipStatus.innerHTML = '<i class="fas fa-crown"></i> Crown VIP';
-                                statVipStatus.className = 'stat-pill stat-crown';
-                            }
-                            if(heroUpgradeBtn) heroUpgradeBtn.style.display = 'none'; // Max tier
-                        } else if (activePlan.includes('Elite')) {
-                            if(statVipStatus) {
-                                statVipStatus.innerHTML = '<i class="fas fa-gem"></i> Elite VIP';
-                                statVipStatus.className = 'stat-pill stat-elite';
-                            }
-                            if(heroUpgradeBtn) {
-                                heroUpgradeBtn.style.display = 'inline-flex';
-                                heroUpgradeBtn.innerHTML = '<i class="fas fa-arrow-up"></i> Upgrade Crown';
-                                heroUpgradeBtn.className = 'btn-upgrade-hero upgrade-crown';
-                            }
-                        } else {
-                            if(statVipStatus) {
-                                statVipStatus.innerHTML = '<i class="fas fa-user"></i> Basic Plan';
-                                statVipStatus.className = 'stat-pill stat-basic';
-                            }
-                            if(heroUpgradeBtn) {
-                                heroUpgradeBtn.style.display = 'inline-flex';
-                                heroUpgradeBtn.innerHTML = '<i class="fas fa-bolt"></i> Upgrade VIP';
-                                heroUpgradeBtn.className = 'btn-upgrade-hero upgrade-elite';
-                            }
-                        }
-                    }
+                    });
 
                     // Requests fetch
                     const reqSnap = await getDocs(query(collection(db, "requests"), where("userId", "==", user.uid)));
@@ -1185,8 +1182,6 @@
                     await updateDoc(currentUserDocRef, updateData);
                 }
                 
-                renderProfiles(); 
-                
                 btn.style.background = '#10b981';
                 btn.style.boxShadow = '0 8px 25px rgba(16,185,129,0.4)';
                 btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
@@ -1225,6 +1220,8 @@
         });
 
         document.getElementById('logout-btn').addEventListener('click', () => {
+            if(unsubscribeUser) unsubscribeUser();
+            if(unsubscribeHistory) unsubscribeHistory();
             signOut(auth).then(()=>window.location.replace('login.html'));
         });
     </script>

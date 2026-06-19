@@ -10,11 +10,17 @@
     
     <link rel="stylesheet" href="global.css">
     <script src="bottom-bar.js" defer></script> 
+    <script src="lightmode.js" defer></script> 
+    <link rel="stylesheet" href="lightmode.css"> 
 
     <style>
         body { 
             padding-bottom: 90px; 
-            background-color: var(--background-color); 
+            background-color: var(--background-color, #050507); 
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
         }
         
         .mylist-container { 
@@ -24,7 +30,22 @@
             animation: fadeIn 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); 
         }
 
+        .main-header {
+            background: rgba(5, 5, 7, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .logo { font-size: 1.5rem; font-weight: 800; text-decoration: none; color: #fff; }
+        .logo span { color: #8A2BE2; }
+
         .page-header {
+            margin-top: 20px;
             margin-bottom: 30px;
             padding-bottom: 15px;
             border-bottom: 1px solid rgba(255,255,255,0.08);
@@ -38,6 +59,7 @@
             font-weight: 700;
             color: #fff;
             text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            margin: 0;
         }
 
         .drama-grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; }
@@ -46,15 +68,19 @@
         
         .drama-grid-container .drama-card {
             min-width: 100% !important; max-width: 100% !important; width: 100%; height: 100%; border-radius: 16px;
-            display: flex; flex-direction: column; overflow: hidden; margin: 0;
+            display: flex; flex-direction: column; overflow: hidden; margin: 0; text-decoration: none; color: inherit;
             background: linear-gradient(145deg, rgba(30,30,35,0.4) 0%, rgba(15,15,20,0.6) 100%);
-            border: 1px solid var(--glass-border); box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
-        .drama-grid-container .drama-card-img { width: 100%; aspect-ratio: 2.7 / 4; border-radius: 16px 16px 0 0; overflow: hidden; flex-shrink: 0; }
+        .item-wrapper:hover .drama-card { border-color: rgba(138, 43, 226, 0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+
+        .drama-grid-container .drama-card-img { width: 100%; aspect-ratio: 2.7 / 4; border-radius: 16px 16px 0 0; overflow: hidden; flex-shrink: 0; background: #1a1a1d;}
         .drama-grid-container .drama-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
         .item-wrapper:hover .drama-card-img img { transform: scale(1.08); }
+        
         .drama-grid-container .drama-card-info { padding: 16px; background: transparent; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-        .drama-grid-container .drama-card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .drama-grid-container .drama-card-title { font-size: 0.95rem; font-weight: 600; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
         
         .remove-btn { 
             position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(239, 68, 68, 0.85); 
@@ -63,32 +89,46 @@
             cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5); opacity: 0; transform: scale(0.8); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .item-wrapper:hover .remove-btn { opacity: 1; transform: scale(1); }
-        .remove-btn:hover { background: #ef4444; transform: scale(1.15) !important; }
+        .remove-btn:hover { background: #ef4444; transform: scale(1.15) !important; border-color: #ef4444; }
 
-        .empty-state, .loading-state { text-align: center; padding: 80px 20px; color: var(--text-muted-color); background: rgba(26, 26, 29, 0.4); border-radius: 24px; border: 1px dashed rgba(255,255,255,0.1); backdrop-filter: blur(10px); grid-column: 1 / -1; }
-        .empty-state i { font-size: 4rem; margin-bottom: 20px; color: rgba(157, 78, 221, 0.3); }
-        .empty-state h3 { font-weight: 500; font-size: 1.2rem; color: #e4e4e7; }
-        .loading-state i { font-size: 3rem; margin-bottom: 20px; color: var(--primary-color); }
+        .empty-state, .loading-state { text-align: center; padding: 80px 20px; color: #9CA3AF; background: rgba(26, 26, 29, 0.4); border-radius: 24px; border: 1px dashed rgba(255,255,255,0.1); backdrop-filter: blur(10px); grid-column: 1 / -1; }
+        .empty-state i { font-size: 4rem; margin-bottom: 20px; color: rgba(138, 43, 226, 0.3); }
+        .empty-state h3 { font-weight: 500; font-size: 1.2rem; color: #e4e4e7; margin: 0 0 10px 0;}
+        .loading-state i { font-size: 3rem; margin-bottom: 20px; color: #8A2BE2; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* --- MOBILE UI FIXES --- */
         @media (max-width: 768px) {
             .mylist-container { margin: 20px auto; padding: 0 5%; }
             .drama-grid-container { grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 15px; }
-            .remove-btn { opacity: 1; transform: scale(1); top: 8px; right: 8px; width: 30px; height: 30px; font-size: 0.85rem; }
+            /* Make remove button permanently visible on touch devices */
+            .remove-btn { opacity: 1; transform: scale(1); top: 8px; right: 8px; width: 30px; height: 30px; font-size: 0.85rem; background: rgba(239, 68, 68, 0.95); }
         }
+
+        /* --- APPLE LIQUID GLASS BOTTOM BAR FIX --- */
+        @media (max-width: 992px) {
+            .bottom-nav {
+                display: flex !important; position: fixed !important; bottom: 15px !important; left: 50% !important; transform: translateX(-50%) !important;
+                width: 90% !important; max-width: 400px !important; background: rgba(20, 20, 25, 0.65) !important; backdrop-filter: blur(40px) saturate(180%) !important;
+                -webkit-backdrop-filter: blur(40px) saturate(180%) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 50px !important;
+                z-index: 999999 !important; padding: 5px 10px !important; box-shadow: 0 25px 50px rgba(0,0,0,0.5) !important;
+            }
+            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 0; color: rgba(255, 255, 255, 0.5); text-decoration: none; transition: all 0.4s ease; }
+            .bottom-nav-item.active { color: #fff; }
+            .nav-icon { font-size: 1.35rem; margin-bottom: 4px; transition: transform 0.4s ease; }
+            .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-4px) scale(1.15); color: #8A2BE2; }
+            .nav-label { font-size: 0.65rem; font-weight: 500; }
+        }
+        @media (min-width: 993px) { .bottom-nav { display: none !important; } }
     </style>
-<script src="bottom-bar.js" defer></script><script src="lightmode.js"></script> 
-    
-    
-    <link rel="stylesheet" href="lightmode.css"> 
 </head>
 <body>
 
     <header class="main-header">
-        <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+        <div class="container" style="display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 4%;">
             <a href="index.html" class="logo">Drama<span>Kan</span></a>
-            <a href="index.html" style="color: var(--text-muted-color); font-weight: 500; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: 0.3s;">
+            <a href="index.html" style="color: #9CA3AF; font-weight: 500; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: 0.3s;">
                 <i class="fas fa-arrow-left"></i> Home
             </a>
         </div>
@@ -96,7 +136,7 @@
 
     <main class="mylist-container">
         <div class="page-header">
-            <i class="fas fa-bookmark" style="font-size: 1.8rem; color: var(--primary-color);"></i>
+            <i class="fas fa-bookmark" style="font-size: 1.8rem; color: #8A2BE2;"></i>
             <h1 class="page-title">My List</h1>
         </div>
 
@@ -116,6 +156,7 @@
        <a href="community.html" class="bottom-nav-item">
             <i class="fa-solid fa-bell nav-icon"></i>
             <span class="nav-label">Updates</span>
+        </a>
         <a href="mylist.html" class="bottom-nav-item active">
             <i class="fa-solid fa-bookmark nav-icon"></i>
             <span class="nav-label">My List</span>
@@ -129,60 +170,120 @@
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", authDomain: "dramakan007.firebaseapp.com", projectId: "dramakan007" };
         
-        // Safety check to prevent dual-loading crashes
         const app = !getApps().length ? initializeApp(firebaseConfig) : getApp(); 
         const auth = getAuth(app); 
         const db = getFirestore(app);
 
         let currentUserDocRef = null;
+        let currentMyList = [];
+        let userProfiles = [];
+        let activeProfileIndex = 0;
+        let unsubscribeList = null;
 
+        // Render logic decoupled from fetch
         window.renderMyList = function(listArray) {
             const myListGrid = document.getElementById('mylist-grid-container');
             if (listArray && listArray.length > 0) {
-                myListGrid.innerHTML = listArray.reverse().map(item => `
+                // Ensure ID is passed to remove function, NOT title (fixes apostrophe bugs)
+                myListGrid.innerHTML = listArray.slice().reverse().map(item => {
+                    const identifier = item.id || item.link; // Fallback to link if legacy data
+                    return `
                     <div class="item-wrapper">
                         <a href="${item.link}" class="drama-card">
                             <div class="drama-card-img"><img src="${item.img}" alt="${item.title}"></div>
                             <div class="drama-card-info"><h3 class="drama-card-title">${item.title}</h3></div>
                         </a>
-                        <button class="remove-btn" onclick="removeFromMyList('${item.title.replace(/'/g, "\\'")}')" title="Remove from My List">
-                            <i class="fas fa-times"></i>
+                        <button class="remove-btn" onclick="event.preventDefault(); removeFromMyList('${identifier}')" title="Remove from My List">
+                            <i class="fas fa-trash-alt"></i>
                         </button>
                     </div>
-                `).join('');
+                `}).join('');
             } else {
-                myListGrid.innerHTML = `<div class="empty-state"><i class="fas fa-bookmark"></i><h3>Your list is empty</h3><p style="font-size:0.9rem; margin-top:10px;">Find dramas you like and tap the + button to save them here.</p><a href="index.html" style="display:inline-block; margin-top:20px; padding: 10px 24px; background:var(--primary-color); color:#fff; border-radius:50px; text-decoration:none; font-weight:500;">Browse Dramas</a></div>`;
+                myListGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bookmark"></i>
+                        <h3>Your list is empty</h3>
+                        <p style="font-size:0.9rem; margin-top:10px;">Find dramas you like and tap the + button to save them here.</p>
+                        <a href="index.html" style="display:inline-block; margin-top:20px; padding: 10px 24px; background:#8A2BE2; color:#fff; border-radius:50px; text-decoration:none; font-weight:600; transition: transform 0.3s;">Browse Dramas</a>
+                    </div>`;
             }
         };
 
-        window.removeFromMyList = async function(title) {
-            if (currentUserDocRef) {
-                try {
-                    const docSnap = await getDoc(currentUserDocRef);
-                    if (docSnap.exists()) {
-                        let list = docSnap.data().myList || [];
-                        list = list.filter(item => item.title !== title);
-                        await updateDoc(currentUserDocRef, { myList: list });
-                        renderMyList(list);
-                    }
-                } catch (error) { console.error("Error removing item:", error); alert("Failed to remove item. Please try again."); }
+        // Uses ID to delete perfectly syncs to cloud
+        window.removeFromMyList = async function(id) {
+            if (!currentUserDocRef) return;
+            
+            // Filter out by checking id or legacy link
+            const updatedList = currentMyList.filter(item => String(item.id) !== String(id) && item.link !== id);
+            
+            try {
+                if (userProfiles && userProfiles.length > 0) {
+                    userProfiles[activeProfileIndex].myList = updatedList;
+                    await updateDoc(currentUserDocRef, { profiles: userProfiles });
+                } else {
+                    await updateDoc(currentUserDocRef, { myList: updatedList });
+                }
+            } catch (error) { 
+                console.error("Error removing item:", error); 
+                alert("Failed to remove item. Please check your connection."); 
             }
         };
 
+        // Real-time Cloud Sync Engine
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUserDocRef = doc(db, "users", user.uid);
-                try {
-                    const docSnap = await getDoc(currentUserDocRef);
-                    if (docSnap.exists()) renderMyList(docSnap.data().myList || []);
-                    else renderMyList([]);
-                } catch (error) {
-                    document.getElementById('mylist-grid-container').innerHTML = `<div class="empty-state"><h3>Error loading list. Refresh the page.</h3></div>`;
-                }
+                
+                if(unsubscribeList) unsubscribeList();
+                
+                unsubscribeList = onSnapshot(currentUserDocRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        
+                        if (data.profiles && data.profiles.length > 0) {
+                            userProfiles = data.profiles;
+                            const savedProfileId = localStorage.getItem('dramakan_active_profile_id');
+                            
+                            activeProfileIndex = userProfiles.findIndex(p => p.id === savedProfileId);
+                            if (activeProfileIndex === -1) activeProfileIndex = 0;
+                            
+                            currentMyList = userProfiles[activeProfileIndex].myList || [];
+                        } else {
+                            currentMyList = data.myList || [];
+                        }
+
+                        // ID Sanitizer logic
+                        currentMyList = currentMyList.map(item => {
+                            if(!item.id && item.link) {
+                                const urlParams = new URLSearchParams(item.link.split('?')[1]);
+                                item.id = String(urlParams.get('id'));
+                            } else if (item.id) {
+                                item.id = String(item.id);
+                            }
+                            return item;
+                        });
+
+                        // Passive backup to local storage for index.html quick render
+                        if (activeProfileIndex === 0) {
+                            localStorage.setItem('dramakan_mylist', JSON.stringify(currentMyList));
+                            let watchlistObj = {};
+                            currentMyList.forEach(item => { if(item.id) watchlistObj[item.id] = item; });
+                            localStorage.setItem('dramakan_watchlist', JSON.stringify(watchlistObj));
+                        }
+
+                        renderMyList(currentMyList);
+                    } else {
+                        renderMyList([]);
+                    }
+                }, (error) => {
+                    console.error("List sync error:", error);
+                    document.getElementById('mylist-grid-container').innerHTML = `<div class="empty-state"><h3>Connection error. Attempting to reconnect...</h3></div>`;
+                });
+
             } else {
                 window.location.replace('login.html'); 
             }

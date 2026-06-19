@@ -369,7 +369,7 @@
                             <option value="nxsha" selected>Server 1 - Multi Lang</option>
                             <option value="2embed">Server 2 - 2embed Fast</option>
                             <option value="vsrc">Server 3 - Vidsrc Backup</option>
-                            <option value="hindi">Server 4 - Hindi Dubbed</option>
+                            <option value="hindi" hidden>Server 4 - Hindi Dubbed</option>
                         </select>
                     </div>
                     <div class="control-panel">
@@ -575,6 +575,15 @@
     let activeData = null; 
     let cloudSynced = false; 
 
+    // Cloud First Synchronized Arrays
+    let profileMyList = [];
+    let profileFavorites = [];
+    let activeProfileIndex = 0;
+    
+    // UI Updaters (hoisted for scope)
+    let updateWatchlistUI = () => {};
+    let updateFavoriteUI = () => {};
+
     const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
     const tmdbKey = "014fbdbe962cb38379e09e31d0652459";
 
@@ -660,11 +669,60 @@
 
         if (!dramaId) { window.location.replace('index.html'); return; }
 
+        const addToListBtn = document.getElementById('add-to-list-btn');
+        const favoriteBtn = document.getElementById('favorite-btn');
+
+        updateWatchlistUI = () => {
+            const inList = profileMyList.some(item => String(item.id) === String(dramaId));
+            if (inList) {
+                addToListBtn.innerHTML = '<i class="fas fa-check"></i> <span>In List</span>';
+                addToListBtn.classList.add('btn-primary');
+            } else {
+                addToListBtn.innerHTML = '<i class="fas fa-plus"></i> <span>My List</span>';
+                addToListBtn.classList.remove('btn-primary');
+            }
+        };
+
+        updateFavoriteUI = () => {
+            const isFav = profileFavorites.some(item => String(item.id) === String(dramaId));
+            if (isFav) {
+                favoriteBtn.innerHTML = '<i class="fas fa-heart"></i> <span>Favorited</span>';
+                favoriteBtn.classList.add('btn-favorite-active');
+            } else {
+                favoriteBtn.innerHTML = '<i class="far fa-heart"></i> <span>Favorite</span>';
+                favoriteBtn.classList.remove('btn-favorite-active');
+            }
+        };
+
         onAuthStateChanged(auth, async (user) => {
             currentUser = user;
             const avatarImg = document.getElementById('current-user-avatar');
+            
             if (user) {
                 avatarImg.src = user.photoURL || defaultAvatar;
+
+                // --- CLOUD-FIRST USER DOC LISTENER (Real-time Buttons Sync) ---
+                onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        if (userData.profiles && userData.profiles.length > 0) {
+                            const activeProfileId = localStorage.getItem('dramakan_active_profile_id');
+                            activeProfileIndex = userData.profiles.findIndex(p => p.id === activeProfileId);
+                            if (activeProfileIndex === -1) activeProfileIndex = 0;
+                            profileMyList = userData.profiles[activeProfileIndex].myList || [];
+                            profileFavorites = userData.profiles[activeProfileIndex].favorites || [];
+                        } else {
+                            profileMyList = userData.myList || [];
+                            profileFavorites = userData.favorites || [];
+                        }
+                        
+                        profileMyList.forEach(i => i.id = String(i.id || i.tmdbId));
+                        profileFavorites.forEach(i => i.id = String(i.id || i.tmdbId));
+
+                        updateWatchlistUI();
+                        updateFavoriteUI();
+                    }
+                });
 
                 // --- FETCH CLOUD HISTORY CROSS-DEVICE SYNC ---
                 if (dramaId) {
@@ -822,82 +880,61 @@
             renderCastSection(activeData.fullCast);
             initCommentSystem(dramaId); 
 
-            // --- WATCHLIST / MY LIST LOGIC ---
-            const addToListBtn = document.getElementById('add-to-list-btn');
-            let watchlistObj = JSON.parse(localStorage.getItem('dramakan_watchlist')) || {};
-            let profileMyList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
-
-            const updateWatchlistUI = () => {
-                const inList = profileMyList.some(item => String(item.id) === String(dramaId));
-                if (inList) {
-                    addToListBtn.innerHTML = '<i class="fas fa-check"></i> <span>In List</span>';
-                    addToListBtn.classList.add('btn-primary');
-                } else {
-                    addToListBtn.innerHTML = '<i class="fas fa-plus"></i> <span>My List</span>';
-                    addToListBtn.classList.remove('btn-primary');
-                }
-            };
-
-            addToListBtn.addEventListener('click', () => {
+            // --- CLOUD-FIRST MY LIST TOGGLE ---
+            addToListBtn.addEventListener('click', async () => {
+                if (!currentUser) return alert("Please log in to manage your list.");
+                
                 let inListIdx = profileMyList.findIndex(item => String(item.id) === String(dramaId));
                 if (inListIdx > -1) {
                     profileMyList.splice(inListIdx, 1);
-                    delete watchlistObj[dramaId];
                 } else {
-                    const itemData = { id: dramaId, title: activeData.title, img: activeData.img, link: `watch.html?id=${dramaId}`, timestamp: Date.now() };
-                    profileMyList.push(itemData);
-                    watchlistObj[dramaId] = itemData;
+                    profileMyList.push({ id: String(dramaId), title: activeData.title, img: activeData.img, link: `watch.html?id=${dramaId}`, timestamp: Date.now() });
                 }
-                localStorage.setItem('dramakan_mylist', JSON.stringify(profileMyList));
-                localStorage.setItem('dramakan_watchlist', JSON.stringify(watchlistObj));
+                
                 updateWatchlistUI();
+                
+                try {
+                    const userDocRef = doc(db, "users", currentUser.uid);
+                    const snap = await getDoc(userDocRef);
+                    if(snap.exists()) {
+                        let d = snap.data();
+                        if(d.profiles && d.profiles.length > 0) {
+                            d.profiles[activeProfileIndex].myList = profileMyList;
+                            await updateDoc(userDocRef, { profiles: d.profiles });
+                        } else {
+                            await updateDoc(userDocRef, { myList: profileMyList });
+                        }
+                    }
+                } catch(e) { console.error("Cloud List update failed:", e); }
             });
-            updateWatchlistUI();
 
-            // --- ADD TO FAVORITES LOGIC ---
-            const favoriteBtn = document.getElementById('favorite-btn');
-            let profileFavorites = JSON.parse(localStorage.getItem('dramakan_favorites')) || [];
-
-            const updateFavoriteUI = () => {
-                const isFav = profileFavorites.some(item => String(item.id) === String(dramaId));
-                if (isFav) {
-                    favoriteBtn.innerHTML = '<i class="fas fa-heart"></i> <span>Favorited</span>';
-                    favoriteBtn.classList.add('btn-favorite-active');
-                } else {
-                    favoriteBtn.innerHTML = '<i class="far fa-heart"></i> <span>Favorite</span>';
-                    favoriteBtn.classList.remove('btn-favorite-active');
-                }
-            };
-
+            // --- CLOUD-FIRST FAVORITE TOGGLE ---
             favoriteBtn.addEventListener('click', async () => {
+                if (!currentUser) return alert("Please log in to add to favorites.");
+                
                 let inFavIdx = profileFavorites.findIndex(item => String(item.id) === String(dramaId));
                 if (inFavIdx > -1) {
                     profileFavorites.splice(inFavIdx, 1);
                 } else {
-                    const itemData = { id: dramaId, title: activeData.title, img: activeData.img, link: `watch.html?id=${dramaId}`, timestamp: Date.now() };
-                    profileFavorites.push(itemData);
+                    profileFavorites.push({ id: String(dramaId), title: activeData.title, img: activeData.img, link: `watch.html?id=${dramaId}`, timestamp: Date.now() });
                 }
-                localStorage.setItem('dramakan_favorites', JSON.stringify(profileFavorites));
+                
                 updateFavoriteUI();
 
-                if (currentUser) {
-                    try {
-                        const userDocRef = doc(db, "users", currentUser.uid);
-                        const userSnap = await getDoc(userDocRef);
-                        if (userSnap.exists()) {
-                            let userData = userSnap.data();
-                            if (userData.profiles && userData.profiles.length > 0) {
-                                let activeProfileId = localStorage.getItem('dramakan_active_profile_id');
-                                let pIndex = userData.profiles.findIndex(p => p.id === activeProfileId);
-                                if (pIndex === -1) pIndex = 0; 
-                                userData.profiles[pIndex].favorites = profileFavorites;
-                                await updateDoc(userDocRef, { profiles: userData.profiles });
-                            }
+                try {
+                    const userDocRef = doc(db, "users", currentUser.uid);
+                    const snap = await getDoc(userDocRef);
+                    if(snap.exists()) {
+                        let d = snap.data();
+                        if(d.profiles && d.profiles.length > 0) {
+                            d.profiles[activeProfileIndex].favorites = profileFavorites;
+                            await updateDoc(userDocRef, { profiles: d.profiles });
+                        } else {
+                            await updateDoc(userDocRef, { favorites: profileFavorites });
                         }
-                    } catch (err) { console.error("Error syncing favorites:", err); }
-                }
+                    }
+                } catch(e) { console.error("Cloud Favorites update failed:", e); }
             });
-            updateFavoriteUI();
 
             // =========================================================
             // 4. FIX: EPISODES LOGIC - EXTRACT HISTORY BEFORE RENDERING
@@ -960,7 +997,7 @@
                 let buttonsHtml = '';
                 for (let i = 1; i <= epsInThisSeason; i++) {
                     const epInfo = episodesData ? episodesData[i-1] : null;
-                    const epTitle = epInfo && epInfo.name ? epInfo.name : (isMovieType ? 'Full Movie' : `Episode ${i}`);
+                    const epTitle = epInfo && epInfo.name ? (isMovieType ? epInfo.name : `Episode ${i} - ${epInfo.name}`) : (isMovieType ? 'Full Movie' : `Episode ${i}`);
                     const runtime = epInfo && epInfo.runtime ? `${epInfo.runtime}m` : (isMovieType ? '120m' : '45:00');
 
                     buttonsHtml += `
@@ -1114,6 +1151,7 @@
                 if (currentUser) {
                     try {
                         await setDoc(doc(db, "users", currentUser.uid, "history", String(dramaId)), {
+                            id: String(dramaId),
                             dramaId: String(dramaId),
                             title: activeData.title,
                             img: activeData.img,
