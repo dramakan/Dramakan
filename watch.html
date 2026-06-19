@@ -64,10 +64,27 @@
             padding: 0; 
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            position: relative;
+        }
+
+        /* --- AMBILIGHT BACKDROP CLASS --- */
+        .ambilight-glow-backdrop {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            opacity: 0.25;
+            filter: blur(80px) saturate(220%);
+            object-fit: cover;
+            pointer-events: none;
+            transition: src 0.8s ease-in-out, opacity 0.5s;
         }
 
         /* --- LAYOUT GRID --- */
-        .container { max-width: 1500px; margin: 0 auto; padding: 20px 4%; }
+        .container { max-width: 1500px; margin: 0 auto; padding: 20px 4%; position: relative; z-index: 1; }
         .breadcrumbs { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
         .breadcrumbs span { color: var(--text-main); font-weight: 500; }
         
@@ -109,13 +126,32 @@
         .btn-favorite-active { background: rgba(255, 71, 87, 0.15); border-color: #ff4757; color: #ff4757; }
         .btn-favorite-active:hover { background: rgba(255, 71, 87, 0.25); border-color: #ff4757; box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3); }
 
-        /* --- VIDEO PLAYER --- */
+        /* --- VIDEO PLAYER & CATCH-UP OVERLAY --- */
         .video-player-container {
             position: relative; background: #000; border-radius: 16px; overflow: hidden;
             aspect-ratio: 16/9; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid var(--glass-border);
             transition: all 0.3s ease;
         }
-        .video-player-container iframe { width: 100%; height: 100%; border: none; position: absolute; top:0; left:0; }
+        .video-player-container iframe { width: 100%; height: 100%; border: none; position: absolute; top:0; left:0; z-index: 1;}
+
+        .catchup-overlay {
+            position: absolute; inset: 0; z-index: 500;
+            background: rgba(11, 12, 16, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 1; transition: opacity 0.5s ease;
+        }
+        .catchup-overlay.hidden { opacity: 0; pointer-events: none; }
+        .catchup-content {
+            background: rgba(20, 20, 25, 0.6); border: 1px solid rgba(138,43,226,0.3);
+            border-radius: 16px; padding: 30px; max-width: 80%; text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8); position: relative;
+            animation: popIn 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .catchup-close { position: absolute; top: 15px; right: 20px; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: 0.3s; }
+        .catchup-close:hover { color: #fff; }
+        .catchup-content h5 { color: var(--primary); font-size: 1.2rem; margin: 0 0 10px 0; font-weight: 600;}
+        .catchup-content h6 { color: #fff; font-size: 0.95rem; margin: 0 0 15px 0; font-weight: 500;}
+        .catchup-content p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; margin: 0 0 25px 0; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 
         
         /* Server Notice Banner */
@@ -262,6 +298,8 @@
 </head>
 <body>
 
+    <img id="ambilight-bg" class="ambilight-glow-backdrop" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+
     <div id="light-off-overlay"></div>
 
     <div id="page-loader" style="position: fixed; inset: 0; background: var(--bg-base); z-index: 10000; display: flex; justify-content: center; align-items: center; flex-direction: column; color: #fff;">
@@ -305,8 +343,18 @@
             
             <div class="main-column">
                 <div class="video-player-container" id="video-wrapper">
-    <iframe id="video-player-iframe" src="" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" referrerpolicy="no-referrer" frameborder="0" scrolling="no"></iframe>
-</div>
+                    <iframe id="video-player-iframe" src="" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" referrerpolicy="no-referrer" frameborder="0" scrolling="no"></iframe>
+                    
+                    <div id="catchup-overlay" class="catchup-overlay hidden">
+                        <div class="catchup-content">
+                            <button class="catchup-close" onclick="document.getElementById('catchup-overlay').classList.add('hidden')" title="Dismiss">&times;</button>
+                            <h5><i class="fas fa-history"></i> Welcome back! Need a refresher?</h5>
+                            <h6>Previously on Episode <span id="catchup-ep-num"></span>:</h6>
+                            <p id="catchup-synopsis">Loading...</p>
+                            <button class="action-btn btn-primary" onclick="document.getElementById('catchup-overlay').classList.add('hidden')"><i class="fas fa-play"></i> Got it, let's watch!</button>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="server-notice">
                     <i class="fas fa-info-circle"></i> <span>If the video is not playing or buffering, please try switching to a different server below.</span>
@@ -450,35 +498,35 @@
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; text-align: center;">
                 <button class="share-social-btn" data-network="whatsapp" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
                     <i class="fab fa-whatsapp" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.7rem;">WhatsApp</span>
+                    <span style="font-size: 0.75rem;">WhatsApp</span>
                 </button>
                 <button class="share-social-btn" data-network="instagram" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
                     <i class="fab fa-instagram" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.7rem;">Instagram</span>
+                    <span style="font-size: 0.75rem;">Instagram</span>
                 </button>
                 <button class="share-social-btn" data-network="facebook" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
                     <i class="fab fa-facebook" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.7rem;">Facebook</span>
+                    <span style="font-size: 0.75rem;">Facebook</span>
                 </button>
                 <button class="share-social-btn" data-network="telegram" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
                     <i class="fab fa-telegram" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.7rem;">Telegram</span>
+                    <span style="font-size: 0.75rem;">Telegram</span>
                 </button>
                 <button class="share-social-btn" data-network="twitter" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
                     <i class="fab fa-x-twitter" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.7rem;">X</span>
+                    <span style="font-size: 0.75rem;">X</span>
                 </button>
                 <button class="share-social-btn" data-network="reddit" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
                     <i class="fab fa-reddit" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.7rem;">Reddit</span>
+                    <span style="font-size: 0.75rem;">Reddit</span>
                 </button>
                 <button class="share-social-btn" data-network="discord" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
                     <i class="fab fa-discord" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.7rem;">Discord</span>
+                    <span style="font-size: 0.75rem;">Discord</span>
                 </button>
                 <button class="share-social-btn" data-network="email" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
                     <i class="fas fa-envelope" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.7rem;">Email</span>
+                    <span style="font-size: 0.75rem;">Email</span>
                 </button>
             </div>
         </div>
@@ -565,6 +613,7 @@
             title: data.name || data.title || "Unknown",
             synopsis: data.overview || "No synopsis available.",
             img: data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : "default-poster.jpg",
+            backdrop_path: data.backdrop_path || "",
             imdbId: data.external_ids?.imdb_id || "",
             tmdbId: String(idStr),
             year: (data.first_air_date || data.release_date || "Unknown").substring(0, 4),
@@ -617,7 +666,7 @@
             if (user) {
                 avatarImg.src = user.photoURL || defaultAvatar;
 
-                // 🆕 FETCH CLOUD HISTORY CROSS-DEVICE SYNC
+                // --- FETCH CLOUD HISTORY CROSS-DEVICE SYNC ---
                 if (dramaId) {
                     try {
                         const historyRef = doc(db, "users", user.uid, "history", String(dramaId));
@@ -664,7 +713,6 @@
                 if(!activeData.tmdbId) activeData.tmdbId = dramaId; 
                 document.getElementById('loader-text').textContent = "Loading Drama...";
 
-                // 🆕 FIX: Advanced Check for Incomplete Stubs (Even if Status is "Completed")
                 const statusStr = activeData.status ? activeData.status.toLowerCase() : "";
                 const synStr = activeData.synopsis ? activeData.synopsis.toLowerCase() : "";
                 const dirStr = activeData.director ? activeData.director.toLowerCase() : "";
@@ -686,10 +734,8 @@
                     const freshData = await autoGenerateFromTMDB(activeData.tmdbId);
                     
                     if (freshData) {
-                        // Merge the fresh TMDB data, but strictly keep the original Document ID
                         activeData = { ...activeData, ...freshData, id: activeData.id, tmdbId: activeData.tmdbId };
                         
-                        // If Admin is logged in, silently fix the Firebase database with the new info!
                         if (currentUser && currentUser.email === "zabaazcreations@gmail.com") {
                             try {
                                 await setDoc(doc(db, "dramas", String(dramaId)), activeData, { merge: true });
@@ -740,7 +786,7 @@
             if (typeof activeData.genre !== 'string') { activeData.genre = "Drama"; }
 
             // =========================================================
-            // 3. POPULATE UI & SEO 
+            // 3. POPULATE UI & INITIAL AMBILIGHT
             // =========================================================
             updateSEO(activeData, dramaId);
 
@@ -764,6 +810,13 @@
 
             const tagsHTML = activeData.genre.split(',').map(g => `<span class="tag-pill">${g.trim()}</span>`).join('');
             document.getElementById('ui-genre-tags').innerHTML = tagsHTML;
+
+            // --- AMBILIGHT BACKDROP WORK ---
+            if (activeData.backdrop_path) {
+                document.getElementById('ambilight-bg').src = `https://image.tmdb.org/t/p/w780${activeData.backdrop_path}`;
+            } else {
+                document.getElementById('ambilight-bg').src = activeData.img;
+            }
 
             renderRecommendations(activeData.similar);
             renderCastSection(activeData.fullCast);
@@ -954,6 +1007,9 @@
 
             const videoPlayer = document.getElementById('video-player-iframe');
 
+            // =========================================================
+            // CORE FEATURE INTERFACE: EPISODE X-RAY AND DYNAMIC ADAPTATION
+            // =========================================================
             window.loadEpisode = async function(season, ep) {
                 const targetSeason = parseInt(season);
                 const targetEp = parseInt(ep);
@@ -970,6 +1026,56 @@
                 
                 const isMovie = activeData.type?.toLowerCase().includes('movie');
                 document.getElementById('bread-ep').textContent = isMovie ? 'Full Movie' : `Episode ${targetEp}`;
+
+                // --- CATCH-UP MEMORY JOGGER LOGIC ---
+                const globalHist = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                const lastSession = globalHist[dramaId];
+                
+                // Check if it has been more than 48 hours (48 * 60 * 60 * 1000 ms) since last watch session
+                if (lastSession && lastSession.timestamp && (Date.now() - lastSession.timestamp > 172800000)) {
+                    if (!isMovie && activeTmdbId && targetEp > 1) {
+                        try {
+                            const prevEpNum = targetEp - 1;
+                            const prevRes = await fetch(`https://api.themoviedb.org/3/tv/${activeTmdbId}/season/${targetSeason}/episode/${prevEpNum}?api_key=${tmdbKey}`);
+                            if (prevRes.ok) {
+                                const prevData = await prevRes.json();
+                                if (prevData.overview) {
+                                    document.getElementById('catchup-ep-num').textContent = prevEpNum;
+                                    document.getElementById('catchup-synopsis').textContent = prevData.overview;
+                                    document.getElementById('catchup-overlay').classList.remove('hidden');
+                                }
+                            }
+                        } catch (e) { console.warn("Catch-up fetch failed safely.", e); }
+                    }
+                }
+
+                // --- EPISODE X-RAY SYNC FACTORY ---
+                if (!isMovie && activeTmdbId) {
+                    try {
+                        const epRes = await fetch(`https://api.themoviedb.org/3/tv/${activeTmdbId}/season/${targetSeason}/episode/${targetEp}?api_key=${tmdbKey}`);
+                        if (epRes.ok) {
+                            const epData = await epRes.json();
+                            
+                            // Dynamic metadata fallback crossfade 
+                            if (epData.overview) {
+                                document.getElementById('synopsis-text').textContent = epData.overview;
+                            } else {
+                                document.getElementById('synopsis-text').textContent = activeData.synopsis;
+                            }
+                            
+                            if (epData.name) {
+                                document.getElementById('bread-ep').textContent = `${epData.name} (S${targetSeason}:E${targetEp})`;
+                            }
+
+                            // Dynamic Ambilight palette mutation based on episode specific keyframe maps
+                            if (epData.still_path) {
+                                document.getElementById('ambilight-bg').src = `https://image.tmdb.org/t/p/w780${epData.still_path}`;
+                            }
+                        }
+                    } catch (xrayErr) {
+                        console.warn("X-Ray Fetch failure safely skipped.", xrayErr);
+                    }
+                }
 
                 let embedLink = '';
 
