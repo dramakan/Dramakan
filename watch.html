@@ -78,7 +78,7 @@
             align-items: start;
         }
 
-        .main-column { display: flex; flex-direction: column; gap: 20px; }
+        .main-column { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
         .sidebar-column { display: flex; flex-direction: column; gap: 20px; }
 
         /* --- HEADER & TITLE SECTION --- */
@@ -117,15 +117,7 @@
         }
         .video-player-container iframe { width: 100%; height: 100%; border: none; position: absolute; top:0; left:0; }
 
-        /* Custom Fullscreen Button */
-        #custom-fs-btn {
-            position: absolute; bottom: 20px; right: 20px; background: rgba(20, 20, 25, 0.8);
-            color: #fff; border: 1px solid var(--glass-border); border-radius: 8px;
-            width: 40px; height: 40px; display: none; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 100; transition: all 0.3s ease; backdrop-filter: blur(10px);
-        }
-        #custom-fs-btn:hover { background: var(--primary); border-color: var(--primary); transform: scale(1.1); }
-
+        
         /* Server Notice Banner */
         .server-notice {
             background: rgba(138, 43, 226, 0.1); border-left: 4px solid var(--primary); color: #e2e8f0;
@@ -166,9 +158,7 @@
         .share-social-btn:hover { color: #fff; }
         .share-social-btn:hover i { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
 
-        /* --- AD CONTAINERS --- */
-        .ad-wrapper-glass { width: 100%; overflow: hidden; box-sizing: border-box; background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px; text-align: center; min-height: 100px; display: flex; align-items: center; justify-content: center; position: relative; }
-
+      
         /* --- ABOUT THIS DRAMA --- */
         .about-drama { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; gap: 20px; }
         .about-poster { width: 140px; border-radius: 12px; object-fit: cover; flex-shrink: 0; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
@@ -180,16 +170,25 @@
         .meta-val { color: #fff; font-weight: 500; }
         .tag-pill { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 2px 8px; border-radius: 50px; font-size: 0.75rem; color: var(--text-muted); margin-right: 5px; display: inline-block; }
 
-        /* --- CAST SCROLLER SECTION --- */
-        .cast-scroller { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 12px; scrollbar-width: thin; scrollbar-color: var(--primary) rgba(255,255,255,0.05); }
-        .cast-scroller::-webkit-scrollbar { height: 6px; }
-        .cast-scroller::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
-        .cast-scroller::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
-        .cast-card { flex: 0 0 100px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; }
-        .cast-img { width: 90px; height: 120px; border-radius: 12px; object-fit: cover; border: 1px solid var(--glass-border); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .cast-name { font-size: 0.8rem; color: #fff; font-weight: 500; line-height: 1.2; margin-top: 4px; }
-        .cast-char { font-size: 0.7rem; color: var(--text-muted); line-height: 1.2; }
-
+       /* --- CAST SCROLLER SECTION --- */
+.cast-scroller { 
+    display: flex; 
+    gap: 15px; 
+    overflow-x: auto; 
+    padding-bottom: 12px; 
+    scrollbar-width: thin; 
+    scrollbar-color: var(--primary) rgba(255,255,255,0.05);
+    /* Limits exactly to 8 cards (100px each) + 7 gaps (15px each) */
+    max-width: calc((100px * 8) + (15px * 7)); 
+    width: 100%;
+}
+.cast-scroller::-webkit-scrollbar { height: 6px; }
+.cast-scroller::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+.cast-scroller::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+.cast-card { flex: 0 0 100px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; }
+.cast-img { width: 90px; height: 120px; border-radius: 12px; object-fit: cover; border: 1px solid var(--glass-border); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+.cast-name { font-size: 0.8rem; color: #fff; font-weight: 500; line-height: 1.2; margin-top: 4px; }
+.cast-char { font-size: 0.7rem; color: var(--text-muted); line-height: 1.2; }
         /* --- SIDEBAR: EPISODES (PC) --- */
         .sidebar-widget { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; }
         .sidebar-title { font-size: 1rem; font-weight: 600; color: #fff; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; }
@@ -225,7 +224,6 @@
             .main-column, .sidebar-column { display: contents; }
             .video-player-container { order: 1; }
             .server-notice { order: 2; margin-top: -10px; margin-bottom: 10px; }
-            .ad-wrapper-glass { order: 3; width: 100%; margin-top: 10px; }
             .controls-grid { order: 4; width: 100%; grid-template-columns: 1fr; }
             .video-player-container.pip-mode { width: 250px; height: 140px; bottom: 85px; right: 10px; }
             .sidebar-widget.episodes-widget { order: 5; margin-top: 10px; width: 100%; box-sizing: border-box; }
@@ -307,24 +305,14 @@
             
             <div class="main-column">
                 <div class="video-player-container" id="video-wrapper">
-                    <iframe id="video-player-iframe" src="" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" referrerpolicy="no-referrer" frameborder="0" scrolling="no"></iframe>
-                    <button id="custom-fs-btn" title="Fullscreen"><i class="fas fa-expand"></i></button>
-                </div>
+    <iframe id="video-player-iframe" src="" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" referrerpolicy="no-referrer" frameborder="0" scrolling="no"></iframe>
+</div>
 
                 <div class="server-notice">
                     <i class="fas fa-info-circle"></i> <span>If the video is not playing or buffering, please try switching to a different server below.</span>
                 </div>
                 
-                <div class="ad-wrapper-glass" style="margin-top: 20px; margin-bottom: 20px;">
-                    <span style="position: absolute; top: 5px; left: 10px; font-size: 0.65rem; color: var(--text-muted); font-weight: 500; letter-spacing: 1px; text-transform: uppercase;">Advertisement</span>
-                    <ins class="adsbygoogle"
-                         style="display:block; width: 100%; height: auto;"
-                         data-ad-client="ca-pub-3854581977852778"
-                         data-ad-slot="9077417426" 
-                         data-ad-format="auto"
-                         data-full-width-responsive="true"></ins>
-                    <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
-                </div>
+                
 
                 <div class="controls-grid">
                     <div class="control-panel">
@@ -399,16 +387,7 @@
                     <div class="episodes-timeline" id="episodes-list-container"></div>
                 </div>
                 
-                <div class="sidebar-widget" style="padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 250px; position: relative;">
-                    <span style="position: absolute; top: 5px; left: 10px; font-size: 0.65rem; color: var(--text-muted); font-weight: 500; letter-spacing: 1px; text-transform: uppercase;">Advertisement</span>
-                    <ins class="adsbygoogle"
-                         style="display:block; width: 100%;"
-                         data-ad-client="ca-pub-3854581977852778"
-                         data-ad-slot="6215450369"
-                         data-ad-format="rectangle"
-                         data-full-width-responsive="true"></ins>
-                    <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
-                </div>
+                
                 
                 <div class="sidebar-widget">
                     <h3 class="sidebar-title">You Might Like</h3>
@@ -546,6 +525,7 @@
     let activeImdbId = null; 
     let activeTmdbId = null;
     let activeData = null; 
+    let cloudSynced = false; 
 
     const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
     const tmdbKey = "014fbdbe962cb38379e09e31d0652459";
@@ -558,12 +538,11 @@
         if (!res.ok) {
             res = await fetch(`https://api.themoviedb.org/3/movie/${idStr}?api_key=${tmdbKey}&append_to_response=external_ids,credits`);
             mediaType = 'movie';
-            if (!res.ok) return null; // ID Not found in TMDB at all
+            if (!res.ok) return null; 
         }
         
         const data = await res.json();
         
-        // Auto-detect classification
         let typeStr = mediaType === 'movie' ? 'Movie' : 'K-Drama'; 
         if (data.origin_country && data.origin_country.length > 0) {
             if (data.origin_country.includes('KR')) typeStr = 'K-Drama';
@@ -573,7 +552,6 @@
             else if (data.origin_country.includes('US') || data.origin_country.includes('GB')) typeStr = 'US-Drama';
         }
 
-        // Season logic mapping
         let epsArr = [1];
         if (mediaType === 'tv' && data.seasons) {
             const validSeasons = data.seasons.filter(s => s.season_number > 0);
@@ -602,7 +580,6 @@
         };
     }
 
-    // --- DYNAMIC VISUAL CAST SCROLLER ---
     function renderCastSection(castArray) {
         const container = document.getElementById('ui-cast-scroller');
         if (!castArray || castArray.length === 0) {
@@ -634,11 +611,32 @@
 
         if (!dramaId) { window.location.replace('index.html'); return; }
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             currentUser = user;
             const avatarImg = document.getElementById('current-user-avatar');
             if (user) {
                 avatarImg.src = user.photoURL || defaultAvatar;
+
+                // 🆕 FETCH CLOUD HISTORY CROSS-DEVICE SYNC
+                if (dramaId) {
+                    try {
+                        const historyRef = doc(db, "users", user.uid, "history", String(dramaId));
+                        const historySnap = await getDoc(historyRef);
+                        
+                        if (historySnap.exists()) {
+                            const cloudData = historySnap.data();
+                            const cloudSeason = cloudData.season;
+                            const cloudEp = cloudData.episode;
+                            
+                            if ((cloudSeason != window.currentSeason || cloudEp != window.currentEpisode) && !cloudSynced) {
+                                cloudSynced = true; 
+                                window.loadEpisode(cloudSeason, cloudEp);
+                            }
+                        }
+                    } catch (err) {
+                        console.warn("Cloud history sync error:", err);
+                    }
+                }
             } else {
                 avatarImg.src = defaultAvatar;
             }
@@ -662,12 +660,45 @@
             
             if (docSnap.exists()) {
                 activeData = docSnap.data();
-                // Assign missing IDs based on Document ID mapping rule
                 activeData.id = dramaId;
                 if(!activeData.tmdbId) activeData.tmdbId = dramaId; 
                 document.getElementById('loader-text').textContent = "Loading Drama...";
+
+                // 🆕 FIX: Advanced Check for Incomplete Stubs (Even if Status is "Completed")
+                const statusStr = activeData.status ? activeData.status.toLowerCase() : "";
+                const synStr = activeData.synopsis ? activeData.synopsis.toLowerCase() : "";
+                const dirStr = activeData.director ? activeData.director.toLowerCase() : "";
+                const isMissingActors = !activeData.actors || activeData.actors.length === 0 || activeData.actors[0] === "Unknown";
+
+                if (
+                    statusStr.includes("coming soon") || 
+                    statusStr.includes("upcoming") || 
+                    synStr.includes("coming soon") || 
+                    synStr === "" ||
+                    synStr === "no synopsis available." ||
+                    dirStr === "unknown" || 
+                    dirStr === "" ||
+                    isMissingActors ||
+                    activeData.totalEps === 0
+                ) {
+                    document.getElementById('loader-text').textContent = "Fetching latest updates for this drama...";
+                    
+                    const freshData = await autoGenerateFromTMDB(activeData.tmdbId);
+                    
+                    if (freshData) {
+                        // Merge the fresh TMDB data, but strictly keep the original Document ID
+                        activeData = { ...activeData, ...freshData, id: activeData.id, tmdbId: activeData.tmdbId };
+                        
+                        // If Admin is logged in, silently fix the Firebase database with the new info!
+                        if (currentUser && currentUser.email === "zabaazcreations@gmail.com") {
+                            try {
+                                await setDoc(doc(db, "dramas", String(dramaId)), activeData, { merge: true });
+                            } catch (e) { console.warn("Failed to update incomplete drama in database.", e); }
+                        }
+                    }
+                }
+
             } else {
-                // If drama is NOT in Firebase, trigger Auto-Generation via TMDB
                 document.getElementById('loader-text').innerHTML = "Oh! A new drama? Hold on, brewing some magic to fetch it for you... <i class='fas fa-coffee' style='color:var(--primary); margin: 0 5px;'></i>✨";
                 
                 activeData = await autoGenerateFromTMDB(dramaId);
@@ -677,46 +708,35 @@
                     return;
                 }
 
-                // SECURITY CHECK: Only attempt to save the auto-generated drama to Firebase 
-                // if the active user is the Admin. Normal users will still play perfectly from RAM!
                 if (currentUser && currentUser.email === "zabaazcreations@gmail.com") {
                     try {
                         await setDoc(doc(db, "dramas", String(dramaId)), activeData);
-                        console.log("Admin logged in: Drama seamlessly saved to Firebase Database.");
-                    } catch (saveError) {
-                        console.warn("Failed to save to database.", saveError);
-                    }
+                    } catch (saveError) { console.warn("Failed to save to database.", saveError); }
                 }
             }
 
-            // Assign working IDs
             activeTmdbId = activeData.tmdbId || dramaId;
             activeImdbId = activeData.imdbId || activeData.imdb_id || activeData.imdb;
 
             // =========================================================
-            // 2. FETCH SIMILAR RECOMMENDATIONS & FULL CAST (From TMDB)
+            // 2. FETCH SIMILAR RECOMMENDATIONS & FULL CAST
             // =========================================================
             try {
                 const isMovie = activeData.type?.toLowerCase().includes('movie') ? 'movie' : 'tv';
                 
-                // Fetch Similar
                 const simRes = await fetch(`https://api.themoviedb.org/3/${isMovie}/${activeTmdbId}/similar?api_key=${tmdbKey}&page=1`);
                 if (simRes.ok) {
                     const simData = await simRes.json();
                     activeData.similar = simData.results || [];
                 }
                 
-                // Fetch Credits/Cast
                 const castRes = await fetch(`https://api.themoviedb.org/3/${isMovie}/${activeTmdbId}/credits?api_key=${tmdbKey}`);
                 if (castRes.ok) {
                     const castData = await castRes.json();
                     activeData.fullCast = castData.cast || [];
                 }
-            } catch (err) {
-                console.warn("Could not fetch extra TMDB API data.", err);
-            }
+            } catch (err) { console.warn("Could not fetch extra TMDB API data.", err); }
 
-            // Ensure genre is a string fallback
             if (typeof activeData.genre !== 'string') { activeData.genre = "Drama"; }
 
             // =========================================================
@@ -745,7 +765,6 @@
             const tagsHTML = activeData.genre.split(',').map(g => `<span class="tag-pill">${g.trim()}</span>`).join('');
             document.getElementById('ui-genre-tags').innerHTML = tagsHTML;
 
-            // Render extra visual widgets
             renderRecommendations(activeData.similar);
             renderCastSection(activeData.fullCast);
             initCommentSystem(dramaId); 
@@ -772,13 +791,7 @@
                     profileMyList.splice(inListIdx, 1);
                     delete watchlistObj[dramaId];
                 } else {
-                    const itemData = {
-                        id: dramaId,
-                        title: activeData.title,
-                        img: activeData.img,
-                        link: `watch.html?id=${dramaId}`,
-                        timestamp: Date.now()
-                    };
+                    const itemData = { id: dramaId, title: activeData.title, img: activeData.img, link: `watch.html?id=${dramaId}`, timestamp: Date.now() };
                     profileMyList.push(itemData);
                     watchlistObj[dramaId] = itemData;
                 }
@@ -786,7 +799,6 @@
                 localStorage.setItem('dramakan_watchlist', JSON.stringify(watchlistObj));
                 updateWatchlistUI();
             });
-            
             updateWatchlistUI();
 
             // --- ADD TO FAVORITES LOGIC ---
@@ -809,16 +821,9 @@
                 if (inFavIdx > -1) {
                     profileFavorites.splice(inFavIdx, 1);
                 } else {
-                    const itemData = {
-                        id: dramaId,
-                        title: activeData.title,
-                        img: activeData.img,
-                        link: `watch.html?id=${dramaId}`,
-                        timestamp: Date.now()
-                    };
+                    const itemData = { id: dramaId, title: activeData.title, img: activeData.img, link: `watch.html?id=${dramaId}`, timestamp: Date.now() };
                     profileFavorites.push(itemData);
                 }
-                
                 localStorage.setItem('dramakan_favorites', JSON.stringify(profileFavorites));
                 updateFavoriteUI();
 
@@ -836,22 +841,39 @@
                                 await updateDoc(userDocRef, { profiles: userData.profiles });
                             }
                         }
-                    } catch (err) { console.error("Error syncing favorites to Firebase:", err); }
+                    } catch (err) { console.error("Error syncing favorites:", err); }
                 }
             });
-
             updateFavoriteUI();
 
-            // --- EPISODES SETUP & API FETCH LOGIC ---
+            // =========================================================
+            // 4. FIX: EPISODES LOGIC - EXTRACT HISTORY BEFORE RENDERING
+            // =========================================================
             seasonsArr = activeData.seasons || [activeData.totalEps || 1];
-            window.currentSeason = 1;
-            window.currentEpisode = 1;
+            
+            let initSeason = 1;
+            let initEp = 1;
+            
+            const savedEpRaw = localStorage.getItem(`dramakan_ep_${dramaId}`);
+            if (savedEpRaw && savedEpRaw !== "0") {
+                if (savedEpRaw.includes('-')) {
+                    const parts = savedEpRaw.split('-');
+                    initSeason = parseInt(parts[0]);
+                    initEp = parseInt(parts[1]);
+                } else { 
+                    initEp = parseInt(savedEpRaw); 
+                }
+            }
+
+            window.currentSeason = initSeason;
+            window.currentEpisode = initEp;
 
             const seasonSelector = document.getElementById('season-selector');
 
             if (seasonsArr.length > 1) {
                 seasonSelector.style.display = 'block';
                 seasonSelector.innerHTML = seasonsArr.map((_, idx) => `<option value="${idx + 1}">Season ${idx + 1}</option>`).join('');
+                seasonSelector.value = initSeason; 
             }
 
             seasonSelector.addEventListener('change', (e) => {
@@ -861,13 +883,11 @@
             window.renderEpisodeGrid = async function(seasonNum) {
                 window.currentSeason = parseInt(seasonNum);
                 const grid = document.getElementById('episodes-list-container');
-                
                 grid.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Loading episodes...</div>';
 
                 let epsInThisSeason = seasonsArr[window.currentSeason - 1] || 1;
                 let episodesData = null;
 
-                // === Fetch precise episode data using TMDB native endpoints ===
                 const isMovieType = activeData.type?.toLowerCase().includes('movie');
                 
                 if (!isMovieType && activeTmdbId) {
@@ -881,9 +901,7 @@
                                 seasonsArr[window.currentSeason - 1] = epsInThisSeason; 
                             }
                         }
-                    } catch(err) {
-                        console.warn("Failed to load season details from TMDB API", err);
-                    }
+                    } catch(err) { console.warn("Failed to load season details", err); }
                 }
 
                 let buttonsHtml = '';
@@ -912,13 +930,13 @@
                 const btnNext = document.getElementById('btn-next-ep');
                 const epsInSeason = seasonsArr[window.currentSeason - 1] || 1;
 
-                if (window.currentEpisode <= 1) {
+                if (window.currentEpisode <= 1 && window.currentSeason <= 1) {
                     btnPrev.classList.add('disabled');
                 } else {
                     btnPrev.classList.remove('disabled');
                 }
 
-                if (window.currentEpisode >= epsInSeason) {
+                if (window.currentEpisode >= epsInSeason && window.currentSeason >= seasonsArr.length) {
                     btnNext.classList.add('disabled');
                 } else {
                     btnNext.classList.remove('disabled');
@@ -935,36 +953,35 @@
             }
 
             const videoPlayer = document.getElementById('video-player-iframe');
-            const fsBtn = document.getElementById('custom-fs-btn');
 
             window.loadEpisode = async function(season, ep) {
-                window.currentSeason = parseInt(season);
-                window.currentEpisode = parseInt(ep);
+                const targetSeason = parseInt(season);
+                const targetEp = parseInt(ep);
+                
+                if (seasonSelector && seasonsArr.length > 1) {
+                    if (parseInt(seasonSelector.value) !== targetSeason) {
+                        seasonSelector.value = targetSeason;
+                        await window.renderEpisodeGrid(targetSeason);
+                    }
+                }
+
+                window.currentSeason = targetSeason;
+                window.currentEpisode = targetEp;
                 
                 const isMovie = activeData.type?.toLowerCase().includes('movie');
-                document.getElementById('bread-ep').textContent = isMovie ? 'Full Movie' : `Episode ${ep}`;
-                
+                document.getElementById('bread-ep').textContent = isMovie ? 'Full Movie' : `Episode ${targetEp}`;
+
                 let embedLink = '';
-                fsBtn.style.display = 'flex';
 
                 if (currentServer === 'nxsha') {
-                    if (isMovie) {
-                        embedLink = `https://web.nxsha.app/embed/movie/${activeTmdbId}`;
-                    } else {
-                        embedLink = `https://web.nxsha.app/embed/tv/${activeTmdbId}/${season}/${ep}`;
-                    }
+                    if (isMovie) { embedLink = `https://web.nxsha.app/embed/movie/${activeTmdbId}`;
+                    } else { embedLink = `https://web.nxsha.app/embed/tv/${activeTmdbId}/${targetSeason}/${targetEp}`; }
                 } else if (currentServer === '2embed') {
-                    if (isMovie) {
-                        embedLink = `https://player.2embed.win/vip/movie/${activeTmdbId}`;
-                    } else {
-                        embedLink = `https://player.2embed.win/vip/tv/${activeTmdbId}-${season}-${ep}`;
-                    }
+                    if (isMovie) { embedLink = `https://player.2embed.win/vip/movie/${activeTmdbId}`;
+                    } else { embedLink = `https://player.2embed.win/vip/tv/${activeTmdbId}-${targetSeason}-${targetEp}`; }
                 } else if (currentServer === 'vsrc') {
-                    if (isMovie) {
-                        embedLink = activeImdbId ? `https://vidsrc.fyi/embed/movie/${activeImdbId}` : `https://vidsrc.fyi/embed/movie?tmdb=${activeTmdbId}`;
-                    } else {
-                        embedLink = activeImdbId ? `https://vidsrc.fyi/embed/tv/${activeImdbId}/${season}/${ep}` : `https://vidsrc.fyi/embed/tv?tmdb=${activeTmdbId}&season=${season}&episode=${ep}`;
-                    }
+                    if (isMovie) { embedLink = activeImdbId ? `https://vidsrc.fyi/embed/movie/${activeImdbId}` : `https://vidsrc.fyi/embed/movie?tmdb=${activeTmdbId}`;
+                    } else { embedLink = activeImdbId ? `https://vidsrc.fyi/embed/tv/${activeImdbId}/${targetSeason}/${targetEp}` : `https://vidsrc.fyi/embed/tv?tmdb=${activeTmdbId}&season=${targetSeason}&episode=${targetEp}`; }
                 } else if (currentServer === 'hindi') {
                     const targetId = activeImdbId ? activeImdbId : activeTmdbId;
                     embedLink = `https://loffe414wil.com/play/${targetId}`;
@@ -974,7 +991,7 @@
                 updateActiveButton();
                 updateQuickActionStates();
                 
-                localStorage.setItem(`dramakan_ep_${dramaId}`, `${season}-${ep}`);
+                localStorage.setItem(`dramakan_ep_${dramaId}`, `${targetSeason}-${targetEp}`);
                 
                 const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
                 historyObj[dramaId] = {
@@ -982,43 +999,48 @@
                     img: activeData.img,
                     link: `watch.html?id=${dramaId}`,
                     timestamp: Date.now(),
-                    season: season,
-                    episode: ep
+                    season: targetSeason,
+                    episode: targetEp
                 };
                 localStorage.setItem('dramakan_history', JSON.stringify(historyObj));
                 window.dispatchEvent(new Event('historySynced'));
 
-                updateSEO(activeData, dramaId, season, ep);
+                if (currentUser) {
+                    try {
+                        await setDoc(doc(db, "users", currentUser.uid, "history", String(dramaId)), {
+                            dramaId: String(dramaId),
+                            title: activeData.title,
+                            img: activeData.img,
+                            link: `watch.html?id=${dramaId}`,
+                            season: targetSeason,
+                            episode: targetEp,
+                            timestamp: Date.now()
+                        }, { merge: true });
+                    } catch(err) { console.warn("Could not save progress to cloud:", err); }
+                }
+
+                updateSEO(activeData, dramaId, targetSeason, targetEp);
             }
 
-            await window.renderEpisodeGrid(1);
+            await window.renderEpisodeGrid(initSeason);
+            window.loadEpisode(initSeason, initEp);
 
             document.getElementById('btn-prev-ep').addEventListener('click', () => {
-                if (window.currentEpisode > 1) { window.loadEpisode(window.currentSeason, window.currentEpisode - 1); }
+                if (window.currentEpisode > 1) { 
+                    window.loadEpisode(window.currentSeason, window.currentEpisode - 1); 
+                } else if (window.currentSeason > 1) {
+                    const prevSeasonEps = seasonsArr[window.currentSeason - 2];
+                    window.loadEpisode(window.currentSeason - 1, prevSeasonEps);
+                }
             });
 
             document.getElementById('btn-next-ep').addEventListener('click', () => {
                 const epsInSeason = seasonsArr[window.currentSeason - 1];
-                if (window.currentEpisode < epsInSeason) { window.loadEpisode(window.currentSeason, window.currentEpisode + 1); }
-            });
-
-            const videoWrapper = document.getElementById('video-wrapper');
-            
-            fsBtn.addEventListener('click', () => {
-                if (!document.fullscreenElement) {
-                    if (videoWrapper.requestFullscreen) videoWrapper.requestFullscreen();
-                    else if (videoWrapper.webkitRequestFullscreen) videoWrapper.webkitRequestFullscreen();
-                    else if (videoWrapper.msRequestFullscreen) videoWrapper.msRequestFullscreen();
-                } else {
-                    if (document.exitFullscreen) document.exitFullscreen();
-                    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-                    else if (document.msExitFullscreen) document.msExitFullscreen();
+                if (window.currentEpisode < epsInSeason) { 
+                    window.loadEpisode(window.currentSeason, window.currentEpisode + 1); 
+                } else if (window.currentSeason < seasonsArr.length) {
+                    window.loadEpisode(window.currentSeason + 1, 1);
                 }
-            });
-
-            document.addEventListener('fullscreenchange', () => {
-                if (document.fullscreenElement) { fsBtn.innerHTML = '<i class="fas fa-compress"></i>'; } 
-                else { fsBtn.innerHTML = '<i class="fas fa-expand"></i>'; }
             });
 
             const shareBtn = document.getElementById('btn-share');
@@ -1162,17 +1184,6 @@
                 }
             });
 
-            setTimeout(() => {
-                const savedEpRaw = localStorage.getItem(`dramakan_ep_${dramaId}`);
-                if (savedEpRaw && savedEpRaw !== "0") {
-                    if (savedEpRaw.includes('-')) {
-                        const parts = savedEpRaw.split('-');
-                        window.loadEpisode(parts[0], parts[1]);
-                    } else { window.loadEpisode(1, savedEpRaw); }
-                } else { window.loadEpisode(1, 1); }
-            }, 500);
-
-            // Hide loader, show content
             document.getElementById('page-loader').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
 
@@ -1250,7 +1261,6 @@
         }
     });
 
-    // --- SIDEBAR RECOMMENDATIONS ---
     function renderRecommendations(similarItems) {
         const recsContainer = document.getElementById('ui-recs');
         if (similarItems && similarItems.length > 0) {
@@ -1277,7 +1287,6 @@
         }
     }
 
-    // --- DYNAMIC SEO + META DATA + JSON-LD SYSTEM ---
     function updateSEO(data, dramaId, season, ep) {
         try {
             const siteName = "DramaKan";
