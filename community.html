@@ -81,13 +81,6 @@
         .pc-nav a.active { color: #fff; background: rgba(138, 43, 226, 0.15); box-shadow: 0 4px 15px var(--primary-glow); border: 1px solid rgba(138, 43, 226, 0.3); }
         .pc-nav a.active i { color: var(--primary-color); }
 
-        .clear-btn { 
-            background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); 
-            padding: 8px 20px; border-radius: 50px; cursor: pointer; font-family: 'Poppins'; 
-            font-weight: 600; font-size: 0.9rem; transition: all 0.3s; display: flex; align-items: center; gap: 8px;
-        }
-        .clear-btn:hover { background: #ef4444; color: #fff; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
-
         .notif-container { max-width: 850px; margin: 30px auto; padding: 0 5%; }
 
         @media (min-width: 993px) {
@@ -121,7 +114,7 @@
             box-shadow: inset 0 0 10px rgba(138, 43, 226, 0.2);
         }
 
-        .notif-content { flex: 1; min-width: 0; padding-right: 40px; /* Space for absolute trash can */ }
+        .notif-content { flex: 1; min-width: 0; padding-right: 0; }
         .notif-header-info { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 8px; gap: 2px;}
         .notif-title { font-size: 1.1rem; font-weight: 600; color: #fff; margin: 0; line-height: 1.3;}
         .notif-time { font-size: 0.8rem; color: #777; white-space: nowrap;}
@@ -136,16 +129,6 @@
             border: 1px solid rgba(138, 43, 226, 0.2);
         }
         .notif-link:hover { background: var(--primary-color); color: #fff; box-shadow: 0 4px 15px var(--primary-glow); }
-
-        .delete-btn { 
-            position: absolute; top: 20px; right: 20px; 
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); 
-            color: #ef4444; width: 35px; height: 35px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1rem; cursor: pointer; transition: all 0.3s; 
-            flex-shrink: 0;
-        }
-        .delete-btn:hover { background: #ef4444; color: #fff; border-color: #ef4444; transform: scale(1.1); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4);}
 
         .empty-state {
             text-align: center; padding: 60px 20px; background: var(--glass-bg);
@@ -164,15 +147,13 @@
 
             .app-header { padding: 15px; }
             .header-title { font-size: 1.3rem; }
-            .clear-btn { padding: 8px 16px; font-size: 0.8rem; }
             .notif-container { margin: 20px auto; }
             
             .notif-card { padding: 20px; gap: 15px;}
             .notif-icon-wrap { width: 45px; height: 45px; font-size: 1.1rem; }
-            .notif-content { padding-right: 35px; } /* Space for mobile trash can */
+            .notif-content { padding-right: 0; }
             .notif-title { font-size: 1.05rem; }
             .notif-msg { font-size: 0.9rem; }
-            .delete-btn { top: 15px; right: 15px; width: 32px; height: 32px; font-size: 0.9rem;}
 
             .bottom-nav { display: flex !important; position: fixed !important; bottom: 15px !important; left: 50% !important; transform: translateX(-50%) !important; width: 90% !important; max-width: 400px !important; background: var(--bottom-nav-bg) !important; backdrop-filter: blur(40px) saturate(180%) !important; -webkit-backdrop-filter: blur(40px) saturate(180%) !important; border: 1px solid var(--bottom-nav-border) !important; border-radius: 50px !important; z-index: 9999 !important; padding: 5px 10px !important; box-shadow: 0 25px 50px rgba(0,0,0,0.5) !important;}
             .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 0; color: var(--bottom-nav-item); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); position: relative; text-decoration: none;}
@@ -191,7 +172,7 @@
     <div class="liquid-orb orb-2"></div>
 
     <header class="app-header">
-        <div style="display: flex; align-items: center; gap: 40px;">
+        <div style="display: flex; align-items: center; gap: 40px; width: 100%;">
             <a href="index.html" class="header-logo pc-only">Drama<span>Kan</span></a>
             
             <div class="header-title mobile-only"><i class="fas fa-bell"></i> Updates</div>
@@ -203,8 +184,6 @@
                 <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
             </nav>
         </div>
-
-        <button class="clear-btn" id="clearPageBtn"><i class="fas fa-trash-alt"></i> Clear All</button>
     </header>
 
     <main class="notif-container">
@@ -235,6 +214,7 @@
         </a>
     </nav>
 
+    <!-- Import the global notifier script to ensure background tasks still run -->
     <script type="module" src="anykan-notifier.js"></script>
 
     <script type="module">
@@ -253,16 +233,11 @@
         const auth = getAuth(app);
 
         const listEl = document.getElementById('page-notifications-list');
-        const clearBtn = document.getElementById('clearPageBtn');
 
         // CLOUD-FIRST STATE
         let activePageNotifs = [];
-        let cloudDeletedNotifs = [];
         let currentUserDocRef = null;
         let currentUserId = null;
-
-        // GUEST FALLBACK STATE
-        let guestDeletedNotifs = JSON.parse(localStorage.getItem('Anykan_Deleted_Notifs')) || [];
 
         function timeAgo(timestamp) {
             if(!timestamp) return "Just now";
@@ -312,9 +287,6 @@
                             <p class="notif-msg">${n.body}</p>
                             ${linkHtml}
                         </div>
-                        <button class="delete-btn" onclick="window.removePageNotification('${n.id}')" title="Delete">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
                     </div>
                 `;
             }).join('');
@@ -324,7 +296,6 @@
         function fetchLiveUpdates(user) {
             const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"), limit(50));
             onSnapshot(q, (snapshot) => {
-                const deletedRef = user ? cloudDeletedNotifs : guestDeletedNotifs;
                 activePageNotifs = [];
                 
                 snapshot.forEach(docSnap => {
@@ -334,7 +305,8 @@
                     const target = data.target || 'all';
                     const isForMe = target === 'all' || target === 'viewers' || (user && (target === user.uid || target === user.email));
 
-                    if (isForMe && !deletedRef.includes(notifId)) {
+                    // Items are now permanent on this feed. No deletion check occurs.
+                    if (isForMe) {
                         activePageNotifs.push({
                             id: notifId,
                             title: data.title || "Broadcast",
@@ -353,12 +325,10 @@
                 currentUserId = user.uid;
                 currentUserDocRef = doc(db, "users", user.uid);
                 
-                // Keep deleted state synced with cloud
                 onSnapshot(currentUserDocRef, (docSnap) => {
                     if (docSnap.exists()) {
-                        cloudDeletedNotifs = docSnap.data().deletedNotifs || [];
-                        
                         // Automatically mark everything as read just by visiting this page
+                        // This ensures the red notification bell drops off for the user
                         if (docSnap.data().lastReadTime !== Date.now()) {
                             try { updateDoc(currentUserDocRef, { lastReadTime: Date.now() }); } catch(e){}
                         }
@@ -372,45 +342,6 @@
             }
         });
 
-        window.removePageNotification = async (id) => {
-            const card = document.getElementById(`page-card-${id}`);
-            if(card) {
-                card.style.transform = 'translateX(100px)';
-                card.style.opacity = '0';
-            }
-
-            setTimeout(async () => {
-                if (currentUserId && currentUserDocRef) {
-                    cloudDeletedNotifs.push(id);
-                    if (cloudDeletedNotifs.length > 150) cloudDeletedNotifs = cloudDeletedNotifs.slice(-100);
-                    try { await updateDoc(currentUserDocRef, { deletedNotifs: cloudDeletedNotifs }); } catch(e){}
-                } else {
-                    guestDeletedNotifs.push(id);
-                    localStorage.setItem('Anykan_Deleted_Notifs', JSON.stringify(guestDeletedNotifs));
-                    fetchLiveUpdates(null); // Re-render guest UI manually
-                }
-            }, 300);
-        };
-
-        clearBtn.addEventListener('click', async () => {
-            if(activePageNotifs.length === 0) return;
-            
-            if(confirm("Are you sure you want to clear all your notification history?")) {
-                const deletedRef = currentUserId ? cloudDeletedNotifs : guestDeletedNotifs;
-                
-                activePageNotifs.forEach(n => {
-                    if (!deletedRef.includes(n.id)) deletedRef.push(n.id);
-                });
-
-                if (currentUserId && currentUserDocRef) {
-                    if (deletedRef.length > 150) cloudDeletedNotifs = deletedRef.slice(-100);
-                    try { await updateDoc(currentUserDocRef, { deletedNotifs: cloudDeletedNotifs }); } catch(e){}
-                } else {
-                    localStorage.setItem('Anykan_Deleted_Notifs', JSON.stringify(deletedRef.slice(-100)));
-                    fetchLiveUpdates(null); // Re-render guest UI
-                }
-            }
-        });
     </script>
 </body>
 </html>
