@@ -366,7 +366,7 @@
         ========================================= */
         .history-list-item { display: flex; gap: 15px; align-items: center; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 16px; transition: 0.3s; }
         .history-list-item:hover { background: rgba(138, 43, 226, 0.1); border-color: rgba(138, 43, 226, 0.4); }
-        .history-list-img { width: 50px; height: 75px; border-radius: 8px; object-fit: cover; }
+        .history-list-img { width: 50px; height: 75px; border-radius: 8px; object-fit: cover; background: #1a1a1d; }
         .history-list-info { flex: 1; min-width: 0; }
         .history-list-title { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .history-list-meta { font-size: 0.8rem; color: var(--primary-color); font-weight: 500; }
@@ -534,7 +534,6 @@
                     </div>
                     <div style="display:flex; gap:15px; align-items:center;">
                         <button id="clear-history-btn" onclick="clearHistory()" style="display:none; color:#ef4444; background:none; border:none; cursor:pointer; font-size:0.85rem; font-weight:600;"><i class="fas fa-trash-alt"></i> Clear All</button>
-                        <!-- FIX: Modal trigger instead of redirect -->
                         <a href="#" onclick="openHistoryModal(); return false;" class="see-all-link">See All <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i></a>
                     </div>
                 </div>
@@ -585,14 +584,16 @@
 
     </main>
 
-    <!-- NEW: Dedicated History Modal -->
     <div class="full-modal" id="historyModal">
         <button class="close-modal-btn" onclick="closeModal('historyModal')"><i class="fas fa-times"></i></button>
         <div class="modal-content-wrap">
             <h2 class="modal-title">Watch History</h2>
             <div class="settings-card" style="max-height: 70vh; overflow-y: auto; padding: 20px;">
                 <div id="historyModalList" style="display: flex; flex-direction: column; gap: 12px;">
-                    <!-- List items injected here by renderHistoryModalList -->
+                    <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px;"></i>
+                        <p>Loading History...</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -735,7 +736,15 @@
         // =====================================
         window.openModal = (id) => document.getElementById(id).classList.add('active');
         window.closeModal = (id) => document.getElementById(id).classList.remove('active');
-        window.openHistoryModal = () => openModal('historyModal');
+        
+        // FIX: Caching the array to guarantee instant rendering upon clicking "See All"
+        window.cachedHistoryArr = [];
+        window.openHistoryModal = () => {
+            openModal('historyModal');
+            if (window.cachedHistoryArr && window.renderHistoryModalList) {
+                window.renderHistoryModalList(window.cachedHistoryArr);
+            }
+        };
         
         document.getElementById('profileSelectorBtn').addEventListener('click', () => openModal('profilesModal'));
         
@@ -965,7 +974,7 @@
                     <button class="remove-card-btn" onclick="event.preventDefault(); event.stopPropagation(); window.removeCard('${type}', '${identifier}')" title="Remove">
                         <i class="fas fa-trash-alt"></i>
                     </button>
-                    <img src="${item.img}" alt="${item.title}">
+                    <img src="${item.img}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/155x230/14151a/8a2be2?text=Poster'">
                     <div class="card-gradient-overlay">
                         <span class="card-title">${item.title}</span>
                     </div>
@@ -982,12 +991,12 @@
             const listContainer = document.getElementById('historyModalList');
             if(!listContainer) return;
             if(!arrayData || arrayData.length === 0) {
-                listContainer.innerHTML = '<div class="empty-text">Your watch history is empty.</div>';
+                listContainer.innerHTML = '<div class="empty-text" style="text-align:center; padding: 40px 10px; color:#aaa;">Your watch history is empty.</div>';
                 return;
             }
             listContainer.innerHTML = arrayData.map(item => `
                 <div class="history-list-item">
-                    <img src="${item.img}" class="history-list-img" alt="${item.title}">
+                    <img src="${item.img}" class="history-list-img" alt="${item.title}" onerror="this.src='https://via.placeholder.com/50x75/14151a/8a2be2?text=NA'">
                     <div class="history-list-info">
                         <div class="history-list-title">${item.title}</div>
                         <div class="history-list-meta">Season ${item.season || 1} • Episode ${item.episode || 1}</div>
@@ -1203,9 +1212,12 @@
                             .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
                             .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
                         
+                        // Set the explicit caching engine for the Modal
+                        window.cachedHistoryArr = historyArr;
+
                         // Render standard scroller
                         renderPosterRow('history-container', historyArr, 'history');
-                        // Render Modal List
+                        // Render Modal List if logic is available
                         if(window.renderHistoryModalList) window.renderHistoryModalList(historyArr);
 
                         const clearBtn = document.getElementById('clear-history-btn');
