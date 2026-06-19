@@ -182,7 +182,7 @@
         /* Dynamic Animated Upgrade Button */
         .btn-upgrade-hero {
             padding: 8px 18px; border-radius: 12px; font-weight: 600; font-size: 0.85rem;
-            display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease;
             text-decoration: none;
         }
         .upgrade-elite {
@@ -203,7 +203,7 @@
         .btn-switch-profile {
             background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border-light);
             color: #fff; padding: 10px 20px; border-radius: 12px; font-weight: 600; font-size: 0.9rem;
-            display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         .btn-switch-profile:hover {
             background: var(--primary-color); border-color: var(--primary-color);
@@ -362,7 +362,23 @@
         .btn-danger:hover { background: rgba(239, 68, 68, 0.2); box-shadow: 0 8px 20px rgba(239, 68, 68, 0.2); transform: translateY(-3px); }
 
         /* =========================================
-           7. NETFLIX MOBILE IMPLEMENTATION 
+           7. MODAL LIST STYLES (CONTINUE WATCHING)
+        ========================================= */
+        .history-list-item { display: flex; gap: 15px; align-items: center; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 16px; transition: 0.3s; }
+        .history-list-item:hover { background: rgba(138, 43, 226, 0.1); border-color: rgba(138, 43, 226, 0.4); }
+        .history-list-img { width: 50px; height: 75px; border-radius: 8px; object-fit: cover; }
+        .history-list-info { flex: 1; min-width: 0; }
+        .history-list-title { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .history-list-meta { font-size: 0.8rem; color: var(--primary-color); font-weight: 500; }
+        .history-list-actions { display: flex; gap: 10px; }
+        .history-action-btn { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; text-decoration: none; border: none; }
+        .btn-play-history { background: var(--primary-color); color: #fff; }
+        .btn-play-history:hover { background: var(--primary-rich); transform: scale(1.1); box-shadow: 0 4px 15px var(--primary-glow); }
+        .btn-del-history { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .btn-del-history:hover { background: #ef4444; color: #fff; transform: scale(1.1); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
+
+        /* =========================================
+           8. MOBILE UI OPTIMIZATIONS 
         ========================================= */
         @media (max-width: 768px) {
             .page-container { padding-top: 85px; }
@@ -383,28 +399,49 @@
                 position: fixed; top: 80px; right: 5%; width: 90%; max-width: none; transform-origin: top right;
             }
 
-            /* Responsive Hero Banner for Mobile */
+            /* Responsive Hero Banner for Mobile - De-clustered */
             .profile-hero-panel {
                 flex-direction: column;
                 text-align: center;
-                gap: 12px;
-                padding: 20px 15px;
+                padding: 25px 20px;
                 border-radius: 16px;
                 margin: 0 5% 20px 5%;
+                gap: 15px;
             }
             .hero-right {
                 align-items: center;
+                width: 100%;
             }
             .hero-greeting { font-size: 0.9rem; margin-bottom: -5px; }
-            .gradient-text { font-size: 1.8rem; margin-bottom: 5px; }
-            .hero-actions-wrapper { justify-content: center; gap: 10px; margin-top: 5px; }
-            .hero-stats { justify-content: center; margin-bottom: 0; gap: 10px; }
-            .hero-action-row { justify-content: center; margin-top: 0; gap: 10px; }
-            .hero-avatar { width: 85px; height: 85px; }
+            .gradient-text { font-size: 2rem; margin-bottom: 5px; }
+            
+            .hero-actions-wrapper { 
+                flex-direction: column; 
+                width: 100%; 
+                gap: 15px; 
+                margin-top: 10px; 
+            }
+            .hero-stats { 
+                width: 100%; 
+                justify-content: center; 
+                gap: 10px; 
+                flex-direction: column; 
+                align-items: stretch; 
+            }
+            .hero-action-row { 
+                width: 100%; 
+                justify-content: center; 
+            }
+            .hero-avatar { width: 100px; height: 100px; }
             .avatar-container::before { inset: -4px; }
 
-            /* Smaller buttons for single line fit on mobile */
-            .stat-pill, .btn-upgrade-hero, .btn-switch-profile { padding: 6px 12px; font-size: 0.75rem; }
+            /* Buttons fill width for touch ease */
+            .stat-pill, .btn-upgrade-hero, .btn-switch-profile { 
+                width: 100%; 
+                justify-content: center; 
+                padding: 12px; 
+                font-size: 0.9rem; 
+            }
             
             /* Always show remove button on mobile devices */
             .remove-card-btn { opacity: 1 !important; transform: scale(1) !important; top: 5px; right: 5px; background: rgba(239, 68, 68, 0.9); }
@@ -497,7 +534,8 @@
                     </div>
                     <div style="display:flex; gap:15px; align-items:center;">
                         <button id="clear-history-btn" onclick="clearHistory()" style="display:none; color:#ef4444; background:none; border:none; cursor:pointer; font-size:0.85rem; font-weight:600;"><i class="fas fa-trash-alt"></i> Clear All</button>
-                        <a href="mylist.html" class="see-all-link">See All <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i></a>
+                        <!-- FIX: Modal trigger instead of redirect -->
+                        <a href="#" onclick="openHistoryModal(); return false;" class="see-all-link">See All <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i></a>
                     </div>
                 </div>
                 <div class="h-scroll" id="history-container">
@@ -546,6 +584,19 @@
         </div>
 
     </main>
+
+    <!-- NEW: Dedicated History Modal -->
+    <div class="full-modal" id="historyModal">
+        <button class="close-modal-btn" onclick="closeModal('historyModal')"><i class="fas fa-times"></i></button>
+        <div class="modal-content-wrap">
+            <h2 class="modal-title">Watch History</h2>
+            <div class="settings-card" style="max-height: 70vh; overflow-y: auto; padding: 20px;">
+                <div id="historyModalList" style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- List items injected here by renderHistoryModalList -->
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="full-modal" id="profilesModal">
         <button class="close-modal-btn" onclick="closeModal('profilesModal')"><i class="fas fa-times"></i></button>
@@ -684,6 +735,7 @@
         // =====================================
         window.openModal = (id) => document.getElementById(id).classList.add('active');
         window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+        window.openHistoryModal = () => openModal('historyModal');
         
         document.getElementById('profileSelectorBtn').addEventListener('click', () => openModal('profilesModal'));
         
@@ -925,6 +977,33 @@
             `}).join('');
         }
 
+        // --- NEW: History Modal Render Logic ---
+        window.renderHistoryModalList = function(arrayData) {
+            const listContainer = document.getElementById('historyModalList');
+            if(!listContainer) return;
+            if(!arrayData || arrayData.length === 0) {
+                listContainer.innerHTML = '<div class="empty-text">Your watch history is empty.</div>';
+                return;
+            }
+            listContainer.innerHTML = arrayData.map(item => `
+                <div class="history-list-item">
+                    <img src="${item.img}" class="history-list-img" alt="${item.title}">
+                    <div class="history-list-info">
+                        <div class="history-list-title">${item.title}</div>
+                        <div class="history-list-meta">Season ${item.season || 1} • Episode ${item.episode || 1}</div>
+                    </div>
+                    <div class="history-list-actions">
+                        <button class="history-action-btn btn-del-history" onclick="event.preventDefault(); event.stopPropagation(); window.removeCard('history', '${item.id}');" title="Remove">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <a href="${item.link}" class="history-action-btn btn-play-history" title="Play">
+                            <i class="fas fa-play"></i>
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        };
+
         // --- CLOUD-FIRST CARD REMOVAL LOGIC ---
         window.removeCard = async (type, identifier) => {
             if (!auth.currentUser) return;
@@ -1124,7 +1203,10 @@
                             .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
                             .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
                         
+                        // Render standard scroller
                         renderPosterRow('history-container', historyArr, 'history');
+                        // Render Modal List
+                        if(window.renderHistoryModalList) window.renderHistoryModalList(historyArr);
 
                         const clearBtn = document.getElementById('clear-history-btn');
                         if (clearBtn) {

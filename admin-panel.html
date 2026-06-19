@@ -151,6 +151,7 @@
             <button class="tab-btn active" onclick="switchTab('tab-users')"><i class="fas fa-users"></i> Users & Subscriptions</button>
             <button class="tab-btn" onclick="switchTab('tab-approvals')"><i class="fas fa-file-invoice-dollar"></i> VIP Approvals <span id="pendingBadge" style="background:#E50914; color:#fff; padding:2px 8px; border-radius:10px; font-size:0.7rem; display:none;">0</span></button>
             <button class="tab-btn" onclick="switchTab('tab-marketing')"><i class="fas fa-bullhorn"></i> Marketing & Alerts</button>
+            <button class="tab-btn" onclick="switchTab('tab-community')"><i class="fas fa-rss"></i> Community Updates</button>
         </div>
         <a href="index.html" style="color: #aaa; text-decoration: none; font-size: 0.9rem;"><i class="fas fa-sign-out-alt"></i> Exit</a>
     </header>
@@ -228,29 +229,31 @@
             <div style="display: flex; gap: 30px; flex-wrap: wrap;">
                 
                 <div class="admin-card" style="flex: 1; min-width: 350px;">
-                    <h2><i class="fas fa-bell"></i> Broadcast Push Alert</h2>
+                    <h2><i class="fas fa-bell"></i> Send Direct Alert</h2>
+                    <p style="font-size: 0.85rem; color: #aaa; margin-bottom: 25px;">Send a targeted notification directly to a user's inbox (e.g. VIP expiry reminders).</p>
+                    
                     <input type="hidden" id="editNotifId">
                     
                     <div class="form-group">
-                        <label>Target Audience (UID, Email, or 'all')</label>
-                        <input type="text" id="notifTarget" value="all" placeholder="Enter 'all' or user's exact email">
+                        <label>Target Audience (UID or Email)</label>
+                        <input type="text" id="notifTarget" placeholder="Enter user's exact UID or email">
                     </div>
                     <div class="form-group">
                         <label>Alert Title</label>
-                        <input type="text" id="notifTitle" placeholder="e.g., New Episode Released!">
+                        <input type="text" id="notifTitle" placeholder="e.g., ⚠️ VIP Expiring Soon!">
                     </div>
                     <div class="form-group">
                         <label>Message Body</label>
-                        <textarea id="notifBody" rows="3" placeholder="Click here to watch now..."></textarea>
+                        <textarea id="notifBody" rows="3" placeholder="Click here to renew your VIP plan..."></textarea>
                     </div>
                     <div class="form-group">
                         <label>Redirect Link (Optional)</label>
-                        <input type="text" id="notifLink" placeholder="e.g., watch.html?id=perfectcrown">
+                        <input type="text" id="notifLink" placeholder="e.g., subscription.html">
                     </div>
                     
                     <div style="display: flex; gap: 10px;">
-                        <button class="btn-primary" id="sendNotifBtn"><i class="fas fa-paper-plane"></i> Broadcast Notification</button>
-                        <button class="btn-primary" id="cancelEditNotifBtn" style="background: transparent; border: 1px solid #aaa; color: #aaa; display: none;" onclick="cancelEditNotif()">Cancel Edit</button>
+                        <button class="btn-primary" id="sendNotifBtn"><i class="fas fa-paper-plane"></i> Send Alert</button>
+                        <button class="btn-primary" id="cancelEditNotifBtn" style="background: transparent; border: 1px solid #aaa; color: #aaa; display: none;" onclick="window.cancelEditNotif()"><i class="fas fa-times"></i> Cancel Edit</button>
                     </div>
                     
                     <div id="notifStatus" style="margin-top: 15px; font-size: 0.85rem; text-align: center;"></div>
@@ -285,8 +288,43 @@
             </div>
 
             <div class="admin-card">
-                <h2><i class="fas fa-history"></i> Manage Notification History</h2>
+                <h2><i class="fas fa-history"></i> Direct Alert History</h2>
                 <div id="adminNotifHistory" style="max-height: 400px; overflow-y: auto;"></div>
+            </div>
+        </div>
+
+        <div id="tab-community" class="tab-content">
+            <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                <div class="admin-card" style="flex: 1; min-width: 350px;">
+                    <h2><i class="fas fa-newspaper" style="color: #10B981;"></i> Post Community Update</h2>
+                    <p style="font-size: 0.85rem; color: #aaa; margin-bottom: 25px;">Post new features, patch notes, or general announcements. These push globally to the "Updates" page.</p>
+                    
+                    <input type="hidden" id="editUpdateId">
+                    
+                    <div class="form-group">
+                        <label>Update Title</label>
+                        <input type="text" id="updateTitle" placeholder="e.g., 🚀 New Feature: Cross-Device Sync Live!">
+                    </div>
+                    <div class="form-group">
+                        <label>Details / Changelog</label>
+                        <textarea id="updateBody" rows="4" placeholder="Describe the new updates or features here..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Related Link (Optional)</label>
+                        <input type="text" id="updateLink" placeholder="e.g., profile.html">
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-primary" id="postUpdateBtn" style="background: linear-gradient(135deg, #10B981, #059669);"><i class="fas fa-paper-plane"></i> Post Update</button>
+                        <button class="btn-primary" id="cancelEditUpdateBtn" style="background: transparent; border: 1px solid #aaa; color: #aaa; display: none;" onclick="window.cancelEditUpdate()"><i class="fas fa-times"></i> Cancel Edit</button>
+                    </div>
+                    <div id="updateStatus" style="margin-top: 15px; font-size: 0.85rem; text-align: center;"></div>
+                </div>
+                
+                <div class="admin-card" style="flex: 1; min-width: 350px;">
+                    <h2><i class="fas fa-history"></i> Community Updates History</h2>
+                    <div id="adminUpdatesHistory" style="max-height: 400px; overflow-y: auto;"></div>
+                </div>
             </div>
         </div>
 
@@ -888,12 +926,11 @@
             const notifQuery = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
             onSnapshot(notifQuery, (snapshot) => {
                 const historyDiv = document.getElementById('adminNotifHistory');
-                if (snapshot.empty) {
-                    historyDiv.innerHTML = '<div style="text-align: center; color: #777; padding: 20px;">No broadcast history found.</div>';
-                    return;
-                }
+                const updatesDiv = document.getElementById('adminUpdatesHistory');
+                
+                let notifHtml = '';
+                let updatesHtml = '';
 
-                let html = '';
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
                     const dateStr = new Date(data.createdAt).toLocaleString();
@@ -903,7 +940,7 @@
                     const safeMsg = (data.message || '').replace(/'/g, "\\'");
                     const safeLink = (data.link || '').replace(/'/g, "\\'");
 
-                    html += `
+                    const cardHtml = `
                         <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
                             <div style="flex-grow: 1;">
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
@@ -914,38 +951,68 @@
                                 <div style="font-size: 0.7rem; color: #555;">Sent: ${dateStr}</div>
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <button class="btn-sm btn-edit" onclick="window.editBroadcast('${docSnap.id}', '${safeTarget}', '${safeTitle}', '${safeMsg}', '${safeLink}')" title="Edit Notification"><i class="fas fa-edit"></i></button>
+                                <button class="btn-sm btn-edit" onclick="window.editBroadcast('${docSnap.id}', '${safeTarget}', '${safeTitle}', '${safeMsg}', '${safeLink}')" title="Edit"><i class="fas fa-edit"></i></button>
                                 <button class="btn-sm btn-delete" onclick="window.deleteBroadcast('${docSnap.id}')" title="Delete Globally"><i class="fas fa-trash-alt"></i></button>
                             </div>
                         </div>
                     `;
+
+                    // Split history intelligently based on target
+                    if (data.target === 'all' || data.target === 'viewers') {
+                        updatesHtml += cardHtml;
+                    } else {
+                        notifHtml += cardHtml;
+                    }
                 });
-                historyDiv.innerHTML = html;
+
+                if (historyDiv) historyDiv.innerHTML = notifHtml || '<div style="text-align: center; color: #777; padding: 20px;">No direct alerts found.</div>';
+                if (updatesDiv) updatesDiv.innerHTML = updatesHtml || '<div style="text-align: center; color: #777; padding: 20px;">No community updates found.</div>';
             });
         }
 
         window.editBroadcast = (id, target, title, message, link) => {
-            document.getElementById('editNotifId').value = id;
-            document.getElementById('notifTarget').value = target;
-            document.getElementById('notifTitle').value = title;
-            document.getElementById('notifBody').value = message;
-            document.getElementById('notifLink').value = link || '';
-            
-            document.getElementById('sendNotifBtn').innerHTML = '<i class="fas fa-edit"></i> Update Notification';
-            document.getElementById('cancelEditNotifBtn').style.display = 'inline-block';
-            
+            if (target === 'all' || target === 'viewers') {
+                switchTab('tab-community');
+                document.getElementById('editUpdateId').value = id;
+                document.getElementById('updateTitle').value = title;
+                document.getElementById('updateBody').value = message;
+                document.getElementById('updateLink').value = link || '';
+                
+                document.getElementById('postUpdateBtn').innerHTML = '<i class="fas fa-edit"></i> Modify Update';
+                document.getElementById('cancelEditUpdateBtn').style.display = 'inline-block';
+            } else {
+                switchTab('tab-marketing');
+                document.getElementById('editNotifId').value = id;
+                document.getElementById('notifTarget').value = target;
+                document.getElementById('notifTitle').value = title;
+                document.getElementById('notifBody').value = message;
+                document.getElementById('notifLink').value = link || '';
+                
+                document.getElementById('sendNotifBtn').innerHTML = '<i class="fas fa-edit"></i> Update Alert';
+                document.getElementById('cancelEditNotifBtn').style.display = 'inline-block';
+            }
             document.querySelector('.workspace').scrollTo({ top: 0, behavior: 'smooth' });
         };
 
         window.cancelEditNotif = () => {
             document.getElementById('editNotifId').value = '';
-            document.getElementById('notifTarget').value = 'all';
+            document.getElementById('notifTarget').value = '';
             document.getElementById('notifTitle').value = '';
             document.getElementById('notifBody').value = '';
             document.getElementById('notifLink').value = '';
             
-            document.getElementById('sendNotifBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Broadcast Notification';
+            document.getElementById('sendNotifBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Send Alert';
             document.getElementById('cancelEditNotifBtn').style.display = 'none';
+        };
+
+        window.cancelEditUpdate = () => {
+            document.getElementById('editUpdateId').value = '';
+            document.getElementById('updateTitle').value = '';
+            document.getElementById('updateBody').value = '';
+            document.getElementById('updateLink').value = '';
+            
+            document.getElementById('postUpdateBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Post Update';
+            document.getElementById('cancelEditUpdateBtn').style.display = 'none';
         };
 
         window.deleteBroadcast = async (notifId) => {
@@ -955,6 +1022,7 @@
             }
         };
 
+        // --- SUBMIT: DIRECT ALERT (Tab: Marketing) ---
         document.getElementById('sendNotifBtn').addEventListener('click', async () => {
             const btn = document.getElementById('sendNotifBtn');
             const status = document.getElementById('notifStatus');
@@ -965,8 +1033,8 @@
             const message = document.getElementById('notifBody').value.trim();
             const link = document.getElementById('notifLink').value.trim();
 
-            if (!title || !message) {
-                alert("Title and Message cannot be empty.");
+            if (!target || !title || !message) {
+                alert("Target, Title, and Message cannot be empty.");
                 return;
             }
 
@@ -980,7 +1048,7 @@
                         message: message,
                         link: link,
                     });
-                    status.innerText = "Notification Updated Successfully!";
+                    status.innerText = "Alert Updated Successfully!";
                     window.cancelEditNotif();
                 } else {
                     await addDoc(collection(db, "notifications"), {
@@ -990,10 +1058,8 @@
                         link: link,
                         createdAt: Date.now()
                     });
-                    status.innerText = "Notification Broadcasted Successfully!";
-                    document.getElementById('notifTitle').value = '';
-                    document.getElementById('notifBody').value = '';
-                    document.getElementById('notifLink').value = '';
+                    status.innerText = "Alert Sent Successfully!";
+                    window.cancelEditNotif();
                 }
                 status.style.color = "#10b981";
                 
@@ -1002,7 +1068,57 @@
                 status.innerText = "Error: " + error.message;
             }
 
-            if(!editId) btn.innerHTML = "<i class='fas fa-paper-plane'></i> Broadcast Notification";
+            if(!editId) btn.innerHTML = "<i class='fas fa-paper-plane'></i> Send Alert";
+            status.style.display = "block";
+            setTimeout(() => status.style.display = "none", 4000);
+        });
+
+        // --- SUBMIT: COMMUNITY UPDATE (Tab: Community Updates) ---
+        document.getElementById('postUpdateBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('postUpdateBtn');
+            const status = document.getElementById('updateStatus');
+            const editId = document.getElementById('editUpdateId').value;
+            
+            const title = document.getElementById('updateTitle').value.trim();
+            const message = document.getElementById('updateBody').value.trim();
+            const link = document.getElementById('updateLink').value.trim();
+
+            if (!title || !message) {
+                alert("Title and Details cannot be empty.");
+                return;
+            }
+
+            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Posting...";
+            
+            try {
+                if (editId) {
+                    await updateDoc(doc(db, "notifications", editId), {
+                        target: 'all', // Forces community broadcast
+                        title: title,
+                        message: message,
+                        link: link,
+                    });
+                    status.innerText = "Update Modified Successfully!";
+                    window.cancelEditUpdate();
+                } else {
+                    await addDoc(collection(db, "notifications"), {
+                        target: 'all', // Forces community broadcast
+                        title: title,
+                        message: message,
+                        link: link,
+                        createdAt: Date.now()
+                    });
+                    status.innerText = "Community Update Posted!";
+                    window.cancelEditUpdate();
+                }
+                status.style.color = "#10b981";
+                
+            } catch (error) {
+                status.style.color = "#EF4444";
+                status.innerText = "Error: " + error.message;
+            }
+
+            if(!editId) btn.innerHTML = "<i class='fas fa-paper-plane'></i> Post Update";
             status.style.display = "block";
             setTimeout(() => status.style.display = "none", 4000);
         });
