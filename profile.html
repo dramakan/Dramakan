@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <script src="bottom-bar.js" defer></script>
-<script src="feedback-popup.js" defer></script>
+    <script src="feedback-popup.js" defer></script>
     <script src="admin_easter_egg.js" defer></script>
     <script src="premium-manager.js" defer></script>
     
@@ -61,7 +61,7 @@
         }
 
         /* =========================================
-           3. TOP HEADER (WITH INTEGRATED NOTIFICATION DROPDOWN)
+           3. TOP HEADER
         ========================================= */
         .top-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 30px; width: 100%; position: relative; }
         
@@ -237,7 +237,6 @@
         .modal-title { font-size: 2rem; font-weight: 700; margin-bottom: 30px; text-align: center; }
         .settings-card { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 20px; width: 100%; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
         
-        /* THE FIX: Robust CSS Grid to prevent content squishing */
         .modal-list-item { 
             display: grid; 
             grid-template-columns: auto 1fr auto; 
@@ -269,16 +268,17 @@
         .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
         .form-input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-family: inherit; font-size: 0.95rem; }
         .form-input:focus { outline: none; border-color: var(--primary-color); }
+        
         .btn-primary { width: 100%; padding: 14px; background: var(--primary-color); color: #fff; border-radius: 10px; font-weight: 600; margin-bottom: 15px; display: flex; justify-content: center; gap: 8px; align-items: center; transition: 0.3s; cursor: pointer; border: none;}
         .btn-primary:hover { background: var(--primary-rich); }
         .btn-danger { width: 100%; padding: 14px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; font-weight: 600; display: flex; justify-content: center; gap: 8px; align-items: center; transition: 0.3s; cursor: pointer;}
         
-        /* Custom Settings Tabs */
+        /* Custom Settings Tabs (Cute & Segregated) */
         .settings-tabs {
-            display: flex; gap: 10px; margin-bottom: 25px; background: rgba(255,255,255,0.05); padding: 6px; border-radius: 12px; border: 1px solid var(--glass-border);
+            display: flex; gap: 10px; margin-bottom: 25px; background: rgba(157, 78, 221, 0.05); padding: 8px; border-radius: 16px; border: 1px solid var(--glass-border);
         }
         .tab-btn {
-            flex: 1; padding: 12px; border-radius: 8px; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 0.9rem; border: none; background: transparent;
+            flex: 1; padding: 12px; border-radius: 10px; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 0.9rem; border: none; background: transparent;
         }
         .tab-btn.active { background: var(--primary-color); color: #fff; box-shadow: 0 4px 15px var(--primary-glow); }
         .tab-content { display: none; animation: fadeIn 0.4s ease; }
@@ -306,15 +306,20 @@
         @media (max-width: 992px) {
             .main-content { padding: 20px 5% 100px 5%; width: 100%;}
             
-            /* Bottom Navigation */
+            /* Bottom Navigation synced perfectly with index.html */
             .bottom-nav {
-                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 15, 20, 0.95);
-                backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); z-index: 1000; padding: 10px 0 20px 0;
+                display: flex !important; position: fixed !important; bottom: 15px !important; left: 50% !important; 
+                transform: translateX(-50%) !important; width: 90% !important; max-width: 400px !important; 
+                background: rgba(20, 20, 25, 0.65) !important; backdrop-filter: blur(40px) saturate(180%) !important;
+                -webkit-backdrop-filter: blur(40px) saturate(180%) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; 
+                border-radius: 50px !important; z-index: 999999 !important; padding: 5px 10px !important; box-shadow: 0 25px 50px rgba(0,0,0,0.5) !important;
             }
-            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text-muted); transition: 0.3s; }
-            .bottom-nav-item i { font-size: 1.2rem; }
-            .bottom-nav-item span { font-size: 0.65rem; font-weight: 500; }
-            .bottom-nav-item.active { color: var(--primary-color); }
+            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 0; color: rgba(255, 255, 255, 0.5); text-decoration: none; transition: all 0.4s ease; }
+            .bottom-nav-item.active { color: #fff; }
+            .bottom-nav-item .nav-icon { font-size: 1.35rem; margin-bottom: 4px; transition: transform 0.4s ease; }
+            .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-4px) scale(1.15); color: var(--primary-color, #8A2BE2); }
+            .bottom-nav-item .nav-label { font-size: 0.65rem; font-weight: 500; }
+            body { padding-bottom: 100px; }
 
             /* Mobile Hero Layout Fixes (CENTERED FOR PREMIUM FEEL) */
             .hero-card { flex-direction: column; align-items: center; text-align: center; gap: 20px; padding: 25px 20px; }
@@ -346,13 +351,13 @@
             .modal-list-item { grid-template-columns: 100px 1fr auto; gap: 10px; padding: 10px; }
             .modal-img-landscape { width: 100px; }
             .modal-img-portrait { width: 55px; }
-            .modal-list-actions { flex-direction: column; gap: 6px; } /* Stacks the trash and play buttons */
+            .modal-list-actions { flex-direction: column; gap: 6px; } 
             .modal-action-btn { width: 32px; height: 32px; font-size: 0.8rem; }
             .modal-list-title { font-size: 0.85rem; }
             .modal-title { font-size: 1.5rem; margin-bottom: 20px;}
         }
 
-        @media (min-width: 993px) { .bottom-nav { display: none; } }
+        @media (min-width: 993px) { .bottom-nav { display: none !important; } }
     </style>
 </head>
 <body>
@@ -468,11 +473,24 @@
         </main>
     </div>
 
+    <!-- Match index.html Bottom Bar Precisely -->
     <nav class="bottom-nav">
-        <a href="index.html" class="bottom-nav-item"><i class="fas fa-home"></i><span>Home</span></a>
-        <a href="community.html" class="bottom-nav-item"><i class="fas fa-bell"></i><span>Updates</span></a>
-        <a href="mylist.html" class="bottom-nav-item"><i class="fas fa-bookmark"></i><span>My List</span></a>
-        <a href="#" class="bottom-nav-item active"><i class="fas fa-user"></i><span>Profile</span></a>
+        <a href="index.html" class="bottom-nav-item">
+            <i class="fa-solid fa-house nav-icon"></i>
+            <span class="nav-label">Home</span>
+        </a>
+       <a href="community.html" class="bottom-nav-item">
+            <i class="fa-solid fa-bell nav-icon"></i>
+            <span class="nav-label">Updates</span>
+        </a>
+        <a href="mylist.html" class="bottom-nav-item">
+            <i class="fa-solid fa-bookmark nav-icon"></i>
+            <span class="nav-label">My List</span>
+        </a>
+        <a href="#" class="bottom-nav-item active">
+            <i class="fa-solid fa-user nav-icon"></i>
+            <span class="nav-label">Profile</span>
+        </a>
     </nav>
 
     <!-- Modals -->
@@ -532,8 +550,9 @@
                     <div class="form-group" style="margin-bottom: 12px;">
                         <input type="text" id="new-profile-name" class="form-input" placeholder="Enter profile name...">
                     </div>
+                    
                     <div class="form-group">
-                        <label style="margin-bottom: 5px; display: block; text-align: center;">Select Sub-Profile Avatar</label>
+                        <label style="margin-bottom: 5px; display: block; text-align: center;">Select Preset Avatar</label>
                         <div class="avatar-selection-row" id="new-profile-avatar-row" style="justify-content: center;">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" class="selectable-avatar-option selected-choice" onclick="selectCreationAvatar(this)">
                             <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Karash" class="selectable-avatar-option" onclick="selectCreationAvatar(this)">
@@ -542,6 +561,13 @@
                             <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Cloud" class="selectable-avatar-option" onclick="selectCreationAvatar(this)">
                         </div>
                     </div>
+
+                    <!-- Custom Custom Image Feature -->
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="text-align: center;">Or Paste Custom Image URL</label>
+                        <input type="text" id="create-custom-avatar" class="form-input" placeholder="https://..." oninput="window.updateCreationCustomAvatarPreview(this.value)">
+                    </div>
+
                     <button class="btn-primary" id="btn-add-new-profile" style="margin-top: 5px; font-size: 0.85rem; padding: 12px;"><i class="fas fa-user-plus"></i> Create Profile</button>
                 </div>
             </div>
@@ -569,7 +595,7 @@
 
                     <!-- Custom Avatar Gallery Selector -->
                     <div class="form-group">
-                        <label style="text-align: center;">Choose Custom Avatar</label>
+                        <label style="text-align: center;">Choose Preset Avatar</label>
                         <div class="avatar-selection-row" id="edit-profile-avatar-row" style="justify-content: center;">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
                             <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Karash" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
@@ -577,6 +603,12 @@
                             <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ashish" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
                             <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Cloud" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
                         </div>
+                    </div>
+
+                    <!-- Custom Feature -->
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label style="text-align: center;">Or Paste Custom Image URL</label>
+                        <input type="text" id="edit-custom-avatar" class="form-input" placeholder="https://..." oninput="window.updateCustomAvatarPreview(this.value)">
                     </div>
 
                     <div class="form-group">
@@ -671,12 +703,30 @@
             imgElement.classList.add('selected-choice');
             temporarySelectedEditAvatar = imgElement.src;
             document.getElementById('edit-avatar-preview').src = imgElement.src;
+            document.getElementById('edit-custom-avatar').value = ""; // Clear text if preset chosen
         };
 
         window.selectCreationAvatar = (imgElement) => {
             document.querySelectorAll('#new-profile-avatar-row .selectable-avatar-option').forEach(el => el.classList.remove('selected-choice'));
             imgElement.classList.add('selected-choice');
             temporarySelectedCreationAvatar = imgElement.src;
+            document.getElementById('create-custom-avatar').value = ""; // Clear text if preset chosen
+        };
+
+        // Custom Image URL Handlers
+        window.updateCustomAvatarPreview = (url) => {
+            if(url.trim() !== '') {
+                document.getElementById('edit-avatar-preview').src = url;
+                temporarySelectedEditAvatar = url;
+                document.querySelectorAll('#edit-profile-avatar-row .selectable-avatar-option').forEach(el => el.classList.remove('selected-choice'));
+            }
+        };
+
+        window.updateCreationCustomAvatarPreview = (url) => {
+            if(url.trim() !== '') {
+                temporarySelectedCreationAvatar = url;
+                document.querySelectorAll('#new-profile-avatar-row .selectable-avatar-option').forEach(el => el.classList.remove('selected-choice'));
+            }
         };
 
         // --- POPUP LOGIC (Strictly Local Storage Powered) ---
@@ -732,10 +782,22 @@
             temporarySelectedEditAvatar = activeProf.avatar;
 
             // Highlight choice item in settings
+            let presetFound = false;
             document.querySelectorAll('#edit-profile-avatar-row .selectable-avatar-option').forEach(el => {
-                if (el.src === activeProf.avatar) el.classList.add('selected-choice');
-                else el.classList.remove('selected-choice');
+                if (el.src === activeProf.avatar) {
+                    el.classList.add('selected-choice');
+                    presetFound = true;
+                } else {
+                    el.classList.remove('selected-choice');
+                }
             });
+
+            // Set custom URL input if the avatar wasn't a preset
+            if (!presetFound && activeProf.avatar) {
+                document.getElementById('edit-custom-avatar').value = activeProf.avatar;
+            } else {
+                document.getElementById('edit-custom-avatar').value = "";
+            }
         }
 
         window.switchProfile = (idx) => {
@@ -1218,6 +1280,7 @@
                 if (currentUserDocRef) {
                     await updateDoc(currentUserDocRef, { profiles: userProfiles });
                     profileNameInput.value = "";
+                    document.getElementById('create-custom-avatar').value = "";
                     renderProfiles(); // Re-sync UI immediately
                     alert("Crown VIP Sub-profile appended seamlessly!");
                 }
