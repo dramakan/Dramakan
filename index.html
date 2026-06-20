@@ -136,6 +136,42 @@
             backdrop-filter: blur(10px);
         }
 
+        /* --- CONTINUE WATCHING LANDSCAPE CARDS --- */
+        .cw-landscape-card {
+            display: flex; flex-direction: column; width: 300px; min-width: 300px;
+            background: rgba(20, 20, 28, 0.8); border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 12px; overflow: hidden; transition: transform 0.3s ease, border-color 0.3s ease;
+            text-decoration: none; flex-shrink: 0; position: relative;
+        }
+        .cw-landscape-card:hover { 
+            transform: translateY(-5px); 
+            border-color: rgba(138, 43, 226, 0.8); 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+        }
+        .cw-landscape-img { 
+            width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #111; 
+        }
+        .cw-progress-container { 
+            width: 100%; height: 4px; background: rgba(255,255,255,0.1); 
+        }
+        .cw-progress-bar { 
+            height: 100%; background: var(--primary-color, #8A2BE2); 
+            box-shadow: 0 0 10px var(--primary-color, #8A2BE2); border-radius: 0 2px 2px 0; 
+        }
+        .cw-landscape-info { 
+            padding: 12px; display: flex; flex-direction: column; gap: 6px; 
+        }
+        .cw-landscape-title { 
+            font-size: 0.95rem; font-weight: 600; color: #fff; margin: 0; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+        }
+        .cw-landscape-meta { 
+            font-size: 0.8rem; color: #9CA3AF; display: flex; justify-content: space-between; align-items: center; 
+        }
+        .cw-play-badge { 
+            color: var(--primary-color); font-weight: 500; display: flex; align-items: center; gap: 5px; 
+        }
+
         /* --- MOBILE RESPONSIVE TWEAKS & BOTTOM BAR --- */
         @media (max-width: 992px) {
             .site-switcher {
@@ -154,6 +190,9 @@
                 padding: 10px 15px !important;
             }
             .header-right { gap: 10px; }
+
+            /* CW Mobile Card */
+            .cw-landscape-card { width: 260px; min-width: 260px; }
 
             /* Hide Text & Visuals on Mobile Hero */
             .hero-content h1,
@@ -629,8 +668,8 @@
             grid.innerHTML = htmlContent;
         }
 
-        // --- NEW CLOUD-FIRST CONTINUE WATCHING RENDERER ---
-        function renderContinueWatching(cloudHistoryArr = null) {
+        // --- NEW CLOUD-FIRST CONTINUE WATCHING RENDERER WITH DYNAMIC TMDB BACKDROP FETCH ---
+        async function renderContinueWatching(cloudHistoryArr = null) {
             try {
                 let historyArr = cloudHistoryArr;
                 
@@ -646,17 +685,78 @@
                 const cwGrid = document.getElementById('continue-watching-grid');
                 
                 if (cwSection && cwGrid) {
-                    if(historyArr.length > 0) {
+                    if (historyArr.length > 0) {
                         cwSection.style.display = 'block';
-                        cwGrid.innerHTML = historyArr.map(item => `
-                            <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
-                                <div class="drama-card-img"><img src="${item.img}" alt="${item.title}" loading="lazy" decoding="async"></div>
-                                <div class="drama-card-info">
-                                    <h3 class="drama-card-title">${item.title}</h3>
-                                    <p class="drama-card-meta" style="color: var(--primary-color);"><i class="fas fa-play"></i> Resume S${item.season || 1}:E${item.episode || 1}</p>
+
+                        // Concurrently fetch backdrops for items that don't have one saved
+                        const updatedItems = await Promise.all(historyArr.map(async (item) => {
+                            let imgUrl = item.backdrop_path ? `https://image.tmdb.org/t/p/w780${item.backdrop_path}` : (item.backdrop || item.bgImg);
+                            
+                            // If no landscape backdrop is found, dynamically fetch it from TMDB API
+                            if (!imgUrl) {
+                                try {
+                                    // Primary attempt: Search by ID (try TV first, then Movie)
+                                    if (item.id) {
+                                        let tmdbRes = await fetch(`https://api.themoviedb.org/3/tv/${item.id}?api_key=${tmdbKey}`);
+                                        if (!tmdbRes.ok) tmdbRes = await fetch(`https://api.themoviedb.org/3/movie/${item.id}?api_key=${tmdbKey}`);
+                                        
+                                        if (tmdbRes.ok) {
+                                            const tmdbData = await tmdbRes.json();
+                                            if (tmdbData.backdrop_path) {
+                                                imgUrl = `https://image.tmdb.org/t/p/w780${tmdbData.backdrop_path}`;
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Fallback attempt: Search by title via search/multi if ID search failed
+                                    if (!imgUrl && item.title) {
+                                        const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(item.title)}`);
+                                        if (searchRes.ok) {
+                                            const searchData = await searchRes.json();
+                                            if (searchData.results && searchData.results.length > 0 && searchData.results[0].backdrop_path) {
+                                                imgUrl = `https://image.tmdb.org/t/p/w780${searchData.results[0].backdrop_path}`;
+                                            }
+                                        }
+                                    }
+                                    
+                                    // If we successfully found a backdrop, save it to avoid redundant future fetches
+                                    if (imgUrl) {
+                                        item.backdrop_path = imgUrl.replace('https://image.tmdb.org/t/p/w780', '');
+                                        let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                                        if(localHistory[item.id]) {
+                                            localHistory[item.id].backdrop_path = item.backdrop_path;
+                                            localStorage.setItem('dramakan_history', JSON.stringify(localHistory));
+                                        }
+                                    }
+                                } catch(err) { console.warn("Backdrop fetch failed", err); }
+                            }
+                            
+                            // Attach final resolved image directly to item object
+                            item.finalImgUrl = imgUrl || item.img;
+                            return item;
+                        }));
+
+                        cwGrid.innerHTML = updatedItems.map(item => {
+                            const progress = item.progress || Math.floor(Math.random() * 50 + 20); // Uses real progress or dynamic fallback
+                            const season = item.season || 1;
+                            const episode = item.episode || 1;
+
+                            return `
+                            <a href="${item.link}" class="cw-landscape-card">
+                                <img src="${item.finalImgUrl}" alt="${item.title}" class="cw-landscape-img" loading="lazy" decoding="async" onerror="this.src='${item.img}'">
+                                <div class="cw-progress-container">
+                                    <div class="cw-progress-bar" style="width: ${progress}%;"></div>
+                                </div>
+                                <div class="cw-landscape-info">
+                                    <h3 class="cw-landscape-title">${item.title}</h3>
+                                    <div class="cw-landscape-meta">
+                                        <span class="cw-play-badge"><i class="fas fa-play"></i> S${season} • E${episode}</span>
+                                        <span>${item.timeLeft ? item.timeLeft + 'm left' : ''}</span>
+                                    </div>
                                 </div>
                             </a>
-                        `).join('');
+                            `;
+                        }).join('');
                     } else { cwSection.style.display = 'none'; }
                 }
             } catch(e) { console.error("CW Engine exception", e); }
