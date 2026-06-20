@@ -168,13 +168,13 @@
            6. CARD DESIGNS
         ========================================= */
         
-        /* Continue Watching (Horizontal Card) */
+        /* Continue Watching (Optimized for TMDB 16:9 Backdrops) */
         .cw-card {
-            min-width: 340px; max-width: 340px; background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 16px; padding: 12px; 
+            min-width: 360px; max-width: 360px; background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 16px; padding: 12px; 
             display: flex; gap: 15px; align-items: center; transition: transform 0.3s, border-color 0.3s; position: relative; flex-shrink: 0; box-sizing: border-box;
         }
         .cw-card:hover { transform: translateY(-5px); border-color: rgba(157, 78, 221, 0.4); }
-        .cw-img-wrap { width: 120px; height: 80px; border-radius: 10px; overflow: hidden; flex-shrink: 0; position: relative;}
+        .cw-img-wrap { width: 130px; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; flex-shrink: 0; position: relative;}
         .cw-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
         .cw-info { flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0;}
         .cw-title { font-size: 0.95rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
@@ -194,7 +194,7 @@
         .list-card:hover .list-poster-wrap { border-color: var(--primary-color); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5);}
         .list-poster-wrap img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* New Trash Button for Lists */
+        /* Trash Button for Lists */
         .remove-list-btn {
             position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.2);
             border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: 0.3s; z-index: 10;
@@ -240,7 +240,7 @@
         
         .history-list-item { display: flex; gap: 15px; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; transition: 0.3s; margin-bottom: 10px;}
         .history-list-item:hover { background: rgba(157, 78, 221, 0.1); border-color: rgba(157, 78, 221, 0.3); }
-        .history-list-img { width: 50px; height: 75px; border-radius: 8px; object-fit: cover; }
+        .history-list-img { width: 70px; aspect-ratio: 16/9; border-radius: 6px; object-fit: cover; }
         .history-list-info { flex: 1; min-width: 0; }
         .history-list-title { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .history-list-actions { display: flex; gap: 10px; }
@@ -293,10 +293,10 @@
             .hero-actions { width: 100%; }
             .hero-actions button { flex: 1; justify-content: center; }
             
-            /* Continue Watching Mobile Fixes (Prevent Overflow & Stack) */
+            /* Continue Watching Mobile Layout Fixes */
             #history-container { flex-direction: column; overflow-x: hidden; gap: 12px; width: 100%; }
             .cw-card { width: 100%; min-width: 0; max-width: none; padding: 10px; margin: 0; }
-            .cw-img-wrap { width: 100px; height: 65px; }
+            .cw-img-wrap { width: 110px; }
             
             /* List Card Layout */
             .list-card { min-width: 140px; max-width: 140px; }
@@ -516,7 +516,7 @@
         window.openModal = (id) => document.getElementById(id).classList.add('active');
         window.closeModal = (id) => document.getElementById(id).classList.remove('active');
         
-        // History Modal (Local storage only for popup)
+        // History Modal (Local storage fallback for popup optimization)
         window.openHistoryModal = () => {
             openModal('historyModal');
             let dataToRender = window.cachedHistoryArr;
@@ -575,7 +575,11 @@
                 container.innerHTML = `<div class="empty-state">Your watch history is empty.</div>`;
                 return;
             }
-            container.innerHTML = arrayData.map(item => `
+
+            // Cap the primary container loop at exactly 4 items
+            const limitedData = arrayData.slice(0, 4);
+
+            container.innerHTML = limitedData.map(item => `
                 <div class="cw-card">
                    <div class="cw-img-wrap"><img src="${item.img}" alt="${item.title}"></div>
                    <div class="cw-info">
@@ -672,12 +676,12 @@
             `).join('');
         };
 
-        // --- REAL-TIME SYNC LOGIC (NO LOCAL STORAGE FOR MAIN UI) ---
+        // --- REAL-TIME SYNC LOGIC ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUserDocRef = doc(db, "users", user.uid);
 
-                // 1. User Profile & Lists (Direct Cloud Sync)
+                // 1. Profile Snapshots
                 if(unsubscribeUser) unsubscribeUser();
                 unsubscribeUser = onSnapshot(currentUserDocRef, (docSnap) => {
                     if (docSnap.exists()) {
@@ -703,14 +707,13 @@
 
                         renderProfiles();
                         
-                        // Direct fetch from cloud object, NO local storage caching
                         const activeList = userProfiles[activeProfileIndex].myList || [];
                         const activeFavs = userProfiles[activeProfileIndex].favorites || [];
                         renderPosterList(activeList, 'mylist-container', 'mylist');
                         renderPosterList(activeFavs, 'favorites-container', 'favorites');
                         document.getElementById('stat-completed').textContent = activeList.length;
 
-                        // VIP UI
+                        // VIP Tiering Adjustments
                         const isPremium = data.isPremium && data.premiumExpiry > Date.now();
                         const btnVip = document.getElementById('heroVipBtn');
                         const sidebarBanner = document.getElementById('sidebar-premium-banner');
@@ -728,7 +731,7 @@
                     }
                 });
 
-                // 2. History Sync
+                // 2. Watch History Snapshots
                 if(unsubscribeHistory) unsubscribeHistory();
                 unsubscribeHistory = onSnapshot(collection(db, "users", user.uid, "history"), (snapshot) => {
                     let cloudHistory = {};
@@ -737,7 +740,6 @@
                         if(histData && histData.dramaId) cloudHistory[String(histData.dramaId)] = histData;
                     });
                     
-                    // Permitted local storage ONLY for modal popup speed enhancement
                     localStorage.setItem('dramakan_history', JSON.stringify(cloudHistory));
                     
                     const historyArr = Object.values(cloudHistory)
@@ -751,7 +753,7 @@
                     }
                 });
 
-                // 3. Requests Sync
+                // 3. Request Snapshots
                 getDocs(query(collection(db, "requests"), where("userId", "==", user.uid))).then(reqSnap => {
                     if (!reqSnap.empty) {
                         const sortedReqs = [];
@@ -766,7 +768,7 @@
             }
         });
 
-        // --- CLOUD-FIRST CARD REMOVAL ---
+        // --- DOCUMENT LEVEL CARD DELETIONS ---
         window.removeCard = async (type, identifier) => {
             if (!auth.currentUser) return;
             if (type === 'history') {
