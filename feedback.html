@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback - DramaKan</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+    :root {
+        --primary: #9D4EDD;
+        --primary-rich: #7b2cbf;
+        --primary-glow: rgba(157, 78, 221, 0.35);
+        --bg-base: #0a0a0f;
+        --glass-bg: rgba(20, 20, 28, 0.6);
+        --glass-bg-soft: rgba(255, 255, 255, 0.025);
+        --glass-border: rgba(255, 255, 255, 0.09);
+        --text-muted: #8b8b96;
+        --tint-a: rgba(157, 78, 221, 0.07);
+        --tint-b: rgba(236, 72, 153, 0.05);
+        --tint-c: rgba(56, 189, 248, 0.05);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Manrope', sans-serif;
+        background-color: var(--bg-base);
+        color: #fff;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+        padding: 56px 4%;
+    }
+
+    h1, h2, h3, h4, .section-label, .reviewer-name, .submit-btn { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    /* Liquid background orbs */
+    .liquid-orb { position: fixed; border-radius: 50%; filter: blur(110px); z-index: -1; animation: floatOrb 24s infinite alternate ease-in-out; pointer-events: none; }
+    .orb-1 { width: 560px; height: 560px; background: rgba(157, 78, 221, 0.22); top: -10%; left: -8%; }
+    .orb-2 { width: 620px; height: 620px; background: rgba(123, 44, 191, 0.18); bottom: -12%; right: -8%; animation-delay: -8s; }
+    .orb-3 { width: 380px; height: 380px; background: rgba(56, 189, 248, 0.08); top: 35%; left: 45%; animation-delay: -14s; animation-duration: 30s; }
+
+    @keyframes floatOrb {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(70px, 90px) scale(1.12); }
+    }
+
+    .eyebrow { text-transform: uppercase; letter-spacing: 2px; font-size: 0.72rem; color: var(--primary); font-weight: 700; margin-bottom: 10px; display: block; }
+
+    /* PRIMARY 2-COLUMN PAGE GRID */
+    .page-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.65fr) minmax(320px, 0.85fr);
+        gap: 28px;
+        width: 100%;
+        max-width: 1680px;
+        margin: 0 auto;
+        z-index: 10;
+        align-items: start;
+        animation: slideUp 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: 26px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.55);
+    }
+
+    .feedback-container { padding: 48px 50px; }
+
+    .header-content { margin-bottom: 38px; }
+    .header-content h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; }
+    .header-content h1 span { color: var(--primary); }
+    .header-content p { color: var(--text-muted); font-size: 1.02rem; max-width: 520px; }
+
+    /* Internal grids that use the horizontal space */
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .field-block { margin-bottom: 30px; }
+
+    /* Distinct sub-card system: every question is its own card with a tint + left accent border */
+    .sub-card {
+        border-radius: 18px;
+        padding: 26px 28px;
+        border: 1px solid var(--glass-border);
+        border-left: 3px solid var(--primary);
+        background: var(--glass-bg-soft);
+        height: 100%;
+    }
+    .sub-card.tint-a { background: var(--tint-a); border-left-color: var(--primary); }
+    .sub-card.tint-b { background: var(--tint-b); border-left-color: #ec4899; }
+    .sub-card.tint-c { background: var(--tint-c); border-left-color: #38bdf8; }
+    .sub-card.tint-d { background: rgba(251, 191, 36, 0.04); border-left-color: #FBBF24; }
+
+    .section-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .section-label { font-size: 1rem; color: #fff; font-weight: 700; display: flex; align-items: center; gap: 9px; }
+    .section-label i { color: var(--primary); font-size: 0.95rem; }
+
+    .optional-tag, .required-tag {
+        font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
+        padding: 4px 10px; border-radius: 6px; white-space: nowrap;
+    }
+    .optional-tag { color: #9CA3AF; background: rgba(255,255,255,0.05); }
+    .required-tag { color: #FBBF24; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.25); }
+
+    /* Star Rating */
+    .rating-wrapper { text-align: center; padding: 30px 28px; }
+    .rating-wrapper .section-label { justify-content: center; margin-bottom: 18px; font-size: 1.08rem; }
+    .stars { display: flex; gap: 14px; flex-direction: row-reverse; justify-content: center; }
+    .stars input { display: none; }
+    .stars label { font-size: 2.9rem; color: #34343f; cursor: pointer; transition: 0.25s cubic-bezier(0.25, 1, 0.5, 1); margin: 0; }
+    .stars label:hover, .stars label:hover ~ label, .stars input:checked ~ label { color: #FBBF24; text-shadow: 0 0 25px rgba(251, 191, 36, 0.55); transform: scale(1.12); }
+
+    /* Inputs */
+    .feedback-input {
+        width: 100%; background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border);
+        border-radius: 14px; padding: 14px 18px; color: #fff; font-family: inherit;
+        font-size: 0.96rem; outline: none; transition: 0.25s;
+    }
+    textarea.feedback-input { resize: vertical; min-height: 130px; }
+    .feedback-input:focus { border-color: var(--primary); background: rgba(0,0,0,0.45); box-shadow: 0 0 0 3px var(--primary-glow); }
+    .feedback-input::placeholder { color: #6B7280; }
+
+    /* Pills */
+    .pills-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pill-input { display: none; }
+    .pill-label {
+        background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+        padding: 10px 17px; border-radius: 50px; font-size: 0.88rem; color: #9CA3AF;
+        cursor: pointer; transition: all 0.25s; display: flex; align-items: center; gap: 7px; user-select: none;
+    }
+    .pill-label:hover { background: rgba(255,255,255,0.08); color: #fff; transform: translateY(-2px); }
+    .pill-input:checked + .pill-label { background: rgba(157, 78, 221, 0.22); border-color: var(--primary); color: #fff; box-shadow: 0 4px 15px var(--primary-glow); }
+    .improve-pill:checked + .pill-label { background: rgba(236, 72, 153, 0.18); border-color: #ec4899; color: #fff; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.25); }
+    .source-pill:checked + .pill-label { background: rgba(56, 189, 248, 0.18); border-color: #38bdf8; color: #fff; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.25); }
+
+    /* Dynamic 'Other' field */
+    .other-text-input {
+        width: 100%; background: rgba(0,0,0,0.32); border: 1px solid var(--primary);
+        border-radius: 12px; padding: 12px 16px; color: #fff; font-family: inherit;
+        font-size: 0.9rem; outline: none; margin-top: 14px;
+        max-height: 0; opacity: 0; overflow: hidden; padding-top: 0; padding-bottom: 0; border-width: 0;
+        transition: max-height 0.35s cubic-bezier(0.25,1,0.5,1), opacity 0.3s ease, padding 0.3s ease, border-width 0.3s ease, margin 0.3s ease;
+    }
+    .other-text-input.open { max-height: 70px; opacity: 1; padding-top: 12px; padding-bottom: 12px; border-width: 1px; }
+
+    /* Submit */
+    .submit-btn {
+        width: 100%; padding: 17px; background: linear-gradient(135deg, var(--primary), var(--primary-rich));
+        color: #fff; border: none; border-radius: 14px; font-weight: 700; font-size: 1.08rem; letter-spacing: 0.3px;
+        cursor: pointer; transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;
+        box-shadow: 0 10px 30px var(--primary-glow); margin-top: 6px;
+    }
+    .submit-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(157, 78, 221, 0.55); }
+    .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+    .back-link { display: block; text-align: center; margin-top: 22px; color: var(--text-muted); text-decoration: none; font-size: 0.92rem; transition: 0.25s; font-weight: 500; }
+    .back-link:hover { color: #fff; }
+
+    /* RIGHT COLUMN: Community Reviews */
+    .reviews-card { padding: 40px 34px; position: sticky; top: 56px; }
+    .stats-header { text-align: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 26px; margin-bottom: 26px; }
+    .stats-header h3 { font-size: 0.82rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px; }
+    .avg-rating { font-size: 4rem; font-weight: 800; color: #fff; line-height: 1; text-shadow: 0 0 30px rgba(251, 191, 36, 0.35); }
+    .avg-stars { color: #FBBF24; font-size: 1.4rem; margin: 12px 0; }
+    .total-reviews { color: var(--text-muted); font-size: 0.9rem; }
+
+    .recent-title { font-size: 1rem; font-weight: 700; border-left: 3px solid var(--primary); padding-left: 10px; margin-bottom: 16px; }
+
+    .reviews-list { display: flex; flex-direction: column; gap: 14px; max-height: 640px; overflow-y: auto; padding-right: 8px; }
+    .reviews-list::-webkit-scrollbar { width: 5px; }
+    .reviews-list::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+    .review-item { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); padding: 16px 18px; border-radius: 14px; transition: 0.25s; }
+    .review-item:hover { background: rgba(255,255,255,0.045); border-color: rgba(255,255,255,0.12); }
+    .review-header { display: flex; justify-content: space-between; margin-bottom: 9px; align-items: center; }
+    .reviewer-info { display: flex; align-items: center; gap: 10px; }
+    .reviewer-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-rich)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; color: #fff; flex-shrink: 0; }
+    .reviewer-name { font-size: 0.9rem; font-weight: 600; color: #fff; }
+    .review-stars { color: #FBBF24; font-size: 0.78rem; white-space: nowrap; }
+    .review-text { font-size: 0.87rem; color: #c9c9d2; line-height: 1.55; margin: 0; font-style: italic; }
+
+    .empty-reviews { text-align: center; color: var(--text-muted); font-size: 0.92rem; padding: 28px; font-style: italic; }
+
+    /* Success state */
+    .success-state { display: none; text-align: center; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 60px 10px; min-height: 480px; }
+    .success-icon { width: 110px; height: 110px; background: rgba(16, 185, 129, 0.1); color: #10B981; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3.6rem; border: 3px solid rgba(16, 185, 129, 0.3); animation: popIn 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+
+    @keyframes slideUp { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes popIn { 0% { opacity: 0; transform: scale(0.5); } 100% { opacity: 1; transform: scale(1); } }
+
+    /* Responsive */
+    @media (max-width: 1180px) {
+        .page-layout { grid-template-columns: 1fr; }
+        .reviews-card { position: static; }
+    }
+    @media (max-width: 720px) {
+        body { padding: 24px 14px; }
+        .feedback-container, .reviews-card { padding: 30px 20px; }
+        .form-grid-2 { grid-template-columns: 1fr; gap: 18px; }
+        .header-content h1 { font-size: 1.9rem; }
+        .stars label { font-size: 2.3rem; }
+        .pill-label { font-size: 0.83rem; padding: 9px 14px; }
+        .sub-card { padding: 20px 20px; }
+        .reviews-list { max-height: 420px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="liquid-orb orb-1"></div>
+<div class="liquid-orb orb-2"></div>
+<div class="liquid-orb orb-3"></div>
+
+<div class="page-layout">
+
+    <div class="glass-card feedback-container">
+        <div id="form-content">
+            <div class="header-content">
+                <span class="eyebrow">Help us improve</span>
+                <h1>Drama<span>Kan</span> Feedback</h1>
+                <p>We're building this platform for you. Tell us how we're doing, what you love, and what deserves a fix.</p>
+            </div>
+
+            <form id="feedbackForm">
+
+                <div class="form-grid-2 field-block">
+                    <div class="sub-card tint-a">
+                        <div class="section-header">
+                            <span class="section-label"><i class="fas fa-user-astronaut"></i> What should we call you?</span>
+                            <span class="required-tag">Required</span>
+                        </div>
+                        <input type="text" id="fb-name" class="feedback-input" placeholder="Your name or nickname" required>
+                    </div>
+                    <div class="sub-card tint-c">
+                        <div class="section-header">
+                            <span class="section-label"><i class="fas fa-envelope"></i> Email address</span>
+                            <span class="optional-tag">Optional</span>
+                        </div>
+                        <input type="email" id="fb-email" class="feedback-input" placeholder="name@example.com — for follow-ups">
+                    </div>
+                </div>
+
+                <div class="field-block">
+                    <div class="sub-card tint-d rating-wrapper">
+                        <span class="section-label"><i class="fas fa-star"></i> How would you rate your overall experience?</span>
+                        <div class="stars">
+                            <input type="radio" name="rating" id="star5" value="5" required>
+                            <label for="star5" class="fas fa-star" title="Amazing!"></label>
+
+                            <input type="radio" name="rating" id="star4" value="4">
+                            <label for="star4" class="fas fa-star" title="Good"></label>
+
+                            <input type="radio" name="rating" id="star3" value="3">
+                            <label for="star3" class="fas fa-star" title="Average"></label>
+
+                            <input type="radio" name="rating" id="star2" value="2">
+                            <label for="star2" class="fas fa-star" title="Poor"></label>
+
+                            <input type="radio" name="rating" id="star1" value="1">
+                            <label for="star1" class="fas fa-star" title="Terrible"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid-2 field-block">
+                    <div class="sub-card tint-a">
+                        <div class="section-header">
+                            <span class="section-label">💜 What do you love?</span>
+                            <span class="optional-tag">Optional</span>
+                        </div>
+                        <div class="pills-grid">
+                            <input type="checkbox" name="liked" id="like-design" value="UI/Design" class="pill-input">
+                            <label for="like-design" class="pill-label"><i class="fas fa-paint-brush"></i> UI & Design</label>
+
+                            <input type="checkbox" name="liked" id="like-speed" value="Fast Streaming" class="pill-input">
+                            <label for="like-speed" class="pill-label"><i class="fas fa-bolt"></i> Fast video</label>
+
+                            <input type="checkbox" name="liked" id="like-collection" value="Huge Collection" class="pill-input">
+                            <label for="like-collection" class="pill-label"><i class="fas fa-film"></i> Library</label>
+
+                            <input type="checkbox" name="liked" id="like-noads" value="Ad-Free Feel" class="pill-input">
+                            <label for="like-noads" class="pill-label"><i class="fas fa-shield-alt"></i> No ads</label>
+
+                            <input type="checkbox" id="like-other-cb" value="Other" class="pill-input toggle-other">
+                            <label for="like-other-cb" class="pill-label"><i class="fas fa-plus"></i> Other</label>
+                        </div>
+                        <input type="text" id="like-other-text" class="other-text-input" placeholder="What else do you love?">
+                    </div>
+
+                    <div class="sub-card tint-b">
+                        <div class="section-header">
+                            <span class="section-label">🛠️ What should we fix?</span>
+                            <span class="optional-tag">Optional</span>
+                        </div>
+                        <div class="pills-grid">
+                            <input type="checkbox" name="improve" id="imp-servers" value="More Servers" class="pill-input improve-pill">
+                            <label for="imp-servers" class="pill-label"><i class="fas fa-server"></i> Servers</label>
+
+                            <input type="checkbox" name="improve" id="imp-subs" value="Better Subtitles" class="pill-input improve-pill">
+                            <label for="imp-subs" class="pill-label"><i class="fas fa-language"></i> Subtitles</label>
+
+                            <input type="checkbox" name="improve" id="imp-anime" value="Add Anime" class="pill-input improve-pill">
+                            <label for="imp-anime" class="pill-label"><i class="fas fa-tv"></i> Add anime</label>
+
+                            <input type="checkbox" name="improve" id="imp-app" value="Need Mobile App" class="pill-input improve-pill">
+                            <label for="imp-app" class="pill-label"><i class="fas fa-mobile-alt"></i> Mobile app</label>
+
+                            <input type="checkbox" id="imp-other-cb" value="Other" class="pill-input improve-pill toggle-other">
+                            <label for="imp-other-cb" class="pill-label"><i class="fas fa-plus"></i> Other</label>
+                        </div>
+                        <input type="text" id="imp-other-text" class="other-text-input" placeholder="What else needs fixing?">
+                    </div>
+                </div>
+
+                <div class="field-block">
+                    <div class="sub-card tint-c">
+                        <div class="section-header">
+                            <span class="section-label"><i class="fas fa-globe"></i> How did you find DramaKan?</span>
+                            <span class="optional-tag">Optional</span>
+                        </div>
+                        <div class="pills-grid">
+                            <input type="radio" name="source" id="src-tiktok" value="TikTok" class="pill-input source-pill">
+                            <label for="src-tiktok" class="pill-label"><i class="fab fa-tiktok"></i> TikTok</label>
+
+                            <input type="radio" name="source" id="src-ig" value="Instagram" class="pill-input source-pill">
+                            <label for="src-ig" class="pill-label"><i class="fab fa-instagram"></i> Instagram</label>
+
+                            <input type="radio" name="source" id="src-tg" value="Telegram" class="pill-input source-pill">
+                            <label for="src-tg" class="pill-label"><i class="fab fa-telegram"></i> Telegram</label>
+
+                            <input type="radio" name="source" id="src-search" value="Google Search" class="pill-input source-pill">
+                            <label for="src-search" class="pill-label"><i class="fab fa-google"></i> Google</label>
+
+                            <input type="radio" name="source" id="src-other-cb" value="Other" class="pill-input source-pill toggle-other">
+                            <label for="src-other-cb" class="pill-label"><i class="fas fa-plus"></i> Other</label>
+                        </div>
+                        <input type="text" id="src-other-text" class="other-text-input" placeholder="Where else did you hear about us?">
+                    </div>
+                </div>
+
+                <div class="field-block">
+                    <div class="sub-card tint-a">
+                        <div class="section-header">
+                            <span class="section-label"><i class="fas fa-keyboard"></i> Detailed thoughts</span>
+                            <span class="optional-tag">Optional</span>
+                        </div>
+                        <textarea id="feedbackText" class="feedback-input" placeholder="Type your suggestions, drama requests, bug reports, or feature ideas here. We read everything!"></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="submit-btn">
+                    <span>Submit feedback</span> <i class="fas fa-paper-plane"></i>
+                </button>
+
+                <a href="index.html" class="back-link" id="cancel-link"><i class="fas fa-arrow-left"></i> Cancel and return to site</a>
+            </form>
+        </div>
+
+        <div id="success-content" class="success-state">
+            <div class="success-icon"><i class="fas fa-check"></i></div>
+            <h2 style="font-size: 2.1rem; margin: 0; color: #fff;">Thank you!</h2>
+            <p style="color: var(--text-muted); font-size: 1.05rem; line-height: 1.6; max-width: 85%;">Your feedback has been securely sent to our admin dashboard. We appreciate you helping us make DramaKan the ultimate streaming platform.</p>
+            <button onclick="window.location.href='index.html'" class="submit-btn" style="margin-top: 18px; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); box-shadow: none; max-width: 280px;">Back to home</button>
+        </div>
+    </div>
+
+    <div class="glass-card reviews-card">
+        <div class="stats-header">
+            <h3>Overall community rating</h3>
+            <div class="avg-rating" id="avg-score">--</div>
+            <div class="avg-stars" id="avg-stars-container">
+                <i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
+            </div>
+            <div class="total-reviews" id="total-reviews-count">Fetching reviews...</div>
+        </div>
+
+        <h4 class="recent-title">Recent feedback</h4>
+        <div class="reviews-list" id="public-reviews-container">
+            <div class="empty-reviews"><i class="fas fa-spinner fa-spin"></i> Loading community feedback...</div>
+        </div>
+    </div>
+
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
+        authDomain: "dramakan007.firebaseapp.com",
+        projectId: "dramakan007"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // --- Auto-fill User Data if Logged In ---
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            if (user.displayName) document.getElementById('fb-name').value = user.displayName;
+            if (user.email) document.getElementById('fb-email').value = user.email;
+        }
+    });
+
+    // --- Toggle 'Other' Text Inputs (smooth slide-down) ---
+    function wireOtherToggle(checkboxId, textId) {
+        const cb = document.getElementById(checkboxId);
+        const text = document.getElementById(textId);
+        cb.addEventListener('change', (e) => {
+            text.classList.toggle('open', e.target.checked);
+            if (e.target.checked) text.focus();
+        });
+    }
+    wireOtherToggle('like-other-cb', 'like-other-text');
+    wireOtherToggle('imp-other-cb', 'imp-other-text');
+    wireOtherToggle('src-other-cb', 'src-other-text');
+
+    // --- Fetch & Display Public Reviews ---
+    const reviewsContainer = document.getElementById('public-reviews-container');
+    const q = query(collection(db, "feedback"), orderBy("timestamp", "desc"), limit(40));
+
+    onSnapshot(q, (snapshot) => {
+        if (snapshot.empty) {
+            reviewsContainer.innerHTML = '<div class="empty-reviews">No reviews yet. Be the first to share your thoughts!</div>';
+            document.getElementById('avg-score').innerText = "0.0";
+            document.getElementById('total-reviews-count').innerText = "Based on 0 reviews";
+            return;
+        }
+
+        let html = '';
+        let totalScore = 0;
+        let reviewCount = 0;
+
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            if (!data.rating) return;
+
+            totalScore += data.rating;
+            reviewCount++;
+
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                starsHtml += i <= data.rating ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
+            }
+
+            let fallbackText = "Left a rating.";
+            if (data.likedFeatures && data.likedFeatures.length > 0) {
+                fallbackText = "Loves the " + data.likedFeatures.join(", ") + ".";
+            }
+
+            let reviewText = data.message ? data.message : fallbackText;
+
+            const displayName = data.username && data.username !== "Anonymous Viewer" ? data.username : "Anonymous";
+            const initial = displayName.charAt(0).toUpperCase();
+
+            html += `
+            <div class="review-item">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-avatar">${initial}</div>
+                        <span class="reviewer-name">${displayName}</span>
+                    </div>
+                    <div class="review-stars">${starsHtml}</div>
+                </div>
+                <p class="review-text">"${reviewText}"</p>
+            </div>
+            `;
+        });
+
+        reviewsContainer.innerHTML = html;
+
+        if (reviewCount > 0) {
+            const avg = (totalScore / reviewCount).toFixed(1);
+            document.getElementById('avg-score').innerText = avg;
+            document.getElementById('total-reviews-count').innerText = `Based on ${reviewCount} recent reviews`;
+
+            let avgStarsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= Math.floor(avg)) avgStarsHtml += '<i class="fas fa-star"></i>';
+                else if (i === Math.ceil(avg) && avg % 1 !== 0) avgStarsHtml += '<i class="fas fa-star-half-alt"></i>';
+                else avgStarsHtml += '<i class="far fa-star"></i>';
+            }
+            document.getElementById('avg-stars-container').innerHTML = avgStarsHtml;
+        }
+    });
+
+    // --- Handle Form Submission ---
+    document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Sending securely...</span>';
+
+        const userName = document.getElementById('fb-name').value.trim() || "Anonymous Viewer";
+        const userEmail = document.getElementById('fb-email').value.trim() || "No email";
+
+        const ratingInput = document.querySelector('input[name="rating"]:checked');
+        const rating = ratingInput ? parseInt(ratingInput.value) : 0;
+
+        let source = "Unknown";
+        const sourceInput = document.querySelector('input[name="source"]:checked');
+        if (sourceInput) {
+            source = sourceInput.value;
+            if (sourceInput.id === 'src-other-cb') {
+                const customSrc = document.getElementById('src-other-text').value.trim();
+                if (customSrc) source = "Other: " + customSrc;
+            }
+        }
+
+        const likedItems = Array.from(document.querySelectorAll('input[name="liked"]:checked')).map(cb => cb.value);
+        if (document.getElementById('like-other-cb').checked) {
+            const customLike = document.getElementById('like-other-text').value.trim();
+            if (customLike) likedItems.push("Other: " + customLike);
+        }
+
+        const improveItems = Array.from(document.querySelectorAll('input[name="improve"]:checked')).map(cb => cb.value);
+        if (document.getElementById('imp-other-cb').checked) {
+            const customImp = document.getElementById('imp-other-text').value.trim();
+            if (customImp) improveItems.push("Other: " + customImp);
+        }
+
+        const feedbackText = document.getElementById('feedbackText').value.trim();
+
+        const user = auth.currentUser;
+        const userId = user ? user.uid : "Anonymous";
+
+        try {
+            await addDoc(collection(db, "feedback"), {
+                rating: rating,
+                foundVia: source,
+                likedFeatures: likedItems,
+                needsImprovement: improveItems,
+                message: feedbackText,
+                userId: userId,
+                username: userName,
+                userEmail: userEmail,
+                timestamp: serverTimestamp(),
+                status: "Unread"
+            });
+
+            document.getElementById('form-content').style.display = 'none';
+            document.getElementById('cancel-link').style.display = 'none';
+            document.getElementById('success-content').style.display = 'flex';
+
+            localStorage.setItem("dramakan_feedback_dismissed", "true");
+            localStorage.setItem("dramakan_feedback_time", (Date.now() + 31536000000).toString());
+
+        } catch (error) {
+            console.error("Error sending feedback: ", error);
+            alert("Oops! Something went wrong connecting to the server. Please check your internet and try again.");
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>Submit feedback</span> <i class="fas fa-paper-plane"></i>';
+        }
+    });
+</script>
+</body>
+</html>

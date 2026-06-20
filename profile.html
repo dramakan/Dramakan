@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <script src="bottom-bar.js" defer></script>
+script src="feedback-popup.js" defer></script>
     <script src="admin_easter_egg.js" defer></script>
     <script src="premium-manager.js" defer></script>
     
@@ -64,7 +65,6 @@
         ========================================= */
         .top-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 30px; width: 100%; position: relative; }
         
-        /* New Site Logo Link */
         .site-logo { display: block; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; color: #fff; transition: opacity 0.3s; }
         .site-logo:hover { opacity: 0.8; }
         .site-logo span { color: var(--primary-color); }
@@ -92,7 +92,6 @@
         .notif-dropdown-header button { font-size: 0.75rem; color: #ef4444; font-weight: 600; }
         .notif-dropdown-list { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
 
-        /* System Inner Notification Content */
         .global-notif-item { display: flex; gap: 12px; padding: 12px; border-radius: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); position: relative; transition: 0.2s; }
         .global-notif-icon { width: 32px; height: 32px; border-radius: 50%; background: rgba(157, 78, 221, 0.1); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; }
         .global-notif-content { flex: 1; min-width: 0; }
@@ -102,7 +101,6 @@
         .global-notif-delete { background: none; border: none; color: rgba(255,255,255,0.2); cursor: pointer; font-size: 0.8rem; height: fit-content; transition: color 0.2s; padding: 2px; }
         .global-notif-delete:hover { color: #ef4444; }
 
-        /* Shared Button Styles */
         .btn-vip { background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.3); color: var(--vip-gold); padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
         .btn-switch { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 500; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; transition: background 0.3s; }
         .btn-switch:hover { background: rgba(255,255,255,0.1); }
@@ -271,16 +269,28 @@
         .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
         .form-input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-family: inherit; font-size: 0.95rem; }
         .form-input:focus { outline: none; border-color: var(--primary-color); }
-        .btn-primary { width: 100%; padding: 14px; background: var(--primary-color); color: #fff; border-radius: 10px; font-weight: 600; margin-bottom: 15px; display: flex; justify-content: center; gap: 8px; align-items: center; transition: 0.3s;}
+        .btn-primary { width: 100%; padding: 14px; background: var(--primary-color); color: #fff; border-radius: 10px; font-weight: 600; margin-bottom: 15px; display: flex; justify-content: center; gap: 8px; align-items: center; transition: 0.3s; cursor: pointer; border: none;}
         .btn-primary:hover { background: var(--primary-rich); }
-        .btn-danger { width: 100%; padding: 14px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; font-weight: 600; display: flex; justify-content: center; gap: 8px; align-items: center; transition: 0.3s;}
+        .btn-danger { width: 100%; padding: 14px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; font-weight: 600; display: flex; justify-content: center; gap: 8px; align-items: center; transition: 0.3s; cursor: pointer;}
+        
+        /* Custom Settings Tabs */
+        .settings-tabs {
+            display: flex; gap: 10px; margin-bottom: 25px; background: rgba(255,255,255,0.05); padding: 6px; border-radius: 12px; border: 1px solid var(--glass-border);
+        }
+        .tab-btn {
+            flex: 1; padding: 12px; border-radius: 8px; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 0.9rem; border: none; background: transparent;
+        }
+        .tab-btn.active { background: var(--primary-color); color: #fff; box-shadow: 0 4px 15px var(--primary-glow); }
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .profiles-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 25px; }
         .profile-item { display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: 0.3s; }
         .profile-item:hover { transform: translateY(-5px); }
-        .profile-item img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid transparent; }
-        .profile-item.active img { border-color: var(--primary-color); }
-        .profile-item span { font-size: 0.9rem; color: var(--text-muted); }
+        .profile-item img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid transparent; transition: 0.2s;}
+        .profile-item.active img { border-color: var(--primary-color); transform: scale(1.05); box-shadow: 0 10px 20px var(--primary-glow);}
+        .profile-item span { font-size: 0.9rem; color: var(--text-muted); transition: 0.2s; }
         .profile-item.active span { color: #fff; font-weight: 600; }
 
         /* Custom Streaming Avatar Selectors */
@@ -288,7 +298,7 @@
         .avatar-selection-row::-webkit-scrollbar { display: none; }
         .selectable-avatar-option { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 3px solid transparent; transition: 0.2s; flex-shrink: 0; }
         .selectable-avatar-option:hover { transform: scale(1.05); }
-        .selectable-avatar-option.selected-choice { border-color: var(--primary-color); transform: scale(1.1); }
+        .selectable-avatar-option.selected-choice { border-color: var(--primary-color); transform: scale(1.1); box-shadow: 0 4px 15px var(--primary-glow);}
 
         /* =========================================
            8. RESPONSIVE DESIGN (MOBILE OVERRIDES)
@@ -371,7 +381,7 @@
                     <div id="globalNotifDropdown" class="notif-dropdown">
                         <div class="notif-dropdown-header">
                             <h3>Notifications</h3>
-                            <button id="clearNotifsBtn">Clear All</button>
+                            <button id="clearNotifsBtn" style="background: none; border: none; cursor: pointer;">Clear All</button>
                         </div>
                         <div id="globalNotifList" class="notif-dropdown-list">
                             <!-- Injected dynamically via anykan-notifier.js -->
@@ -472,7 +482,7 @@
             <h2 class="modal-title">Watch History</h2>
             <div class="settings-card" style="max-height: 70vh; overflow-y: auto;">
                 <div style="display:flex; justify-content: flex-end; margin-bottom: 15px;">
-                    <button id="clear-history-btn" onclick="clearHistory()" style="color:#ef4444; font-size:0.85rem; font-weight:600;"><i class="fas fa-trash-alt"></i> Clear All</button>
+                    <button id="clear-history-btn" onclick="clearHistory()" style="background:none; border:none; color:#ef4444; font-size:0.85rem; font-weight:600; cursor:pointer;"><i class="fas fa-trash-alt"></i> Clear All</button>
                 </div>
                 <div id="historyModalList" style="display: flex; flex-direction: column; width: 100%;"></div>
             </div>
@@ -518,13 +528,13 @@
                 
                 <!-- Advanced Multi-Profile Creation Panel for Premium VIP Subscriptions -->
                 <div id="vip-profile-creation-zone" style="margin-top: 30px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 20px; display: none;">
-                    <h3 style="font-size: 1rem; margin-bottom: 12px; font-weight: 600; color: var(--vip-gold);"><i class="fas fa-plus-circle"></i> Add Crown VIP Sub-Profile</h3>
+                    <h3 style="font-size: 1rem; margin-bottom: 12px; font-weight: 600; color: var(--vip-gold); text-align: center;"><i class="fas fa-plus-circle"></i> Add Crown VIP Sub-Profile</h3>
                     <div class="form-group" style="margin-bottom: 12px;">
                         <input type="text" id="new-profile-name" class="form-input" placeholder="Enter profile name...">
                     </div>
                     <div class="form-group">
-                        <label style="margin-bottom: 5px; display: block;">Select Sub-Profile Avatar</label>
-                        <div class="avatar-selection-row" id="new-profile-avatar-row">
+                        <label style="margin-bottom: 5px; display: block; text-align: center;">Select Sub-Profile Avatar</label>
+                        <div class="avatar-selection-row" id="new-profile-avatar-row" style="justify-content: center;">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" class="selectable-avatar-option selected-choice" onclick="selectCreationAvatar(this)">
                             <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Karash" class="selectable-avatar-option" onclick="selectCreationAvatar(this)">
                             <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Dramakan" class="selectable-avatar-option" onclick="selectCreationAvatar(this)">
@@ -538,46 +548,65 @@
         </div>
     </div>
 
+    <!-- Improved Settings Modal (Tabs for Profile & Security) -->
     <div class="full-modal" id="settingsModal">
         <button class="close-modal-btn" onclick="closeModal('settingsModal')"><i class="fas fa-times"></i></button>
         <div class="modal-content-wrap">
-            <h2 class="modal-title">Edit Profile</h2>
+            <h2 class="modal-title">Settings</h2>
             <div class="settings-card">
-                <div style="display:flex; justify-content:center; margin-bottom: 15px;">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" id="edit-avatar-preview" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid var(--primary-color);">
+                
+                <!-- Navigation Tabs -->
+                <div class="settings-tabs">
+                    <button class="tab-btn active" onclick="window.switchTab('profile-tab')"><i class="fas fa-user-edit"></i> Profile</button>
+                    <button class="tab-btn" onclick="window.switchTab('security-tab')"><i class="fas fa-shield-alt"></i> Security</button>
                 </div>
 
-                <!-- Custom Avatar Gallery Selector Selection Row -->
-                <div class="form-group">
-                    <label>Choose Custom Avatar</label>
-                    <div class="avatar-selection-row" id="edit-profile-avatar-row">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
-                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Karash" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
-                        <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Dramakan" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ashish" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
-                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Cloud" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
+                <!-- 1. Profile Tab Content -->
+                <div id="profile-tab" class="tab-content active">
+                    <div style="display:flex; justify-content:center; margin-bottom: 15px;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" id="edit-avatar-preview" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid var(--primary-color); box-shadow: 0 5px 15px var(--primary-glow);">
+                    </div>
+
+                    <!-- Custom Avatar Gallery Selector -->
+                    <div class="form-group">
+                        <label style="text-align: center;">Choose Custom Avatar</label>
+                        <div class="avatar-selection-row" id="edit-profile-avatar-row" style="justify-content: center;">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
+                            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Karash" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
+                            <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Dramakan" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ashish" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
+                            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Cloud" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Profile Name</label>
+                        <input type="text" id="edit-username" class="form-input">
+                    </div>
+
+                    <button class="btn-primary" id="btn-save-profile"><i class="fas fa-save"></i> Save Profile</button>
+                </div>
+
+                <!-- 2. Security Tab Content -->
+                <div id="security-tab" class="tab-content">
+                    <div class="form-group" style="padding-top: 10px;">
+                        <label>Update Secure Account Password</label>
+                        <input type="password" id="edit-password" class="form-input" placeholder="Enter new password (min 6 chars)">
+                        <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 8px; display: block;">You may be asked to re-login if your session is old to perform this action securely.</small>
+                    </div>
+
+                    <button class="btn-primary" id="btn-update-password" style="background: var(--vip-gold); color: #000; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);"><i class="fas fa-key"></i> Update Password</button>
+                    
+                    <div style="margin-top: 25px; border-top: 1px solid var(--glass-border); padding-top: 20px;">
+                        <button class="btn-danger" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Sign Out Completely</button>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Profile Name</label>
-                    <input type="text" id="edit-username" class="form-input">
-                </div>
-
-                <!-- Live Password Updates Form Fields block -->
-                <div class="form-group" style="border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 15px;">
-                    <label>Update Secure Account Password</label>
-                    <input type="password" id="edit-password" class="form-input" placeholder="Leave blank to keep current password">
-                </div>
-
-                <button class="btn-primary" id="btn-save-profile">Save Profile Changes</button>
-                <div style="margin-top: 25px; border-top: 1px solid var(--glass-border); padding-top: 15px;">
-                    <button class="btn-danger" id="logout-btn">Sign Out</button>
-                </div>
             </div>
         </div>
     </div>
 
+    <!-- Ensure external scripts run -->
     <script type="module" src="anykan-notifier.js"></script>
 
     <script type="module">
@@ -606,11 +635,32 @@
         let temporarySelectedEditAvatar = "";
         let temporarySelectedCreationAvatar = "https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png";
 
+        // Guaranteed Notification Dropdown Toggle (Failsafe)
+        document.getElementById('globalNotifBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('globalNotifDropdown').classList.toggle('active');
+        });
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('globalNotifDropdown');
+            const btn = document.getElementById('globalNotifBtn');
+            if (!dropdown.contains(e.target) && e.target !== btn) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Tabs Logic for Settings Modal
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        };
+
         // Base Modals
         window.openModal = (id) => document.getElementById(id).classList.add('active');
         window.closeModal = (id) => document.getElementById(id).classList.remove('active');
         
-        // Manual Toggle Trigger for settings icon button click handler
+        // Manual Toggle Trigger for settings icon button
         document.getElementById('settingsBtn').addEventListener('click', () => {
             openModal('settingsModal');
         });
@@ -1073,15 +1123,14 @@
             snap.forEach(d => deleteDoc(doc(db, "users", uid, "history", d.id)));
         };
 
-        // --- PROFILE LOGIC CONTROLLERS (SAVE SEAMLESS MODIFICATIONS) ---
+        // --- PROFILE TABS: PROFILE SAVE ---
         document.getElementById('btn-save-profile').addEventListener('click', async () => {
             const btn = document.getElementById('btn-save-profile');
             const newName = document.getElementById('edit-username').value.trim();
-            const newPassword = document.getElementById('edit-password').value.trim();
             
             if(!newName) return;
             btn.disabled = true;
-            btn.innerText = "Saving Profiles...";
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
             try {
                 // Save user meta fields updates 
@@ -1105,24 +1154,44 @@
                     });
                 }
 
-                // Handle secure change password if provided
-                if(newPassword) {
-                    if(newPassword.length < 6) {
-                        alert("Password must be at least 6 characters long.");
-                    } else {
-                        await updatePassword(auth.currentUser, newPassword);
-                        alert("Password updated securely!");
-                    }
-                }
-
-                document.getElementById('edit-password').value = "";
                 closeModal('settingsModal');
             } catch(e) {
                 console.error(e);
                 alert("Error configuring account updates: " + e.message);
             } finally {
                 btn.disabled = false;
-                btn.innerText = "Save Profile Changes";
+                btn.innerHTML = '<i class="fas fa-save"></i> Save Profile';
+            }
+        });
+
+        // --- PROFILE TABS: SECURITY SAVE (PASSWORD) ---
+        document.getElementById('btn-update-password').addEventListener('click', async () => {
+            const newPassword = document.getElementById('edit-password').value.trim();
+            if(!newPassword || newPassword.length < 6) {
+                alert("Password must be at least 6 characters long.");
+                return;
+            }
+
+            const btn = document.getElementById('btn-update-password');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+
+            try {
+                await updatePassword(auth.currentUser, newPassword);
+                alert("Password updated securely!");
+                document.getElementById('edit-password').value = "";
+                closeModal('settingsModal');
+            } catch(e) {
+                console.error(e);
+                // Graceful error prompt for Firebase re-authentication needs
+                if(e.code === 'auth/requires-recent-login') {
+                    alert("For your security, please sign out and sign back in to change your password.");
+                } else {
+                    alert("Error updating password: " + e.message);
+                }
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-key"></i> Update Password';
             }
         });
 
@@ -1131,6 +1200,10 @@
             const profileNameInput = document.getElementById('new-profile-name');
             const name = profileNameInput.value.trim();
             if(!name) { alert("Please provide a sub-profile identity string."); return; }
+
+            const btn = document.getElementById('btn-add-new-profile');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
 
             const newProfileObj = {
                 id: 'prof_' + Date.now(),
@@ -1144,11 +1217,15 @@
                 userProfiles.push(newProfileObj);
                 if (currentUserDocRef) {
                     await updateDoc(currentUserDocRef, { profiles: userProfiles });
-                    alert("Crown VIP Sub-profile appended seamlessly!");
                     profileNameInput.value = "";
+                    renderProfiles(); // Re-sync UI immediately
+                    alert("Crown VIP Sub-profile appended seamlessly!");
                 }
             } catch(e) {
                 alert("Profile save execution error: " + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Profile';
             }
         });
 
