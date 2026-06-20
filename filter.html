@@ -3,373 +3,520 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filter Dramas - Dramakan</title>
+    <title>Discover Dramas - Dramakan</title>
     
     <meta name="title" content="Dramakan - Watch Korean, Japanese, Chinese Dramas Online">
     <meta name="description" content="Stream the latest Korean, Japanese, Chinese, and Filipino dramas online. Your ultimate destination for Asian entertainment with daily updates.">
-    <meta name="keywords" content="kdrama, cdrama, jdrama, watch dramas online, Asian dramas, Dramakan">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://dramakan.site/">
+    <meta name="theme-color" content="#9D4EDD">
 
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://dramakan.site/">
-    <meta property="og:title" content="Dramakan - Watch Asian Dramas Online">
-    <meta property="og:description" content="Watch high-quality K-Dramas, J-Dramas, and more for free. New episodes added daily!">
-    <meta property="og:image" content="https://dramakan.site/og-image.jpg"> 
-    <meta property="og:site_name" content="Dramakan">
-
-    <link rel="icon" type="image/png" sizes="32x32" href="https://dramakan.site/favicon.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://dramakan.site/favicon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://dramakan.site/apple-touch-icon.png">
-    <link rel="shortcut icon" href="https://dramakan.site/favicon.ico">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="bottom-bar.css"> 
+    
+    <script src="bottom-bar.js" defer></script>
+    <script src="admin_easter_egg.js" defer></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
+        /* =========================================
+           1. PREMIUM VARIABLES & RESET
+        ========================================= */
         :root {
-            /* Brand Colors */
-  --primary-color: #8A2BE2;
-  --primary-glow: rgba(138, 43, 226, 0.4);
-            --accent-color: #8A2BE2;
-            --text-color: #ffffff;
-            --text-muted: #b3b3b3;
+            --primary-color: #9D4EDD;
+            --primary-rich: #7b2cbf;
+            --primary-glow: rgba(157, 78, 221, 0.4);
+            
+            --bg-base: #0a0a0f; 
+            --bg-card: rgba(20, 20, 28, 0.6);
+            --bg-sidebar: rgba(15, 15, 21, 0.85);
+            
+            --text-color: #FFFFFF;
+            --text-muted: #9CA3AF;
+            
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-light: rgba(255, 255, 255, 0.15);
+            --glass-blur: blur(20px);
         }
 
-        body { padding-bottom: 80px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* Filter Layout */
+        body { 
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-base); 
+            color: var(--text-color);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            background-image: radial-gradient(circle at 15% 50%, rgba(157, 78, 221, 0.05), transparent 25%),
+                              radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.05), transparent 25%);
+        }
+
+        a { text-decoration: none; color: inherit; }
+        button { border: none; background: transparent; font-family: inherit; cursor: pointer; outline: none; }
+
+        /* =========================================
+           2. HEADER (Simplified for Filter Page)
+        ========================================= */
+        .main-header {
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 5%; display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+        .logo span { color: var(--primary-color); }
+        .back-home { color: var(--text-muted); font-weight: 500; transition: color 0.3s; display: flex; align-items: center; gap: 8px;}
+        .back-home:hover { color: #fff; }
+
+        /* =========================================
+           3. LAYOUT STRUCTURE
+        ========================================= */
         .filter-page-container {
-            display: flex;
-            padding: 20px 4%;
-            gap: 30px;
-            max-width: 1400px;
-            margin: 0 auto;
-            min-height: calc(100vh - 200px);
+            display: flex; gap: 30px; padding: 40px 5%; max-width: 1600px; margin: 0 auto; min-height: 100vh;
         }
 
-        /* Sidebar Styling */
+        /* =========================================
+           4. SIDEBAR FILTERS (GLASSMORPHISM)
+        ========================================= */
         .filter-sidebar {
-            width: 250px;
-            flex-shrink: 0;
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            padding: 20px;
-            border-radius: 16px;
-            height: fit-content;
-            max-height: calc(100vh - 100px);
-            overflow-y: auto;
-            position: sticky;
-            top: 90px;
+            width: 280px; flex-shrink: 0; background: var(--bg-sidebar); 
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border); border-radius: 20px;
+            padding: 25px; height: fit-content; position: sticky; top: 100px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        
-        .filter-sidebar::-webkit-scrollbar { width: 6px; }
-        .filter-sidebar::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
 
-        .filter-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--glass-border); }
-        .filter-header h2 { font-size: 1.2rem; color: var(--text-color); }
-        .close-filter-btn { display: none; background: none; border: none; color: var(--text-color); font-size: 1.2rem; cursor: pointer; transition: 0.3s; }
-        .close-filter-btn:hover { color: var(--accent-color); transform: rotate(90deg); }
+        .filter-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border); }
+        .filter-header h2 { font-size: 1.2rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .filter-header h2 i { color: var(--primary-color); }
 
         .filter-group { margin-bottom: 25px; }
-        .filter-group h3 { font-size: 1rem; margin-bottom: 15px; color: var(--text-color); font-weight: 600; }
+        .filter-group h3 { font-size: 0.95rem; margin-bottom: 15px; color: #fff; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.9;}
 
-        .checkbox-list { display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 5px; }
-        .checkbox-list::-webkit-scrollbar { width: 5px; }
-        .checkbox-list::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 5px; }
+        /* Custom Checkboxes */
+        .checkbox-list { display: flex; flex-direction: column; gap: 12px; }
+        .checkbox-list label { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; color: var(--text-muted); cursor: pointer; transition: color 0.3s; }
+        .checkbox-list label:hover { color: #fff; }
         
-        .checkbox-list label { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s; }
-        .checkbox-list label:hover { color: var(--text-color); }
-
-        .checkbox-list input[type="checkbox"] {
+        .checkbox-list input[type="checkbox"], .checkbox-list input[type="radio"] {
             appearance: none; -webkit-appearance: none;
-            width: 18px; height: 18px; border: 2px solid var(--glass-border-light);
-            border-radius: 4px; background-color: rgba(0,0,0,0.3);
-            display: inline-flex; justify-content: center; align-items: center; cursor: pointer;
-            transition: 0.2s;
+            width: 20px; height: 20px; border: 2px solid var(--glass-border-light);
+            border-radius: 6px; background: rgba(0,0,0,0.3);
+            display: flex; justify-content: center; align-items: center; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative;
         }
-        .checkbox-list input[type="checkbox"]:checked { background-color: var(--accent-color); border-color: var(--accent-color); }
-        .checkbox-list input[type="checkbox"]:checked::after { content: '\2713'; font-size: 12px; color: white; font-weight: bold; }
-
-        #clear-filters-btn {
-            width: 100%; padding: 12px; background-color: transparent;
-            border: 1px solid var(--accent-color); border-radius: 12px;
-            color: var(--accent-color); cursor: pointer; font-weight: 600; transition: 0.3s; margin-top: 10px;
-        }
-        #clear-filters-btn:hover { background-color: var(--accent-color); color: white; box-shadow: 0 0 15px rgba(138, 43, 226, 0.4); }
-
-        /* Results Grid Styling */
-        .filter-page-container section { flex-grow: 1; }
-        .filter-page-container section h2 { margin-bottom: 20px; font-size: 1.5rem; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-
-        .filter-results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .checkbox-list input[type="radio"] { border-radius: 50%; }
         
-        .no-results { grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted); font-size: 1.1rem; background: var(--glass-bg); border-radius: 16px; border: 1px dashed var(--glass-border); }
-        .rating { color: #FFD700; margin-left: 5px; font-size: 0.85rem; }
+        .checkbox-list input:checked { background: var(--primary-color); border-color: var(--primary-color); box-shadow: 0 0 15px var(--primary-glow); }
+        .checkbox-list input[type="checkbox"]:checked::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 10px; color: white; }
+        .checkbox-list input[type="radio"]:checked::after { content: ''; width: 8px; height: 8px; background: white; border-radius: 50%; }
 
-        /* THE FIX: Mobile Filter Toggle Button */
-        .filter-toggle-btn {
-            display: none; 
-            position: fixed; bottom: 90px; right: 20px; /* Hovers above the bottom nav */
-            z-index: 990; padding: 14px 24px;
-            background-color: var(--accent-color); color: white;
-            border: none; border-radius: 50px; font-size: 1rem; font-weight: 600;
-            cursor: pointer; box-shadow: 0 5px 20px rgba(138, 43, 226, 0.5);
+        /* Custom Select */
+        .custom-select {
+            width: 100%; padding: 12px 15px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border-light);
+            color: #fff; border-radius: 10px; font-family: inherit; font-size: 0.9rem; outline: none; cursor: pointer;
+            transition: border-color 0.3s; appearance: none;
+        }
+        .custom-select:focus { border-color: var(--primary-color); }
+        .select-wrapper { position: relative; }
+        .select-wrapper::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+        .custom-select option { background: var(--bg-sidebar); color: #fff; }
+
+        .btn-clear {
+            width: 100%; padding: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.3s;
+            display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 10px;
+        }
+        .btn-clear:hover { background: #ef4444; color: #fff; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4); transform: translateY(-2px); }
+
+        /* =========================================
+           5. RESULTS GRID & CARDS
+        ========================================= */
+        .results-section { flex: 1; min-width: 0; }
+        .results-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; }
+        .results-title { font-size: 1.8rem; font-weight: 700; line-height: 1; }
+        .results-count { color: var(--text-muted); font-size: 0.9rem; }
+
+        .grid-container {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;
+        }
+
+        /* Premium Card Design */
+        .drama-card {
+            position: relative; border-radius: 16px; overflow: hidden; background: #111;
+            aspect-ratio: 2/3; cursor: pointer; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid transparent; opacity: 0; transform: translateY(30px);
+        }
+        .drama-card.loaded { opacity: 1; transform: translateY(0); }
+        
+        .drama-card:hover { 
+            transform: translateY(-8px); border-color: rgba(157, 78, 221, 0.5); 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6), 0 0 20px rgba(157, 78, 221, 0.2);
+        }
+        
+        .drama-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .drama-card:hover img { transform: scale(1.08); }
+
+        .card-overlay {
+            position: absolute; inset: 0; background: linear-gradient(0deg, rgba(10,10,15,0.95) 0%, rgba(10,10,15,0.4) 50%, transparent 100%);
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 15px;
+            opacity: 1; transition: opacity 0.3s;
+        }
+        
+        .card-meta-top { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: #f1c40f; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,0.1); }
+        
+        .card-title { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-info { font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 10px; align-items: center; }
+        
+        .play-overlay-btn {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
+            width: 50px; height: 50px; background: var(--primary-color); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #fff;
+            opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px var(--primary-glow); z-index: 2;
+        }
+        .drama-card:hover .play-overlay-btn { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+        /* Load More / States */
+        .infinite-spinner { grid-column: 1 / -1; display: flex; justify-content: center; padding: 40px 0; opacity: 0; transition: opacity 0.3s; }
+        .infinite-spinner.active { opacity: 1; }
+        .infinite-spinner i { font-size: 2rem; color: var(--primary-color); animation: spin 1s linear infinite; }
+        
+        .empty-state { grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px dashed var(--glass-border); }
+        .empty-state i { font-size: 3rem; color: var(--text-muted); margin-bottom: 15px; opacity: 0.5; }
+        .empty-state h3 { font-size: 1.2rem; color: #fff; margin-bottom: 5px; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* =========================================
+           6. MOBILE OVERRIDES
+        ========================================= */
+        .mobile-filter-btn {
+            display: none; position: fixed; bottom: 85px; right: 20px; z-index: 990;
+            background: var(--primary-color); color: #fff; padding: 15px 25px; border-radius: 50px;
+            font-size: 1rem; font-weight: 600; box-shadow: 0 10px 30px var(--primary-glow);
             align-items: center; gap: 8px; transition: transform 0.3s;
         }
-        .filter-toggle-btn:hover { transform: scale(1.05); }
+        .close-filter-btn { display: none; background: rgba(255,255,255,0.1); width: 35px; height: 35px; border-radius: 50%; color: #fff; align-items: center; justify-content: center; transition: 0.3s; }
 
-        /* Media Queries for Mobile Responsiveness */
         @media (max-width: 992px) {
-            .filter-page-container { flex-direction: column; padding: 20px 4%; }
-
-            /* Show toggle button on mobile */
-            .filter-toggle-btn { display: flex; }
-
-            /* Off-canvas sidebar style on mobile */
+            .filter-page-container { flex-direction: column; padding: 20px 4%; gap: 20px;}
+            .results-header { flex-direction: column; align-items: flex-start; gap: 5px; }
+            .grid-container { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+            .mobile-filter-btn { display: flex; }
+            
+            /* Sidebar becomes Off-Canvas Menu */
             .filter-sidebar {
-                position: fixed; top: 0; left: -110%; 
-                width: 85%; max-width: 320px; height: 100vh; max-height: 100vh;
-                z-index: 10000; transition: left 0.4s cubic-bezier(0.77, 0, 0.175, 1);
-                border-radius: 0; border: none; border-right: 1px solid var(--glass-border);
-                background: rgba(12, 12, 16, 0.98); padding: 30px 20px;
+                position: fixed; top: 0; left: -110%; width: 85%; max-width: 320px; height: 100vh;
+                z-index: 2000; border-radius: 0; border: none; border-right: 1px solid var(--glass-border);
+                overflow-y: auto; box-shadow: 20px 0 50px rgba(0,0,0,0.8);
             }
-
-            .filter-sidebar.active { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
-            .close-filter-btn { display: block; }
-
-            /* Overlay background */
-            .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 9999; display: none; opacity: 0; transition: opacity 0.3s; }
-            .menu-overlay.active { display: block; opacity: 1; }
-
-            .filter-results-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
+            .filter-sidebar.active { left: 0; }
+            .close-filter-btn { display: flex; }
+            
+            .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1999; opacity: 0; pointer-events: none; transition: 0.3s; }
+            .overlay.active { opacity: 1; pointer-events: auto; }
+            
+            /* Bottom Nav Compensation */
+            body { padding-bottom: 80px; }
+            .bottom-nav {
+                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 15, 20, 0.95);
+                backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); z-index: 1000; padding: 10px 0 20px 0;
+            }
+            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text-muted); transition: 0.3s; font-size: 0.65rem;}
+            .bottom-nav-item i { font-size: 1.2rem; }
+            .bottom-nav-item.active { color: var(--primary-color); }
         }
+        @media (min-width: 993px) { .bottom-nav { display: none; } }
     </style>
-<script src="bottom-bar.js" defer></script><script src="lightmode.js"></script> 
-    
-    
-    <link rel="stylesheet" href="lightmode.css"> 
 </head>
 <body>
-    
+
     <header class="main-header">
-        <div class="container" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0;">
-            <a href="index.html" class="logo">Drama<span>Kan</span></a>
-            <a href="index.html" style="color: var(--text-muted-color); font-weight: 500; transition: 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-muted-color)'"><i class="fas fa-arrow-left"></i> Home</a>
-        </div>
+        <a href="index.html" class="logo">Drama<span>Kan</span></a>
+        <a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Back to Home</a>
     </header>
 
-    <button id="filter-toggle-btn" class="filter-toggle-btn">
-        <i class="fas fa-filter"></i> Filters
-    </button>
-
-    <div id="filter-overlay" class="menu-overlay"></div>
+    <div class="overlay" id="mobile-overlay"></div>
+    <button class="mobile-filter-btn" id="mobile-filter-btn"><i class="fas fa-filter"></i> Filter</button>
 
     <main class="filter-page-container">
         
-        <aside id="filter-sidebar" class="filter-sidebar">
+        <aside class="filter-sidebar" id="sidebar">
             <div class="filter-header">
-                <h2>Filters</h2>
-                <button id="close-filter-btn" class="close-filter-btn"><i class="fa-solid fa-times"></i></button>
+                <h2><i class="fas fa-sliders-h"></i> Filters</h2>
+                <button class="close-filter-btn" id="close-sidebar"><i class="fas fa-times"></i></button>
             </div>
-            <div id="filter-groups"></div>
-            <button id="clear-filters-btn">Clear All Filters</button>
+
+            <div class="filter-group">
+                <h3>Sort By</h3>
+                <div class="select-wrapper">
+                    <select class="custom-select" id="sort-select">
+                        <option value="popularity.desc">Most Popular</option>
+                        <option value="vote_average.desc">Highest Rated</option>
+                        <option value="first_air_date.desc">Newest Releases</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <h3>Region / Language</h3>
+                <div class="checkbox-list">
+                    <label><input type="radio" name="lang" value="ko|zh|ja|th" checked> All Asian</label>
+                    <label><input type="radio" name="lang" value="ko"> Korean (K-Drama)</label>
+                    <label><input type="radio" name="lang" value="zh"> Chinese (C-Drama)</label>
+                    <label><input type="radio" name="lang" value="ja"> Japanese (J-Drama)</label>
+                    <label><input type="radio" name="lang" value="th"> Thai (Thai-Drama)</label>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <h3>Genres</h3>
+                <div class="checkbox-list" id="genre-filters">
+                    <label><input type="checkbox" value="10759"> Action & Adventure</label>
+                    <label><input type="checkbox" value="35"> Comedy</label>
+                    <label><input type="checkbox" value="18"> Drama</label>
+                    <label><input type="checkbox" value="9648"> Mystery</label>
+                    <label><input type="checkbox" value="10765"> Sci-Fi & Fantasy</label>
+                    <label><input type="checkbox" value="10751"> Family</label>
+                    <label><input type="checkbox" value="10766"> Romance (Soap)</label>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <h3>Release Year</h3>
+                <div class="select-wrapper">
+                    <select class="custom-select" id="year-select">
+                        <option value="">Any Year</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020 & Older</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn-clear" id="reset-filters"><i class="fas fa-trash-alt"></i> Reset All</button>
         </aside>
 
-        <section>
-            <h2>All Dramas</h2>
-            <div id="filter-results" class="filter-results-grid"></div>
+        <section class="results-section">
+            <div class="results-header">
+                <h1 class="results-title">Discover Dramas</h1>
+                <span class="results-count" id="results-count">Loading results...</span>
+            </div>
+            
+            <div class="grid-container" id="results-grid">
+                </div>
+            
+            <div class="infinite-spinner" id="loading-spinner">
+                <i class="fas fa-circle-notch"></i>
+            </div>
         </section>
 
     </main>
 
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-content" style="display: flex; justify-content: space-between; flex-wrap: wrap;">
-                <a href="index.html" class="logo">Drama<span>Kan</span></a>
-                <div class="footer-socials">
-                    <a href="contact.html"><i class="fas fa-address-book"></i></a>
-                    <a href="privacy.html"><i class="fas fa-file-alt"></i></a>
-                    <a href="terms.html"><i class="fas fa-file-contract"></i></a>
-                </div>
-            </div>
-            <div class="footer-bottom">&copy; 2026 Dramakan. All rights reserved.</div>
-        </div>
-    </footer>
-
     <nav class="bottom-nav">
-        <a href="index.html" class="bottom-nav-item active">
-            <i class="fa-solid fa-house"></i>
-            <span class="nav-label">Home</span>
-        </a>
-        <a href="Korean.html" class="bottom-nav-item">
-            <i class="fa-solid fa-won-sign"></i>
-            <span class="nav-label">Korean</span>
-        </a>
-        <a href="chinese.html" class="bottom-nav-item">
-            <i class="fa-brands fa-renren"></i>
-            <span class="nav-label">Chinese</span>
-        </a>
-        <a href="japanese.html" class="bottom-nav-item">
-            <i class="fa-solid fa-yen-sign"></i>
-            <span class="nav-label">Japanese</span>
-        </a>
-        <a href="login.html" class="bottom-nav-item" id="bottomAuthBtn">
-            <i class="fas fa-user-circle"></i>
-            <span class="nav-label">Sign In</span>
-        </a>
+        <a href="index.html" class="bottom-nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="community.html" class="bottom-nav-item"><i class="fas fa-bell"></i><span>Updates</span></a>
+        <a href="#" class="bottom-nav-item active"><i class="fas fa-search"></i><span>Discover</span></a>
+        <a href="profile.html" class="bottom-nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
     </nav>
-
-    <script type="module" src="bottom-bar.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            let allDramas = [];
-            const filterGroupsContainer = document.getElementById('filter-groups');
-            const resultsContainer = document.getElementById('filter-results');
+            const tmdbKey = "014fbdbe962cb38379e09e31d0652459";
             
-            // Mobile UI elements
-            const filterToggleBtn = document.getElementById('filter-toggle-btn');
-            const filterSidebar = document.getElementById('filter-sidebar');
-            const closeFilterBtn = document.getElementById('close-filter-btn');
-            const clearFiltersBtn = document.getElementById('clear-filters-btn');
-            const filterOverlay = document.getElementById('filter-overlay');
+            // State
+            let currentPage = 1;
+            let totalPages = 1;
+            let isFetching = false;
+            let currentResults = 0;
 
-            // 1. Fetch data from dramas.json
-            fetch('dramas.json')
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.json();
-                })
-                .then(data => {
-                    allDramas = data;
-                    initializeFilters(allDramas);
-                    renderResults(allDramas);
-                })
-                .catch(error => {
-                    console.error('Error fetching dramas:', error);
-                    resultsContainer.innerHTML = '<p class="no-results">Error loading dramas. Please check your internet connection.</p>';
-                });
+            // DOM Elements
+            const grid = document.getElementById('results-grid');
+            const spinner = document.getElementById('loading-spinner');
+            const countLabel = document.getElementById('results-count');
+            
+            // Filter Elements
+            const sortSelect = document.getElementById('sort-select');
+            const langRadios = document.querySelectorAll('input[name="lang"]');
+            const genreCheckboxes = document.querySelectorAll('#genre-filters input[type="checkbox"]');
+            const yearSelect = document.getElementById('year-select');
+            const resetBtn = document.getElementById('reset-filters');
 
-            // 2. Initialize filters
-            function initializeFilters(dramas) {
-                const genres = new Set();
-                const types = new Set();
-                const years = new Set();
-                const platforms = new Set();
+            // Mobile Elements
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            const mobileBtn = document.getElementById('mobile-filter-btn');
+            const closeBtn = document.getElementById('close-sidebar');
 
-                dramas.forEach(drama => {
-                    if (drama.genre) drama.genre.split(',').forEach(g => genres.add(g.trim()));
-                    if (drama.type) types.add(drama.type);
-                    if (drama.year) years.add(drama.year);
-                    if (drama.platform) platforms.add(drama.platform);
-                });
-
-                createFilterGroup('Genre', Array.from(genres).sort());
-                createFilterGroup('Type', Array.from(types).sort());
-                createFilterGroup('Year', Array.from(years).sort((a, b) => b - a)); 
-                createFilterGroup('Platform', Array.from(platforms).sort());
-            }
-
-            function createFilterGroup(name, options) {
-                if (options.length === 0) return;
-                const groupDiv = document.createElement('div');
-                groupDiv.className = 'filter-group';
-                groupDiv.innerHTML = `<h3>${name}</h3>`;
-                const listDiv = document.createElement('div');
-                listDiv.className = 'checkbox-list';
-
-                options.forEach(option => {
-                    const label = document.createElement('label');
-                    const safeOption = option.toString().replace(/\s+/g, '-').toLowerCase();
-                    label.innerHTML = `
-                        <input type="checkbox" id="${name.toLowerCase()}-${safeOption}" name="${name.toLowerCase()}" value="${option}">
-                        <span>${option}</span>
-                    `;
-                    label.querySelector('input').addEventListener('change', applyFilters);
-                    listDiv.appendChild(label);
-                });
-                groupDiv.appendChild(listDiv);
-                filterGroupsContainer.appendChild(groupDiv);
-            }
-
-            // 3. Apply Filters
-            function applyFilters() {
-                const selectedGenres = getSelectedValues('genre');
-                const selectedTypes = getSelectedValues('type');
-                const selectedYears = getSelectedValues('year').map(Number);
-                const selectedPlatforms = getSelectedValues('platform');
-
-                const filteredDramas = allDramas.filter(drama => {
-                    const genreMatch = selectedGenres.length === 0 || (drama.genre && selectedGenres.some(g => drama.genre.includes(g)));
-                    const typeMatch = selectedTypes.length === 0 || selectedTypes.includes(drama.type);
-                    const yearMatch = selectedYears.length === 0 || selectedYears.includes(drama.year);
-                    const platformMatch = selectedPlatforms.length === 0 || selectedPlatforms.includes(drama.platform);
-
-                    return genreMatch && typeMatch && yearMatch && platformMatch;
-                });
-
-                renderResults(filteredDramas);
-            }
-
-            function getSelectedValues(name) {
-                return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
-            }
-
-            // 4. Render Results (Matches your new premium card CSS)
-            function renderResults(dramas) {
-                resultsContainer.innerHTML = '';
-                if (dramas.length === 0) {
-                    resultsContainer.innerHTML = '<p class="no-results"><i class="fas fa-ghost" style="font-size:3rem; margin-bottom:15px; display:block; opacity:0.5;"></i>No dramas found matching your criteria.</p>';
-                    return;
+            // --- 1. TMDB Fetch Engine ---
+            async function fetchDramas(isLoadMore = false) {
+                if (isFetching) return;
+                if (!isLoadMore) {
+                    currentPage = 1;
+                    grid.innerHTML = '';
+                    currentResults = 0;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
-                dramas.forEach(drama => {
-                    const card = document.createElement('a');
-                    card.href = drama.link;
-                    card.className = 'drama-card';
-                    card.style = "min-width: 100%;";
+
+                isFetching = true;
+                spinner.classList.add('active');
+
+                // Build Query Parameters
+                const sortBy = sortSelect.value;
+                const lang = document.querySelector('input[name="lang"]:checked').value;
+                const year = yearSelect.value;
+                
+                // Get checked genres (join with | for OR, or , for AND. We use | for broader results)
+                const genres = Array.from(genreCheckboxes)
+                                    .filter(cb => cb.checked)
+                                    .map(cb => cb.value)
+                                    .join('|');
+
+                // Base URL for TV Discover
+                let url = `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&page=${currentPage}&sort_by=${sortBy}&without_genres=16`;
+                
+                // Add conditional filters
+                if (lang) url += `&with_original_language=${lang}`;
+                if (genres) url += `&with_genres=${genres}`;
+                
+                // Handle year logic (if 2020 & older is selected)
+                if (year) {
+                    if (year === '2020') {
+                        url += `&first_air_date.lte=2020-12-31`;
+                    } else {
+                        url += `&first_air_date_year=${year}`;
+                    }
+                }
+
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error("API Error");
+                    const data = await response.json();
                     
-                    card.innerHTML = `
-                        <div class="drama-card-img">
-                            <img src="${drama.img}" alt="${drama.title}" loading="lazy">
-                        </div>
-                        <div class="drama-card-info">
-                            <h3 class="drama-card-title">${drama.title}</h3>
-                            <p class="drama-card-meta">${drama.type} • ${drama.year} <span class="rating"><i class="fa-solid fa-star"></i> ${drama.imdb || 'N/A'}</span></p>
-                        </div>
+                    totalPages = data.total_pages;
+                    currentResults += data.results.length;
+                    
+                    renderCards(data.results, isLoadMore);
+                    
+                    countLabel.innerHTML = `Showing <strong style="color:#fff">${currentResults}</strong> of ${data.total_results.toLocaleString()} titles`;
+                    
+                    if (data.results.length === 0 && !isLoadMore) {
+                        grid.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-ghost"></i>
+                                <h3>No Dramas Found</h3>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Try adjusting your filters or clearing them entirely.</p>
+                            </div>
+                        `;
+                    }
+
+                } catch (error) {
+                    console.error("Fetch failed:", error);
+                    if (!isLoadMore) {
+                        grid.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#ef4444"></i><h3>Failed to load</h3><p>Please check your connection and try again.</p></div>`;
+                    }
+                } finally {
+                    isFetching = false;
+                    spinner.classList.remove('active');
+                }
+            }
+
+            // --- 2. Render Cards ---
+            function renderCards(items, isAppend) {
+                let html = '';
+                items.forEach((item, index) => {
+                    // Filter out non-asian if the API returned garbage
+                    if(item.genre_ids && item.genre_ids.includes(16)) return;
+
+                    const poster = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://via.placeholder.com/500x750/111/444?text=No+Poster';
+                    const title = item.name || item.original_name;
+                    const rating = item.vote_average ? item.vote_average.toFixed(1) : 'NR';
+                    const year = (item.first_air_date || "").substring(0, 4) || "N/A";
+                    const delay = isAppend ? (index * 0.05) : (index * 0.05); // Staggered animation delay
+
+                    html += `
+                        <a href="watch.html?id=${item.id}" class="drama-card" style="transition-delay: ${delay}s">
+                            <img src="${poster}" alt="${title}" loading="lazy">
+                            <div class="card-meta-top"><i class="fas fa-star"></i> ${rating}</div>
+                            <div class="card-overlay">
+                                <h3 class="card-title">${title}</h3>
+                                <div class="card-info">
+                                    <span>${year}</span>
+                                    <span style="color:var(--primary-color); font-weight:600; text-transform:uppercase;">${item.original_language}</span>
+                                </div>
+                            </div>
+                            <div class="play-overlay-btn"><i class="fas fa-play"></i></div>
+                        </a>
                     `;
-                    resultsContainer.appendChild(card);
                 });
+
+                if (isAppend) {
+                    grid.insertAdjacentHTML('beforeend', html);
+                } else {
+                    grid.innerHTML = html;
+                }
+
+                // Trigger animation after DOM insertion
+                setTimeout(() => {
+                    const cards = grid.querySelectorAll('.drama-card:not(.loaded)');
+                    cards.forEach(card => card.classList.add('loaded'));
+                }, 50);
             }
 
-            // 5. Mobile Toggle Logic
-            if (filterToggleBtn) {
-                filterToggleBtn.addEventListener('click', () => {
-                    filterSidebar.classList.add('active');
-                    filterOverlay.classList.add('active');
-                    document.body.style.overflow = 'hidden'; 
+            // --- 3. Event Listeners for Filters ---
+            const inputs = [sortSelect, yearSelect, ...langRadios, ...genreCheckboxes];
+            inputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    fetchDramas(false);
+                    if(window.innerWidth <= 992 && input.type !== 'checkbox') {
+                        // Optional: auto-close sidebar on mobile for dropdown/radio changes
+                        // toggleMobileSidebar(false); 
+                    }
                 });
-            }
-
-            function closeMobileFilter() {
-                filterSidebar.classList.remove('active');
-                filterOverlay.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-
-            if (closeFilterBtn) closeFilterBtn.addEventListener('click', closeMobileFilter);
-            if (filterOverlay) filterOverlay.addEventListener('click', closeMobileFilter);
-
-            clearFiltersBtn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-group input[type="checkbox"]').forEach(cb => cb.checked = false);
-                applyFilters();
-                if (window.innerWidth <= 992) closeMobileFilter();
             });
+
+            resetBtn.addEventListener('click', () => {
+                sortSelect.value = 'popularity.desc';
+                yearSelect.value = '';
+                langRadios[0].checked = true; // Set to All
+                genreCheckboxes.forEach(cb => cb.checked = false);
+                fetchDramas(false);
+                if(window.innerWidth <= 992) toggleMobileSidebar(false);
+            });
+
+            // --- 4. Infinite Scroll (Intersection Observer) ---
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && !isFetching && currentPage < totalPages) {
+                    currentPage++;
+                    fetchDramas(true);
+                }
+            }, { rootMargin: "400px" });
+            
+            observer.observe(spinner);
+
+            // --- 5. Mobile Sidebar Logic ---
+            function toggleMobileSidebar(show) {
+                if (show) {
+                    sidebar.classList.add('active');
+                    overlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+
+            mobileBtn.addEventListener('click', () => toggleMobileSidebar(true));
+            closeBtn.addEventListener('click', () => toggleMobileSidebar(false));
+            overlay.addEventListener('click', () => toggleMobileSidebar(false));
+
+            // Initial Fetch
+            fetchDramas(false);
         });
     </script>
 </body>
