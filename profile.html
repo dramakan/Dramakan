@@ -300,6 +300,29 @@
         .selectable-avatar-option:hover { transform: scale(1.05); }
         .selectable-avatar-option.selected-choice { border-color: var(--primary-color); transform: scale(1.1); box-shadow: 0 4px 15px var(--primary-glow);}
 
+        /* File Upload Inputs */
+        input[type="file"].form-input {
+            padding: 10px 14px;
+            cursor: pointer;
+            color: #9CA3AF;
+            background: rgba(0,0,0,0.3);
+        }
+        input[type="file"].form-input::-webkit-file-upload-button {
+            visibility: hidden;
+            display: none;
+        }
+        input[type="file"].form-input::before {
+            content: 'Browse Files';
+            display: inline-block;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
         /* =========================================
            8. RESPONSIVE DESIGN (MOBILE OVERRIDES)
         ========================================= */
@@ -562,10 +585,10 @@
                         </div>
                     </div>
 
-                    <!-- Custom Custom Image Feature -->
+                    <!-- Direct Image File Upload Feature -->
                     <div class="form-group" style="margin-bottom: 15px;">
-                        <label style="text-align: center;">Or Paste Custom Image URL</label>
-                        <input type="text" id="create-custom-avatar" class="form-input" placeholder="https://..." oninput="window.updateCreationCustomAvatarPreview(this.value)">
+                        <label style="text-align: center;">Or Upload Custom Image</label>
+                        <input type="file" id="create-custom-avatar-file" class="form-input" accept="image/*">
                     </div>
 
                     <button class="btn-primary" id="btn-add-new-profile" style="margin-top: 5px; font-size: 0.85rem; padding: 12px;"><i class="fas fa-user-plus"></i> Create Profile</button>
@@ -605,10 +628,10 @@
                         </div>
                     </div>
 
-                    <!-- Custom Feature -->
+                    <!-- Direct Image File Upload Feature -->
                     <div class="form-group" style="margin-top: 15px;">
-                        <label style="text-align: center;">Or Paste Custom Image URL</label>
-                        <input type="text" id="edit-custom-avatar" class="form-input" placeholder="https://..." oninput="window.updateCustomAvatarPreview(this.value)">
+                        <label style="text-align: center;">Or Upload Custom Image</label>
+                        <input type="file" id="edit-custom-avatar-file" class="form-input" accept="image/*">
                     </div>
 
                     <div class="form-group">
@@ -703,31 +726,75 @@
             imgElement.classList.add('selected-choice');
             temporarySelectedEditAvatar = imgElement.src;
             document.getElementById('edit-avatar-preview').src = imgElement.src;
-            document.getElementById('edit-custom-avatar').value = ""; // Clear text if preset chosen
+            document.getElementById('edit-custom-avatar-file').value = ""; // Clear file input if preset chosen
         };
 
         window.selectCreationAvatar = (imgElement) => {
             document.querySelectorAll('#new-profile-avatar-row .selectable-avatar-option').forEach(el => el.classList.remove('selected-choice'));
             imgElement.classList.add('selected-choice');
             temporarySelectedCreationAvatar = imgElement.src;
-            document.getElementById('create-custom-avatar').value = ""; // Clear text if preset chosen
+            document.getElementById('create-custom-avatar-file').value = ""; // Clear file input if preset chosen
         };
 
-        // Custom Image URL Handlers
-        window.updateCustomAvatarPreview = (url) => {
-            if(url.trim() !== '') {
-                document.getElementById('edit-avatar-preview').src = url;
-                temporarySelectedEditAvatar = url;
-                document.querySelectorAll('#edit-profile-avatar-row .selectable-avatar-option').forEach(el => el.classList.remove('selected-choice'));
-            }
-        };
+        // File Upload Processing (Compress to Base64 to bypass Firestore 1MB limits safely)
+        function processImageUpload(file, previewImgElementId, isEdit) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 250;
+                    const MAX_HEIGHT = 250;
+                    let width = img.width;
+                    let height = img.height;
 
-        window.updateCreationCustomAvatarPreview = (url) => {
-            if(url.trim() !== '') {
-                temporarySelectedCreationAvatar = url;
-                document.querySelectorAll('#new-profile-avatar-row .selectable-avatar-option').forEach(el => el.classList.remove('selected-choice'));
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Compress to JPEG Base64
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+                    if (isEdit) {
+                        document.getElementById(previewImgElementId).src = dataUrl;
+                        temporarySelectedEditAvatar = dataUrl;
+                        document.querySelectorAll('#edit-profile-avatar-row .selectable-avatar-option').forEach(el => el.classList.remove('selected-choice'));
+                    } else {
+                        temporarySelectedCreationAvatar = dataUrl;
+                        document.querySelectorAll('#new-profile-avatar-row .selectable-avatar-option').forEach(el => el.classList.remove('selected-choice'));
+                    }
+                }
+                img.src = event.target.result;
             }
-        };
+            reader.readAsDataURL(file);
+        }
+
+        // Attach File Input Listeners
+        document.getElementById('edit-custom-avatar-file').addEventListener('change', function(e) {
+            if(e.target.files && e.target.files[0]) {
+                processImageUpload(e.target.files[0], 'edit-avatar-preview', true);
+            }
+        });
+
+        document.getElementById('create-custom-avatar-file').addEventListener('change', function(e) {
+            if(e.target.files && e.target.files[0]) {
+                processImageUpload(e.target.files[0], null, false);
+            }
+        });
 
         // --- POPUP LOGIC (Strictly Local Storage Powered) ---
         window.openHistoryModal = () => {
@@ -791,13 +858,8 @@
                     el.classList.remove('selected-choice');
                 }
             });
-
-            // Set custom URL input if the avatar wasn't a preset
-            if (!presetFound && activeProf.avatar) {
-                document.getElementById('edit-custom-avatar').value = activeProf.avatar;
-            } else {
-                document.getElementById('edit-custom-avatar').value = "";
-            }
+            
+            document.getElementById('edit-custom-avatar-file').value = ""; // Always reset the file input visually
         }
 
         window.switchProfile = (idx) => {
@@ -1280,7 +1342,7 @@
                 if (currentUserDocRef) {
                     await updateDoc(currentUserDocRef, { profiles: userProfiles });
                     profileNameInput.value = "";
-                    document.getElementById('create-custom-avatar').value = "";
+                    document.getElementById('create-custom-avatar-file').value = "";
                     renderProfiles(); // Re-sync UI immediately
                     alert("Crown VIP Sub-profile appended seamlessly!");
                 }
