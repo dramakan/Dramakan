@@ -46,60 +46,40 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        a { text-decoration: none; color: inherit; }
+        a { text-decoration: none; color: inherit; outline: none; }
         button { border: none; background: transparent; font-family: inherit; cursor: pointer; outline: none; }
 
         /* =========================================
            2. LAYOUT STRUCTURE (SIDEBAR + MAIN)
         ========================================= */
-        .app-layout {
-            display: flex;
-            min-height: 100vh;
-        }
+        .app-layout { display: flex; min-height: 100vh; }
 
         .sidebar {
-            width: 260px;
-            background-color: var(--bg-sidebar);
-            border-right: 1px solid var(--glass-border);
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            left: 0;
-            top: 0;
-            z-index: 100;
+            width: 260px; background-color: var(--bg-sidebar); border-right: 1px solid var(--glass-border);
+            padding: 30px 20px; display: flex; flex-direction: column; position: fixed; height: 100vh; left: 0; top: 0; z-index: 100;
         }
 
         .main-content {
-            flex: 1;
-            margin-left: 260px;
-            padding: 30px 5%;
-            padding-bottom: 120px; /* Space for mobile nav if it shows */
-            min-height: 100vh;
+            flex: 1; margin-left: 260px; padding: 30px 5% 120px 5%; min-height: 100vh;
+            display: flex; flex-direction: column; overflow-x: hidden;
         }
 
-        /* Sidebar Logo */
+        /* Sidebar Elements */
         .sidebar-logo { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 40px; padding-left: 10px;}
         .sidebar-logo span { color: var(--primary-color); }
 
-        /* Sidebar Navigation */
         .side-nav { display: flex; flex-direction: column; gap: 10px; flex: 1;}
         .side-nav-item {
             display: flex; align-items: center; gap: 15px; padding: 14px 20px;
-            border-radius: 12px; color: var(--text-muted); font-weight: 500; font-size: 0.95rem;
-            transition: all 0.3s ease;
+            border-radius: 12px; color: var(--text-muted); font-weight: 500; font-size: 0.95rem; transition: all 0.3s ease;
         }
         .side-nav-item i { font-size: 1.1rem; width: 20px; text-align: center; }
         .side-nav-item:hover { color: #fff; background: rgba(255,255,255,0.03); }
         .side-nav-item.active { background: rgba(157, 78, 221, 0.1); color: #fff; border-left: 3px solid var(--primary-color); }
 
-        /* Sidebar Premium Banner */
         .premium-banner {
-            background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.9));
-            border: 1px solid rgba(241, 196, 15, 0.2);
-            border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 20px;
-            position: relative; overflow: hidden;
+            background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.9)); border: 1px solid rgba(241, 196, 15, 0.2);
+            border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 20px; position: relative; overflow: hidden;
         }
         .premium-banner i.fa-crown { color: var(--vip-gold); font-size: 1.8rem; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(241,196,15,0.4));}
         .premium-banner h4 { font-size: 0.9rem; font-weight: 500; color: var(--text-muted); margin-bottom: 5px; }
@@ -118,24 +98,18 @@
         /* =========================================
            3. TOP HEADER (IN MAIN CONTENT)
         ========================================= */
-        .top-header {
-            display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 30px;
-        }
-        /* Mobile Logo (Hidden on PC) */
+        .top-header { display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 30px; width: 100%; }
         .mobile-logo { display: none; font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; }
         .mobile-logo span { color: var(--primary-color); }
 
         .header-icon-btn {
-            width: 40px; height: 40px; border-radius: 50%; background: var(--bg-card);
-            border: 1px solid var(--glass-border); color: var(--text-color);
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            transition: all 0.3s; position: relative;
+            width: 40px; height: 40px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--glass-border); color: var(--text-color);
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; position: relative;
         }
         .header-icon-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--glass-border-light); transform: translateY(-2px);}
         .notif-badge-dot {
-            position: absolute; top: 0; right: 0; width: 14px; height: 14px; background: #e50914;
-            border-radius: 50%; border: 2px solid var(--bg-base); color: #fff; font-size: 0.5rem;
-            display: flex; align-items: center; justify-content: center; font-weight: bold;
+            position: absolute; top: 0; right: 0; width: 14px; height: 14px; background: #e50914; border-radius: 50%; border: 2px solid var(--bg-base);
+            color: #fff; font-size: 0.5rem; display: flex; align-items: center; justify-content: center; font-weight: bold;
         }
 
         /* =========================================
@@ -143,37 +117,33 @@
         ========================================= */
         .hero-card {
             background: var(--bg-card); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border); border-radius: 24px;
-            padding: 30px 40px; display: flex; align-items: center; justify-content: space-between; gap: 30px;
-            position: relative; overflow: hidden; margin-bottom: 40px;
+            border: 1px solid var(--glass-border); border-radius: 24px; padding: 30px 40px; 
+            display: flex; align-items: center; justify-content: space-between; gap: 30px;
+            position: relative; overflow: hidden; margin-bottom: 40px; flex-wrap: wrap; width: 100%;
         }
 
-        .hero-bg-crown {
-            position: absolute; right: 5%; top: -20%; font-size: 15rem; color: rgba(255,255,255,0.02);
-            pointer-events: none; transform: rotate(15deg); z-index: 0;
-        }
+        .hero-bg-crown { position: absolute; right: 5%; top: -20%; font-size: 15rem; color: rgba(255,255,255,0.02); pointer-events: none; transform: rotate(15deg); z-index: 0; }
 
-        .hero-profile-wrap { display: flex; align-items: center; gap: 25px; z-index: 1; flex: 1; }
-        
-        .hero-avatar-container { position: relative; }
+        .hero-profile-wrap { display: flex; align-items: center; gap: 25px; z-index: 1; flex: 1; min-width: 300px;}
+        .hero-avatar-container { position: relative; flex-shrink: 0;}
         .hero-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); background: #121216; }
         .hero-edit-btn {
-            position: absolute; bottom: 0; right: 0; width: 32px; height: 32px; background: var(--primary-color);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
-            border: 2px solid var(--bg-base); font-size: 0.8rem; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: transform 0.3s;
+            position: absolute; bottom: 0; right: 0; width: 32px; height: 32px; background: var(--primary-color); border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid var(--bg-base); font-size: 0.8rem; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: transform 0.3s;
         }
         .hero-edit-btn:hover { transform: scale(1.1); }
 
         .hero-user-info { display: flex; flex-direction: column; }
         .hero-greeting { font-size: 1rem; color: var(--text-muted); font-weight: 500; margin-bottom: 2px; }
         .hero-name { font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1.1; margin-bottom: 12px; letter-spacing: -0.5px;}
-        .hero-actions { display: flex; gap: 10px; }
+        .hero-actions { display: flex; gap: 10px; flex-wrap: wrap;}
         
         .btn-vip { background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.3); color: var(--vip-gold); padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
         .btn-switch { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 500; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; transition: background 0.3s; }
         .btn-switch:hover { background: rgba(255,255,255,0.1); }
 
-        .hero-stats-wrap { display: flex; gap: 40px; z-index: 1; padding-left: 30px; border-left: 1px solid var(--glass-border); }
+        .hero-stats-wrap { display: flex; gap: 40px; z-index: 1; padding-left: 30px; border-left: 1px solid var(--glass-border); align-items: center; flex-shrink: 0;}
         .stat-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .stat-value { display: flex; align-items: center; gap: 8px; font-size: 1.5rem; font-weight: 700; color: #fff; }
         .stat-value i { font-size: 1.1rem; }
@@ -185,13 +155,13 @@
         /* =========================================
            5. SECTION TITLES & SCROLLERS
         ========================================= */
-        .section { margin-bottom: 40px; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .section { margin-bottom: 40px; width: 100%;}
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%;}
         .section-title { font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 10px; border-left: 3px solid var(--primary-color); padding-left: 12px; line-height: 1;}
-        .see-all { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; transition: color 0.3s; display: flex; align-items: center; gap: 4px; }
+        .see-all { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; transition: color 0.3s; display: flex; align-items: center; gap: 4px; white-space: nowrap;}
         .see-all:hover { color: var(--primary-color); }
 
-        .h-scroll { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
+        .h-scroll { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; width: 100%;}
         .h-scroll::-webkit-scrollbar { display: none; }
 
         /* =========================================
@@ -200,9 +170,8 @@
         
         /* Continue Watching (Horizontal Card) */
         .cw-card {
-            min-width: 340px; max-width: 340px; background: var(--bg-card); border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 12px; display: flex; gap: 15px; align-items: center;
-            transition: transform 0.3s, border-color 0.3s; position: relative; flex-shrink: 0;
+            min-width: 340px; max-width: 340px; background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 16px; padding: 12px; 
+            display: flex; gap: 15px; align-items: center; transition: transform 0.3s, border-color 0.3s; position: relative; flex-shrink: 0; box-sizing: border-box;
         }
         .cw-card:hover { transform: translateY(-5px); border-color: rgba(157, 78, 221, 0.4); }
         .cw-img-wrap { width: 120px; height: 80px; border-radius: 10px; overflow: hidden; flex-shrink: 0; position: relative;}
@@ -214,25 +183,25 @@
         .cw-progress-fill { height: 100%; background: var(--primary-color); border-radius: 2px; box-shadow: 0 0 8px var(--primary-glow); }
         .cw-time { font-size: 0.7rem; color: var(--text-muted); }
         .cw-actions { display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100%; padding-left: 10px; border-left: 1px solid rgba(255,255,255,0.05); }
-        .cw-menu-btn { color: var(--text-muted); font-size: 1rem; cursor: pointer; }
+        .cw-menu-btn { color: var(--text-muted); font-size: 1.1rem; cursor: pointer; transition: 0.2s;}
+        .cw-menu-btn:hover { color: #ef4444; }
         .cw-play-btn { width: 36px; height: 36px; background: var(--primary-color); border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; box-shadow: 0 4px 10px var(--primary-glow); transition: transform 0.2s;}
         .cw-play-btn:hover { transform: scale(1.1); }
 
-        /* My List (Vertical Poster + Text Below) */
-        .list-card {
-            min-width: 160px; max-width: 160px; flex-shrink: 0; display: flex; flex-direction: column; gap: 10px;
-        }
-        .list-poster-wrap {
-            width: 100%; aspect-ratio: 2/3; border-radius: 12px; overflow: hidden; position: relative;
-            border: 1px solid transparent; transition: border-color 0.3s, transform 0.3s;
-        }
+        /* My List & Favorites (Vertical Poster) */
+        .list-card { min-width: 160px; max-width: 160px; flex-shrink: 0; display: flex; flex-direction: column; gap: 10px; position: relative;}
+        .list-poster-wrap { width: 100%; aspect-ratio: 2/3; border-radius: 12px; overflow: hidden; position: relative; border: 1px solid transparent; transition: border-color 0.3s, transform 0.3s;}
         .list-card:hover .list-poster-wrap { border-color: var(--primary-color); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5);}
         .list-poster-wrap img { width: 100%; height: 100%; object-fit: cover; }
-        .bookmark-ribbon {
-            position: absolute; top: -5px; right: 10px; width: 24px; height: 35px; background: var(--primary-color);
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
-            display: flex; justify-content: center; padding-top: 5px; color: #fff; font-size: 0.7rem; box-shadow: -2px 2px 10px rgba(0,0,0,0.5);
+        
+        /* New Trash Button for Lists */
+        .remove-list-btn {
+            position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: 0.3s; z-index: 10;
         }
+        .list-card:hover .remove-list-btn { opacity: 1; }
+        .remove-list-btn:hover { background: #ef4444; border-color: #ef4444; }
+
         .list-info { display: flex; flex-direction: column; padding: 0 5px; }
         .list-title { font-size: 0.9rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px;}
         .list-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; }
@@ -240,15 +209,11 @@
 
         /* Requested Content (Cloud Cards) */
         .req-card {
-            min-width: 280px; max-width: 280px; background: var(--bg-card); border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 15px; display: flex; gap: 15px; align-items: center; flex-shrink: 0;
-            transition: transform 0.3s;
+            min-width: 280px; max-width: 280px; background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px; 
+            display: flex; gap: 15px; align-items: center; flex-shrink: 0; transition: transform 0.3s;
         }
         .req-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.15); }
-        .req-icon {
-            width: 45px; height: 45px; border-radius: 50%; background: rgba(157, 78, 221, 0.1); border: 1px solid rgba(157, 78, 221, 0.3);
-            color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;
-        }
+        .req-icon { width: 45px; height: 45px; border-radius: 50%; background: rgba(157, 78, 221, 0.1); border: 1px solid rgba(157, 78, 221, 0.3); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
         .req-info { display: flex; flex-direction: column; flex: 1; min-width: 0;}
         .req-header-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
         .req-title { font-size: 0.95rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -261,11 +226,9 @@
         /* =========================================
            7. MODALS
         ========================================= */
-        /* Reusing exact logic and IDs for modals but updating aesthetic */
         .full-modal {
             position: fixed; inset: 0; background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            z-index: 2000; display: flex; flex-direction: column; align-items: center; padding: 60px 20px;
-            opacity: 0; pointer-events: none; transition: all 0.4s ease; overflow-y: auto;
+            z-index: 2000; display: flex; flex-direction: column; align-items: center; padding: 60px 20px; opacity: 0; pointer-events: none; transition: all 0.4s ease; overflow-y: auto;
         }
         .full-modal.active { opacity: 1; pointer-events: auto; }
         .modal-content-wrap { transform: translateY(30px) scale(0.95); transition: all 0.4s ease; width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; }
@@ -275,7 +238,6 @@
         .modal-title { font-size: 2rem; font-weight: 700; margin-bottom: 30px; text-align: center; }
         .settings-card { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 20px; width: 100%; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
         
-        /* Modal - Continue Watching Item */
         .history-list-item { display: flex; gap: 15px; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; transition: 0.3s; margin-bottom: 10px;}
         .history-list-item:hover { background: rgba(157, 78, 221, 0.1); border-color: rgba(157, 78, 221, 0.3); }
         .history-list-img { width: 50px; height: 75px; border-radius: 8px; object-fit: cover; }
@@ -286,7 +248,6 @@
         .btn-play-history { background: var(--primary-color); }
         .btn-del-history { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
         
-        /* Settings Forms reusing previous structure */
         .form-group { width: 100%; margin-bottom: 20px; }
         .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
         .form-input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-family: inherit; font-size: 0.95rem; }
@@ -302,15 +263,13 @@
         .profile-item.active img { border-color: var(--primary-color); }
         .profile-item span { font-size: 0.9rem; color: var(--text-muted); }
         .profile-item.active span { color: #fff; font-weight: 600; }
-        .add-profile-btn { width: 80px; height: 80px; border-radius: 50%; border: 2px dashed rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: rgba(255,255,255,0.4); }
-
 
         /* =========================================
            8. RESPONSIVE DESIGN (MOBILE OVERRIDES)
         ========================================= */
         @media (max-width: 992px) {
             .sidebar { display: none; }
-            .main-content { margin-left: 0; padding: 20px 5% 100px 5%; }
+            .main-content { margin-left: 0; padding: 20px 5% 100px 5%; width: 100%;}
             
             .top-header { justify-content: space-between; }
             .mobile-logo { display: block; }
@@ -325,19 +284,25 @@
             .bottom-nav-item span { font-size: 0.65rem; font-weight: 500; }
             .bottom-nav-item.active { color: var(--primary-color); }
 
-            /* Mobile Hero Stacking */
+            /* Mobile Hero Layout Fixes */
             .hero-card { flex-direction: column; align-items: flex-start; gap: 20px; padding: 25px 20px; }
-            .hero-stats-wrap { border-left: none; padding-left: 0; border-top: 1px solid var(--glass-border); padding-top: 20px; width: 100%; justify-content: space-between; gap: 0;}
+            .hero-stats-wrap { 
+                border-left: none; padding-left: 0; border-top: 1px solid var(--glass-border); 
+                padding-top: 20px; width: 100%; justify-content: space-around; gap: 10px; flex-direction: row; margin-top: 5px;
+            }
             .hero-actions { width: 100%; }
             .hero-actions button { flex: 1; justify-content: center; }
             
-            /* Continue Watching Mobile (Vertical Stack) */
-            #history-container { flex-direction: column; overflow-x: visible; gap: 12px; }
-            .cw-card { min-width: 100%; max-width: 100%; padding: 10px; }
+            /* Continue Watching Mobile Fixes (Prevent Overflow & Stack) */
+            #history-container { flex-direction: column; overflow-x: hidden; gap: 12px; width: 100%; }
+            .cw-card { width: 100%; min-width: 0; max-width: none; padding: 10px; margin: 0; }
             .cw-img-wrap { width: 100px; height: 65px; }
-
-            /* My List & Requests Mobile (Tight Grid or Scroll) */
+            
+            /* List Card Layout */
             .list-card { min-width: 140px; max-width: 140px; }
+            
+            /* Ensure Remove Buttons are visible on touch devices */
+            .remove-list-btn { opacity: 1; background: rgba(239, 68, 68, 0.8); border-color: rgba(239, 68, 68, 1); }
         }
         
         @media (min-width: 993px) { .bottom-nav { display: none; } }
@@ -452,6 +417,16 @@
             
             <div class="section">
                 <div class="section-header">
+                    <h2 class="section-title" style="border-color: #ec4899;">Favorites</h2>
+                    <a href="mylist.html" class="see-all">See All <i class="fas fa-chevron-right"></i></a>
+                </div>
+                <div class="h-scroll" id="favorites-container">
+                    <div class="empty-state">Your favorites list is empty.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
                     <h2 class="section-title" style="border-color: #d8b4fe;">Requested Content</h2>
                     <a href="mylist.html" class="see-all">See All <i class="fas fa-chevron-right"></i></a>
                 </div>
@@ -513,7 +488,6 @@
         </div>
     </div>
 
-
     <script type="module" src="anykan-notifier.js"></script>
 
     <script type="module">
@@ -542,7 +516,7 @@
         window.openModal = (id) => document.getElementById(id).classList.add('active');
         window.closeModal = (id) => document.getElementById(id).classList.remove('active');
         
-        // History Modal (Utilizes local storage strictly for instant popup load)
+        // History Modal (Local storage only for popup)
         window.openHistoryModal = () => {
             openModal('historyModal');
             let dataToRender = window.cachedHistoryArr;
@@ -573,7 +547,6 @@
             });
             grid.innerHTML = html;
 
-            // Sync Main Hero
             const activeProf = userProfiles[activeProfileIndex];
             document.getElementById('headerAvatar').src = activeProf.avatar;
             document.getElementById('headerName').textContent = activeProf.name || 'User';
@@ -586,11 +559,11 @@
             localStorage.setItem('dramakan_active_profile_id', userProfiles[idx].id);
             renderProfiles();
             
-            // Re-render purely from active profile cloud data array
             const currentList = userProfiles[idx].myList || [];
-            renderMyList(currentList);
+            const currentFavs = userProfiles[idx].favorites || [];
+            renderPosterList(currentList, 'mylist-container', 'mylist');
+            renderPosterList(currentFavs, 'favorites-container', 'favorites');
             
-            // Stat update
             document.getElementById('stat-completed').textContent = currentList.length;
             
             closeModal('profilesModal');
@@ -612,25 +585,23 @@
                       <div class="cw-time">${Math.floor(Math.random() * 40 + 10)}m left</div>
                    </div>
                    <div class="cw-actions">
-                      <div class="cw-menu-btn" onclick="window.removeCard('history', '${item.id}')" title="Remove"><i class="fas fa-times"></i></div>
+                      <div class="cw-menu-btn" onclick="event.preventDefault(); event.stopPropagation(); window.removeCard('history', '${item.id}')" title="Remove"><i class="fas fa-times"></i></div>
                       <a href="${item.link}" class="cw-play-btn"><i class="fas fa-play"></i></a>
                    </div>
                 </div>
             `).join('');
             
             document.getElementById('stat-watching').textContent = arrayData.length;
-            // Mock stat generation for hours based on history length to match layout design requirement
             document.getElementById('stat-hours').textContent = (arrayData.length * 3) + 12; 
         }
 
-        function renderMyList(arrayData) {
-            const container = document.getElementById('mylist-container');
+        function renderPosterList(arrayData, containerId, listType) {
+            const container = document.getElementById(containerId);
             if (!arrayData || arrayData.length === 0) {
                 container.innerHTML = `<div class="empty-state">Your list is empty.</div>`;
                 return;
             }
             container.innerHTML = arrayData.map(item => {
-                // Mock formatting date if undefined to match the aesthetic UI
                 const d = new Date();
                 const dateStr = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
                 
@@ -638,7 +609,9 @@
                 <a href="${item.link}" class="list-card">
                    <div class="list-poster-wrap">
                       <img src="${item.img}" alt="${item.title}">
-                      <div class="bookmark-ribbon" onclick="event.preventDefault(); window.removeCard('mylist', '${item.id || item.link}')"><i class="fas fa-bookmark"></i></div>
+                      <button class="remove-list-btn" onclick="event.preventDefault(); event.stopPropagation(); window.removeCard('${listType}', '${item.id || item.link}')" title="Remove">
+                          <i class="fas fa-trash-alt"></i>
+                      </button>
                    </div>
                    <div class="list-info">
                       <div class="list-title">${item.title}</div>
@@ -717,7 +690,8 @@
                                 id: 'prof_default',
                                 name: user.displayName || data.username || "User", 
                                 avatar: data.avatarUrl || "https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png",
-                                myList: data.myList || []
+                                myList: data.myList || [],
+                                favorites: data.favorites || []
                             }];
                         }
 
@@ -731,7 +705,9 @@
                         
                         // Direct fetch from cloud object, NO local storage caching
                         const activeList = userProfiles[activeProfileIndex].myList || [];
-                        renderMyList(activeList);
+                        const activeFavs = userProfiles[activeProfileIndex].favorites || [];
+                        renderPosterList(activeList, 'mylist-container', 'mylist');
+                        renderPosterList(activeFavs, 'favorites-container', 'favorites');
                         document.getElementById('stat-completed').textContent = activeList.length;
 
                         // VIP UI
@@ -795,9 +771,12 @@
             if (!auth.currentUser) return;
             if (type === 'history') {
                 deleteDoc(doc(db, "users", auth.currentUser.uid, "history", String(identifier)));
-            } else if (type === 'mylist') {
-                const updatedList = (userProfiles[activeProfileIndex].myList || []).filter(i => String(i.id) !== String(identifier) && i.link !== identifier);
-                userProfiles[activeProfileIndex].myList = updatedList;
+            } else if (type === 'mylist' || type === 'favorites') {
+                const targetArray = type === 'mylist' ? 'myList' : 'favorites';
+                const currentList = userProfiles[activeProfileIndex][targetArray] || [];
+                const updatedList = currentList.filter(i => String(i.id) !== String(identifier) && i.link !== identifier);
+                userProfiles[activeProfileIndex][targetArray] = updatedList;
+                
                 if (currentUserDocRef) updateDoc(currentUserDocRef, { profiles: userProfiles });
             }
         };
