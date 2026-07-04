@@ -1410,7 +1410,7 @@
                     <span id="hero-score" class="meta-chip imdb"><i class="fas fa-star"></i> —</span>
                     <span id="hero-genre" class="meta-chip">Drama</span>
                 </div>
-                <a id="hero-watch-btn" href="watch.html" class="btn-watch-now">
+                <a id="hero-watch-btn" href="details.html" class="btn-watch-now">
                     <span class="play-icon-wrap"><i class="fas fa-play"></i></span>
                     <span>Watch Episode 1 Now</span>
                     <i class="fas fa-chevron-right" style="margin-left: auto; opacity: 0.7; font-size: 0.8rem;"></i>
@@ -1723,7 +1723,7 @@ function renderHero(data) {
     document.getElementById('hero-genre').textContent = f.genre ? f.genre.split(',')[0].trim() : 'Drama';
 
     // Build watch URL — use drama's Firestore ID as the id param
-    const watchUrl = f.dramaId ? `watch.html?id=${f.dramaId}` : (f.link || 'watch.html');
+    const watchUrl = f.dramaId ? `details.html?id=${f.dramaId}` : (f.link || 'details.html');
     document.getElementById('hero-watch-btn').href = watchUrl;
 }
 
@@ -1734,7 +1734,7 @@ function renderRecentGrid(data) {
 
     const items = data.recentGrid.slice(0, 4);
     items.forEach((item, i) => {
-        const watchUrl = item.dramaId ? `watch.html?id=${item.dramaId}` : (item.link || 'watch.html');
+        const watchUrl = item.dramaId ? `details.html?id=${item.dramaId}` : (item.link || 'details.html');
         const card = document.createElement('a');
         card.href = watchUrl;
         card.className = 'recent-card';
@@ -2015,7 +2015,7 @@ async function searchDrama() {
                     if (match) {
                         // Broader fallback for whatever key the JSON uses for the ID
                         foundId = match.id || match.dramaId || match.imdbId;
-                        foundLink = match.link || `watch.html?id=${foundId}`;
+                        foundLink = match.link || `details.html?id=${foundId}`;
                     }
                 }
             } catch(e) { console.warn("JSON check skipped or failed."); }
@@ -2040,7 +2040,7 @@ async function searchDrama() {
                 if (matchedDoc) {
                     foundId = matchedDoc.id;
                     const docData = matchedDoc.data();
-                    foundLink = docData.link || `watch.html?id=${foundId}`;
+                    foundLink = docData.link || `details.html?id=${foundId}`;
                 }
             }
 

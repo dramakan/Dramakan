@@ -304,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     id: String(item.tmdb_id),
                     title: item.name || item.title || "Unknown Title",
                     img: item.poster || 'https://via.placeholder.com/500x750?text=No+Image',
-                    link: item.embed_tmdb || `watch.html?id=${item.tmdb_id}`, 
+                    link: item.embed_tmdb || `details.html?id=${item.tmdb_id}`, 
                     type: "Trending TV"
                 }));
                 
@@ -495,7 +495,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (dragThresholdMet) { e.preventDefault(); return; }
                 if (window.innerWidth <= 992 && !slide.classList.contains('active')) return;
                 const btn = slide.querySelector('.btn-primary');
-                const mobileLink = slide.querySelector('a[href^="watch.html"]');
+                const mobileLink = slide.querySelector('a[href^="details.html"]');
                 if (btn) window.location.href = btn.getAttribute('href');
                 else if (mobileLink) window.location.href = mobileLink.getAttribute('href');
             });
