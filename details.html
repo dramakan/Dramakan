@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Drama Details - DramaKan</title>
+
+    <meta id="seo-description" name="description" content="Watch your favorite dramas on DramaKan.">
+    <meta id="seo-keywords" name="keywords" content="dramakan, kdrama, watch drama online">
+    
+    <meta id="og-title" property="og:title" content="Drama Details - DramaKan">
+    <meta id="og-description" property="og:description" content="Watch your favorite dramas on DramaKan.">
+    <meta id="og-image" property="og:image" content="">
+    <meta id="og-url" property="og:url" content="">
+    <meta property="og:type" content="video.tv_show">
+    
+    <meta id="tw-title" name="twitter:title" content="Drama Details - DramaKan">
+    <meta id="tw-description" name="twitter:description" content="Watch your favorite dramas on DramaKan.">
+    <meta id="tw-image" name="twitter:image" content="">
+
+    <!-- GOOGLE ADSENSE PREPARATION -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-base: #0B0C10; 
+            --bg-panel: #14151A;
+            --primary: #8A2BE2; 
+            --primary-rich: #6a1b9a;
+            --glass-bg: rgba(20, 20, 25, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08); 
+            --text-main: #F8F8F8;
+            --text-muted: #a1a1aa;
+            --star-gold: #f59e0b;
+        }
+
+        /* --- RESET & BASE --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background-color: var(--bg-base); 
+            color: var(--text-main); 
+            font-family: 'Poppins', sans-serif; 
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: 0;
+        }
+
+        /* --- HEADER --- */
+        .main-header {
+            background: rgba(11, 12, 16, 0.85); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 4%; position: fixed; top: 0; width: 100%; z-index: 1000;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .logo { font-size: 1.8rem; font-weight: 700; color: #fff; text-decoration: none; }
+        .logo span { color: var(--primary); }
+
+        /* --- CINEMATIC HERO SECTION --- */
+        .hero-section {
+            position: relative; width: 100%; min-height: 85vh;
+            display: flex; align-items: center; padding-top: 80px;
+        }
+        .hero-backdrop {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: 1; opacity: 0.35;
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+        }
+        .hero-gradient {
+            position: absolute; inset: 0; z-index: 2;
+            background: linear-gradient(90deg, var(--bg-base) 0%, rgba(11, 12, 16, 0.8) 60%, transparent 100%),
+                        linear-gradient(0deg, var(--bg-base) 0%, transparent 40%);
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 4%; position: relative; z-index: 3; width: 100%; }
+        
+        /* PC Hero Layout */
+        .hero-content {
+            display: grid; grid-template-columns: 300px 1fr; gap: 40px; align-items: center;
+        }
+        .poster-wrapper {
+            position: relative; border-radius: 16px; overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid var(--glass-border);
+            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; width: 100%;
+        }
+        .poster-wrapper img { width: 100%; display: block; object-fit: cover; aspect-ratio: 2/3; }
+
+        .drama-info { animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .drama-info h1 { font-size: 3.5rem; line-height: 1.1; margin: 0 0 10px 0; font-weight: 800; }
+        
+        .meta-tags { display: flex; gap: 12px; flex-wrap: wrap; color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; align-items: center;}
+        .tag-pill { background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); padding: 4px 12px; border-radius: 50px; color: #fff; font-size: 0.85rem;}
+        
+        .synopsis { font-size: 1rem; color: #d1d5db; line-height: 1.7; margin-bottom: 30px; max-width: 800px; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;}
+
+        /* Rating & Watch Buttons */
+        .actions-row { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+        .btn-watch {
+            display: inline-flex; align-items: center; gap: 10px; background: var(--primary); color: #fff; text-decoration: none;
+            padding: 15px 40px; border-radius: 50px; font-size: 1.1rem; font-weight: 600;
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.4); transition: 0.3s; cursor: pointer; border: 2px solid var(--primary-rich);
+        }
+        .btn-watch:hover { transform: translateY(-3px) scale(1.02); background: var(--primary-rich); box-shadow: 0 15px 40px rgba(138, 43, 226, 0.6); }
+
+        .hero-rating { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 50px; border: 1px solid var(--glass-border);}
+        .hero-rating i { color: var(--star-gold); font-size: 1.2rem;}
+        .hero-rating span { font-weight: 700; font-size: 1.1rem;}
+
+        /* --- CONTENT GRID (PC: Left Content, Right Sidebar) --- */
+        .content-grid {
+            display: grid; grid-template-columns: minmax(0, 1fr) 350px; gap: 40px; margin-top: -30px; padding-bottom: 20px; position: relative; z-index: 5;
+        }
+        .section-title { font-size: 1.4rem; border-left: 4px solid var(--primary); padding-left: 15px; margin: 0 0 20px 0; font-weight: 600;}
+
+        /* Trailer Container Fix */
+        .trailer-wrapper { max-width: 850px; margin: 0 0 40px 0; }
+        .trailer-container { width: 100%; aspect-ratio: 16/9; border-radius: 16px; overflow: hidden; border: 1px solid var(--glass-border); background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
+        .trailer-container iframe { width: 100%; height: 100%; border: none; }
+
+        /* Scrollers (Cast, Gallery) */
+        .scroller { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: thin; scrollbar-color: var(--primary) rgba(255,255,255,0.05); }
+        .scroller::-webkit-scrollbar { height: 6px; }
+        .scroller::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .scroller::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        
+        .cast-card { flex: 0 0 120px; text-align: center; }
+        .cast-card img { width: 120px; height: 180px; border-radius: 12px; object-fit: cover; border: 1px solid var(--glass-border); box-shadow: 0 5px 15px rgba(0,0,0,0.3);}
+        .cast-card h4 { margin: 10px 0 2px 0; font-size: 0.85rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .cast-card p { margin: 0; font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+
+        .gallery-card { flex: 0 0 280px; }
+        .gallery-card img { width: 280px; height: 157px; object-fit: cover; border-radius: 12px; border: 1px solid var(--glass-border); transition: 0.3s; }
+        .gallery-card img:hover { transform: scale(1.03); cursor: pointer; border-color: var(--primary);}
+
+        /* --- SIDEBAR WIDGETS --- */
+        .sidebar-widget {
+            background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 25px; margin-bottom: 30px;
+        }
+        
+        /* Drama Info List */
+        .info-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+        .info-list li { display: flex; justify-content: space-between; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;}
+        .info-list li span:first-child { color: var(--text-muted); }
+        .info-list li span:last-child { color: #fff; font-weight: 500; text-align: right;}
+
+        /* Where to Watch */
+        .providers-list { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;}
+        .provider-icon { width: 45px; height: 45px; border-radius: 10px; border: 1px solid var(--glass-border); object-fit: cover;}
+
+        /* Recommendations */
+        .rec-list { display: flex; flex-direction: column; gap: 15px; }
+        .rec-card { display: flex; gap: 15px; align-items: center; text-decoration: none; transition: 0.3s; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 12px; border: 1px solid transparent;}
+        .rec-card:hover { background: rgba(255,255,255,0.05); border-color: var(--glass-border); transform: translateX(5px); }
+        .rec-card img { width: 60px; height: 90px; object-fit: cover; border-radius: 8px; }
+        .rec-info h4 { margin: 0 0 5px 0; font-size: 0.9rem; color: #fff; font-weight: 500; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
+        .rec-info p { margin: 0; font-size: 0.8rem; color: var(--primary); font-weight: 600;}
+
+        /* --- REVIEW ENGINE (Main Content) --- */
+        .review-section-wrapper { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 30px; margin-top: 40px;}
+        .review-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
+        
+        .dramakan-rate { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 1.5rem;}
+        .dramakan-rate i { color: #3f3f46; transition: 0.2s; }
+        .dramakan-rate i:hover, .dramakan-rate i.active, .dramakan-rate i.hover-active { color: var(--star-gold); }
+        
+        .review-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; color: #fff; outline: none; margin-bottom: 15px; resize: vertical; min-height: 80px; font-family: inherit;}
+        .review-input:focus { border-color: var(--primary); }
+        
+        .btn-submit-review { background: var(--primary); color: #fff; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; display: inline-block;}
+        .btn-submit-review:hover { background: var(--primary-rich); }
+        
+        .user-reviews-list { margin-top: 30px; display: flex; flex-direction: column; gap: 20px; }
+        .user-review-item { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid var(--glass-border);}
+        .review-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;}
+        .reviewer-name { font-weight: 600; font-size: 1rem; color: #fff; display: flex; align-items: center; gap: 10px;}
+        .reviewer-name img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        .reviewer-stars { color: var(--star-gold); font-size: 0.9rem; }
+        .review-text { font-size: 0.95rem; color: #d1d5db; line-height: 1.6; }
+
+        /* --- ATTRIBUTION FOOTER --- */
+        .attribution { 
+            display: flex; align-items: center; justify-content: center; gap: 12px; 
+            padding: 30px 0 40px 0; margin-top: 20px; border-top: 1px solid var(--glass-border);
+            color: var(--text-muted); font-size: 0.85rem;
+        }
+        .attribution img { height: 14px; opacity: 0.8; transition: 0.3s; }
+        .attribution img:hover { opacity: 1; }
+
+        /* --- ANIMATIONS --- */
+        @keyframes slideUpFade {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .reveal-anim { opacity: 0; transform: translateY(30px); transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal-anim.active { opacity: 1; transform: translateY(0); }
+
+        /* =========================================
+           MOBILE REDESIGN (Premium Native App Style)
+           ========================================= */
+        @media (max-width: 992px) {
+            html, body { overflow-x: hidden; max-width: 100%; }
+            body { padding-bottom: 90px; } /* Ensures bottom content isn't hidden by the nav bar */
+
+            .container { padding: 0 20px; } /* REMOVED overflow-x: hidden to allow scrollers to bleed edge-to-edge smoothly */
+
+            /* --- Compact App-Style Hero --- */
+            .hero-section { padding-top: 78px; min-height: auto; padding-bottom: 26px; }
+            .hero-backdrop { opacity: 0.25; }
+            .hero-gradient {
+                background:
+                    linear-gradient(to top, var(--bg-base) 0%, rgba(11,12,16,0.6) 38%, rgba(11,12,16,0.15) 75%, transparent 100%),
+                    linear-gradient(to bottom, rgba(11,12,16,0.55) 0%, transparent 35%);
+            }
+
+            .hero-content {
+                grid-template-columns: 104px 1fr; /* small poster left, text right */
+                grid-template-rows: auto auto;
+                gap: 14px 16px;
+                align-items: start;
+            }
+
+            .poster-wrapper { width: 100%; max-width: 104px; margin: 0; border-radius: 10px; grid-column: 1 / 2; grid-row: 1 / 2; min-width: 0; }
+
+            /* Unbox drama-info so its children can sit directly in the hero grid */
+            .drama-info { display: contents; }
+
+            .hero-title-meta {
+                grid-column: 2 / 3; grid-row: 1 / 2;
+                display: flex; flex-direction: column; justify-content: center; min-width: 0;
+                animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+            .hero-synopsis-actions {
+                grid-column: 1 / 3; grid-row: 2 / 3; min-width: 0;
+                animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+
+            .drama-info h1 { font-size: 1.35rem; line-height: 1.2; margin-bottom: 6px; font-weight: 700; overflow-wrap: break-word; word-break: break-word; }
+            .meta-tags { gap: 6px; row-gap: 6px; margin-bottom: 0; }
+            .tag-pill { padding: 3px 9px; font-size: 0.7rem; }
+            #ui-status { font-size: 0.8rem; }
+            #ui-eps { font-size: 0.8rem; }
+
+            .synopsis { font-size: 0.88rem; line-height: 1.55; -webkit-line-clamp: 3; margin-bottom: 16px; max-width: 100%; overflow-wrap: break-word; }
+            .actions-row { flex-direction: column; width: 100%; gap: 10px; margin-bottom: 0; }
+            .btn-watch { width: 100%; justify-content: center; font-size: 0.95rem; padding: 13px; }
+            .hero-rating { width: 100%; justify-content: center; padding: 10px; }
+
+            /* --- Content Grid Restructure --- */
+            .content-grid { grid-template-columns: minmax(0, 1fr); gap: 22px; margin-top: 8px; padding-bottom: 10px; }
+            .main-content, .sidebar { min-width: 0; }
+
+            .section-title { font-size: 1.1rem; padding-left: 12px; margin-bottom: 12px; }
+
+            /* Trailer: guaranteed to never overflow the viewport */
+            .trailer-wrapper { max-width: 100%; width: 100%; margin: 0 0 24px 0; }
+            .trailer-container { width: 100%; max-width: 100%; aspect-ratio: 16/9; border-radius: 12px; }
+            .trailer-container iframe { width: 100%; height: 100%; max-width: 100%; }
+
+            /* Scrollers: full-bleed edge-to-edge, smooth touch scrolling, no page scroll leakage */
+            .scroller { gap: 12px; margin: 0 -20px; padding: 0 20px 14px; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; scrollbar-width: none; -ms-overflow-style: none; }
+            .scroller::-webkit-scrollbar { display: none; }
+            .scroller > * { scroll-snap-align: start; }
+            .cast-card { flex: 0 0 100px; }
+            .cast-card img { width: 100px; height: 150px; border-radius: 10px; }
+            .gallery-card { flex: 0 0 230px; }
+            .gallery-card img { width: 230px; height: 129px; border-radius: 10px; }
+
+            /* Tighter, less wasteful mobile paddings for widgets */
+            .review-section-wrapper { padding: 16px; margin-top: 22px; border-radius: 14px; }
+            .sidebar-widget { padding: 16px; margin-bottom: 16px; border-radius: 14px; }
+
+            .info-list li { font-size: 0.85rem; gap: 10px; }
+            .info-list li span:last-child { overflow-wrap: break-word; word-break: break-word; max-width: 60%; }
+
+            .providers-list { gap: 8px; }
+            .provider-icon { width: 40px; height: 40px; }
+
+            .rec-list { gap: 12px; }
+            .rec-card { padding: 8px; gap: 12px; }
+            .rec-card img { width: 50px; height: 75px; }
+            .rec-info h4 { font-size: 0.85rem; }
+
+            /* Review header + Firebase inputs: fully responsive, never overflow */
+            .review-header-flex { gap: 10px; }
+            .review-header-flex h3 { font-size: 1.05rem; }
+            .review-input { width: 100%; max-width: 100%; box-sizing: border-box; padding: 12px; font-size: 0.9rem; }
+            .dramakan-rate { font-size: 1.3rem; }
+            .btn-submit-review { width: 100%; text-align: center; padding: 13px; }
+
+            .user-review-item { padding: 14px; }
+            .review-meta { flex-wrap: wrap; gap: 8px; }
+            .reviewer-name { font-size: 0.9rem; }
+            .review-text { font-size: 0.88rem; overflow-wrap: break-word; word-break: break-word; }
+
+            .attribution { padding: 22px 0 30px 0; font-size: 0.75rem; flex-wrap: wrap; text-align: center; }
+        }
+
+        /* Extra tightening for very small phones */
+        @media (max-width: 380px) {
+            .hero-content { grid-template-columns: 84px 1fr; gap: 12px 14px; }
+            .poster-wrapper { max-width: 84px; }
+            .drama-info h1 { font-size: 1.15rem; }
+            .cast-card { flex: 0 0 84px; }
+            .cast-card img { width: 84px; height: 126px; }
+        }
+
+        /* --- APPLE LIQUID GLASS BOTTOM BAR (Mobile Only) --- */
+        @media (max-width: 992px) {
+            .bottom-nav {
+                display: flex !important; position: fixed !important; bottom: 15px !important; left: 50% !important; transform: translateX(-50%) !important;
+                width: 90% !important; max-width: 400px !important; background: rgba(20, 20, 25, 0.6) !important; backdrop-filter: blur(25px) saturate(200%) !important;
+                -webkit-backdrop-filter: blur(25px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 50px !important;
+                z-index: 9999 !important; padding: 5px 10px !important; box-shadow: 0 25px 50px rgba(0,0,0,0.4) !important;
+            }
+            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 0; color: rgba(255, 255, 255, 0.5); text-decoration: none; transition: all 0.4s ease; }
+            .bottom-nav-item.active { color: #fff; }
+            .nav-icon { font-size: 1.35rem; margin-bottom: 4px; transition: transform 0.4s ease; }
+            .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-4px) scale(1.15); color: var(--primary); }
+            .nav-label { font-size: 0.65rem; font-weight: 500; }
+        }
+        @media (min-width: 993px) { .bottom-nav { display: none !important; } }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <a href="index.html" class="logo">Drama<span>Kan</span></a>
+    </header>
+
+    <section class="hero-section">
+        <img id="hero-bg" class="hero-backdrop" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Backdrop">
+        <div class="hero-gradient"></div>
+        
+        <div class="container hero-content">
+            <div class="poster-wrapper">
+                <img id="ui-poster" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Poster">
+            </div>
+            
+            <div class="drama-info">
+                <div class="hero-title-meta">
+                    <h1 id="ui-title">Loading Details...</h1>
+                    <div class="meta-tags">
+                        <span id="ui-year" class="tag-pill">----</span>
+                        <span id="ui-type" class="tag-pill">Drama</span>
+                        <span id="ui-status" style="color: var(--primary); font-weight: 600;">Status</span>
+                        <span id="ui-eps">-- Episodes</span>
+                    </div>
+                </div>
+                
+                <div class="hero-synopsis-actions">
+                    <p class="synopsis" id="ui-synopsis">Brewing magic to fetch drama details...</p>
+
+                    <div class="actions-row">
+                        <a href="#" id="btn-watch-now" class="btn-watch">
+                            <i class="fas fa-play-circle"></i> Watch on DramaKan
+                        </a>
+                        <div class="hero-rating" title="TMDB Global Rating">
+                            <i class="fas fa-star"></i> <span id="ui-tmdb-score">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container content-grid">
+        
+        <div class="main-content">
+            
+            <div class="trailer-wrapper reveal-anim">
+                <h3 class="section-title">Official Trailer</h3>
+                <div class="trailer-container" id="trailer-container">
+                    <p style="padding: 20px; color: var(--text-muted); text-align: center; margin-top: 15%;">Fetching trailer...</p>
+                </div>
+            </div>
+
+            <!-- GOOGLE ADSENSE: Content Stream Native Placement Area -->
+            <div style="margin: 20px 0; text-align: center; width: 100%;">
+                <ins class="adsbygoogle"
+                     style="display:block; text-align:center;"
+                     data-ad-layout="in-article"
+                     data-ad-format="fluid"
+                     data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                     data-ad-slot="YYYYYYYYYYYY"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            <div class="reveal-anim" style="margin-bottom: 30px;">
+                <h3 class="section-title">Top Cast</h3>
+                <div class="scroller" id="cast-scroller">
+                    <p style="color: var(--text-muted);">Fetching cast...</p>
+                </div>
+            </div>
+
+            <div class="reveal-anim" id="gallery-section">
+                <h3 class="section-title">Snapshots</h3>
+                <div class="scroller" id="gallery-scroller">
+                    <p style="color: var(--text-muted);">Fetching images...</p>
+                </div>
+            </div>
+
+            <div class="review-section-wrapper reveal-anim">
+                <div class="review-header-flex">
+                    <h3 class="section-title" style="margin: 0; border: none; padding: 0;">Community Reviews</h3>
+                    <div style="display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.4); padding: 8px 15px; border-radius: 50px;">
+                        <span style="font-size: 0.9rem; color: var(--text-muted);">Dramakan Score:</span>
+                        <i class="fas fa-star" style="color: var(--star-gold);"></i>
+                        <span id="ui-dk-score" style="font-weight: 700; color: #fff;">--</span>
+                    </div>
+                </div>
+
+                <div id="review-input-area" style="display: none; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--glass-border);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-weight: 600; font-size: 0.95rem;">Rate & Review</span>
+                        <div class="dramakan-rate" id="star-rating-widget">
+                            <i class="fas fa-star" data-val="1"></i>
+                            <i class="fas fa-star" data-val="2"></i>
+                            <i class="fas fa-star" data-val="3"></i>
+                            <i class="fas fa-star" data-val="4"></i>
+                            <i class="fas fa-star" data-val="5"></i>
+                        </div>
+                    </div>
+                    <textarea id="review-text" class="review-input" placeholder="What did you think of this drama?"></textarea>
+                    <div style="text-align: right;">
+                        <button id="btn-submit-review" class="btn-submit-review">Post Review</button>
+                    </div>
+                </div>
+                <div id="rating-login-msg" style="text-align: center; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 20px; color: var(--primary);">
+                    <i class="fas fa-lock"></i> Please log in to leave a review.
+                </div>
+
+                <div class="user-reviews-list" id="user-reviews-list">
+                    <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center;">Loading reviews...</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="sidebar">
+            
+            <div class="sidebar-widget reveal-anim">
+                <h3 class="section-title" style="font-size: 1.1rem;">Details</h3>
+                <ul class="info-list">
+                    <li><span>Native Title</span> <span id="ui-native">N/A</span></li>
+                    <li><span>Network</span> <span id="ui-network">N/A</span></li>
+                    <li><span>Aired</span> <span id="ui-aired">N/A</span></li>
+                    <li><span>Content Rating</span> <span id="ui-rating">N/A</span></li>
+                    <li><span>Runtime</span> <span id="ui-runtime">N/A</span></li>
+                    <li><span>Genres</span> <span id="ui-genres">N/A</span></li>
+                </ul>
+            </div>
+
+            <!-- GOOGLE ADSENSE: Sidebar Display Ad Unit -->
+            <div style="margin-bottom: 30px; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                     data-ad-slot="ZZZZZZZZZZZZ"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            <div class="sidebar-widget reveal-anim" id="where-to-watch-widget" style="display: none;">
+                <h3 class="section-title" style="font-size: 1.1rem;">Official Providers</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Available on these platforms:</p>
+                <div class="providers-list" id="ui-providers">
+                    </div>
+            </div>
+
+            <div class="sidebar-widget reveal-anim">
+                <h3 class="section-title" style="font-size: 1.1rem;">You May Also Like</h3>
+                <div class="rec-list" id="ui-recs">
+                    <p style="color:var(--text-muted); font-size:0.85rem;">Fetching recommendations...</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="attribution reveal-anim">
+            <span>Data and Images provided by</span>
+            <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" alt="TMDB Logo">
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <i class="fa-solid fa-house nav-icon"></i>
+            <span class="nav-label">Home</span>
+        </a>
+        <a href="updates.html" class="bottom-nav-item">
+            <i class="fa-solid fa-bell nav-icon"></i>
+            <span class="nav-label">Updates</span>
+        </a>
+        <a href="mylist.html" class="bottom-nav-item">
+            <i class="fa-solid fa-bookmark nav-icon"></i>
+            <span class="nav-label">My List</span>
+        </a>
+        <a href="profile.html" class="bottom-nav-item">
+            <i class="fa-solid fa-user nav-icon"></i>
+            <span class="nav-label">Profile</span>
+        </a>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        // === CONFIGURATIONS ===
+        const WATCH_DOMAIN_URL = "https://watch.dramakan.site/watch.html?id="; // Your streaming domain/page
+        const tmdbKey = "014fbdbe962cb38379e09e31d0652459";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
+            authDomain: "dramakan007.firebaseapp.com",
+            projectId: "dramakan007"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app); 
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const dramaId = urlParams.get('id');
+
+        let currentUser = null;
+        let activeData = null;
+        let isMovieType = false;
+        let selectedStarValue = 0;
+
+        if (!dramaId) { window.location.replace('index.html'); }
+        document.getElementById('btn-watch-now').href = WATCH_DOMAIN_URL + dramaId;
+
+        // --- INTERSECTION OBSERVER FOR SCROLL ANIMATIONS ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal-anim').forEach(el => observer.observe(el));
+
+
+        // --- TMDB DATA FETCHING ---
+        async function fetchDramaDetails() {
+            const appendParams = `append_to_response=credits,videos,images,recommendations,similar,watch/providers`;
+            let res = null;
+
+            // 1. Try as a TV show first. Any failure (network error OR non-OK status)
+            //    falls through to the movie fallback below instead of aborting entirely.
+            try {
+                const tvRes = await fetch(`https://api.themoviedb.org/3/tv/${dramaId}?api_key=${tmdbKey}&${appendParams}`);
+                if (tvRes.ok) res = tvRes;
+            } catch (e) { /* network error - fall through to movie lookup */ }
+
+            // 2. Fallback to Movie if TV lookup didn't succeed
+            if (!res) {
+                try {
+                    const movieRes = await fetch(`https://api.themoviedb.org/3/movie/${dramaId}?api_key=${tmdbKey}&${appendParams}`);
+                    if (movieRes.ok) {
+                        res = movieRes;
+                        isMovieType = true;
+                    }
+                } catch (e) { /* network error on fallback too */ }
+            }
+
+            if (!res) {
+                document.getElementById('ui-synopsis').textContent = "Failed to load drama details.";
+                return;
+            }
+
+            try {
+                activeData = await res.json();
+                renderUI();
+                updateSEO();
+                initReviews();
+            } catch (err) {
+                document.getElementById('ui-synopsis').textContent = "Failed to load drama details.";
+            }
+        }
+
+        // --- RENDER UI ---
+        function renderUI() {
+            const title = activeData.name || activeData.title;
+            const posterUrl = activeData.poster_path ? `https://image.tmdb.org/t/p/w500${activeData.poster_path}` : 'default.jpg';
+            const bgUrl = activeData.backdrop_path ? `https://image.tmdb.org/t/p/w1280${activeData.backdrop_path}` : posterUrl;
+            
+            // Hero
+            document.getElementById('ui-title').textContent = title;
+            document.getElementById('ui-synopsis').textContent = activeData.overview || "No synopsis available.";
+            document.getElementById('ui-year').innerHTML = `<i class="far fa-calendar"></i> ${(activeData.first_air_date || activeData.release_date || "----").substring(0, 4)}`;
+            document.getElementById('ui-type').textContent = isMovieType ? 'Movie' : 'Drama';
+            document.getElementById('ui-status').textContent = activeData.status;
+            document.getElementById('ui-poster').src = posterUrl;
+            document.getElementById('hero-bg').src = bgUrl;
+            
+            if (!isMovieType && activeData.number_of_episodes) {
+                document.getElementById('ui-eps').textContent = `${activeData.number_of_episodes} Episodes`;
+            } else { document.getElementById('ui-eps').style.display = 'none'; }
+
+            // Sidebar Info Box
+            document.getElementById('ui-native').textContent = activeData.original_name || activeData.original_title || "N/A";
+            document.getElementById('ui-network').textContent = activeData.networks && activeData.networks.length ? activeData.networks[0].name : (isMovieType ? "Theatrical" : "N/A");
+            document.getElementById('ui-aired').textContent = activeData.first_air_date || activeData.release_date || "N/A";
+            document.getElementById('ui-rating').textContent = activeData.content_ratings?.results?.find(r => r.iso_3166_1 === 'US')?.rating || "PG-13";
+            document.getElementById('ui-runtime').textContent = activeData.episode_run_time?.length ? `${activeData.episode_run_time[0]} min` : (activeData.runtime ? `${activeData.runtime} min` : "N/A");
+            document.getElementById('ui-genres').textContent = activeData.genres?.map(g => g.name).join(', ') || "N/A";
+            document.getElementById('ui-tmdb-score').textContent = activeData.vote_average ? activeData.vote_average.toFixed(1) : "N/A";
+
+            // Where to Watch (Providers)
+            const providers = activeData['watch/providers']?.results;
+            const providerDiv = document.getElementById('ui-providers');
+            if (providers) {
+                const countryData = providers['US'] || Object.values(providers)[0];
+                if (countryData && countryData.flatrate) {
+                    document.getElementById('where-to-watch-widget').style.display = 'block';
+                    providerDiv.innerHTML = countryData.flatrate.slice(0, 5).map(p => 
+                        `<img src="https://image.tmdb.org/t/p/w92${p.logo_path}" alt="${p.provider_name}" title="${p.provider_name}" class="provider-icon">`
+                    ).join('');
+                }
+            }
+
+            // Trailer
+            const trailerDiv = document.getElementById('trailer-container');
+            const videos = activeData.videos?.results || [];
+            const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube') || videos[0];
+            if (trailer) {
+                trailerDiv.innerHTML = `<iframe src="https://www.youtube.com/embed/${trailer.key}?modestbranding=1&rel=0" allowfullscreen></iframe>`;
+            } else { trailerDiv.innerHTML = '<p style="padding: 20px; color: var(--text-muted); text-align: center; margin-top: 15%;">No official trailer available.</p>'; }
+
+            // Cast
+            const castDiv = document.getElementById('cast-scroller');
+            const cast = activeData.credits?.cast || [];
+            if (cast.length > 0) {
+                castDiv.innerHTML = cast.slice(0, 15).map(actor => {
+                    const img = actor.profile_path ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` : 'https://via.placeholder.com/120x180/14151a/8A2BE2?text=No+Image';
+                    return `<div class="cast-card"><img src="${img}" alt="${actor.name}" loading="lazy"><h4>${actor.name}</h4><p>${actor.character}</p></div>`;
+                }).join('');
+            } else { castDiv.innerHTML = '<p style="color: var(--text-muted);">No cast info available.</p>'; }
+
+            // Gallery
+            const galDiv = document.getElementById('gallery-scroller');
+            const images = activeData.images?.backdrops || [];
+            if (images.length > 0) {
+                galDiv.innerHTML = images.slice(0, 10).map(img => {
+                    const url = `https://image.tmdb.org/t/p/w780${img.file_path}`;
+                    return `<div class="gallery-card"><img src="${url}" loading="lazy" onclick="window.open('${url}', '_blank')"></div>`;
+                }).join('');
+            } else { document.getElementById('gallery-section').style.display = 'none'; }
+
+            // Recommendations (With Smart Fallback to 'Similar')
+            const recDiv = document.getElementById('ui-recs');
+            let recs = activeData.recommendations?.results || [];
+            if (recs.length === 0) { recs = activeData.similar?.results || []; } 
+
+            if (recs.length > 0) {
+                recDiv.innerHTML = recs.slice(0, 5).map(rec => {
+                    let p = rec.poster_path ? `https://image.tmdb.org/t/p/w200${rec.poster_path}` : 'https://via.placeholder.com/60x90/14151a/8A2BE2?text=NA';
+                    const t = rec.name || rec.title;
+                    const r = rec.vote_average ? rec.vote_average.toFixed(1) : 'N/A';
+                    return `
+                    <a href="details.html?id=${rec.id}" class="rec-card">
+                        <img src="${p}" alt="${t}" loading="lazy">
+                        <div class="rec-info"><h4>${t}</h4><p><i class="fas fa-star" style="color:var(--star-gold);"></i> ${r}</p></div>
+                    </a>`;
+                }).join('');
+            } else { recDiv.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">No similar shows found.</p>'; }
+        }
+
+        // --- DYNAMIC SEO ENGINE ---
+        function updateSEO() {
+            const title = activeData.name || activeData.title;
+            const posterUrl = activeData.poster_path ? `https://image.tmdb.org/t/p/w500${activeData.poster_path}` : '';
+            const synopsis = activeData.overview || "Watch your favorite dramas on DramaKan.";
+            const url = window.location.href;
+            const typeLabel = isMovieType ? 'Movie' : 'Drama';
+
+            // Generate Automated Keywords Contextually
+            const genreList = activeData.genres?.map(g => g.name.toLowerCase()) || [];
+            const nativeKeywords = ['dramakan', 'watch drama online', typeLabel.toLowerCase(), title.toLowerCase()];
+            const integratedKeywords = [...nativeKeywords, ...genreList, `${title} stream`, `watch ${title} free`].join(', ');
+
+            document.title = `${title} - Drama Details | DramaKan`;
+            
+            document.getElementById('seo-description').content = synopsis.slice(0, 160);
+            document.getElementById('seo-keywords').content = integratedKeywords;
+            
+            document.getElementById('og-title').content = `${title} - DramaKan`;
+            document.getElementById('og-description').content = synopsis.slice(0, 160);
+            document.getElementById('og-image').content = posterUrl;
+            document.getElementById('og-url').content = url;
+
+            document.getElementById('tw-title').content = `${title} - DramaKan`;
+            document.getElementById('tw-description').content = synopsis.slice(0, 160);
+            document.getElementById('tw-image').content = posterUrl;
+        }
+
+        // --- REVIEWS & RATINGS ENGINE ---
+        function initReviews() {
+            const stars = document.querySelectorAll('.dramakan-rate i');
+            const reviewInputArea = document.getElementById('review-input-area');
+            const loginMsg = document.getElementById('rating-login-msg');
+            const reviewList = document.getElementById('user-reviews-list');
+            
+            // 1. Auth Listener
+            onAuthStateChanged(auth, (user) => {
+                currentUser = user;
+                if (user) {
+                    loginMsg.style.display = 'none';
+                    reviewInputArea.style.display = 'block';
+                    fetchUserReview();
+                } else {
+                    loginMsg.style.display = 'block';
+                    reviewInputArea.style.display = 'none';
+                }
+                fetchAggregateRating(); 
+            });
+
+            // 2. Fetch Global Average
+            async function fetchAggregateRating() {
+                try {
+                    const docRef = doc(db, "dramaRatings", dramaId);
+                    const snap = await getDoc(docRef);
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        const avg = data.totalScore / data.count;
+                        document.getElementById('ui-dk-score').textContent = avg.toFixed(1);
+                    } else { document.getElementById('ui-dk-score').textContent = "New"; }
+                } catch (e) { console.error(e); }
+            }
+
+            // 3. Fetch User's Existing Review
+            async function fetchUserReview() {
+                try {
+                    const revRef = doc(db, "dramaRatings", dramaId, "reviews", currentUser.uid);
+                    const snap = await getDoc(revRef);
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        selectedStarValue = data.score;
+                        highlightStars(data.score);
+                        document.getElementById('review-text').value = data.text || "";
+                        document.getElementById('btn-submit-review').textContent = "Update Review";
+                    }
+                } catch (e) {}
+            }
+
+            // 4. Star Hover/Click Logic
+            function highlightStars(val, isHover = false) {
+                stars.forEach(s => {
+                    const starVal = parseInt(s.dataset.val);
+                    if (isHover) { s.classList.toggle('hover-active', starVal <= val); } 
+                    else { s.classList.toggle('active', starVal <= val); }
+                });
+            }
+
+            stars.forEach(star => {
+                star.addEventListener('mouseenter', (e) => { if (currentUser) highlightStars(e.target.dataset.val, true); });
+                star.addEventListener('mouseleave', () => { stars.forEach(s => s.classList.remove('hover-active')); });
+                star.addEventListener('click', (e) => {
+                    if (!currentUser) return;
+                    selectedStarValue = parseInt(e.target.dataset.val);
+                    highlightStars(selectedStarValue);
+                });
+            });
+
+            // 5. Submit Review
+            document.getElementById('btn-submit-review').addEventListener('click', async () => {
+                if (selectedStarValue === 0) { alert("Please select a star rating first."); return; }
+                const text = document.getElementById('review-text').value.trim();
+                const btn = document.getElementById('btn-submit-review');
+                
+                btn.textContent = "Saving...";
+                btn.disabled = true;
+
+                try {
+                    const revRef = doc(db, "dramaRatings", dramaId, "reviews", currentUser.uid);
+                    const snap = await getDoc(revRef);
+                    const isNew = !snap.exists();
+                    const oldScore = isNew ? 0 : snap.data().score;
+
+                    await setDoc(revRef, {
+                        score: selectedStarValue,
+                        text: text,
+                        userId: currentUser.uid,
+                        username: currentUser.displayName || "DramaFan",
+                        photo: currentUser.photoURL || 'https://via.placeholder.com/40',
+                        timestamp: serverTimestamp()
+                    });
+
+                    // Update aggregate
+                    const aggRef = doc(db, "dramaRatings", dramaId);
+                    const aggSnap = await getDoc(aggRef);
+                    if (!aggSnap.exists()) {
+                        await setDoc(aggRef, { totalScore: selectedStarValue, count: 1 });
+                    } else {
+                        const d = aggSnap.data();
+                        const newCount = isNew ? d.count + 1 : d.count;
+                        const newTotal = (d.totalScore - oldScore) + selectedStarValue;
+                        await updateDoc(aggRef, { totalScore: newTotal, count: newCount });
+                    }
+
+                    btn.textContent = "Update Review";
+                    fetchAggregateRating();
+                } catch (e) {
+                    alert("Error saving review.");
+                    btn.textContent = "Post Review";
+                } finally { btn.disabled = false; }
+            });
+
+            // 6. Real-time Reviews Listener
+            const reviewsQuery = query(collection(db, "dramaRatings", dramaId, "reviews"), orderBy("timestamp", "desc"));
+            onSnapshot(reviewsQuery, (snapshot) => {
+                const reviewList = document.getElementById('user-reviews-list');
+                reviewList.innerHTML = '';
+                if (snapshot.empty) {
+                    reviewList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; text-align: center;">No reviews yet. Be the first to review this drama!</p>';
+                    return;
+                }
+                snapshot.forEach((docSnap) => {
+                    const d = docSnap.data();
+                    let starsHtml = '';
+                    for(let i=1; i<=5; i++) { starsHtml += `<i class="fas fa-star" style="color: ${i <= d.score ? 'var(--star-gold)' : '#3f3f46'};"></i>`; }
+                    
+                    reviewList.insertAdjacentHTML('beforeend', `
+                        <div class="user-review-item">
+                            <div class="review-meta">
+                                <div class="reviewer-name"><img src="${d.photo}" alt="user"> ${d.username}</div>
+                                <div class="reviewer-stars">${starsHtml}</div>
+                            </div>
+                            ${d.text ? `<div class="review-text">${d.text}</div>` : ''}
+                        </div>
+                    `);
+                });
+            });
+        }
+
+        // Kickoff
+        fetchDramaDetails();
+    </script>
+</body>
+</html>
