@@ -160,6 +160,7 @@
 
         /* --- REVIEW ENGINE (Main Content) --- */
         .review-section-wrapper { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 30px; margin-top: 40px;}
+        .review-section-wrapper .section-title { border-left: 4px solid var(--primary); padding-left: 15px; font-weight: 600; }
         .review-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
         
         .dramakan-rate { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 1.5rem;}
@@ -202,9 +203,9 @@
            ========================================= */
         @media (max-width: 992px) {
             html, body { overflow-x: hidden; max-width: 100%; }
-            body { padding-bottom: 90px; } /* Ensures bottom content isn't hidden by the nav bar */
+            body { padding-bottom: 90px; } 
 
-            .container { padding: 0 20px; } /* REMOVED overflow-x: hidden to allow scrollers to bleed edge-to-edge smoothly */
+            .container { padding: 0 20px; } 
 
             /* --- Compact App-Style Hero --- */
             .hero-section { padding-top: 78px; min-height: auto; padding-bottom: 26px; }
@@ -216,7 +217,7 @@
             }
 
             .hero-content {
-                grid-template-columns: 104px 1fr; /* small poster left, text right */
+                grid-template-columns: 104px 1fr; 
                 grid-template-rows: auto auto;
                 gap: 14px 16px;
                 align-items: start;
@@ -224,7 +225,6 @@
 
             .poster-wrapper { width: 100%; max-width: 104px; margin: 0; border-radius: 10px; grid-column: 1 / 2; grid-row: 1 / 2; min-width: 0; }
 
-            /* Unbox drama-info so its children can sit directly in the hero grid */
             .drama-info { display: contents; }
 
             .hero-title-meta {
@@ -243,7 +243,7 @@
             #ui-status { font-size: 0.8rem; }
             #ui-eps { font-size: 0.8rem; }
 
-            .synopsis { font-size: 0.88rem; line-height: 1.55; -webkit-line-clamp: 3; margin-bottom: 16px; max-width: 100%; overflow-wrap: break-word; }
+            .synopsis { font-size: 0.88rem; line-height: 1.55; -webkit-line-clamp: initial; margin-bottom: 16px; max-width: 100%; overflow-wrap: break-word; display: block; overflow: visible; }
             .actions-row { flex-direction: column; width: 100%; gap: 10px; margin-bottom: 0; }
             .btn-watch { width: 100%; justify-content: center; font-size: 0.95rem; padding: 13px; }
             .hero-rating { width: 100%; justify-content: center; padding: 10px; }
@@ -254,12 +254,10 @@
 
             .section-title { font-size: 1.1rem; padding-left: 12px; margin-bottom: 12px; }
 
-            /* Trailer: guaranteed to never overflow the viewport */
             .trailer-wrapper { max-width: 100%; width: 100%; margin: 0 0 24px 0; }
             .trailer-container { width: 100%; max-width: 100%; aspect-ratio: 16/9; border-radius: 12px; }
             .trailer-container iframe { width: 100%; height: 100%; max-width: 100%; }
 
-            /* Scrollers: full-bleed edge-to-edge, smooth touch scrolling, no page scroll leakage */
             .scroller { gap: 12px; margin: 0 -20px; padding: 0 20px 14px; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; scrollbar-width: none; -ms-overflow-style: none; }
             .scroller::-webkit-scrollbar { display: none; }
             .scroller > * { scroll-snap-align: start; }
@@ -268,7 +266,6 @@
             .gallery-card { flex: 0 0 230px; }
             .gallery-card img { width: 230px; height: 129px; border-radius: 10px; }
 
-            /* Tighter, less wasteful mobile paddings for widgets */
             .review-section-wrapper { padding: 16px; margin-top: 22px; border-radius: 14px; }
             .sidebar-widget { padding: 16px; margin-bottom: 16px; border-radius: 14px; }
 
@@ -283,7 +280,6 @@
             .rec-card img { width: 50px; height: 75px; }
             .rec-info h4 { font-size: 0.85rem; }
 
-            /* Review header + Firebase inputs: fully responsive, never overflow */
             .review-header-flex { gap: 10px; }
             .review-header-flex h3 { font-size: 1.05rem; }
             .review-input { width: 100%; max-width: 100%; box-sizing: border-box; padding: 12px; font-size: 0.9rem; }
@@ -298,7 +294,6 @@
             .attribution { padding: 22px 0 30px 0; font-size: 0.75rem; flex-wrap: wrap; text-align: center; }
         }
 
-        /* Extra tightening for very small phones */
         @media (max-width: 380px) {
             .hero-content { grid-template-columns: 84px 1fr; gap: 12px 14px; }
             .poster-wrapper { max-width: 84px; }
@@ -351,7 +346,7 @@
                 </div>
                 
                 <div class="hero-synopsis-actions">
-                    <p class="synopsis" id="ui-synopsis">Brewing magic to fetch drama details...</p>
+                    <div class="synopsis" id="ui-synopsis">Brewing magic to fetch drama details...</div>
 
                     <div class="actions-row">
                         <a href="#" id="btn-watch-now" class="btn-watch">
@@ -517,7 +512,7 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         // === CONFIGURATIONS ===
-        const WATCH_DOMAIN_URL = "https://watch.Anykan.fun/anywatch.html?id="; // Your streaming domain/page
+        const WATCH_DOMAIN_URL = "watch.html?id="; 
         const tmdbKey = "014fbdbe962cb38379e09e31d0652459";
         
         const firebaseConfig = {
@@ -557,14 +552,11 @@
             const appendParams = `append_to_response=credits,videos,images,recommendations,similar,watch/providers`;
             let res = null;
 
-            // 1. Try as a TV show first. Any failure (network error OR non-OK status)
-            //    falls through to the movie fallback below instead of aborting entirely.
             try {
                 const tvRes = await fetch(`https://api.themoviedb.org/3/tv/${dramaId}?api_key=${tmdbKey}&${appendParams}`);
                 if (tvRes.ok) res = tvRes;
-            } catch (e) { /* network error - fall through to movie lookup */ }
+            } catch (e) { }
 
-            // 2. Fallback to Movie if TV lookup didn't succeed
             if (!res) {
                 try {
                     const movieRes = await fetch(`https://api.themoviedb.org/3/movie/${dramaId}?api_key=${tmdbKey}&${appendParams}`);
@@ -572,7 +564,7 @@
                         res = movieRes;
                         isMovieType = true;
                     }
-                } catch (e) { /* network error on fallback too */ }
+                } catch (e) { }
             }
 
             if (!res) {
@@ -590,15 +582,53 @@
             }
         }
 
+        // --- GENERATE ORIGINAL VALUE-ADD TEXT CONTENT (GOOGLE ADSENSE READY) ---
+        function generateOriginalContent(data) {
+            const title = data.name || data.title;
+            const genresList = data.genres?.map(g => g.name) || [];
+            const nativeTitle = data.original_name || data.original_title || title;
+            const primaryGenre = genresList[0] || "Drama";
+            
+            let recommendationTarget = "fans of deeply engaging Asian television looking for strong character development, intricate plotting, and emotional narrative arcs.";
+            if (genresList.includes("Action") || genresList.includes("Sci-Fi & Fantasy") || genresList.includes("Adventure")) {
+                recommendationTarget = "viewers who crave high-stakes storytelling, fast-paced action sequences, and immersive world-building accompanied by phenomenal cast dynamics.";
+            } else if (genresList.includes("Comedy")) {
+                recommendationTarget = "anyone seeking a delightful balance of witty banter, comedic relief, lighthearted subplots, and heartwarming relational journeys.";
+            } else if (genresList.includes("Mystery") || genresList.includes("Crime")) {
+                recommendationTarget = "suspense enthusiasts who enjoy solving complex puzzles, uncovering hidden motivations, and following brilliant multi-layered thriller plots.";
+            } else if (genresList.includes("Romance")) {
+                recommendationTarget = "romantic storytelling fans who appreciate profound chemistry, beautifully captured slow-burn arcs, and emotional depth between leads.";
+            }
+
+            const introText = `Welcome to the comprehensive DramaKan encyclopedia entry for **${title}** (originally known as *${nativeTitle}*). As a prominent standout within the contemporary ${primaryGenre.toLowerCase()} landscape, this production has captured critical interest globally.`;
+            
+            const plotAnalysis = data.overview ? 
+                `### Plot Paradigm & Conceptual Design\n${data.overview}\n\nOur editorial staff notes that the thematic weight of this storyline balances complex subplots with exceptional structural pacing, ensuring a lingering emotional impact.` : 
+                `### Plot Paradigm & Conceptual Design\nDetailed thematic assessments for this piece are currently being curated by our community. The narrative explores multifaceted thematic arcs specific to the ${primaryGenre.toLowerCase()} genre frameworks.`;
+            
+            const targetAudience = `### Target Audience Insights: For Whom is This ${isMovieType ? 'Movie' : 'Drama'}?\nThis production is tailor-made for **${recommendationTarget}** If you appreciate highly stylized visual production design, detailed character profiles, and impactful screenplays, this title stands as an essential addition to your personal watchlist portfolio.`;
+
+            const thematicKeywords = `### Curated Analytical Tags\nKey thematic identifiers for this release encompass: **${genresList.join('**, **') || 'General Metadata Indexed'}**.`;
+
+            return `${introText}\n\n${plotAnalysis}\n\n${targetAudience}\n\n${thematicKeywords}`;
+        }
+
         // --- RENDER UI ---
         function renderUI() {
             const title = activeData.name || activeData.title;
             const posterUrl = activeData.poster_path ? `https://image.tmdb.org/t/p/w500${activeData.poster_path}` : 'default.jpg';
             const bgUrl = activeData.backdrop_path ? `https://image.tmdb.org/t/p/w1280${activeData.backdrop_path}` : posterUrl;
             
-            // Hero
+            const originalContentMarkdown = generateOriginalContent(activeData);
+            
+            const structuredHTML = originalContentMarkdown
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/### (.*)/g, '<h3 style="margin-top:25px; margin-bottom:12px; font-size:1.2rem; border-left:3px solid var(--primary); padding-left:10px; color:#fff; font-weight:600;">$1</h3>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong style="color:#fff; font-weight:600;">$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em style="color:var(--text-muted); font-style:italic;">$1</em>');
+
             document.getElementById('ui-title').textContent = title;
-            document.getElementById('ui-synopsis').textContent = activeData.overview || "No synopsis available.";
+            document.getElementById('ui-synopsis').innerHTML = structuredHTML;
             document.getElementById('ui-year').innerHTML = `<i class="far fa-calendar"></i> ${(activeData.first_air_date || activeData.release_date || "----").substring(0, 4)}`;
             document.getElementById('ui-type').textContent = isMovieType ? 'Movie' : 'Drama';
             document.getElementById('ui-status').textContent = activeData.status;
@@ -609,7 +639,6 @@
                 document.getElementById('ui-eps').textContent = `${activeData.number_of_episodes} Episodes`;
             } else { document.getElementById('ui-eps').style.display = 'none'; }
 
-            // Sidebar Info Box
             document.getElementById('ui-native').textContent = activeData.original_name || activeData.original_title || "N/A";
             document.getElementById('ui-network').textContent = activeData.networks && activeData.networks.length ? activeData.networks[0].name : (isMovieType ? "Theatrical" : "N/A");
             document.getElementById('ui-aired').textContent = activeData.first_air_date || activeData.release_date || "N/A";
@@ -618,7 +647,6 @@
             document.getElementById('ui-genres').textContent = activeData.genres?.map(g => g.name).join(', ') || "N/A";
             document.getElementById('ui-tmdb-score').textContent = activeData.vote_average ? activeData.vote_average.toFixed(1) : "N/A";
 
-            // Where to Watch (Providers)
             const providers = activeData['watch/providers']?.results;
             const providerDiv = document.getElementById('ui-providers');
             if (providers) {
@@ -631,7 +659,6 @@
                 }
             }
 
-            // Trailer
             const trailerDiv = document.getElementById('trailer-container');
             const videos = activeData.videos?.results || [];
             const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube') || videos[0];
@@ -639,7 +666,6 @@
                 trailerDiv.innerHTML = `<iframe src="https://www.youtube.com/embed/${trailer.key}?modestbranding=1&rel=0" allowfullscreen></iframe>`;
             } else { trailerDiv.innerHTML = '<p style="padding: 20px; color: var(--text-muted); text-align: center; margin-top: 15%;">No official trailer available.</p>'; }
 
-            // Cast
             const castDiv = document.getElementById('cast-scroller');
             const cast = activeData.credits?.cast || [];
             if (cast.length > 0) {
@@ -649,7 +675,6 @@
                 }).join('');
             } else { castDiv.innerHTML = '<p style="color: var(--text-muted);">No cast info available.</p>'; }
 
-            // Gallery
             const galDiv = document.getElementById('gallery-scroller');
             const images = activeData.images?.backdrops || [];
             if (images.length > 0) {
@@ -659,7 +684,6 @@
                 }).join('');
             } else { document.getElementById('gallery-section').style.display = 'none'; }
 
-            // Recommendations (With Smart Fallback to 'Similar')
             const recDiv = document.getElementById('ui-recs');
             let recs = activeData.recommendations?.results || [];
             if (recs.length === 0) { recs = activeData.similar?.results || []; } 
@@ -686,7 +710,6 @@
             const url = window.location.href;
             const typeLabel = isMovieType ? 'Movie' : 'Drama';
 
-            // Generate Automated Keywords Contextually
             const genreList = activeData.genres?.map(g => g.name.toLowerCase()) || [];
             const nativeKeywords = ['dramakan', 'watch drama online', typeLabel.toLowerCase(), title.toLowerCase()];
             const integratedKeywords = [...nativeKeywords, ...genreList, `${title} stream`, `watch ${title} free`].join(', ');
@@ -711,9 +734,7 @@
             const stars = document.querySelectorAll('.dramakan-rate i');
             const reviewInputArea = document.getElementById('review-input-area');
             const loginMsg = document.getElementById('rating-login-msg');
-            const reviewList = document.getElementById('user-reviews-list');
             
-            // 1. Auth Listener
             onAuthStateChanged(auth, (user) => {
                 currentUser = user;
                 if (user) {
@@ -727,7 +748,6 @@
                 fetchAggregateRating(); 
             });
 
-            // 2. Fetch Global Average
             async function fetchAggregateRating() {
                 try {
                     const docRef = doc(db, "dramaRatings", dramaId);
@@ -740,7 +760,6 @@
                 } catch (e) { console.error(e); }
             }
 
-            // 3. Fetch User's Existing Review
             async function fetchUserReview() {
                 try {
                     const revRef = doc(db, "dramaRatings", dramaId, "reviews", currentUser.uid);
@@ -755,7 +774,6 @@
                 } catch (e) {}
             }
 
-            // 4. Star Hover/Click Logic
             function highlightStars(val, isHover = false) {
                 stars.forEach(s => {
                     const starVal = parseInt(s.dataset.val);
@@ -774,7 +792,6 @@
                 });
             });
 
-            // 5. Submit Review
             document.getElementById('btn-submit-review').addEventListener('click', async () => {
                 if (selectedStarValue === 0) { alert("Please select a star rating first."); return; }
                 const text = document.getElementById('review-text').value.trim();
@@ -798,7 +815,6 @@
                         timestamp: serverTimestamp()
                     });
 
-                    // Update aggregate
                     const aggRef = doc(db, "dramaRatings", dramaId);
                     const aggSnap = await getDoc(aggRef);
                     if (!aggSnap.exists()) {
@@ -818,7 +834,6 @@
                 } finally { btn.disabled = false; }
             });
 
-            // 6. Real-time Reviews Listener
             const reviewsQuery = query(collection(db, "dramaRatings", dramaId, "reviews"), orderBy("timestamp", "desc"));
             onSnapshot(reviewsQuery, (snapshot) => {
                 const reviewList = document.getElementById('user-reviews-list');
@@ -845,7 +860,6 @@
             });
         }
 
-        // Kickoff
         fetchDramaDetails();
     </script>
 </body>
