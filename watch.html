@@ -628,7 +628,7 @@
             id: String(idStr),
             title: data.name || data.title || "Unknown",
             synopsis: data.overview || "No synopsis available.",
-            img: data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : "default-poster.jpg",
+            img: data.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${data.poster_path}` : "default-poster.jpg",
             backdrop_path: data.backdrop_path || "",
             imdbId: data.external_ids?.imdb_id || "",
             tmdbId: String(idStr),
@@ -657,7 +657,7 @@
             const fallbackInitial = encodeURIComponent(actor.name.charAt(0));
             const fallbackColor = "14151a";
             const imgUrl = actor.profile_path 
-                ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` 
+                ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w185${actor.profile_path}` 
                 : `https://via.placeholder.com/185x278/${fallbackColor}/8A2BE2?text=${fallbackInitial}`;
             
             return `
@@ -868,7 +868,7 @@
             
             // Link both poster versions securely 
             document.getElementById('ui-poster').src = activeData.img;
-            const backdropUrl = activeData.backdrop_path ? `https://image.tmdb.org/t/p/w780${activeData.backdrop_path}` : activeData.img;
+            const backdropUrl = activeData.backdrop_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${activeData.backdrop_path}` : activeData.img;
             const mobilePosterSource = document.getElementById('ui-poster-mobile');
             if(mobilePosterSource) mobilePosterSource.srcset = backdropUrl;
 
@@ -892,7 +892,7 @@
 
             // --- AMBILIGHT BACKDROP WORK ---
             if (activeData.backdrop_path) {
-                document.getElementById('ambilight-bg').src = `https://image.tmdb.org/t/p/w780${activeData.backdrop_path}`;
+                document.getElementById('ambilight-bg').src = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${activeData.backdrop_path}`;
             } else {
                 document.getElementById('ambilight-bg').src = activeData.img;
             }
@@ -1135,7 +1135,7 @@
 
                             // Dynamic Ambilight palette mutation based on episode specific keyframe maps
                             if (epData.still_path) {
-                                document.getElementById('ambilight-bg').src = `https://image.tmdb.org/t/p/w780${epData.still_path}`;
+                                document.getElementById('ambilight-bg').src = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${epData.still_path}`;
                             }
                         }
                     } catch (xrayErr) {
@@ -1458,7 +1458,7 @@
         if (similarItems && similarItems.length > 0) {
             const resultsArray = similarItems.slice(0, 4);
             recsContainer.innerHTML = resultsArray.map(rec => {
-                let poster = rec.poster_path ? `https://image.tmdb.org/t/p/w200${rec.poster_path}` : 'default-poster.jpg';
+                let poster = rec.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w200${rec.poster_path}` : 'default-poster.jpg';
                 const title = rec.name || rec.title || "Unknown";
                 const year = (rec.first_air_date || rec.release_date || "N/A").substring(0, 4);
                 const rating = rec.vote_average ? rec.vote_average.toFixed(1) : 'N/A';

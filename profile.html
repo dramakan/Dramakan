@@ -896,7 +896,7 @@
                         const limitedData = historyArr.slice(0, 4);
 
                         const updatedItems = await Promise.all(limitedData.map(async (item) => {
-                            let imgUrl = item.backdrop_path ? `https://image.tmdb.org/t/p/w780${item.backdrop_path}` : (item.backdrop || item.bgImg);
+                            let imgUrl = item.backdrop_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${item.backdrop_path}` : (item.backdrop || item.bgImg);
                             
                             if (!imgUrl) {
                                 try {
@@ -905,7 +905,7 @@
                                         if (!tmdbRes.ok) tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${item.id}?api_key=${tmdbKey}`);
                                         if (tmdbRes.ok) {
                                             const tmdbData = await tmdbRes.json();
-                                            if (tmdbData.backdrop_path) imgUrl = `https://image.tmdb.org/t/p/w780${tmdbData.backdrop_path}`;
+                                            if (tmdbData.backdrop_path) imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${tmdbData.backdrop_path}`;
                                         }
                                     }
                                     if (!imgUrl && item.title) {
@@ -913,12 +913,12 @@
                                         if (searchRes.ok) {
                                             const searchData = await searchRes.json();
                                             if (searchData.results && searchData.results.length > 0 && searchData.results[0].backdrop_path) {
-                                                imgUrl = `https://image.tmdb.org/t/p/w780${searchData.results[0].backdrop_path}`;
+                                                imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${searchData.results[0].backdrop_path}`;
                                             }
                                         }
                                     }
                                     if (imgUrl) {
-                                        item.backdrop_path = imgUrl.replace('https://image.tmdb.org/t/p/w780', '');
+                                        item.backdrop_path = imgUrl.replace('https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780', '');
                                         let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
                                         if(localHistory[item.id]) {
                                             localHistory[item.id].backdrop_path = item.backdrop_path;
@@ -1035,7 +1035,7 @@
                 return;
             }
             listContainer.innerHTML = arrayData.map(item => {
-                const imgUrl = item.backdrop_path ? `https://image.tmdb.org/t/p/w780${item.backdrop_path}` : (item.backdrop || item.bgImg || item.img);
+                const imgUrl = item.backdrop_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${item.backdrop_path}` : (item.backdrop || item.bgImg || item.img);
                 return `
                 <div class="modal-list-item">
                     <img src="${imgUrl}" class="modal-img-landscape" alt="${item.title}" onerror="this.src='${item.img}'">

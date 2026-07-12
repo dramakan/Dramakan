@@ -616,8 +616,8 @@
         // --- RENDER UI ---
         function renderUI() {
             const title = activeData.name || activeData.title;
-            const posterUrl = activeData.poster_path ? `https://image.tmdb.org/t/p/w500${activeData.poster_path}` : 'default.jpg';
-            const bgUrl = activeData.backdrop_path ? `https://image.tmdb.org/t/p/w1280${activeData.backdrop_path}` : posterUrl;
+            const posterUrl = activeData.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${activeData.poster_path}` : 'default.jpg';
+            const bgUrl = activeData.backdrop_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w1280${activeData.backdrop_path}` : posterUrl;
             
             const originalContentMarkdown = generateOriginalContent(activeData);
             
@@ -654,7 +654,7 @@
                 if (countryData && countryData.flatrate) {
                     document.getElementById('where-to-watch-widget').style.display = 'block';
                     providerDiv.innerHTML = countryData.flatrate.slice(0, 5).map(p => 
-                        `<img src="https://image.tmdb.org/t/p/w92${p.logo_path}" alt="${p.provider_name}" title="${p.provider_name}" class="provider-icon">`
+                        `<img src="https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w92${p.logo_path}" alt="${p.provider_name}" title="${p.provider_name}" class="provider-icon">`
                     ).join('');
                 }
             }
@@ -670,7 +670,7 @@
             const cast = activeData.credits?.cast || [];
             if (cast.length > 0) {
                 castDiv.innerHTML = cast.slice(0, 15).map(actor => {
-                    const img = actor.profile_path ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` : 'https://via.placeholder.com/120x180/14151a/8A2BE2?text=No+Image';
+                    const img = actor.profile_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w185${actor.profile_path}` : 'https://via.placeholder.com/120x180/14151a/8A2BE2?text=No+Image';
                     return `<div class="cast-card"><img src="${img}" alt="${actor.name}" loading="lazy"><h4>${actor.name}</h4><p>${actor.character}</p></div>`;
                 }).join('');
             } else { castDiv.innerHTML = '<p style="color: var(--text-muted);">No cast info available.</p>'; }
@@ -679,7 +679,7 @@
             const images = activeData.images?.backdrops || [];
             if (images.length > 0) {
                 galDiv.innerHTML = images.slice(0, 10).map(img => {
-                    const url = `https://image.tmdb.org/t/p/w780${img.file_path}`;
+                    const url = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${img.file_path}`;
                     return `<div class="gallery-card"><img src="${url}" loading="lazy" onclick="window.open('${url}', '_blank')"></div>`;
                 }).join('');
             } else { document.getElementById('gallery-section').style.display = 'none'; }
@@ -690,7 +690,7 @@
 
             if (recs.length > 0) {
                 recDiv.innerHTML = recs.slice(0, 5).map(rec => {
-                    let p = rec.poster_path ? `https://image.tmdb.org/t/p/w200${rec.poster_path}` : 'https://via.placeholder.com/60x90/14151a/8A2BE2?text=NA';
+                    let p = rec.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w200${rec.poster_path}` : 'https://via.placeholder.com/60x90/14151a/8A2BE2?text=NA';
                     const t = rec.name || rec.title;
                     const r = rec.vote_average ? rec.vote_average.toFixed(1) : 'N/A';
                     return `
@@ -705,7 +705,7 @@
         // --- DYNAMIC SEO ENGINE ---
         function updateSEO() {
             const title = activeData.name || activeData.title;
-            const posterUrl = activeData.poster_path ? `https://image.tmdb.org/t/p/w500${activeData.poster_path}` : '';
+            const posterUrl = activeData.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${activeData.poster_path}` : '';
             const synopsis = activeData.overview || "Watch your favorite dramas on DramaKan.";
             const url = window.location.href;
             const typeLabel = isMovieType ? 'Movie' : 'Drama';

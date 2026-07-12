@@ -728,7 +728,7 @@
                         cwSection.style.display = 'block';
 
                         const updatedItems = await Promise.all(historyArr.map(async (item) => {
-                            let imgUrl = item.backdrop_path ? `https://image.tmdb.org/t/p/w780${item.backdrop_path}` : (item.backdrop || item.bgImg);
+                            let imgUrl = item.backdrop_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${item.backdrop_path}` : (item.backdrop || item.bgImg);
                             
                             if (!imgUrl) {
                                 try {
@@ -739,7 +739,7 @@
                                         if (tmdbRes.ok) {
                                             const tmdbData = await tmdbRes.json();
                                             if (tmdbData.backdrop_path) {
-                                                imgUrl = `https://image.tmdb.org/t/p/w780${tmdbData.backdrop_path}`;
+                                                imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${tmdbData.backdrop_path}`;
                                             }
                                         }
                                     }
@@ -749,13 +749,13 @@
                                         if (searchRes.ok) {
                                             const searchData = await searchRes.json();
                                             if (searchData.results && searchData.results.length > 0 && searchData.results[0].backdrop_path) {
-                                                imgUrl = `https://image.tmdb.org/t/p/w780${searchData.results[0].backdrop_path}`;
+                                                imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${searchData.results[0].backdrop_path}`;
                                             }
                                         }
                                     }
                                     
                                     if (imgUrl) {
-                                        item.backdrop_path = imgUrl.replace('https://image.tmdb.org/t/p/w780', '');
+                                        item.backdrop_path = imgUrl.replace('https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780', '');
                                         let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
                                         if(localHistory[item.id]) {
                                             localHistory[item.id].backdrop_path = item.backdrop_path;
@@ -821,8 +821,8 @@
 
                 bannerItems.forEach((item, index) => {
                     const d = item.data;
-                    const bgImg = `https://image.tmdb.org/t/p/original${d.backdrop_path || d.poster_path}`;
-                    const mobileImg = `https://image.tmdb.org/t/p/w780${d.poster_path || d.backdrop_path}`;
+                    const bgImg = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/original${d.backdrop_path || d.poster_path}`;
+                    const mobileImg = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${d.poster_path || d.backdrop_path}`;
                     const titleText = d.name || d.title || "Featured Show";
                     const releaseYear = (d.first_air_date || d.release_date || "2026").substring(0, 4);
                     
@@ -968,7 +968,7 @@
                         .slice(0, 15).map(i => ({
                         id: String(i.id),
                         title: i.name || i.title,
-                        img: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : 'default-poster.jpg',
+                        img: i.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${i.poster_path}` : 'default-poster.jpg',
                         link: `details.html?id=${i.id}`,
                         type: "Trending Now"
                     }));
@@ -996,7 +996,7 @@
                                         const cleanMapped = (resData.results || []).slice(0, 15).map(i => ({
                                             id: String(i.id),
                                             title: i.name || i.title,
-                                            img: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : 'default-poster.jpg',
+                                            img: i.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${i.poster_path}` : 'default-poster.jpg',
                                             link: `details.html?id=${i.id}`,
                                             type: config.label
                                         }));
@@ -1077,7 +1077,7 @@
                         }));
 
                         listContainer.innerHTML = detailedItems.map(item => {
-                            const imgUrl = item.poster_path ? `https://image.tmdb.org/t/p/w200${item.poster_path}` : 'default-poster.jpg';
+                            const imgUrl = item.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w200${item.poster_path}` : 'default-poster.jpg';
                             const title = item.name || item.original_name;
                             const lang = item.original_language === 'ko' ? 'Korean' : item.original_language === 'zh' ? 'Chinese' : item.original_language === 'ja' ? 'Japanese' : 'Asian';
                             const sNum = item.season !== undefined ? item.season : 1;
@@ -1149,7 +1149,7 @@
                                 
                                 searchResults.innerHTML = resultsMapped.map(item => {
                                     const title = item.name || item.title;
-                                    const poster = item.poster_path ? `https://image.tmdb.org/t/p/w92${item.poster_path}` : 'default-poster.jpg';
+                                    const poster = item.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w92${item.poster_path}` : 'default-poster.jpg';
                                     return `
                                     <a href="details.html?id=${item.id}" class="search-result-item">
                                         <img src="${poster}" width="45" height="60" loading="lazy" decoding="async">
