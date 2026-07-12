@@ -597,10 +597,10 @@
     // --- AUTOMATIC TMDB GENERATOR FUNCTION ---
     async function autoGenerateFromTMDB(idStr) {
         let mediaType = 'tv';
-        let res = await fetch(`https://api.themoviedb.org/3/tv/${idStr}?api_key=${tmdbKey}&append_to_response=external_ids,credits`);
+        let res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${idStr}?api_key=${tmdbKey}&append_to_response=external_ids,credits`);
         
         if (!res.ok) {
-            res = await fetch(`https://api.themoviedb.org/3/movie/${idStr}?api_key=${tmdbKey}&append_to_response=external_ids,credits`);
+            res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${idStr}?api_key=${tmdbKey}&append_to_response=external_ids,credits`);
             mediaType = 'movie';
             if (!res.ok) return null; 
         }
@@ -836,20 +836,20 @@
                 
                 // Dynamically fetch backdrop if it is missing
                 if (!activeData.backdrop_path && activeTmdbId) {
-                    const detailRes = await fetch(`https://api.themoviedb.org/3/${isMovie}/${activeTmdbId}?api_key=${tmdbKey}`);
+                    const detailRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/${isMovie}/${activeTmdbId}?api_key=${tmdbKey}`);
                     if (detailRes.ok) {
                         const detailData = await detailRes.json();
                         if (detailData.backdrop_path) activeData.backdrop_path = detailData.backdrop_path;
                     }
                 }
 
-                const simRes = await fetch(`https://api.themoviedb.org/3/${isMovie}/${activeTmdbId}/similar?api_key=${tmdbKey}&page=1`);
+                const simRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/${isMovie}/${activeTmdbId}/similar?api_key=${tmdbKey}&page=1`);
                 if (simRes.ok) {
                     const simData = await simRes.json();
                     activeData.similar = simData.results || [];
                 }
                 
-                const castRes = await fetch(`https://api.themoviedb.org/3/${isMovie}/${activeTmdbId}/credits?api_key=${tmdbKey}`);
+                const castRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/${isMovie}/${activeTmdbId}/credits?api_key=${tmdbKey}`);
                 if (castRes.ok) {
                     const castData = await castRes.json();
                     activeData.fullCast = castData.cast || [];
@@ -1011,7 +1011,7 @@
                 
                 if (!isMovieType && activeTmdbId) {
                     try {
-                        const seasonRes = await fetch(`https://api.themoviedb.org/3/tv/${activeTmdbId}/season/${window.currentSeason}?api_key=${tmdbKey}`);
+                        const seasonRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${activeTmdbId}/season/${window.currentSeason}?api_key=${tmdbKey}`);
                         if (seasonRes.ok) {
                             const seasonDetails = await seasonRes.json();
                             if (seasonDetails.episodes) {
@@ -1102,7 +1102,7 @@
                     if (!isMovie && activeTmdbId && targetEp > 1) {
                         try {
                             const prevEpNum = targetEp - 1;
-                            const prevRes = await fetch(`https://api.themoviedb.org/3/tv/${activeTmdbId}/season/${targetSeason}/episode/${prevEpNum}?api_key=${tmdbKey}`);
+                            const prevRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${activeTmdbId}/season/${targetSeason}/episode/${prevEpNum}?api_key=${tmdbKey}`);
                             if (prevRes.ok) {
                                 const prevData = await prevRes.json();
                                 if (prevData.overview) {
@@ -1118,7 +1118,7 @@
                 // --- EPISODE X-RAY SYNC FACTORY ---
                 if (!isMovie && activeTmdbId) {
                     try {
-                        const epRes = await fetch(`https://api.themoviedb.org/3/tv/${activeTmdbId}/season/${targetSeason}/episode/${targetEp}?api_key=${tmdbKey}`);
+                        const epRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${activeTmdbId}/season/${targetSeason}/episode/${targetEp}?api_key=${tmdbKey}`);
                         if (epRes.ok) {
                             const epData = await epRes.json();
                             

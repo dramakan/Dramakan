@@ -901,15 +901,15 @@
                             if (!imgUrl) {
                                 try {
                                     if (item.id) {
-                                        let tmdbRes = await fetch(`https://api.themoviedb.org/3/tv/${item.id}?api_key=${tmdbKey}`);
-                                        if (!tmdbRes.ok) tmdbRes = await fetch(`https://api.themoviedb.org/3/movie/${item.id}?api_key=${tmdbKey}`);
+                                        let tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${item.id}?api_key=${tmdbKey}`);
+                                        if (!tmdbRes.ok) tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${item.id}?api_key=${tmdbKey}`);
                                         if (tmdbRes.ok) {
                                             const tmdbData = await tmdbRes.json();
                                             if (tmdbData.backdrop_path) imgUrl = `https://image.tmdb.org/t/p/w780${tmdbData.backdrop_path}`;
                                         }
                                     }
                                     if (!imgUrl && item.title) {
-                                        const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(item.title)}`);
+                                        const searchRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(item.title)}`);
                                         if (searchRes.ok) {
                                             const searchData = await searchRes.json();
                                             if (searchData.results && searchData.results.length > 0 && searchData.results[0].backdrop_path) {

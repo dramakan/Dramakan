@@ -733,8 +733,8 @@
                             if (!imgUrl) {
                                 try {
                                     if (item.id) {
-                                        let tmdbRes = await fetch(`https://api.themoviedb.org/3/tv/${item.id}?api_key=${tmdbKey}`);
-                                        if (!tmdbRes.ok) tmdbRes = await fetch(`https://api.themoviedb.org/3/movie/${item.id}?api_key=${tmdbKey}`);
+                                        let tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${item.id}?api_key=${tmdbKey}`);
+                                        if (!tmdbRes.ok) tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${item.id}?api_key=${tmdbKey}`);
                                         
                                         if (tmdbRes.ok) {
                                             const tmdbData = await tmdbRes.json();
@@ -745,7 +745,7 @@
                                     }
                                     
                                     if (!imgUrl && item.title) {
-                                        const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(item.title)}`);
+                                        const searchRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(item.title)}`);
                                         if (searchRes.ok) {
                                             const searchData = await searchRes.json();
                                             if (searchData.results && searchData.results.length > 0 && searchData.results[0].backdrop_path) {
@@ -798,8 +798,8 @@
         async function initializeDramaSite() {
             try {
                 const [koRes, zhRes] = await Promise.all([
-                    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=ko&sort_by=popularity.desc&without_genres=16&page=1`),
-                    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=zh&sort_by=popularity.desc&without_genres=16&page=1`)
+                    fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/discover/tv?api_key=${tmdbKey}&with_original_language=ko&sort_by=popularity.desc&without_genres=16&page=1`),
+                    fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/discover/tv?api_key=${tmdbKey}&with_original_language=zh&sort_by=popularity.desc&without_genres=16&page=1`)
                 ]);
 
                 const koData = await koRes.json();
@@ -960,7 +960,7 @@
 
                 startSlideShow();
 
-                const trendRes = await fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${tmdbKey}`);
+                const trendRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/trending/tv/week?api_key=${tmdbKey}`);
                 if (trendRes.ok) {
                     const dataTrend = await trendRes.json();
                     const items = (dataTrend.results || [])
@@ -977,11 +977,11 @@
                 }
 
                 const gridConfigs = [
-                    { id: 'kdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=ko&sort_by=popularity.desc&without_genres=16`, label: "K-Drama" },
-                    { id: 'cdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=zh&sort_by=popularity.desc&without_genres=16`, label: "C-Drama" },
-                    { id: 'jdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=ja&sort_by=popularity.desc&without_genres=16`, label: "J-Drama" },
-                    { id: 'usdrama-grid', url: `https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&with_original_language=en&with_origin_country=US&sort_by=popularity.desc&without_genres=16`, label: "US-Drama" },
-                    { id: 'Movie-grid', url: `https://api.themoviedb.org/3/discover/movie?api_key=${tmdbKey}&sort_by=popularity.desc&without_genres=16`, label: "Movie" }
+                    { id: 'kdrama-grid', url: `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/discover/tv?api_key=${tmdbKey}&with_original_language=ko&sort_by=popularity.desc&without_genres=16`, label: "K-Drama" },
+                    { id: 'cdrama-grid', url: `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/discover/tv?api_key=${tmdbKey}&with_original_language=zh&sort_by=popularity.desc&without_genres=16`, label: "C-Drama" },
+                    { id: 'jdrama-grid', url: `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/discover/tv?api_key=${tmdbKey}&with_original_language=ja&sort_by=popularity.desc&without_genres=16`, label: "J-Drama" },
+                    { id: 'usdrama-grid', url: `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/discover/tv?api_key=${tmdbKey}&with_original_language=en&with_origin_country=US&sort_by=popularity.desc&without_genres=16`, label: "US-Drama" },
+                    { id: 'Movie-grid', url: `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/discover/movie?api_key=${tmdbKey}&sort_by=popularity.desc&without_genres=16`, label: "Movie" }
                 ];
 
                 const gridObserver = new IntersectionObserver((entries, observer) => {
@@ -1038,7 +1038,7 @@
                 const displayDateStr = targetDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
                 try {
-                    const res = await fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${tmdbKey}&air_date.gte=${dateStr}&air_date.lte=${dateStr}&with_original_language=ko|zh|ja&sort_by=popularity.desc&without_genres=16`);
+                    const res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/discover/tv?api_key=${tmdbKey}&air_date.gte=${dateStr}&air_date.lte=${dateStr}&with_original_language=ko|zh|ja&sort_by=popularity.desc&without_genres=16`);
                     if (res.ok) {
                         const data = await res.json();
                         let items = data.results || [];
@@ -1052,7 +1052,7 @@
                         // Fetch specific episode details for each show to get exact Season and Episode
                         const detailedItems = await Promise.all(items.map(async (item) => {
                             try {
-                                const detailRes = await fetch(`https://api.themoviedb.org/3/tv/${item.id}?api_key=${tmdbKey}`);
+                                const detailRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${item.id}?api_key=${tmdbKey}`);
                                 if(detailRes.ok) {
                                     const detailData = await detailRes.json();
                                     
@@ -1140,7 +1140,7 @@
                         if (queryStr.length < 1) { searchResults.style.display = 'none'; return; }
                         
                         try {
-                            const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(queryStr)}`);
+                            const searchRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(queryStr)}`);
                             if (searchRes.ok) {
                                 const searchData = await searchRes.json();
                                 const resultsMapped = (searchData.results || [])

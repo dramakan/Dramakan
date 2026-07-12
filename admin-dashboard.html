@@ -685,7 +685,7 @@
 
                 // 2. Fetch TMDB Data for TMDB ID, Images & Seasons
                 if (tmdbKey !== "YOUR_TMDB_API_KEY") {
-                    const findRes = await fetch(`https://api.themoviedb.org/3/find/${imdbId}?api_key=${tmdbKey}&external_source=imdb_id`);
+                    const findRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/find/${imdbId}?api_key=${tmdbKey}&external_source=imdb_id`);
                     const findData = await findRes.json();
                     
                     let mediaType = '';
@@ -704,7 +704,7 @@
                         document.getElementById('cms-tmdb-id').value = tmdbId;
 
                         // Get Credits for Headshots
-                        const credRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${tmdbId}/credits?api_key=${tmdbKey}`);
+                        const credRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/${mediaType}/${tmdbId}/credits?api_key=${tmdbKey}`);
                         const credData = await credRes.json();
                         if (credData.cast && credData.cast.length > 0) {
                             if (credData.cast[0]?.profile_path) document.getElementById('cms-actor1-img').value = `https://image.tmdb.org/t/p/w500${credData.cast[0].profile_path}`;
@@ -713,7 +713,7 @@
 
                         // Get Detailed Metadata for Episode Counts
                         if (mediaType === 'tv') {
-                            const detailRes = await fetch(`https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${tmdbKey}`);
+                            const detailRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${tmdbId}?api_key=${tmdbKey}`);
                             const detailData = await detailRes.json();
                             if (detailData.seasons) {
                                 // Filters out Season 0 (Specials) and maps episode counts
