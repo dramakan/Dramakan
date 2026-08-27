@@ -39,6 +39,7 @@
     <script src="bottom-bar.js" defer></script>
 <script src="feedback-popup.js" defer></script>
     <script src="admin_easter_egg.js" defer></script>
+    <script type="module" src="global-login-popup.js" defer></script>
 
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3854581977852778" crossorigin="anonymous"></script>
 
@@ -55,6 +56,7 @@
             --text-main: #F8F8F8;
             --text-muted: #a1a1aa;
             --danger: #ff4757;
+            --star-gold: #f59e0b; /* Added for polished recommendations */
         }
 
         body { 
@@ -248,12 +250,11 @@
 
         /* --- RECOMMENDATIONS --- */
         .rec-list { display: flex; flex-direction: column; gap: 15px; }
-        .rec-card { display: flex; gap: 12px; align-items: center; text-decoration: none; transition: 0.3s; }
-        .rec-card:hover { transform: translateX(5px); }
-        .rec-card img { width: 60px; height: 85px; object-fit: cover; border-radius: 8px; }
-        .rec-info h4 { margin: 0 0 5px 0; font-size: 0.9rem; color: #fff; font-weight: 500; }
-        .rec-info p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
-        .rec-info .rating { color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .rec-card { display: flex; gap: 15px; align-items: center; text-decoration: none; transition: 0.3s; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 12px; border: 1px solid transparent;}
+        .rec-card:hover { background: rgba(255,255,255,0.05); border-color: var(--glass-border); transform: translateX(5px); }
+        .rec-card img { width: 60px; height: 90px; object-fit: cover; border-radius: 8px; }
+        .rec-info h4 { margin: 0 0 5px 0; font-size: 0.9rem; color: #fff; font-weight: 500; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
+        .rec-info p { margin: 0; font-size: 0.8rem; color: var(--primary); font-weight: 600;}
 
         /* --- MOBILE RESPONSIVE UPDATES --- */
         .mobile-only { display: none; }
@@ -396,7 +397,7 @@
                         <img id="ui-poster" src="" alt="Poster" class="about-poster">
                     </picture>
                     <div class="about-info">
-                        <h3>ABOUT THIS DRAMA</h3>
+                        <h3 id="ui-about-heading">ABOUT THIS TITLE</h3>
                         <p id="synopsis-text">Loading synopsis...</p>
                         <div class="meta-grid">
                             <div class="meta-label"><i class="far fa-user"></i> Director</div>
@@ -607,13 +608,21 @@ async function autoGenerateFromTMDB(idStr) {
     
     const data = await res.json();
     
-    let typeStr = mediaType === 'movie' ? 'Movie' : 'K-Drama'; 
-    if (data.origin_country && data.origin_country.length > 0) {
-        if (data.origin_country.includes('KR')) typeStr = 'K-Drama';
-        else if (data.origin_country.includes('CN')) typeStr = 'C-Drama';
-        else if (data.origin_country.includes('JP')) typeStr = 'J-Drama';
-        else if (data.origin_country.includes('TH')) typeStr = 'T-Drama';
-        else if (data.origin_country.includes('US') || data.origin_country.includes('GB')) typeStr = 'US-Drama';
+    // Dynamic Type Detection (Movie, Anime, Drama, or Show)
+    let typeStr = 'Show';
+    if (mediaType === 'movie') {
+        typeStr = 'Movie';
+    } else {
+        const isAnimation = data.genres && data.genres.some(g => g.id === 16);
+        const country = (data.origin_country && data.origin_country.length > 0) ? data.origin_country[0] : '';
+        
+        if (isAnimation && country === 'JP') {
+            typeStr = 'Anime';
+        } else if (['KR', 'CN', 'JP', 'TH', 'TW'].includes(country)) {
+            typeStr = 'Drama'; 
+        } else {
+            typeStr = 'Show';
+        }
     }
 
     let epsArr = [1];
@@ -863,7 +872,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         document.getElementById('bread-title').textContent = activeData.title;
         document.getElementById('ui-title').textContent = activeData.title;
-        
+        // Update "ABOUT THIS..." text dynamically
+        const displayType = activeData.type ? activeData.type.toUpperCase() : "TITLE";
+        document.getElementById('ui-about-heading').textContent = `ABOUT THIS ${displayType}`;
         document.getElementById('ui-poster').src = activeData.img;
         const backdropUrl = activeData.backdrop_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${activeData.backdrop_path}` : activeData.img;
         const mobilePosterSource = document.getElementById('ui-poster-mobile');
@@ -1445,20 +1456,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 function renderRecommendations(similarItems) {
     const recsContainer = document.getElementById('ui-recs');
     if (similarItems && similarItems.length > 0) {
-        const resultsArray = similarItems.slice(0, 4);
+        const resultsArray = similarItems.slice(0, 5);
         recsContainer.innerHTML = resultsArray.map(rec => {
             let poster = rec.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w200${rec.poster_path}` : 'default-poster.jpg';
             const title = rec.name || rec.title || "Unknown";
-            const year = (rec.first_air_date || rec.release_date || "N/A").substring(0, 4);
             const rating = rec.vote_average ? rec.vote_average.toFixed(1) : 'N/A';
             
             return `
             <a href="watch.html?id=${rec.id}" class="rec-card">
-                <img src="${poster}" alt="Poster" onerror="this.src='default-poster.jpg'">
+                <img src="${poster}" alt="${title}" loading="lazy" onerror="this.src='default-poster.jpg'">
                 <div class="rec-info">
                     <h4>${title}</h4>
-                    <p>${year}</p>
-                    <span class="rating"><i class="fas fa-star"></i> ${rating}</span>
+                    <p><i class="fas fa-star" style="color:var(--star-gold);"></i> ${rating}</p>
                 </div>
             </a>
             `;

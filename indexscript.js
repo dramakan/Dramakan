@@ -189,20 +189,22 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
 
             if (index === 2) {
-                if (['trending-grid', 'kdrama-grid', 'cdrama-grid', 'jdrama-grid', 'Movie-grid'].includes(elementId)) {
+                if (['trending-grid', 'everything-drama-grid', 'movie-grid', 'shows-grid', 'asian-grid', 'anime-grid'].includes(elementId)) {
                     let adSlot = "8531757983"; 
                     let layoutKey = "-6t+ed+2i-1n-4w"; 
                     
-                    if (elementId === 'kdrama-grid') {
+                    if (elementId === 'everything-drama-grid') {
                         adSlot = "2322807703"; layoutKey = "+21+s4-18-23+8q";
-                    } else if (elementId === 'jdrama-grid') {
+                    } else if (elementId === 'asian-grid') {
                         adSlot = "6975017511"; layoutKey = "+2a+rx+1+2-3";
-                    } else if (elementId === 'cdrama-grid') {
-                        adSlot = "[INSERT_CDRAMA_INFEED_ID_HERE]";
+                    } else if (elementId === 'shows-grid') {
+                        adSlot = "[INSERT_SHOWS_INFEED_ID_HERE]";
                     } else if (elementId === 'trending-grid') {
                         adSlot = "[INSERT_TRENDING_INFEED_ID_HERE]";
-                    } else if (elementId === 'Movie-grid') {
+                    } else if (elementId === 'movie-grid') {
                         adSlot = "[INSERT_MOVIE_INFEED_ID_HERE]";
+                    } else if (elementId === 'anime-grid') {
+                        adSlot = "[INSERT_ANIME_INFEED_ID_HERE]";
                     }
 
                     htmlContent += `
@@ -305,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     title: item.name || item.title || "Unknown Title",
                     img: item.poster || 'https://via.placeholder.com/500x750?text=No+Image',
                     link: item.embed_tmdb || `details.html?id=${item.tmdb_id}`, 
-                    type: "Trending TV"
+                    type: "Trending"
                 }));
                 
                 populateGrid('trending-grid', apiTrendingItems);
@@ -318,14 +320,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             const gridConfigs = [
-                { id: 'kdrama-grid', filterType: "K-Drama" },
-                { id: 'cdrama-grid', filterType: "C-Drama" },
-                { id: 'jdrama-grid', filterType: "J-Drama" },
-                { id: 'pdrama-grid', filterType: "P-Drama" },
-                { id: 'tdrama-grid', filterType: "T-Drama" },
-                { id: 'turkishdrama-grid', filterType: "Turkish-Drama" },
-                { id: 'usdrama-grid', filterType: "US-Drama" },
-                { id: 'Movie-grid', filterType: "Movie" },
+                { id: 'everything-drama-grid', filterType: "Everything Drama" },
+                { id: 'movie-grid', filterType: "Movie" },
+                { id: 'shows-grid', filterType: "Shows" },
+                { id: 'asian-grid', filterType: "Asian" },
+                { id: 'anime-grid', filterType: "Anime" },
                 { id: 'upcoming-grid', isUpcoming: true }
             ];
 
@@ -532,7 +531,7 @@ document.addEventListener("DOMContentLoaded", function() {
         openBtn.onclick = async () => {
             const { auth } = await getFirebase();
             if (!auth.currentUser) {
-                alert("You must be logged in to request a drama. Redirecting to Login...");
+                alert("You must be logged in to request content. Redirecting to Login...");
                 window.location.href = "login.html";
             } else { modal.style.display = "flex"; }
         };
@@ -814,3 +813,86 @@ async function initAuthSync() {
 }
 
 initAuthSync();
+document.addEventListener("DOMContentLoaded", function() {
+    const authModal = document.getElementById("authModal");
+    const closeAuthModal = document.getElementById("closeAuthModal");
+    const authForm = document.getElementById("authForm");
+    const authTitle = document.getElementById("authTitle");
+    const authSubtitle = document.getElementById("authSubtitle");
+    const authSubmitBtn = document.getElementById("authSubmitBtn");
+    const nameInputGroup = document.getElementById("nameInputGroup");
+    const authToggleText = document.getElementById("authToggleText");
+    
+    let isLogin = true;
+
+    // Toggle logic for Login / Sign Up
+    function bindToggleEvent() {
+        const authToggleBtn = document.getElementById("authToggleBtn");
+        if(authToggleBtn) {
+            authToggleBtn.addEventListener("click", () => {
+                isLogin = !isLogin;
+                if(isLogin) {
+                    authTitle.innerText = "Welcome Back";
+                    authSubtitle.innerText = "Login to continue your journey";
+                    nameInputGroup.style.display = "none";
+                    document.getElementById("authName").removeAttribute("required");
+                    authSubmitBtn.innerText = "Login";
+                    authToggleText.innerHTML = `Don't have an account? <span id="authToggleBtn" class="auth-toggle-link">Sign Up</span>`;
+                } else {
+                    authTitle.innerText = "Create Account";
+                    authSubtitle.innerText = "Join us and start tracking your favorites";
+                    nameInputGroup.style.display = "block";
+                    document.getElementById("authName").setAttribute("required", "true");
+                    authSubmitBtn.innerText = "Sign Up";
+                    authToggleText.innerHTML = `Already have an account? <span id="authToggleBtn" class="auth-toggle-link">Login</span>`;
+                }
+                bindToggleEvent(); // Re-bind after rewriting innerHTML
+            });
+        }
+    }
+    bindToggleEvent();
+
+    // Close Modal Logic
+    if(closeAuthModal) closeAuthModal.onclick = () => authModal.style.display = "none";
+    window.addEventListener("click", (e) => { if(e.target === authModal) authModal.style.display = "none"; });
+
+    // Intercept Auth Button Clicks (Overrides navigation to login.html)
+    const topAuthBtn = document.getElementById("topAuthBtn");
+    const bottomAuthBtn = document.getElementById("bottomAuthBtn");
+
+    function handleAuthInteraction(e) {
+        // If the button explicitly says "Login" or has the default user icon without an avatar, open the modal
+        if (this.innerText.includes("Login") || (this.innerHTML.includes("fa-user") && !this.innerHTML.includes("img"))) {
+            e.preventDefault();
+            authModal.style.display = "flex";
+        }
+    }
+
+    if (topAuthBtn) topAuthBtn.addEventListener("click", handleAuthInteraction);
+    if (bottomAuthBtn) bottomAuthBtn.addEventListener("click", handleAuthInteraction);
+
+    // Form Submission UI Handler (Visual only - hook up your Firebase auth here)
+    if(authForm) {
+        authForm.onsubmit = (e) => {
+            e.preventDefault();
+            const status = document.getElementById("authStatusMessage");
+            authSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            authSubmitBtn.disabled = true;
+
+            // TODO: Replace setTimeout with actual Firebase signInWithEmailAndPassword or createUserWithEmailAndPassword
+            setTimeout(() => {
+                status.style.display = "block";
+                status.style.color = "#10b981";
+                status.innerHTML = `<i class='fas fa-check-circle'></i> ${isLogin ? 'Login successful!' : 'Account created!'}`;
+                
+                setTimeout(() => { 
+                    authModal.style.display = "none"; 
+                    status.style.display = "none";
+                    authSubmitBtn.innerText = isLogin ? "Login" : "Sign Up";
+                    authSubmitBtn.disabled = false;
+                    authForm.reset();
+                }, 1500);
+            }, 1000);
+        };
+    }
+});
