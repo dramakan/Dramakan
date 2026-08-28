@@ -895,4 +895,156 @@ document.addEventListener("DOMContentLoaded", function() {
             }, 1000);
         };
     }
+    // --- 1. AD-FREE REWARD SYSTEM LOGIC ---
+const adFreeKey = 'dramakan_ad_free_expiry';
+function checkAdFreeStatus() {
+    const expiry = localStorage.getItem(adFreeKey);
+    if (expiry && Date.now() < parseInt(expiry)) {
+        document.body.classList.add('premium-ad-free-mode');
+        const btn = document.getElementById('adFreeBtn');
+        if(btn) btn.innerHTML = '<i class="fas fa-check"></i> Ad-Free Active';
+    }
+}
+checkAdFreeStatus(); // Run instantly on load
+
+const adFreeBtn = document.getElementById('adFreeBtn');
+if (adFreeBtn) {
+    adFreeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // TRIGGER MONETAG REWARDED AD HERE.
+        // Example: if (typeof show_8531757 === 'function') { show_8531757().then(() => { ... }) }
+        
+        // Simulating the reward completion:
+        alert("Watch this short sponsor message to unlock 24 Hours of Ad-Free streaming!");
+        setTimeout(() => {
+            const oneDay = 24 * 60 * 60 * 1000;
+            localStorage.setItem(adFreeKey, Date.now() + oneDay);
+            alert("Thank you! Enjoy 24 hours of uninterrupted, ad-free streaming.");
+            location.reload(); // Reload to remove CSS ads
+        }, 2000); 
+    });
+}
+
+// --- 2. SKELETON LOADER GENERATOR ---
+function setSkeletons(elementId, count = 10) {
+    const grid = document.getElementById(elementId);
+    if (!grid) return;
+    grid.innerHTML = Array(count).fill('<div class="drama-card skeleton skeleton-card"></div>').join('');
+}
+
+// --- 3. UPDATED GRID POPULATOR (WITH METADATA & DATA-ATTRIBUTES) ---
+function populateGrid(elementId, items) {
+    const grid = document.getElementById(elementId);
+    if (!grid) return;
+    
+    let htmlContent = '';
+    const isAdFree = document.body.classList.contains('premium-ad-free-mode');
+    
+    items.forEach((drama, index) => {
+        const safeTitle = encodeURIComponent(drama.title);
+        const safeImg = encodeURIComponent(drama.img);
+        const safeLink = encodeURIComponent(drama.link);
+        const rating = drama.vote_average ? drama.vote_average.toFixed(1) : "NR";
+        const year = drama.release_date ? drama.release_date.substring(0,4) : "2026";
+        const isMovie = drama.type && drama.type.toLowerCase().includes('movie') ? 'movie' : 'tv';
+        
+        htmlContent += `
+        <a href="${drama.link}" class="drama-card" data-id="${drama.id}" data-type="${isMovie}">
+            <div class="drama-card-img">
+                <img src="${drama.img}" alt="${drama.title}" loading="lazy" decoding="async">
+            </div>
+            <div class="drama-card-info">
+                <h3 class="drama-card-title">${drama.title}</h3>
+                <div class="drama-card-meta">
+                    <span class="rating-tag"><i class="fas fa-star"></i> ${rating}</span> 
+                    <span>${year}</span>
+                    <span style="color: var(--primary-color); font-weight:600;">${drama.type}</span>
+                </div>
+            </div>
+            <button class="bookmark-btn" onclick="event.preventDefault(); window.toggleMyList(this, '${safeTitle}', '${safeImg}', '${safeLink}', '${drama.id}')" title="Add to My List">
+                <i class="fas fa-plus"></i>
+            </button>
+        </a>
+        `;
+
+        // Inject Monetag Native Ad if not ad-free
+        if (index === 2 && !isAdFree) {
+            if (['trending-grid', 'everything-drama-grid', 'movie-grid', 'shows-grid', 'asian-grid', 'anime-grid'].includes(elementId)) {
+                htmlContent += `
+                <div class="drama-card ad-card-wrapper">
+                    <ins class="adsbygoogle" style="display:block; width:100%; height:100%;" data-ad-format="fluid" data-ad-layout-key="-6t+ed+2i-1n-4w" data-ad-client="ca-pub-3854581977852778" data-ad-slot="8531757983"></ins>
+                </div>`;
+            }
+        }
+    });
+
+    grid.innerHTML = htmlContent;
+}
+
+// --- 4. NETFLIX-STYLE HOVER AUTOPLAY TRAILER LOGIC ---
+document.addEventListener('mouseover', (e) => {
+    const card = e.target.closest('.drama-card');
+    // Only fetch trailers on PC views to save mobile data/API limits
+    if (card && window.innerWidth > 992) {
+        card.hoverTimer = setTimeout(async () => {
+            const imgWrap = card.querySelector('.drama-card-img');
+            if (!imgWrap || imgWrap.querySelector('iframe')) return; // Already loaded
+            
+            const id = card.dataset.id;
+            const type = card.dataset.type || 'tv';
+            
+            try {
+                const res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/${type}/${id}/videos?api_key=${tmdbKey}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube') || data.results[0];
+                    if (trailer) {
+                        imgWrap.innerHTML += `<iframe class="card-hover-video" src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&controls=0&modestbranding=1&loop=1&playlist=${trailer.key}" frameborder="0" allow="autoplay" allowfullscreen></iframe>`;
+                    }
+                }
+            } catch(err) { console.warn('Trailer fetch failed'); }
+        }, 1200); // Wait 1.2 seconds before fetching to prevent spamming the API while users scroll quickly
+    }
+}, true);
+
+document.addEventListener('mouseout', (e) => {
+    const card = e.target.closest('.drama-card');
+    if (card) {
+        clearTimeout(card.hoverTimer);
+        const iframe = card.querySelector('iframe');
+        if (iframe) iframe.remove(); // Destroy iframe to save memory
+    }
+}, true);
+
+// --- 5. DYNAMIC "FOR YOU" RECOMMENDATION ENGINE ---
+async function loadDynamicForYou() {
+    const histObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+    const histArr = Object.values(histObj).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    
+    if (histArr.length > 0) {
+        const lastWatched = histArr[0];
+        document.getElementById('foryou-section').style.display = 'block';
+        setSkeletons('foryou-grid', 8);
+
+        try {
+            // Check if the last watched item was a movie or TV show
+            const type = lastWatched.type && lastWatched.type.toLowerCase().includes('movie') ? 'movie' : 'tv';
+            const res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/${type}/${lastWatched.id}/recommendations?api_key=${tmdbKey}`);
+            
+            if (res.ok) {
+                const data = await res.json();
+                const mappedData = data.results.slice(0, 10).map(i => ({
+                    id: String(i.id),
+                    title: i.name || i.title,
+                    img: i.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${i.poster_path}` : 'default-poster.jpg',
+                    link: `details.html?id=${i.id}`,
+                    type: "For You",
+                    vote_average: i.vote_average,
+                    release_date: i.first_air_date || i.release_date
+                }));
+                populateGrid('foryou-grid', mappedData);
+            }
+        } catch(e) { console.warn("For you failed", e); }
+    }
+}
 });
