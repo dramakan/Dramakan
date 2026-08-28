@@ -5,17 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Drama Details - DramaKan</title>
 
-    <meta id="seo-description" name="description" content="Watch your favorite dramas on DramaKan.">
-    <meta id="seo-keywords" name="keywords" content="dramakan, kdrama, watch drama online">
-    
+    <!-- Standard & SEO Meta Tags -->
+    <meta id="seo-description" name="description" content="Watch your favorite dramas, movies, and anime on DramaKan.">
+    <meta id="seo-keywords" name="keywords" content="dramakan, kdrama, watch drama online, movies, anime">
+    <link id="canonical-url" rel="canonical" href="">
+
+    <!-- OpenGraph / Facebook / WhatsApp / Telegram Meta Tags -->
     <meta id="og-title" property="og:title" content="Drama Details - DramaKan">
-    <meta id="og-description" property="og:description" content="Watch your favorite dramas on DramaKan.">
+    <meta id="og-description" property="og:description" content="Watch your favorite dramas, movies, and anime on DramaKan.">
     <meta id="og-image" property="og:image" content="">
+    <meta id="og-image-alt" property="og:image:alt" content="Drama Poster">
     <meta id="og-url" property="og:url" content="">
     <meta property="og:type" content="video.tv_show">
+    <meta property="og:site_name" content="DramaKan">
     
+    <!-- Twitter / X Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
     <meta id="tw-title" name="twitter:title" content="Drama Details - DramaKan">
-    <meta id="tw-description" name="twitter:description" content="Watch your favorite dramas on DramaKan.">
+    <meta id="tw-description" name="twitter:description" content="Watch your favorite dramas, movies, and anime on DramaKan.">
     <meta id="tw-image" name="twitter:image" content="">
 
     <!-- GOOGLE ADSENSE PREPARATION -->
@@ -52,12 +59,71 @@
         /* --- HEADER --- */
         .main-header {
             background: rgba(11, 12, 16, 0.85); backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
             padding: 15px 4%; position: fixed; top: 0; width: 100%; z-index: 1000;
             display: flex; align-items: center; justify-content: space-between;
         }
         .logo { font-size: 1.8rem; font-weight: 700; color: #fff; text-decoration: none; }
         .logo span { color: var(--primary); }
+
+        /* Share Button Top Right (Theme-Matched) */
+        .header-share-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            outline: none;
+        }
+        .header-share-btn:hover {
+            background: rgba(138, 43, 226, 0.25);
+            border-color: var(--primary);
+            color: #fff;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        }
+        .header-share-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Toast Notification for Link Copy */
+        .dk-toast {
+            position: fixed;
+            top: 75px;
+            right: 4%;
+            background: rgba(20, 20, 28, 0.95);
+            border: 1px solid var(--primary);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(138, 43, 226, 0.3);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 10000;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .dk-toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         /* --- CINEMATIC HERO SECTION --- */
         .hero-section {
@@ -324,7 +390,18 @@
 
     <header class="main-header">
         <a href="index.html" class="logo">Drama<span>Kan</span></a>
+        
+        <!-- Top Right Share Button -->
+        <button id="headerShareBtn" class="header-share-btn" title="Share Drama" aria-label="Share">
+            <i class="fa-solid fa-share"></i>
+        </button>
     </header>
+
+    <!-- Toast Notification -->
+    <div id="shareToast" class="dk-toast">
+        <i class="fas fa-check-circle" style="color: var(--primary);"></i>
+        <span>Link copied to clipboard!</span>
+    </div>
 
     <section class="hero-section">
         <img id="hero-bg" class="hero-backdrop" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Backdrop">
@@ -547,6 +624,63 @@
         }, { threshold: 0.1 });
         document.querySelectorAll('.reveal-anim').forEach(el => observer.observe(el));
 
+        // --- TOAST NOTIFICATION ---
+        function showToast(msg = "Link copied to clipboard!") {
+            const toast = document.getElementById('shareToast');
+            if (!toast) return;
+            toast.querySelector('span').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        // --- NATIVE / CLIPBOARD SHARE LOGIC ---
+        async function handleShare() {
+            const title = activeData ? (activeData.name || activeData.title) : document.title;
+            const overview = activeData?.overview ? (activeData.overview.slice(0, 100) + '...') : "Watch on DramaKan!";
+            const shareUrl = window.location.href;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: `${title} - DramaKan`,
+                        text: `Watch ${title} on DramaKan!\n${overview}`,
+                        url: shareUrl
+                    });
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        copyToClipboard(shareUrl);
+                    }
+                }
+            } else {
+                copyToClipboard(shareUrl);
+            }
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Link copied to clipboard!");
+                }).catch(() => {
+                    fallbackPrompt(text);
+                });
+            } else {
+                fallbackPrompt(text);
+            }
+        }
+
+        function fallbackPrompt(text) {
+            prompt("Copy this link to share:", text);
+        }
+
+        const shareBtn = document.getElementById('headerShareBtn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                handleShare();
+            });
+        }
 
         // --- TMDB DATA FETCHING ---
         async function fetchDramaDetails() {
@@ -703,11 +837,12 @@
             } else { recDiv.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">No similar shows found.</p>'; }
         }
 
-        // --- DYNAMIC SEO ENGINE ---
+        // --- DYNAMIC SEO & SOCIAL SHARING ENGINE (PORTRAIT POSTER) ---
         function updateSEO() {
             const title = activeData.name || activeData.title;
-            const posterUrl = activeData.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${activeData.poster_path}` : '';
-            const synopsis = activeData.overview || "Watch your favorite dramas on DramaKan.";
+            // High-resolution Portrait poster for dynamic link preview
+            const portraitPosterUrl = activeData.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${activeData.poster_path}` : '';
+            const synopsis = activeData.overview || "Watch your favorite dramas, movies, and anime on DramaKan.";
             const url = window.location.href;
             const typeLabel = isMovieType ? 'Movie' : 'Drama';
 
@@ -715,19 +850,27 @@
             const nativeKeywords = ['dramakan', 'watch drama online', typeLabel.toLowerCase(), title.toLowerCase()];
             const integratedKeywords = [...nativeKeywords, ...genreList, `${title} stream`, `watch ${title} free`].join(', ');
 
+            // Document Title
             document.title = `${title} - Drama Details | DramaKan`;
             
+            // Canonical URL
+            const canonicalEl = document.getElementById('canonical-url');
+            if (canonicalEl) canonicalEl.href = url;
+
+            // Search Meta
             document.getElementById('seo-description').content = synopsis.slice(0, 160);
             document.getElementById('seo-keywords').content = integratedKeywords;
             
+            // OpenGraph / WhatsApp / Telegram Meta
             document.getElementById('og-title').content = `${title} - DramaKan`;
             document.getElementById('og-description').content = synopsis.slice(0, 160);
-            document.getElementById('og-image').content = posterUrl;
+            document.getElementById('og-image').content = portraitPosterUrl;
             document.getElementById('og-url').content = url;
 
+            // Twitter / X Meta
             document.getElementById('tw-title').content = `${title} - DramaKan`;
             document.getElementById('tw-description').content = synopsis.slice(0, 160);
-            document.getElementById('tw-image').content = posterUrl;
+            document.getElementById('tw-image').content = portraitPosterUrl;
         }
 
         // --- REVIEWS & RATINGS ENGINE ---
