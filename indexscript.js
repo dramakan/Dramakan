@@ -981,38 +981,62 @@ function populateGrid(elementId, items) {
     grid.innerHTML = htmlContent;
 }
 
-// --- 4. NETFLIX-STYLE HOVER AUTOPLAY TRAILER LOGIC ---
+// --- NETFLIX HOVER AUTOPLAY TRAILER LOGIC ---
+const trailerCache = new Map();
+
 document.addEventListener('mouseover', (e) => {
     const card = e.target.closest('.drama-card');
-    // Only fetch trailers on PC views to save mobile data/API limits
-    if (card && window.innerWidth > 992) {
-        card.hoverTimer = setTimeout(async () => {
-            const imgWrap = card.querySelector('.drama-card-img');
-            if (!imgWrap || imgWrap.querySelector('iframe')) return; // Already loaded
-            
-            const id = card.dataset.id;
-            const type = card.dataset.type || 'tv';
-            
-            try {
-                const res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/${type}/${id}/videos?api_key=${tmdbKey}`);
+    if (!card || window.innerWidth <= 992) return;
+
+    // Debounce hover to prevent API spam while scrolling
+    card.hoverTimer = setTimeout(async () => {
+        const imgWrap = card.querySelector('.drama-card-img');
+        if (!imgWrap || imgWrap.querySelector('.card-hover-video')) return;
+
+        const id = card.dataset.id;
+        const type = card.dataset.type || 'tv';
+        if (!id || id === 'undefined') return;
+
+        try {
+            let trailerKey = trailerCache.get(`${type}_${id}`);
+
+            if (!trailerKey) {
+                const res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/${type}/${id}/videos?api_key=${tmdbKey}`);
                 if (res.ok) {
                     const data = await res.json();
-                    const trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube') || data.results[0];
-                    if (trailer) {
-                        imgWrap.innerHTML += `<iframe class="card-hover-video" src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&controls=0&modestbranding=1&loop=1&playlist=${trailer.key}" frameborder="0" allow="autoplay" allowfullscreen></iframe>`;
+                    const results = data.results || [];
+                    const trailer = results.find(v => v.type === 'Trailer' && v.site === 'YouTube') 
+                                 || results.find(v => v.site === 'YouTube') 
+                                 || results[0];
+                    if (trailer && trailer.key) {
+                        trailerKey = trailer.key;
+                        trailerCache.set(`${type}_${id}`, trailerKey);
                     }
                 }
-            } catch(err) { console.warn('Trailer fetch failed'); }
-        }, 1200); // Wait 1.2 seconds before fetching to prevent spamming the API while users scroll quickly
-    }
+            }
+
+            if (trailerKey && !imgWrap.querySelector('.card-hover-video')) {
+                const iframe = document.createElement('iframe');
+                iframe.className = 'card-hover-video';
+                iframe.src = `https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&mute=1&controls=0&modestbranding=1&loop=1&playlist=${trailerKey}&playsinline=1&rel=0`;
+                iframe.setAttribute('allow', 'autoplay; encrypted-media');
+                iframe.setAttribute('frameborder', '0');
+                imgWrap.appendChild(iframe);
+            }
+        } catch (err) {
+            console.warn('Trailer autoplay failed:', err);
+        }
+    }, 700); // 700ms hover delay
 }, true);
 
 document.addEventListener('mouseout', (e) => {
     const card = e.target.closest('.drama-card');
     if (card) {
         clearTimeout(card.hoverTimer);
-        const iframe = card.querySelector('iframe');
-        if (iframe) iframe.remove(); // Destroy iframe to save memory
+        const iframe = card.querySelector('.card-hover-video');
+        if (iframe) {
+            iframe.remove(); // Unload iframe to stop audio & free RAM
+        }
     }
 }, true);
 
