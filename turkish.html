@@ -78,10 +78,8 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="https://dramakan.site/og-image.jpg"> 
 <script src="bottom-bar.js" defer></script>
-<script src="feedback-popup.js" defer></script><script src="lightmode.js"></script> 
+<script src="feedback-popup.js" defer></script>    
     
-    
-    <link rel="stylesheet" href="lightmode.css"> 
 </head>
 <body>
 
@@ -99,23 +97,11 @@
         <div id="drama-grid" class="drama-grid"></div>
     </main>
 
-    <script>
-        async function loadDramas() {
-            const grid = document.getElementById('drama-grid');
-            try {
-                const response = await fetch('dramas.json');
-                const allDramas = await response.json();
-                const filtered = allDramas.filter(d => d.type === "Turkish-Drama");
-                grid.innerHTML = filtered.map(drama => `
-                    <a href="${drama.link}" class="drama-card">
-                        <div class="drama-card-img"><img loading="lazy" src="${drama.img}" alt="${drama.title}"></div>
-                        <div class="drama-card-info"><h3 class="drama-card-title">${drama.title}</h3></div>
-                    </a>
-                `).join('');
-            } catch (e) { grid.innerHTML = "<p>Failed to load dramas.</p>"; }
-        }
-        window.onload = loadDramas;
+    <script type="module">
+        import { loadDramasFromJson } from './json-category.js';
+        loadDramasFromJson(d => d.type === "Turkish-Drama");
     </script>
+
 <link rel="stylesheet" href="bottom-bar.css"> 
 <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item active">
@@ -140,6 +126,5 @@
             <span class="nav-label">Sign In</span>
         </a>
     </nav>
-<script src="/js/bottom-bar.js"></script>
 </body>
 </html>
