@@ -37,11 +37,9 @@
     <link rel="stylesheet" href="bottom-bar.css"> 
 
     <script src="bottom-bar.js" defer></script>
-<script src="feedback-popup.js" defer></script>
+    <script src="feedback-popup.js" defer></script>
     <script src="admin_easter_egg.js" defer></script>
     <script type="module" src="global-login-popup.js" defer></script>
-
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3854581977852778" crossorigin="anonymous"></script>
 
     <style>
         :root {
@@ -56,7 +54,7 @@
             --text-main: #F8F8F8;
             --text-muted: #a1a1aa;
             --danger: #ff4757;
-            --star-gold: #f59e0b; /* Added for polished recommendations */
+            --star-gold: #f59e0b;
         }
 
         body { 
@@ -156,32 +154,135 @@
         .catchup-content h6 { color: #fff; font-size: 0.95rem; margin: 0 0 15px 0; font-weight: 500;}
         .catchup-content p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; margin: 0 0 25px 0; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 
-        
         /* Server Notice Banner */
         .server-notice {
             background: rgba(138, 43, 226, 0.1); border-left: 4px solid var(--primary); color: #e2e8f0;
-            padding: 12px 15px; border-radius: 0 8px 8px 0; margin-top: 15px; font-size: 0.85rem;
+            padding: 12px 15px; border-radius: 0 8px 8px 0; 
+            margin-top: 0; 
+            margin-bottom: 0;
+            font-size: 0.85rem;
             display: flex; align-items: center; gap: 10px;
         }
         .server-notice i { color: var(--primary); font-size: 1.1rem; }
 
-        /* --- SERVERS & QUICK ACTIONS --- */
-        .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .control-panel { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; }
-        .panel-title { color: var(--primary); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px; }
+        /* =====================================================
+           PREMIUM WATCH ACTION BAR
+        ===================================================== */
+        .watch-action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(20, 20, 28, 0.55);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 12px 25px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .server-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 10px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+        }
         
-        .quick-actions { display: flex; justify-content: space-between; align-items: center; }
-        .q-action { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); background: none; border: none; cursor: pointer; transition: 0.3s; }
-        .q-action i { font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); transition: 0.3s; }
-        .q-action span { font-size: 0.75rem; font-family: 'Poppins'; }
+        .server-wrapper i { color: var(--primary); font-size: 1.1rem; }
+        
+        .server-dropdown {
+            background: transparent;
+            color: #fff;
+            border: none;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .server-dropdown option { background: var(--bg-panel); color: #fff; }
+        
+        .quick-actions { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+        
+        .q-action {
+            display: flex; flex-direction: column; align-items: center; gap: 6px; 
+            color: var(--text-muted); background: none; border: none; cursor: pointer; transition: 0.3s; 
+        }
+        .q-action i {
+            font-size: 1.1rem; 
+            background: rgba(255,255,255,0.05); 
+            width: 42px; height: 42px; 
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 50%; 
+            border: 1px solid var(--glass-border); 
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
+        }
+        .q-action span { font-size: 0.75rem; font-weight: 500; font-family: 'Poppins'; }
+        
         .q-action:hover { color: #fff; }
-        .q-action:hover i { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+        .q-action:hover i { 
+            background: var(--primary); 
+            border-color: var(--primary); 
+            color: #fff; 
+            box-shadow: 0 4px 15px var(--primary-glow); 
+            transform: translateY(-3px); 
+        }
         .q-action.disabled { opacity: 0.3 !important; pointer-events: none !important; }
+
+        /* =====================================================
+           WATCH PAGE CLEAN RESPONSIVE AD STYLES
+        ===================================================== */
+        .watch-ad-section {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: -5px 0; /* Pulls ad tight into the natural gap */
+            box-sizing: border-box;
+        }
+
+        .watch-ad-container {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-panel);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            overflow: hidden;
+        }
+
+        .adcash-watch-wrapper {
+            width: 728px;
+            height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .adcash-watch-wrapper iframe {
+            border: none;
+            max-width: 100%;
+        }
+
+        /* Auto-Hide Logic via CSS */
+        .adcash-watch-wrapper:empty,
+        .adcash-watch-wrapper iframe[height="0"] {
+            display: none;
+        }
+        .watch-ad-container:has(.adcash-watch-wrapper:empty) {
+            display: none;
+        }
 
         #light-off-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 990; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
         #light-off-overlay.active { opacity: 1; pointer-events: auto; cursor: pointer; }
         .video-player-container.light-on { z-index: 995; position: relative; box-shadow: 0 0 50px rgba(138, 43, 226, 0.2); }
-        .video-player-container.pip-mode { position: fixed; bottom: 80px; right: 20px; width: 350px; height: 197px; z-index: 2000; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); border: 2px solid var(--primary); animation: popIn 0.3s ease; }
         @keyframes popIn { 0% { transform: scale(0.8); opacity: 0;} 100% { transform: scale(1); opacity: 1;} }
 
         /* Report Modal Styles */
@@ -209,6 +310,10 @@
         .meta-val { color: #fff; font-weight: 500; }
         .tag-pill { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 2px 8px; border-radius: 50px; font-size: 0.75rem; color: var(--text-muted); margin-right: 5px; display: inline-block; }
 
+        /* --- CONTROL PANELS --- */
+        .control-panel { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; }
+        .panel-title { color: var(--primary); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px; }
+
        /* --- CAST SCROLLER SECTION --- */
         .cast-scroller { 
             display: flex; 
@@ -217,7 +322,6 @@
             padding-bottom: 12px; 
             scrollbar-width: thin; 
             scrollbar-color: var(--primary) rgba(255,255,255,0.05);
-            /* Limits exactly to 8 cards (100px each) + 7 gaps (15px each) */
             max-width: calc((100px * 8) + (15px * 7)); 
             width: 100%;
         }
@@ -263,24 +367,27 @@
             .main-column, .sidebar-column { display: contents; }
             .video-player-container { order: 1; }
             .server-notice { order: 2; margin-top: -10px; margin-bottom: 10px; }
-            .controls-grid { order: 4; width: 100%; grid-template-columns: 1fr; }
-            .video-player-container.pip-mode { width: 250px; height: 140px; bottom: 85px; right: 10px; }
-            .sidebar-widget.episodes-widget { order: 5; margin-top: 10px; width: 100%; box-sizing: border-box; }
+            .watch-action-bar { order: 4; flex-direction: column; gap: 15px; padding: 15px; width: 100%; box-sizing: border-box; }
+            .server-wrapper { width: 100%; justify-content: space-between; box-sizing: border-box; }
+            .quick-actions { width: 100%; justify-content: space-between; }
+            
+            .watch-ad-section { order: 5; margin: 10px 0; padding: 0; }
+            .watch-ad-container { width: 100%; max-width: 350px; height: 52px; padding: 0; border-radius: 10px; }
+            .adcash-watch-wrapper { transform: scale(0.44); transform-origin: center center; flex-shrink: 0; }
+            
+            .sidebar-widget.episodes-widget { order: 6; margin-top: 10px; width: 100%; box-sizing: border-box; }
             .episodes-timeline { flex-direction: column; max-height: 300px; gap: 10px; padding-bottom: 0; }
             .ep-timeline-item { flex-direction: row; min-width: 0; background: transparent; border: none; padding: 10px; justify-content: flex-start; text-align: left; }
-            .ep-timeline-item:hover { background: rgba(255,255,255,0.03); }
             .ep-timeline-item.active { background: rgba(138,43,226,0.1); border: 1px solid rgba(138,43,226,0.3); }
             .ep-icon { display: flex; } .ep-duration { display: block; }
             .ep-info-text h4 { font-size: 0.9rem; font-weight: 500; }
             
-            .about-drama { order: 6; flex-direction: column; margin-top: 10px; width: 100%; box-sizing: border-box; }
-            
-            /* The critical fix for the mobile landscape poster */
+            .about-drama { order: 7; flex-direction: column; margin-top: 10px; width: 100%; box-sizing: border-box; }
             .about-poster { width: 100%; height: auto; aspect-ratio: 16/9; object-position: center; }
             
-            .cast-section { order: 7; margin-top: 10px; width: 100%; box-sizing: border-box; }
-            .control-panel.comments-widget { order: 8; margin-top: 10px; width: 100%; box-sizing: border-box; }
-            .sidebar-widget:not(.episodes-widget) { order: 9; margin-top: 10px; width: 100%; box-sizing: border-box; }
+            .cast-section { order: 8; width: 100%; box-sizing: border-box; }
+            .control-panel.comments-widget { order: 9; width: 100%; box-sizing: border-box; }
+            .sidebar-widget:not(.episodes-widget) { order: 10; margin-top: 10px; width: 100%; box-sizing: border-box; }
             .title-actions { width: 100%; justify-content: space-between; }
             .action-btn { flex: 1; justify-content: center; }
         }
@@ -301,71 +408,6 @@
             body { padding-bottom: 100px; }
         }
         @media (min-width: 993px) { .bottom-nav { display: none !important; } }
-
-        /* =====================================================
-   WATCH PAGE CLEAN RESPONSIVE AD STYLES
-===================================================== */
-.watch-ad-section {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 15px 0 5px 0;
-    box-sizing: border-box;
-}
-
-.watch-ad-container {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    background: var(--bg-panel);
-    border: 1px solid var(--glass-border);
-    border-radius: 14px;
-    padding: 8px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    overflow: hidden;
-}
-
-/* PC View: Native 728x90 Placement */
-.adcash-watch-wrapper {
-    width: 728px;
-    height: 90px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.adcash-watch-wrapper iframe {
-    border: none;
-    max-width: 100%;
-}
-
-/* Mobile View: Auto-scales cleanly without clipping or breaking sidebar */
-@media (max-width: 1024px) {
-    .watch-ad-section {
-        order: 5; /* Places it cleanly above 'About Drama' on phones */
-        margin: 10px 0;
-        padding: 0;
-    }
-
-    .watch-ad-container {
-        width: 100%;
-        max-width: 350px;
-        height: 52px;
-        padding: 0;
-        border-radius: 10px;
-    }
-
-    .adcash-watch-wrapper {
-        width: 728px;
-        height: 90px;
-        transform: scale(0.44);
-        transform-origin: center center;
-        flex-shrink: 0;
-    }
-}
     </style>
 </head>
 <body>
@@ -428,34 +470,32 @@
                     </div>
                 </div>
 
-                <div class="server-notice">
-                    <i class="fas fa-info-circle"></i> <span>If the video is not playing or buffering, please try switching to a different server below.</span>
+                <div class="server-notice" style="margin-top: 0; margin-bottom: 0;">
+                    <i class="fas fa-info-circle"></i> <span>If the video is not playing or buffering, try switching servers.</span>
                 </div>
-                
-                
 
-                <div class="controls-grid">
-                    <div class="control-panel">
-                        <h4 class="panel-title"><i class="fas fa-bolt"></i> Choose Server</h4>
-                        <select id="server-selector-dropdown" class="drama-input" style="margin-bottom: 0; padding: 12px; font-size: 0.9rem; cursor: pointer; width: 100%;">
+                <!-- NEW UNIFIED ACTION BAR -->
+                <div class="watch-action-bar">
+                    <div class="server-wrapper">
+                        <i class="fas fa-server"></i>
+                        <select id="server-selector-dropdown" class="server-dropdown">
                             <option value="nxsha" selected>Server 1 - Multi Lang</option>
                             <option value="2embed">Server 2 - 2embed Fast</option>
                             <option value="vsrc">Server 3 - Vidsrc Backup</option>
                             <option value="hindi" hidden>Server 4 - Hindi Dubbed</option>
                         </select>
                     </div>
-                    <div class="control-panel">
-                        <h4 class="panel-title"><i class="fas fa-bolt"></i> Quick Actions</h4>
-                        <div class="quick-actions">
-                            <button class="q-action disabled" id="btn-prev-ep"><i class="fas fa-step-backward"></i><span>Prev</span></button>
-                            <button class="q-action" id="btn-next-ep"><i class="fas fa-step-forward"></i><span>Next</span></button>
-                            <button class="q-action" id="btn-share"><i class="fas fa-share-alt"></i><span>Share</span></button>
-                            <button class="q-action" id="btn-pip"><i class="fas fa-clone"></i><span>PIP</span></button>
-                            <button class="q-action" id="btn-report"><i class="fas fa-exclamation-triangle"></i><span>Report</span></button>
-                        </div>
+                    
+                    <div class="quick-actions">
+                        <button class="q-action disabled" id="btn-prev-ep" title="Previous"><i class="fas fa-step-backward"></i><span>Prev</span></button>
+                        <button class="q-action" id="btn-next-ep" title="Next"><i class="fas fa-step-forward"></i><span>Next</span></button>
+                        <button class="q-action" id="btn-download" title="Download"><i class="fas fa-download"></i><span>Download</span></button>
+                        <button class="q-action" id="btn-share" title="Share"><i class="fas fa-share-alt"></i><span>Share</span></button>
+                        <button class="q-action" id="btn-report" title="Report"><i class="fas fa-exclamation-triangle"></i><span>Report</span></button>
                     </div>
                 </div>
-<!-- CLEAN RESPONSIVE AD BANNER (Zone: 12127990) -->
+                
+                <!-- CLEAN RESPONSIVE AD BANNER (Zone: 12127990) -->
                 <div class="watch-ad-section" id="watch-ad-section">
                     <div class="watch-ad-container">
                         <!-- Adcash Library Script -->
@@ -471,6 +511,7 @@
                         </div>
                     </div>
                 </div>
+                
                 <div class="about-drama">
                     <picture style="display: contents;">
                         <source media="(max-width: 1024px)" id="ui-poster-mobile" srcset="">
@@ -495,14 +536,14 @@
                     </div>
                 </div>
 
-                <div class="cast-section control-panel" style="margin-top: 15px;">
+                <div class="cast-section control-panel">
                     <h4 class="panel-title"><i class="fas fa-users" style="color: var(--primary);"></i> Top Cast</h4>
                     <div class="cast-scroller" id="ui-cast-scroller">
                         <p style="color:var(--text-muted); font-size:0.85rem;">Loading cast...</p>
                     </div>
                 </div>
 
-                <div class="control-panel comments-widget" style="margin-top: 10px;">
+                <div class="control-panel comments-widget">
                     <h4 class="panel-title" style="color: #fff;"><i class="fas fa-comments" style="color: var(--primary);"></i> Comments</h4>
                     <form id="comment-form" style="display: flex; gap: 15px; margin-bottom: 20px;">
                         <img id="current-user-avatar" src="" style="width: 40px; height: 40px; border-radius: 50%;">
@@ -1392,11 +1433,34 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         });
 
-        const pipBtn = document.getElementById('btn-pip');
-        pipBtn.addEventListener('click', () => {
-            playerContainer.classList.toggle('pip-mode');
-            pipBtn.style.color = playerContainer.classList.contains('pip-mode') ? "var(--primary)" : "";
-        });
+        // --- DYNAMIC DOWNLOAD BUTTON LOGIC ---
+        const downloadBtn = document.getElementById('btn-download');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => {
+                const isMovie = activeData.type?.toLowerCase().includes('movie');
+                let dlUrl = '';
+                
+                if (isMovie) {
+                    // Movie Format: https://nxsha.space/dl/movie/imdbid
+                    const imdbId = activeImdbId || activeData.imdbId || activeData.imdb_id || '';
+                    if (!imdbId) {
+                        alert("Download link not available for this movie yet.");
+                        return;
+                    }
+                    dlUrl = `https://nxsha.space/dl/movie/${imdbId}`;
+                } else {
+                    // TV Format: https://nxsha.space/dl/tv/tmdbid/season/episode
+                    if (!activeTmdbId || !window.currentSeason || !window.currentEpisode) {
+                        alert("Download link not available for this episode yet.");
+                        return;
+                    }
+                    dlUrl = `https://nxsha.space/dl/tv/${activeTmdbId}/${window.currentSeason}/${window.currentEpisode}`;
+                }
+                
+                // Opens the download gateway in a new tab securely
+                window.open(dlUrl, '_blank', 'noopener,noreferrer');
+            });
+        }
 
         const reportBtn = document.getElementById('btn-report');
         const reportModal = document.getElementById('reportModal');
@@ -1639,22 +1703,26 @@ function updateSEO(data, dramaId, season, ep) {
     } catch (e) { console.warn("SEO update skipped due to error:", e); }
 }
 </script>
-<!-- AUTO-HIDE SCRIPT IF ADBLOCKER IS DETECTED -->
+<!-- SMARTER AUTO-HIDE FOR ADBLOCKERS & LOCALHOST -->
     <script>
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const adFrame = document.getElementById('adcash-watch-frame');
-                const adSection = document.getElementById('watch-ad-section');
-                
-                // Detects if the ad frame was blocked or collapsed
-                const hasAdContent = adFrame && (adFrame.querySelector('iframe') || adFrame.querySelector('img') || adFrame.children.length > 1);
-                const isBlocked = !hasAdContent || adFrame.offsetHeight === 0 || adFrame.clientHeight === 0;
+        // Set an interval to check the ad ONLY after the TMDB loading screen finishes
+        const adCheckInterval = setInterval(() => {
+            const mainContent = document.getElementById('main-content');
+            const adSection = document.getElementById('watch-ad-section');
+            const adFrame = document.getElementById('adcash-watch-frame');
 
-                if (isBlocked && adSection) {
-                    adSection.style.display = 'none';
+            // Wait until the loading screen disappears and the main content is visible
+            if (mainContent && mainContent.style.display === 'block') {
+                
+                // If the ad frame is less than 50px tall, Adcash served a blank ad (Localhost/Adblock)
+                if (adFrame && adFrame.offsetHeight < 50) {
+                    adSection.style.display = 'none'; // Kill the empty box
                 }
-            }, 1200);
-        });
+                
+                // Stop checking once we've made a decision
+                clearInterval(adCheckInterval); 
+            }
+        }, 1000); // Checks every 1 second
     </script>
 </body>
 </html>
