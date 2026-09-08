@@ -301,6 +301,71 @@
             body { padding-bottom: 100px; }
         }
         @media (min-width: 993px) { .bottom-nav { display: none !important; } }
+
+        /* =====================================================
+   WATCH PAGE CLEAN RESPONSIVE AD STYLES
+===================================================== */
+.watch-ad-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px 0 5px 0;
+    box-sizing: border-box;
+}
+
+.watch-ad-container {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg-panel);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    overflow: hidden;
+}
+
+/* PC View: Native 728x90 Placement */
+.adcash-watch-wrapper {
+    width: 728px;
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.adcash-watch-wrapper iframe {
+    border: none;
+    max-width: 100%;
+}
+
+/* Mobile View: Auto-scales cleanly without clipping or breaking sidebar */
+@media (max-width: 1024px) {
+    .watch-ad-section {
+        order: 5; /* Places it cleanly above 'About Drama' on phones */
+        margin: 10px 0;
+        padding: 0;
+    }
+
+    .watch-ad-container {
+        width: 100%;
+        max-width: 350px;
+        height: 52px;
+        padding: 0;
+        border-radius: 10px;
+    }
+
+    .adcash-watch-wrapper {
+        width: 728px;
+        height: 90px;
+        transform: scale(0.44);
+        transform-origin: center center;
+        flex-shrink: 0;
+    }
+}
     </style>
 </head>
 <body>
@@ -390,7 +455,22 @@
                         </div>
                     </div>
                 </div>
-
+<!-- CLEAN RESPONSIVE AD BANNER (Zone: 12127990) -->
+                <div class="watch-ad-section" id="watch-ad-section">
+                    <div class="watch-ad-container">
+                        <!-- Adcash Library Script -->
+                        <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
+                        <div class="adcash-watch-wrapper" id="adcash-watch-frame">
+                            <script type="text/javascript">
+                                if (typeof aclib !== 'undefined' && aclib.runBanner) {
+                                    aclib.runBanner({
+                                        zoneId: '12127990',
+                                    });
+                                }
+                            </script>
+                        </div>
+                    </div>
+                </div>
                 <div class="about-drama">
                     <picture style="display: contents;">
                         <source media="(max-width: 1024px)" id="ui-poster-mobile" srcset="">
@@ -1559,5 +1639,22 @@ function updateSEO(data, dramaId, season, ep) {
     } catch (e) { console.warn("SEO update skipped due to error:", e); }
 }
 </script>
+<!-- AUTO-HIDE SCRIPT IF ADBLOCKER IS DETECTED -->
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const adFrame = document.getElementById('adcash-watch-frame');
+                const adSection = document.getElementById('watch-ad-section');
+                
+                // Detects if the ad frame was blocked or collapsed
+                const hasAdContent = adFrame && (adFrame.querySelector('iframe') || adFrame.querySelector('img') || adFrame.children.length > 1);
+                const isBlocked = !hasAdContent || adFrame.offsetHeight === 0 || adFrame.clientHeight === 0;
+
+                if (isBlocked && adSection) {
+                    adSection.style.display = 'none';
+                }
+            }, 1200);
+        });
+    </script>
 </body>
 </html>
