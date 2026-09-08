@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0B0C10">
     <title>Stream Online - DramaKan</title>
 
     <!-- Standard SEO Meta Tags -->
@@ -10,505 +11,623 @@
     <meta id="seo-keywords" name="keywords" content="movies, tv shows, anime, watch online, Asian dramas, Dramakan">
     <link id="canonical-url" rel="canonical" href="https://dramakan.site/">
 
-    <!-- Dynamic Social OpenGraph (WhatsApp, Telegram, Facebook) -->
+    <!-- Dynamic Social OpenGraph -->
     <meta id="og-type" property="og:type" content="video.other">
     <meta id="og-site-name" property="og:site_name" content="DramaKan">
     <meta id="og-title" property="og:title" content="Stream Online - DramaKan">
     <meta id="og-description" property="og:description" content="Watch high quality Movies, Shows, Anime, and Dramas for free on DramaKan.">
     <meta id="og-image" property="og:image" content="https://dramakan.site/og-image.jpg">
-    <meta id="og-image-width" property="og:image:width" content="780">
-    <meta id="og-image-height" property="og:image:height" content="1170">
     <meta id="og-url" property="og:url" content="https://dramakan.site/">
 
-    <!-- Twitter / X Cards (Large Portrait Presentation) -->
+    <!-- Twitter / X Cards -->
     <meta name="twitter:card" content="summary_large_image">
     <meta id="tw-title" name="twitter:title" content="Stream Online - DramaKan">
     <meta id="tw-description" name="twitter:description" content="Watch high quality Movies, Shows, Anime, and Dramas for free on DramaKan.">
     <meta id="tw-image" name="twitter:image" content="https://dramakan.site/og-image.jpg">
 
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%230B0C10'/%3E%3Ctext x='50' y='68' font-family='Arial, sans-serif' font-size='54' font-weight='800' fill='%238A2BE2' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+
     <!-- GOOGLE ADSENSE -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3854581977852778" crossorigin="anonymous"></script>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
+
     <script type="module" src="global-login-popup.js" defer></script>
     <style>
         :root {
-            --bg-base: #0B0C10; 
+            --bg-base: #0B0C10;
             --bg-panel: #14151A;
-            --primary: #8A2BE2; 
+            --bg-panel-alt: #191A21;
+            --primary: #8A2BE2;
             --primary-rich: #6a1b9a;
-            --glass-bg: rgba(20, 20, 25, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.08); 
+            --primary-soft: rgba(138, 43, 226, .16);
+            --primary-glow: rgba(138, 43, 226, .4);
+            --glass-border: rgba(255, 255, 255, .08);
+            --border-strong: rgba(255, 255, 255, .16);
             --text-main: #F8F8F8;
             --text-muted: #a1a1aa;
+            --text-faint: #6f707a;
             --star-gold: #f59e0b;
+            --skeleton-color: rgba(255, 255, 255, .06);
+            --skeleton-shine: rgba(255, 255, 255, .15);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-pill: 999px;
+            --shadow-md: 0 16px 40px rgba(0, 0, 0, .45);
+            --shadow-glow: 0 18px 46px rgba(138, 43, 226, .35);
+            --header-h: 72px;
+            --container-max: 1360px;
+            --ease: cubic-bezier(.16, 1, .3, 1);
         }
 
         /* --- RESET & BASE --- */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            background-color: var(--bg-base); 
-            color: var(--text-main); 
-            font-family: 'Poppins', sans-serif; 
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 20px); }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            padding-bottom: 0;
+            line-height: 1.5;
         }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; display: block; }
+        button { font-family: inherit; }
+        ul { list-style: none; }
+        ::selection { background: var(--primary); color: #fff; }
+
+        .scroller { scrollbar-width: thin; scrollbar-color: var(--primary) transparent; }
+        .scroller::-webkit-scrollbar { height: 6px; }
+        .scroller::-webkit-scrollbar-track { background: transparent; }
+        .scroller::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        a:focus-visible, button:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+            outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 6px;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .001ms !important; animation-iteration-count: 1 !important;
+                transition-duration: .001ms !important; scroll-behavior: auto !important;
+            }
+        }
+        .visually-hidden {
+            position: absolute; width: 1px; height: 1px; overflow: hidden;
+            clip: rect(0 0 0 0); white-space: nowrap;
+        }
+        .skip-link {
+            position: fixed; top: -60px; left: 16px; z-index: 3000;
+            background: var(--primary); color: #fff; padding: 12px 20px; border-radius: 10px;
+            font-weight: 600; font-size: .9rem; transition: top .2s;
+        }
+        .skip-link:focus { top: 16px; width: auto; height: auto; clip: auto; overflow: visible; }
+
+        /* --- SKELETON LOADING --- */
+        .skeleton, .skeleton-img {
+            background: linear-gradient(100deg, var(--skeleton-color) 30%, var(--skeleton-shine) 50%, var(--skeleton-color) 70%);
+            background-size: 250% 100%;
+            animation: shimmer 1.6s ease-in-out infinite;
+        }
+        .skeleton { color: transparent !important; pointer-events: none; user-select: none; }
+        .skeleton * { visibility: hidden; }
+        .skeleton-img { display: block; width: 100%; height: 100%; }
+        .skeleton-text { display: block; min-height: .95em; border-radius: 6px; width: 100%; margin-bottom: .55em; }
+        .skeleton-text:last-child { margin-bottom: 0; }
+        .skeleton-text.short { width: 42%; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* --- LAYOUT --- */
+        .container { max-width: var(--container-max); margin: 0 auto; padding: 0 5%; position: relative; z-index: 2; width: 100%; }
 
         /* --- HEADER --- */
         .main-header {
-            background: rgba(11, 12, 16, 0.85); backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 15px 4%; position: fixed; top: 0; width: 100%; z-index: 1000;
-            display: flex; align-items: center; justify-content: space-between;
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; height: var(--header-h);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 5%;
+            background: rgba(11, 12, 16, .7);
+            backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid transparent;
+            transition: background .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease);
         }
-        .logo { font-size: 1.8rem; font-weight: 700; color: #fff; text-decoration: none; }
+        .main-header.is-scrolled {
+            background: rgba(11, 12, 16, .92); border-bottom-color: var(--glass-border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: #fff; letter-spacing: -.01em; flex-shrink: 0; }
         .logo span { color: var(--primary); }
 
-        /* Top-Right Glass Share Button */
-        .header-share-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            outline: none;
+        .header-nav { display: flex; align-items: center; gap: 4px; }
+        .header-nav a {
+            display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: var(--radius-pill);
+            font-size: .9rem; font-weight: 500; color: var(--text-muted); transition: background .25s, color .25s;
         }
-        .header-share-btn:hover {
-            background: rgba(138, 43, 226, 0.25);
-            border-color: var(--primary);
-            color: #fff;
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        .header-nav a:hover, .header-nav a:focus-visible { background: rgba(255, 255, 255, .06); color: #fff; }
+
+        .header-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+        .icon-btn {
+            background: rgba(255, 255, 255, .05); border: 1px solid var(--glass-border); color: var(--text-main);
+            width: 44px; height: 44px; border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 1.05rem; cursor: pointer; transition: .25s var(--ease);
         }
-        .header-share-btn:active {
-            transform: scale(0.95);
+        .icon-btn:hover, .icon-btn:focus-visible {
+            background: var(--primary); border-color: var(--primary); color: #fff;
+            transform: translateY(-2px); box-shadow: 0 10px 24px rgba(138, 43, 226, .4);
         }
 
-        /* Glass Toast Notification */
+        /* --- TOAST --- */
         .dk-toast {
-            position: fixed;
-            top: 75px;
-            right: 4%;
-            background: rgba(20, 20, 28, 0.95);
-            border: 1px solid var(--primary);
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(138, 43, 226, 0.3);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            z-index: 10000;
-            opacity: 0;
-            transform: translateY(-10px);
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            position: fixed; top: calc(var(--header-h) + 14px); right: 5%;
+            background: rgba(18, 19, 24, .96); border: 1px solid var(--primary);
+            padding: 12px 22px; border-radius: var(--radius-pill); font-size: .88rem; font-weight: 500;
+            box-shadow: 0 14px 34px rgba(0, 0, 0, .55); backdrop-filter: blur(14px);
+            display: flex; align-items: center; gap: 10px; z-index: 2000;
+            opacity: 0; transform: translateY(-14px); pointer-events: none; transition: .3s var(--ease);
+            max-width: 90vw;
         }
-        .dk-toast.show {
-            opacity: 1;
-            transform: translateY(0);
+        .dk-toast.show { opacity: 1; transform: translateY(0); }
+
+        /* --- HERO --- */
+        .hero { position: relative; padding-top: calc(var(--header-h) + 40px); padding-bottom: 48px; overflow: hidden; }
+        .hero::before {
+            content: ""; position: absolute; top: -12%; left: 50%; transform: translateX(-50%);
+            width: 900px; height: 620px; max-width: 140vw;
+            background: radial-gradient(closest-side, var(--primary-glow), transparent 70%);
+            opacity: .35; pointer-events: none; z-index: 0;
+        }
+        .hero-media { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .hero-bg-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .28; }
+        .hero-scrim {
+            position: absolute; inset: 0;
+            background:
+                linear-gradient(100deg, var(--bg-base) 0%, rgba(11, 12, 16, .88) 45%, rgba(11, 12, 16, .55) 70%, transparent 100%),
+                linear-gradient(0deg, var(--bg-base) 0%, transparent 45%);
         }
 
-        /* --- CINEMATIC HERO SECTION --- */
-        .hero-section {
-            position: relative; width: 100%; min-height: 85vh;
-            display: flex; align-items: center; padding-top: 80px;
+        .hero-inner { display: flex; gap: 44px; align-items: flex-end; }
+        .hero-poster {
+            flex: 0 0 280px; width: 280px; aspect-ratio: 2 / 3; border-radius: var(--radius-lg); overflow: hidden;
+            box-shadow: var(--shadow-md); border: 1px solid var(--glass-border);
+            animation: riseIn .7s var(--ease) both;
         }
-        .hero-backdrop {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; z-index: 1; opacity: 0.35;
-            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
-            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
-        }
-        .hero-gradient {
-            position: absolute; inset: 0; z-index: 2;
-            background: linear-gradient(90deg, var(--bg-base) 0%, rgba(11, 12, 16, 0.8) 60%, transparent 100%),
-                        linear-gradient(0deg, var(--bg-base) 0%, transparent 40%);
+        .hero-poster img { width: 100%; height: 100%; object-fit: cover; }
+
+        .hero-body { flex: 1; min-width: 0; animation: riseIn .7s var(--ease) .08s both; }
+        .hero-title {
+            font-size: clamp(1.9rem, 1.1rem + 3vw, 3.4rem); line-height: 1.12; font-weight: 800;
+            letter-spacing: -.01em; margin-bottom: 16px;
         }
 
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 4%; position: relative; z-index: 3; width: 100%; }
-        
-        /* PC Hero Layout */
-        .hero-content {
-            display: grid; grid-template-columns: 300px 1fr; gap: 40px; align-items: center;
+        .hero-meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 22px; }
+        .chip {
+            display: inline-flex; align-items: center; gap: 7px; background: rgba(255, 255, 255, .06);
+            border: 1px solid var(--glass-border); padding: 7px 15px; border-radius: var(--radius-pill);
+            font-size: .82rem; font-weight: 500; color: var(--text-main);
         }
-        .poster-wrapper {
-            position: relative; border-radius: 16px; overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid var(--glass-border);
-            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; width: 100%;
+        .chip i { font-size: .78rem; color: var(--text-muted); }
+        .chip-status { background: var(--primary-soft); border-color: rgba(138, 43, 226, .3); color: #d8b4fe; }
+        .status-dot { font-size: .5rem !important; color: var(--primary) !important; }
+
+        .hero-synopsis-wrap { max-width: 760px; margin-bottom: 28px; }
+        .hero-synopsis {
+            font-size: clamp(.92rem, .85rem + .25vw, 1.05rem); color: #d1d5db; line-height: 1.7;
+            display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
         }
-        .poster-wrapper img { width: 100%; display: block; object-fit: cover; aspect-ratio: 2/3; }
-
-        .drama-info { animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .drama-info h1 { font-size: 3.5rem; line-height: 1.1; margin: 0 0 10px 0; font-weight: 800; }
-        
-        .meta-tags { display: flex; gap: 12px; flex-wrap: wrap; color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; align-items: center;}
-        .tag-pill { background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); padding: 4px 12px; border-radius: 50px; color: #fff; font-size: 0.85rem;}
-        
-        .synopsis { font-size: 1rem; color: #d1d5db; line-height: 1.7; margin-bottom: 30px; max-width: 800px; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;}
-
-        /* Rating & Watch Buttons */
-        .actions-row { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
-        .btn-watch {
-            display: inline-flex; align-items: center; gap: 10px; background: var(--primary); color: #fff; text-decoration: none;
-            padding: 15px 40px; border-radius: 50px; font-size: 1.1rem; font-weight: 600;
-            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.4); transition: 0.3s; cursor: pointer; border: 2px solid var(--primary-rich);
+        .hero-synopsis.expanded { -webkit-line-clamp: unset; overflow: visible; display: block; }
+        .synopsis-toggle {
+            margin-top: 8px; background: none; border: none; color: var(--primary); font-weight: 600;
+            font-size: .88rem; cursor: pointer; padding: 2px 0;
         }
-        .btn-watch:hover { transform: translateY(-3px) scale(1.02); background: var(--primary-rich); box-shadow: 0 15px 40px rgba(138, 43, 226, 0.6); }
+        .synopsis-toggle:hover { text-decoration: underline; }
 
-        .hero-rating { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 50px; border: 1px solid var(--glass-border);}
-        .hero-rating i { color: var(--star-gold); font-size: 1.2rem;}
-        .hero-rating span { font-weight: 700; font-size: 1.1rem;}
+        .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 15px 32px; border-radius: var(--radius-pill); font-size: 1rem; font-weight: 600;
+            border: none; cursor: pointer; transition: .25s var(--ease); white-space: nowrap;
+        }
+        .btn-primary { background: var(--primary); color: #fff; box-shadow: var(--shadow-glow); }
+        .btn-primary:hover, .btn-primary:focus-visible {
+            background: var(--primary-rich); transform: translateY(-2px); box-shadow: 0 20px 50px rgba(138, 43, 226, .55);
+        }
+        .btn-ghost { background: rgba(255, 255, 255, .05); color: var(--text-main); border: 1px solid var(--glass-border); }
+        .btn-ghost:hover, .btn-ghost:focus-visible {
+            background: rgba(255, 255, 255, .1); border-color: var(--border-strong); transform: translateY(-2px);
+        }
+
+        .score-badge {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+            background: rgba(0, 0, 0, .4); border: 1px solid var(--glass-border); border-radius: var(--radius-md);
+            padding: 9px 22px; min-width: 88px;
+        }
+        .score-badge-value { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 1.15rem; color: #fff; }
+        .score-badge-value i { color: var(--star-gold); font-size: .95rem; }
+        .score-badge-label { font-size: .68rem; color: var(--text-muted); }
+
+        @keyframes riseIn { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- CONTENT GRID --- */
-        .content-grid {
-            display: grid; grid-template-columns: minmax(0, 1fr) 350px; gap: 40px; margin-top: -30px; padding-bottom: 20px; position: relative; z-index: 5;
-        }
-        .section-title { font-size: 1.4rem; border-left: 4px solid var(--primary); padding-left: 15px; margin: 0 0 20px 0; font-weight: 600;}
+        .content-grid { display: grid; grid-template-columns: 1fr 360px; gap: 48px; padding-top: 8px; padding-bottom: 40px; align-items: start; }
+        .main-content { min-width: 0; display: flex; flex-direction: column; gap: 44px; }
+        .sidebar { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
 
-        .trailer-wrapper { max-width: 850px; margin: 0 0 40px 0; }
-        .trailer-container { width: 100%; aspect-ratio: 16/9; border-radius: 16px; overflow: hidden; border: 1px solid var(--glass-border); background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
+        .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+        .section-heading-left { display: flex; align-items: center; gap: 12px; }
+        .section-icon {
+            width: 36px; height: 36px; flex-shrink: 0; border-radius: 10px; background: var(--primary-soft); color: var(--primary);
+            display: flex; align-items: center; justify-content: center; font-size: .92rem;
+        }
+        .section-heading h2, .section-heading h3 { font-size: clamp(1.05rem, 1rem + .3vw, 1.25rem); font-weight: 600; }
+
+        .dk-score-chip {
+            display: flex; align-items: center; gap: 9px; background: rgba(0, 0, 0, .35); border: 1px solid var(--glass-border);
+            padding: 8px 16px; border-radius: var(--radius-pill); font-size: .85rem; color: var(--text-muted);
+        }
+        .dk-score-chip strong { color: #fff; font-weight: 700; }
+        .dk-score-chip i { color: var(--star-gold); }
+
+        /* Trailer */
+        .trailer-container {
+            width: 100%; aspect-ratio: 16 / 9; border-radius: var(--radius-lg); overflow: hidden;
+            border: 1px solid var(--glass-border); background: #000; box-shadow: var(--shadow-md);
+        }
         .trailer-container iframe { width: 100%; height: 100%; border: none; }
-
-        .scroller { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: thin; scrollbar-color: var(--primary) rgba(255,255,255,0.05); }
-        .scroller::-webkit-scrollbar { height: 6px; }
-        .scroller::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
-        .scroller::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
-        
-        .cast-card { flex: 0 0 120px; text-align: center; }
-        .cast-card img { width: 120px; height: 180px; border-radius: 12px; object-fit: cover; border: 1px solid var(--glass-border); box-shadow: 0 5px 15px rgba(0,0,0,0.3);}
-        .cast-card h4 { margin: 10px 0 2px 0; font-size: 0.85rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .cast-card p { margin: 0; font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-
-        .gallery-card { flex: 0 0 280px; }
-        .gallery-card img { width: 280px; height: 157px; object-fit: cover; border-radius: 12px; border: 1px solid var(--glass-border); transition: 0.3s; }
-        .gallery-card img:hover { transform: scale(1.03); cursor: pointer; border-color: var(--primary);}
-
-        /* --- SIDEBAR WIDGETS --- */
-        .sidebar-widget {
-            background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 25px; margin-bottom: 30px;
+        .trailer-empty {
+            display: flex; align-items: center; justify-content: center; height: 100%;
+            color: var(--text-faint); font-size: .9rem; text-align: center; padding: 20px;
         }
-        
-        .info-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-        .info-list li { display: flex; justify-content: space-between; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;}
-        .info-list li span:first-child { color: var(--text-muted); }
-        .info-list li span:last-child { color: #fff; font-weight: 500; text-align: right;}
 
-        .providers-list { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;}
-        .provider-icon { width: 45px; height: 45px; border-radius: 10px; border: 1px solid var(--glass-border); object-fit: cover;}
+        /* Scrollers */
+        .scroller { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x proximity; padding: 2px 2px 14px; }
+        .cast-card { flex: 0 0 128px; scroll-snap-align: start; }
+        .cast-card img {
+            width: 100%; aspect-ratio: 2 / 3; border-radius: var(--radius-sm); object-fit: cover;
+            border: 1px solid var(--glass-border); margin-bottom: 10px; background: var(--bg-panel);
+        }
+        .cast-card h4 { font-size: .88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+        .cast-card p { font-size: .75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .rec-list { display: flex; flex-direction: column; gap: 15px; }
-        .rec-card { display: flex; gap: 15px; align-items: center; text-decoration: none; transition: 0.3s; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 12px; border: 1px solid transparent;}
-        .rec-card:hover { background: rgba(255,255,255,0.05); border-color: var(--glass-border); transform: translateX(5px); }
-        .rec-card img { width: 60px; height: 90px; object-fit: cover; border-radius: 8px; }
-        .rec-info h4 { margin: 0 0 5px 0; font-size: 0.9rem; color: #fff; font-weight: 500; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
-        .rec-info p { margin: 0; font-size: 0.8rem; color: var(--primary); font-weight: 600;}
+        .gallery-card { flex: 0 0 280px; scroll-snap-align: start; cursor: pointer; }
+        .gallery-card img {
+            width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-sm);
+            border: 1px solid var(--glass-border); transition: .3s var(--ease);
+        }
+        .gallery-card:hover img, .gallery-card:focus-visible img { transform: scale(1.02); border-color: var(--primary); }
 
-        /* --- REVIEW ENGINE --- */
-        .review-section-wrapper { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 30px; margin-top: 40px;}
-        .review-section-wrapper .section-title { border-left: 4px solid var(--primary); padding-left: 15px; font-weight: 600; }
-        .review-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
-        
-        .dramakan-rate { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 1.5rem;}
-        .dramakan-rate i { color: #3f3f46; transition: 0.2s; }
+        .empty-note { color: var(--text-faint); font-size: .9rem; padding: 6px 0; }
+
+        /* Sidebar widgets */
+        .sidebar-widget { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 24px; }
+        .info-list { display: flex; flex-direction: column; gap: 13px; }
+        .info-list li { display: flex; justify-content: space-between; gap: 12px; font-size: .88rem; border-bottom: 1px solid rgba(255, 255, 255, .05); padding-bottom: 11px; }
+        .info-list li:last-child { border-bottom: none; padding-bottom: 0; }
+        .info-list li span:first-child { color: var(--text-muted); flex-shrink: 0; }
+        .info-list li span:last-child { font-weight: 500; text-align: right; line-height: 1.4; }
+
+        .providers-list { display: flex; gap: 10px; flex-wrap: wrap; }
+        .provider-icon { width: 48px; height: 48px; border-radius: 12px; border: 1px solid var(--glass-border); object-fit: cover; transition: .25s; }
+        .provider-icon:hover { transform: translateY(-3px); border-color: var(--primary); }
+
+        .rec-list { display: flex; flex-direction: column; gap: 8px; }
+        .rec-card { display: flex; gap: 14px; align-items: center; padding: 9px; border-radius: 12px; transition: .25s; }
+        .rec-card:hover, .rec-card:focus-visible { background: rgba(255, 255, 255, .05); }
+        .rec-card img { width: 56px; height: 80px; object-fit: cover; border-radius: 8px; flex-shrink: 0; background: var(--bg-panel-alt); }
+        .rec-info h4 { font-size: .88rem; font-weight: 500; line-height: 1.35; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .rec-info p { font-size: .8rem; color: var(--star-gold); display: flex; align-items: center; gap: 5px; }
+
+        /* Reviews */
+        .review-panel { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 28px; }
+        .review-compose { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--glass-border); }
+        .review-compose-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 12px; flex-wrap: wrap; }
+        .review-compose-head span { font-weight: 600; font-size: .95rem; }
+        .dramakan-rate { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 1.35rem; }
+        .dramakan-rate i { color: #3f3f46; transition: .2s; }
         .dramakan-rate i:hover, .dramakan-rate i.active, .dramakan-rate i.hover-active { color: var(--star-gold); }
-        
-        .review-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; color: #fff; outline: none; margin-bottom: 15px; resize: vertical; min-height: 80px; font-family: inherit;}
+        .review-input {
+            width: 100%; background: rgba(0, 0, 0, .35); border: 1px solid var(--glass-border); padding: 15px;
+            border-radius: 12px; color: #fff; outline: none; resize: vertical; min-height: 96px;
+            font-family: inherit; font-size: .92rem; margin-bottom: 14px;
+        }
         .review-input:focus { border-color: var(--primary); }
-        
-        .btn-submit-review { background: var(--primary); color: #fff; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; display: inline-block;}
-        .btn-submit-review:hover { background: var(--primary-rich); }
-        
-        .user-reviews-list { margin-top: 30px; display: flex; flex-direction: column; gap: 20px; }
-        .user-review-item { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid var(--glass-border);}
-        .review-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;}
-        .reviewer-name { font-weight: 600; font-size: 1rem; color: #fff; display: flex; align-items: center; gap: 10px;}
-        .reviewer-name img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
-        .reviewer-stars { color: var(--star-gold); font-size: 0.9rem; }
-        .review-text { font-size: 0.95rem; color: #d1d5db; line-height: 1.6; }
-
-        /* --- ATTRIBUTION --- */
-        .attribution { 
-            display: flex; align-items: center; justify-content: center; gap: 12px; 
-            padding: 30px 0 40px 0; margin-top: 20px; border-top: 1px solid var(--glass-border);
-            color: var(--text-muted); font-size: 0.85rem;
+        .btn-submit-review {
+            background: var(--primary); color: #fff; border: none; padding: 12px 26px; border-radius: var(--radius-pill);
+            cursor: pointer; font-weight: 600; font-size: .9rem; transition: .25s;
         }
-        .attribution img { height: 14px; opacity: 0.8; transition: 0.3s; }
-        .attribution img:hover { opacity: 1; }
+        .btn-submit-review:hover { background: var(--primary-rich); transform: translateY(-2px); }
+        .btn-submit-review:disabled { opacity: .6; cursor: default; transform: none; }
+        .review-actions { text-align: right; }
 
-        @keyframes slideUpFade {
-            0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
+        .login-note {
+            display: flex; align-items: center; gap: 12px; padding: 18px 20px; background: rgba(138, 43, 226, .08);
+            border: 1px solid rgba(138, 43, 226, .25); border-radius: 12px; margin-bottom: 24px; color: #d8b4fe; font-size: .92rem;
         }
-        .reveal-anim { opacity: 0; transform: translateY(30px); transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-        .reveal-anim.active { opacity: 1; transform: translateY(0); }
+        .login-note i { font-size: 1.2rem; flex-shrink: 0; }
 
-        /* =========================================
-           MOBILE RESPONSIVE
-           ========================================= */
-        @media (max-width: 992px) {
-            html, body { overflow-x: hidden; max-width: 100%; }
-            body { padding-bottom: 90px; } 
-            .container { padding: 0 20px; } 
+        .user-reviews-list { display: flex; flex-direction: column; gap: 16px; }
+        .user-review-item { background: rgba(0, 0, 0, .22); padding: 18px; border-radius: 12px; border: 1px solid var(--glass-border); }
+        .review-meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+        .reviewer-name { font-weight: 600; font-size: .92rem; display: flex; align-items: center; gap: 11px; }
+        .reviewer-name img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+        .reviewer-stars { color: var(--star-gold); font-size: .85rem; }
+        .review-text { color: #d1d5db; line-height: 1.6; font-size: .92rem; }
 
-            .hero-section { padding-top: 78px; min-height: auto; padding-bottom: 26px; }
-            .hero-backdrop { opacity: 0.25; }
-            .hero-gradient {
-                background:
-                    linear-gradient(to top, var(--bg-base) 0%, rgba(11,12,16,0.6) 38%, rgba(11,12,16,0.15) 75%, transparent 100%),
-                    linear-gradient(to bottom, rgba(11,12,16,0.55) 0%, transparent 35%);
-            }
+        /* Attribution / footer */
+        .attribution {
+            text-align: center; padding: 28px 5% 40px; color: var(--text-muted); font-size: .83rem;
+            display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+            border-top: 1px solid var(--glass-border);
+        }
+        .attribution img { height: 15px; opacity: .7; }
 
-            .hero-content {
-                grid-template-columns: 104px 1fr; 
-                grid-template-rows: auto auto;
-                gap: 14px 16px;
-                align-items: start;
-            }
+        /* Bottom nav (mobile) */
+        .bottom-nav { display: none; }
 
-            .poster-wrapper { width: 100%; max-width: 104px; margin: 0; border-radius: 10px; grid-column: 1 / 2; grid-row: 1 / 2; min-width: 0; }
-            .drama-info { display: contents; }
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 1240px) {
+            .content-grid { grid-template-columns: 1fr 320px; gap: 36px; }
+            .hero-poster { flex-basis: 250px; width: 250px; }
+        }
 
-            .hero-title-meta {
-                grid-column: 2 / 3; grid-row: 1 / 2;
-                display: flex; flex-direction: column; justify-content: center; min-width: 0;
-                animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            }
-            .hero-synopsis-actions {
-                grid-column: 1 / 3; grid-row: 2 / 3; min-width: 0;
-                animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            }
+        @media (max-width: 1024px) {
+            :root { --header-h: 66px; }
+            .header-nav a { padding: 8px 12px; font-size: .85rem; }
+            .hero-poster { flex-basis: 210px; width: 210px; }
+            .content-grid { gap: 30px; }
+        }
 
-            .drama-info h1 { font-size: 1.35rem; line-height: 1.2; margin-bottom: 6px; font-weight: 700; overflow-wrap: break-word; word-break: break-word; }
-            .meta-tags { gap: 6px; row-gap: 6px; margin-bottom: 0; }
-            .tag-pill { padding: 3px 9px; font-size: 0.7rem; }
-            #ui-status, #ui-eps { font-size: 0.8rem; }
-
-            .synopsis { font-size: 0.88rem; line-height: 1.55; -webkit-line-clamp: initial; margin-bottom: 16px; max-width: 100%; overflow-wrap: break-word; display: block; overflow: visible; }
-            .actions-row { flex-direction: column; width: 100%; gap: 10px; margin-bottom: 0; }
-            .btn-watch { width: 100%; justify-content: center; font-size: 0.95rem; padding: 13px; }
-            .hero-rating { width: 100%; justify-content: center; padding: 10px; }
-
-            .content-grid { grid-template-columns: minmax(0, 1fr); gap: 22px; margin-top: 8px; padding-bottom: 10px; }
-            .main-content, .sidebar { min-width: 0; }
-            .section-title { font-size: 1.1rem; padding-left: 12px; margin-bottom: 12px; }
-
-            .trailer-wrapper { max-width: 100%; width: 100%; margin: 0 0 24px 0; }
-            .trailer-container { width: 100%; max-width: 100%; aspect-ratio: 16/9; border-radius: 12px; }
-            .trailer-container iframe { width: 100%; height: 100%; max-width: 100%; }
-
-            .scroller { gap: 12px; margin: 0 -20px; padding: 0 20px 14px; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; scrollbar-width: none; -ms-overflow-style: none; }
-            .scroller::-webkit-scrollbar { display: none; }
-            .scroller > * { scroll-snap-align: start; }
-            .cast-card { flex: 0 0 100px; }
-            .cast-card img { width: 100px; height: 150px; border-radius: 10px; }
-            .gallery-card { flex: 0 0 230px; }
-            .gallery-card img { width: 230px; height: 129px; border-radius: 10px; }
-
-            .review-section-wrapper { padding: 16px; margin-top: 22px; border-radius: 14px; }
-            .sidebar-widget { padding: 16px; margin-bottom: 16px; border-radius: 14px; }
-
-            .info-list li { font-size: 0.85rem; gap: 10px; }
-            .info-list li span:last-child { overflow-wrap: break-word; word-break: break-word; max-width: 60%; }
-
-            .providers-list { gap: 8px; }
-            .provider-icon { width: 40px; height: 40px; }
-
-            .rec-list { gap: 12px; }
-            .rec-card { padding: 8px; gap: 12px; }
-            .rec-card img { width: 50px; height: 75px; }
-            .rec-info h4 { font-size: 0.85rem; }
-
-            .review-header-flex { gap: 10px; }
-            .review-header-flex h3 { font-size: 1.05rem; }
-            .review-input { width: 100%; max-width: 100%; box-sizing: border-box; padding: 12px; font-size: 0.9rem; }
-            .dramakan-rate { font-size: 1.3rem; }
-            .btn-submit-review { width: 100%; text-align: center; padding: 13px; }
-
-            .user-review-item { padding: 14px; }
-            .review-meta { flex-wrap: wrap; gap: 8px; }
-            .reviewer-name { font-size: 0.9rem; }
-            .review-text { font-size: 0.88rem; overflow-wrap: break-word; word-break: break-word; }
-
-            .attribution { padding: 22px 0 30px 0; font-size: 0.75rem; flex-wrap: wrap; text-align: center; }
-
+        @media (max-width: 860px) {
+            body { padding-bottom: 96px; }
+            .header-nav { display: none; }
+            .content-grid { grid-template-columns: 1fr; }
+            .main-content { gap: 36px; }
             .bottom-nav {
-                display: flex !important; position: fixed !important; bottom: 15px !important; left: 50% !important; transform: translateX(-50%) !important;
-                width: 90% !important; max-width: 400px !important; background: rgba(20, 20, 25, 0.6) !important; backdrop-filter: blur(25px) saturate(200%) !important;
-                -webkit-backdrop-filter: blur(25px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 50px !important;
-                z-index: 9999 !important; padding: 5px 10px !important; box-shadow: 0 25px 50px rgba(0,0,0,0.4) !important;
+                display: flex; position: fixed; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom));
+                transform: translateX(-50%); width: 92%; max-width: 420px;
+                background: rgba(20, 20, 25, .75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+                border: 1px solid var(--glass-border); border-radius: var(--radius-pill); z-index: 1500; padding: 8px;
+                box-shadow: 0 16px 40px rgba(0, 0, 0, .6);
             }
-            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 0; color: rgba(255, 255, 255, 0.5); text-decoration: none; transition: all 0.4s ease; }
-            .bottom-nav-item.active { color: #fff; }
-            .nav-icon { font-size: 1.35rem; margin-bottom: 4px; transition: transform 0.4s ease; }
-            .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-4px) scale(1.15); color: var(--primary); }
-            .nav-label { font-size: 0.65rem; font-weight: 500; }
+            .bottom-nav-item {
+                flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+                gap: 4px; padding: 8px 0; color: var(--text-muted); border-radius: var(--radius-pill); transition: .25s;
+            }
+            .bottom-nav-item:hover, .bottom-nav-item:focus-visible { color: #fff; }
+            .nav-icon { font-size: 1.15rem; }
+            .nav-label { font-size: .66rem; font-weight: 500; }
         }
-        @media (min-width: 993px) { .bottom-nav { display: none !important; } }
+
+        @media (max-width: 700px) {
+            .hero { padding-top: calc(var(--header-h) + 24px); padding-bottom: 32px; }
+            .hero-inner { flex-direction: column; align-items: flex-start; gap: 22px; }
+            .hero-poster { flex-basis: auto; width: 150px; box-shadow: 0 14px 34px rgba(0, 0, 0, .6); }
+            .hero-body { width: 100%; }
+            .hero-actions { width: 100%; }
+            .btn { flex: 1 1 150px; }
+            .score-badge { flex: 0 0 auto; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-poster { width: 128px; }
+            .hero-title { margin-bottom: 12px; }
+            .btn { padding: 14px 18px; font-size: .92rem; }
+            .sidebar-widget, .review-panel { padding: 20px; }
+            .cast-card { flex: 0 0 104px; }
+            .gallery-card { flex: 0 0 220px; }
+            .dk-toast { right: 4%; left: 4%; max-width: unset; }
+        }
     </style>
 </head>
 <body>
 
-    <header class="main-header">
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <header class="main-header" id="mainHeader">
         <a href="index.html" class="logo">Drama<span>Kan</span></a>
-        <button id="headerShareBtn" class="header-share-btn" title="Share" aria-label="Share">
-            <i class="fa-solid fa-share"></i>
-        </button>
+        <nav class="header-nav" aria-label="Primary">
+            <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="community.html"><i class="fa-solid fa-bell"></i> Updates</a>
+            <a href="mylist.html"><i class="fa-solid fa-bookmark"></i> My List</a>
+            <a href="profile.html"><i class="fa-solid fa-user"></i> Profile</a>
+        </nav>
+        <div class="header-actions">
+            <button id="headerShareBtn" class="icon-btn" type="button" title="Share this page" aria-label="Share this page">
+                <i class="fa-solid fa-share-nodes"></i>
+            </button>
+        </div>
     </header>
 
-    <div id="shareToast" class="dk-toast">
+    <div id="shareToast" class="dk-toast" role="status" aria-live="polite">
         <i class="fas fa-check-circle" style="color: var(--primary);"></i>
         <span>Link copied to clipboard!</span>
     </div>
 
-    <section class="hero-section">
-        <img id="hero-bg" class="hero-backdrop" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Backdrop">
-        <div class="hero-gradient"></div>
-        
-        <div class="container hero-content">
-            <div class="poster-wrapper">
-                <img id="ui-poster" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Poster">
+    <main id="main-content">
+        <!-- HERO SECTION -->
+        <section class="hero" id="hero-section">
+            <div class="hero-media" aria-hidden="true">
+                <img id="hero-bg" class="hero-bg-img skeleton" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+                <div class="hero-scrim"></div>
             </div>
-            
-            <div class="drama-info">
-                <div class="hero-title-meta">
-                    <h1 id="ui-title">Loading Details...</h1>
-                    <div class="meta-tags">
-                        <span id="ui-year" class="tag-pill">----</span>
-                        <span id="ui-type" class="tag-pill">Content</span>
-                        <span id="ui-status" style="color: var(--primary); font-weight: 600;">Status</span>
-                        <span id="ui-eps">-- Episodes</span>
-                    </div>
-                </div>
-                
-                <div class="hero-synopsis-actions">
-                    <div class="synopsis" id="ui-synopsis">Loading content details...</div>
 
-                    <div class="actions-row">
-                        <a href="#" id="btn-watch-now" class="btn-watch">
-                            <i class="fas fa-play-circle"></i> Watch on DramaKan
+            <div class="container hero-inner">
+                <div class="hero-poster skeleton">
+                    <img id="ui-poster" class="skeleton-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Poster">
+                </div>
+
+                <div class="hero-body">
+                    <h1 id="ui-title" class="hero-title skeleton skeleton-text">Loading Details...</h1>
+
+                    <div class="hero-meta skeleton" id="meta-container">
+                        <span id="ui-year" class="chip">----</span>
+                        <span class="chip"><i class="fas fa-film"></i><span id="ui-type">Content</span></span>
+                        <span class="chip chip-status"><i class="fas fa-circle status-dot"></i><span id="ui-status">Status</span></span>
+                        <span id="ui-eps" class="chip">-- Episodes</span>
+                    </div>
+
+                    <div class="hero-synopsis-wrap">
+                        <p class="hero-synopsis skeleton" id="ui-synopsis">
+                            <span class="skeleton-text"></span>
+                            <span class="skeleton-text"></span>
+                            <span class="skeleton-text short"></span>
+                        </p>
+                        <button type="button" class="synopsis-toggle" id="synopsis-toggle" hidden>Read more</button>
+                    </div>
+
+                    <div class="hero-actions skeleton" id="actions-container">
+                        <a href="#" id="btn-watch-now" class="btn btn-primary">
+                            <i class="fas fa-play-circle"></i><span>Watch Now</span>
                         </a>
-                        <div class="hero-rating" title="TMDB Global Rating">
-                            <i class="fas fa-star"></i> <span id="ui-tmdb-score">--</span>
+                        <button type="button" id="btn-watch-trailer" class="btn btn-ghost">
+                            <i class="fas fa-clapperboard"></i><span>Trailer</span>
+                        </button>
+                        <div class="score-badge" title="TMDB Rating">
+                            <div class="score-badge-value"><i class="fas fa-star"></i><span id="ui-tmdb-score">--</span></div>
+                            <span class="score-badge-label">TMDB Score</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <div class="container content-grid">
-        <div class="main-content">
-            <div class="trailer-wrapper reveal-anim">
-                <h3 class="section-title">Official Trailer</h3>
-                <div class="trailer-container" id="trailer-container">
-                    <p style="padding: 20px; color: var(--text-muted); text-align: center; margin-top: 15%;">Fetching trailer...</p>
-                </div>
-            </div>
+        <!-- CONTENT GRID -->
+        <div class="container content-grid" id="content-grid">
+            <div class="main-content">
 
-            <div class="reveal-anim" style="margin-bottom: 30px;">
-                <h3 class="section-title">Top Cast</h3>
-                <div class="scroller" id="cast-scroller">
-                    <p style="color: var(--text-muted);">Fetching cast...</p>
-                </div>
-            </div>
-
-            <div class="reveal-anim" id="gallery-section">
-                <h3 class="section-title">Snapshots</h3>
-                <div class="scroller" id="gallery-scroller">
-                    <p style="color: var(--text-muted);">Fetching images...</p>
-                </div>
-            </div>
-
-            <div class="review-section-wrapper reveal-anim">
-                <div class="review-header-flex">
-                    <h3 class="section-title" style="margin: 0; border: none; padding: 0;">Community Reviews</h3>
-                    <div style="display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.4); padding: 8px 15px; border-radius: 50px;">
-                        <span style="font-size: 0.9rem; color: var(--text-muted);">Dramakan Score:</span>
-                        <i class="fas fa-star" style="color: var(--star-gold);"></i>
-                        <span id="ui-dk-score" style="font-weight: 700; color: #fff;">--</span>
-                    </div>
-                </div>
-
-                <div id="review-input-area" style="display: none; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--glass-border);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <span style="font-weight: 600; font-size: 0.95rem;">Rate & Review</span>
-                        <div class="dramakan-rate" id="star-rating-widget">
-                            <i class="fas fa-star" data-val="1"></i>
-                            <i class="fas fa-star" data-val="2"></i>
-                            <i class="fas fa-star" data-val="3"></i>
-                            <i class="fas fa-star" data-val="4"></i>
-                            <i class="fas fa-star" data-val="5"></i>
+                <section id="trailer-section">
+                    <div class="section-heading">
+                        <div class="section-heading-left">
+                            <span class="section-icon"><i class="fas fa-clapperboard"></i></span>
+                            <h2>Official Trailer</h2>
                         </div>
                     </div>
-                    <textarea id="review-text" class="review-input" placeholder="What did you think of this title?"></textarea>
-                    <div style="text-align: right;">
-                        <button id="btn-submit-review" class="btn-submit-review">Post Review</button>
+                    <div class="trailer-container skeleton" id="trailer-container"></div>
+                </section>
+
+                <section>
+                    <div class="section-heading">
+                        <div class="section-heading-left">
+                            <span class="section-icon"><i class="fas fa-users"></i></span>
+                            <h2>Top Cast</h2>
+                        </div>
+                    </div>
+                    <div class="scroller skeleton" id="cast-scroller">
+                        <div class="cast-card"><div class="skeleton-img" style="aspect-ratio:2/3; border-radius:8px;"></div></div>
+                        <div class="cast-card"><div class="skeleton-img" style="aspect-ratio:2/3; border-radius:8px;"></div></div>
+                        <div class="cast-card"><div class="skeleton-img" style="aspect-ratio:2/3; border-radius:8px;"></div></div>
+                        <div class="cast-card"><div class="skeleton-img" style="aspect-ratio:2/3; border-radius:8px;"></div></div>
+                    </div>
+                </section>
+
+                <section id="gallery-section">
+                    <div class="section-heading">
+                        <div class="section-heading-left">
+                            <span class="section-icon"><i class="fas fa-images"></i></span>
+                            <h2>Snapshots</h2>
+                        </div>
+                    </div>
+                    <div class="scroller skeleton" id="gallery-scroller">
+                        <div class="gallery-card"><div class="skeleton-img" style="aspect-ratio:16/9; border-radius:8px;"></div></div>
+                        <div class="gallery-card"><div class="skeleton-img" style="aspect-ratio:16/9; border-radius:8px;"></div></div>
+                        <div class="gallery-card"><div class="skeleton-img" style="aspect-ratio:16/9; border-radius:8px;"></div></div>
+                    </div>
+                </section>
+
+                <section class="review-panel">
+                    <div class="section-heading">
+                        <div class="section-heading-left">
+                            <span class="section-icon"><i class="fas fa-comments"></i></span>
+                            <h2>Community Reviews</h2>
+                        </div>
+                        <div class="dk-score-chip">
+                            <span>DramaKan Score</span>
+                            <i class="fas fa-star"></i>
+                            <strong id="ui-dk-score">--</strong>
+                        </div>
+                    </div>
+
+                    <div id="review-input-area" class="review-compose" style="display: none;">
+                        <div class="review-compose-head">
+                            <span>Rate &amp; Review</span>
+                            <div class="dramakan-rate" id="star-rating-widget">
+                                <i class="fas fa-star" data-val="1"></i>
+                                <i class="fas fa-star" data-val="2"></i>
+                                <i class="fas fa-star" data-val="3"></i>
+                                <i class="fas fa-star" data-val="4"></i>
+                                <i class="fas fa-star" data-val="5"></i>
+                            </div>
+                        </div>
+                        <textarea id="review-text" class="review-input" placeholder="What did you think of this title?"></textarea>
+                        <div class="review-actions">
+                            <button id="btn-submit-review" class="btn-submit-review" type="button">Post Review</button>
+                        </div>
+                    </div>
+
+                    <div id="rating-login-msg" class="login-note">
+                        <i class="fas fa-lock"></i>
+                        <span>Log in to rate this title and leave a review.</span>
+                    </div>
+
+                    <div class="user-reviews-list skeleton" id="user-reviews-list">
+                        <div class="skeleton-text"></div>
+                        <div class="skeleton-text short"></div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="sidebar">
+                <div class="sidebar-widget">
+                    <div class="section-heading">
+                        <div class="section-heading-left">
+                            <span class="section-icon"><i class="fas fa-circle-info"></i></span>
+                            <h3>Details</h3>
+                        </div>
+                    </div>
+                    <ul class="info-list skeleton" id="details-list">
+                        <li><span>Native Title</span><span id="ui-native">N/A</span></li>
+                        <li><span>Network / Studio</span><span id="ui-network">N/A</span></li>
+                        <li><span>Released / Aired</span><span id="ui-aired">N/A</span></li>
+                        <li><span>Content Rating</span><span id="ui-rating">N/A</span></li>
+                        <li><span>Runtime</span><span id="ui-runtime">N/A</span></li>
+                        <li><span>Genres</span><span id="ui-genres">N/A</span></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-widget" id="where-to-watch-widget" style="display: none;">
+                    <div class="section-heading">
+                        <div class="section-heading-left">
+                            <span class="section-icon"><i class="fas fa-tv"></i></span>
+                            <h3>Official Providers</h3>
+                        </div>
+                    </div>
+                    <div class="providers-list" id="ui-providers"></div>
+                </div>
+
+                <div class="sidebar-widget">
+                    <div class="section-heading">
+                        <div class="section-heading-left">
+                            <span class="section-icon"><i class="fas fa-star"></i></span>
+                            <h3>You May Also Like</h3>
+                        </div>
+                    </div>
+                    <div class="rec-list skeleton" id="ui-recs">
+                        <div class="skeleton-text"></div>
+                        <div class="skeleton-text short"></div>
                     </div>
                 </div>
-                <div id="rating-login-msg" style="text-align: center; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 20px; color: var(--primary);">
-                    <i class="fas fa-lock"></i> Please log in to leave a review.
-                </div>
-
-                <div class="user-reviews-list" id="user-reviews-list">
-                    <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center;">Loading reviews...</p>
-                </div>
-            </div>
+            </aside>
         </div>
+    </main>
 
-        <div class="sidebar">
-            <div class="sidebar-widget reveal-anim">
-                <h3 class="section-title" style="font-size: 1.1rem;">Details</h3>
-                <ul class="info-list">
-                    <li><span>Native Title</span> <span id="ui-native">N/A</span></li>
-                    <li><span>Network / Studio</span> <span id="ui-network">N/A</span></li>
-                    <li><span>Released / Aired</span> <span id="ui-aired">N/A</span></li>
-                    <li><span>Content Rating</span> <span id="ui-rating">N/A</span></li>
-                    <li><span>Runtime</span> <span id="ui-runtime">N/A</span></li>
-                    <li><span>Genres</span> <span id="ui-genres">N/A</span></li>
-                </ul>
-            </div>
+    <footer class="attribution">
+        <span>Data and images provided by</span>
+        <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" alt="TMDB Logo" loading="lazy">
+    </footer>
 
-            <div class="sidebar-widget reveal-anim" id="where-to-watch-widget" style="display: none;">
-                <h3 class="section-title" style="font-size: 1.1rem;">Official Providers</h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Available on these platforms:</p>
-                <div class="providers-list" id="ui-providers"></div>
-            </div>
-
-            <div class="sidebar-widget reveal-anim">
-                <h3 class="section-title" style="font-size: 1.1rem;">You May Also Like</h3>
-                <div class="rec-list" id="ui-recs">
-                    <p style="color:var(--text-muted); font-size:0.85rem;">Fetching recommendations...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="attribution reveal-anim">
-            <span>Data and Images provided by</span>
-            <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" alt="TMDB Logo">
-        </div>
-    </div>
-
-    <nav class="bottom-nav">
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="bottom-nav" aria-label="Mobile">
         <a href="index.html" class="bottom-nav-item">
             <i class="fa-solid fa-house nav-icon"></i>
             <span class="nav-label">Home</span>
@@ -532,9 +651,11 @@
         import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-        const WATCH_DOMAIN_URL = "watch.html?id="; 
+        const WATCH_DOMAIN_URL = "watch.html?id=";
         const tmdbKey = "hidden_by_proxy";
-        
+        const FALLBACK_POSTER = 'https://via.placeholder.com/500x750/14151a/8A2BE2?text=No+Poster';
+        const FALLBACK_BACKDROP = 'https://via.placeholder.com/1280x720/0B0C10/8A2BE2?text=DramaKan';
+
         const firebaseConfig = {
             apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
             authDomain: "dramakan007.firebaseapp.com",
@@ -543,11 +664,11 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app); 
+        const auth = getAuth(app);
 
         const urlParams = new URLSearchParams(window.location.search);
         const dramaId = urlParams.get('id');
-        let contentType = urlParams.get('type') || ''; // 'movie' or 'tv'
+        let contentType = urlParams.get('type') || '';
 
         let currentUser = null;
         let activeData = null;
@@ -557,25 +678,33 @@
         if (!dramaId) { window.location.replace('index.html'); }
         document.getElementById('btn-watch-now').href = WATCH_DOMAIN_URL + dramaId;
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal-anim').forEach(el => observer.observe(el));
+        /* Header shadow on scroll */
+        const headerEl = document.getElementById('mainHeader');
+        const onScrollHeader = () => headerEl.classList.toggle('is-scrolled', window.scrollY > 8);
+        onScrollHeader();
+        window.addEventListener('scroll', onScrollHeader, { passive: true });
 
-        // Toast Feedback
+        /* Jump to trailer */
+        document.getElementById('btn-watch-trailer')?.addEventListener('click', () => {
+            document.getElementById('trailer-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        /* Synopsis read more / show less */
+        const synopsisEl = document.getElementById('ui-synopsis');
+        const synopsisToggle = document.getElementById('synopsis-toggle');
+        synopsisToggle?.addEventListener('click', () => {
+            const expanded = synopsisEl.classList.toggle('expanded');
+            synopsisToggle.textContent = expanded ? 'Show less' : 'Read more';
+        });
+
+        /* Toast & Share */
         function showToast(msg = "Link copied to clipboard!") {
             const toast = document.getElementById('shareToast');
-            if (!toast) return;
             toast.querySelector('span').textContent = msg;
             toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+            setTimeout(() => toast.classList.remove('show'), 2500);
         }
 
-        // Global Share Trigger
         async function handleShare() {
             const title = activeData ? (activeData.name || activeData.title) : document.title;
             const overview = activeData?.overview ? (activeData.overview.slice(0, 100) + '...') : "Watch on DramaKan!";
@@ -583,49 +712,49 @@
 
             if (navigator.share) {
                 try {
-                    await navigator.share({
-                        title: `${title} - DramaKan`,
-                        text: `Watch ${title} on DramaKan!\n${overview}`,
-                        url: shareUrl
-                    });
-                } catch (err) {
-                    if (err.name !== 'AbortError') { copyToClipboard(shareUrl); }
-                }
-            } else {
-                copyToClipboard(shareUrl);
-            }
+                    await navigator.share({ title: `${title} - DramaKan`, text: `Watch ${title} on DramaKan!\n${overview}`, url: shareUrl });
+                } catch (err) { if (err.name !== 'AbortError') copyToClipboard(shareUrl); }
+            } else { copyToClipboard(shareUrl); }
         }
 
         function copyToClipboard(text) {
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showToast("Link copied to clipboard!");
-                }).catch(() => { prompt("Copy link:", text); });
+                navigator.clipboard.writeText(text).then(() => showToast()).catch(() => prompt("Copy link:", text));
             } else { prompt("Copy link:", text); }
         }
 
-        const shareBtn = document.getElementById('headerShareBtn');
-        if (shareBtn) {
-            shareBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                handleShare();
+        document.getElementById('headerShareBtn')?.addEventListener('click', (e) => {
+            e.preventDefault(); handleShare();
+        });
+
+        /* Skeleton removal utility */
+        function clearSkeletons() {
+            document.querySelectorAll('.skeleton').forEach(el => {
+                el.classList.remove('skeleton');
             });
+            document.getElementById('ui-synopsis').innerHTML = '';
         }
 
-        // Universal TMDB Fetcher for Movies, Shows, Anime, and Asian Dramas
+        function showErrorState(message) {
+            clearSkeletons();
+            document.getElementById('ui-title').textContent = "Content Not Found";
+            document.getElementById('ui-synopsis').textContent = message;
+            document.getElementById('meta-container').style.display = 'none';
+            document.getElementById('actions-container').style.display = 'none';
+            document.getElementById('content-grid').style.display = 'none';
+        }
+
         async function fetchDramaDetails() {
             const appendParams = `append_to_response=credits,videos,images,recommendations,similar,watch/providers`;
             let res = null;
 
-            // 1. Try movie first if hint provided
             if (contentType === 'movie') {
                 try {
                     const movieRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${dramaId}?api_key=${tmdbKey}&${appendParams}`);
                     if (movieRes.ok) { res = movieRes; isMovieType = true; }
-                } catch(e){}
+                } catch (e) {}
             }
 
-            // 2. Try TV Series / Drama / Anime
             if (!res) {
                 try {
                     const tvRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${dramaId}?api_key=${tmdbKey}&${appendParams}`);
@@ -633,7 +762,6 @@
                 } catch (e) {}
             }
 
-            // 3. Fallback to Movie check if TV failed
             if (!res) {
                 try {
                     const movieRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${dramaId}?api_key=${tmdbKey}&${appendParams}`);
@@ -642,7 +770,7 @@
             }
 
             if (!res) {
-                document.getElementById('ui-synopsis').textContent = "Failed to load content details.";
+                showErrorState("Failed to load content details. It might have been removed.");
                 return;
             }
 
@@ -652,97 +780,121 @@
                 updateSEO();
                 initReviews();
             } catch (err) {
-                document.getElementById('ui-synopsis').textContent = "Failed to load content details.";
+                showErrorState("Data parsing error. Please try again later.");
             }
         }
 
         function renderUI() {
+            clearSkeletons();
+
             const title = activeData.name || activeData.title;
-            const posterUrl = activeData.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${activeData.poster_path}` : 'default.jpg';
+            const posterUrl = activeData.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${activeData.poster_path}` : FALLBACK_POSTER;
             const bgUrl = activeData.backdrop_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w1280${activeData.backdrop_path}` : posterUrl;
-            
-            // Detect Type Tag (Anime, Movie, Show, Drama)
+
             const genresList = activeData.genres?.map(g => g.name) || [];
             let displayType = isMovieType ? 'Movie' : 'TV Show';
             if (genresList.includes("Animation")) displayType = "Anime";
             else if (['ko', 'zh', 'ja', 'th'].includes(activeData.original_language)) displayType = isMovieType ? 'Asian Movie' : 'Asian Drama';
 
             document.getElementById('ui-title').textContent = title;
+
             document.getElementById('ui-synopsis').textContent = activeData.overview || "No overview available for this title.";
             document.getElementById('ui-year').innerHTML = `<i class="far fa-calendar"></i> ${(activeData.first_air_date || activeData.release_date || "----").substring(0, 4)}`;
             document.getElementById('ui-type').textContent = displayType;
             document.getElementById('ui-status').textContent = activeData.status || "Released";
-            document.getElementById('ui-poster').src = posterUrl;
-            document.getElementById('hero-bg').src = bgUrl;
-            
+
+            const posterImg = document.getElementById('ui-poster');
+            posterImg.onerror = () => { posterImg.onerror = null; posterImg.src = FALLBACK_POSTER; };
+            posterImg.src = posterUrl;
+            posterImg.alt = `${title} poster`;
+            posterImg.classList.remove('skeleton-img');
+
+            const bgImg = document.getElementById('hero-bg');
+            bgImg.onerror = () => { bgImg.onerror = null; bgImg.src = FALLBACK_BACKDROP; };
+            bgImg.src = bgUrl;
+
+            const epsEl = document.getElementById('ui-eps');
             if (!isMovieType && activeData.number_of_episodes) {
-                document.getElementById('ui-eps').textContent = `${activeData.number_of_episodes} Episodes`;
-            } else { document.getElementById('ui-eps').style.display = 'none'; }
+                epsEl.textContent = `${activeData.number_of_episodes} Episodes`;
+            } else { epsEl.style.display = 'none'; }
 
             document.getElementById('ui-native').textContent = activeData.original_name || activeData.original_title || "N/A";
-            document.getElementById('ui-network').textContent = activeData.networks && activeData.networks.length ? activeData.networks[0].name : (activeData.production_companies?.[0]?.name || (isMovieType ? "Theatrical Release" : "N/A"));
+            document.getElementById('ui-network').textContent = activeData.networks?.length ? activeData.networks[0].name : (activeData.production_companies?.[0]?.name || (isMovieType ? "Theatrical Release" : "N/A"));
             document.getElementById('ui-aired').textContent = activeData.first_air_date || activeData.release_date || "N/A";
             document.getElementById('ui-rating').textContent = activeData.content_ratings?.results?.find(r => r.iso_3166_1 === 'US')?.rating || "PG-13";
             document.getElementById('ui-runtime').textContent = activeData.episode_run_time?.length ? `${activeData.episode_run_time[0]} min` : (activeData.runtime ? `${activeData.runtime} min` : "N/A");
             document.getElementById('ui-genres').textContent = genresList.join(', ') || "N/A";
             document.getElementById('ui-tmdb-score').textContent = activeData.vote_average ? activeData.vote_average.toFixed(1) : "N/A";
 
+            // Providers
             const providers = activeData['watch/providers']?.results;
             const providerDiv = document.getElementById('ui-providers');
             if (providers) {
                 const countryData = providers['US'] || providers['IN'] || Object.values(providers)[0];
                 if (countryData && countryData.flatrate) {
                     document.getElementById('where-to-watch-widget').style.display = 'block';
-                    providerDiv.innerHTML = countryData.flatrate.slice(0, 5).map(p => 
-                        `<img src="https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w92${p.logo_path}" alt="${p.provider_name}" title="${p.provider_name}" class="provider-icon">`
+                    providerDiv.innerHTML = countryData.flatrate.slice(0, 5).map(p =>
+                        `<img src="https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w92${p.logo_path}" alt="${p.provider_name}" title="${p.provider_name}" class="provider-icon" loading="lazy">`
                     ).join('');
                 }
             }
 
+            // Trailer
             const trailerDiv = document.getElementById('trailer-container');
             const videos = activeData.videos?.results || [];
             const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube') || videos[0];
             if (trailer) {
-                trailerDiv.innerHTML = `<iframe src="https://www.youtube.com/embed/${trailer.key}?modestbranding=1&rel=0" allowfullscreen></iframe>`;
-            } else { trailerDiv.innerHTML = '<p style="padding: 20px; color: var(--text-muted); text-align: center; margin-top: 15%;">No official trailer available.</p>'; }
+                trailerDiv.innerHTML = `<iframe src="https://www.youtube.com/embed/${trailer.key}?modestbranding=1&rel=0" title="${title} trailer" allowfullscreen loading="lazy"></iframe>`;
+            } else {
+                trailerDiv.innerHTML = '<div class="trailer-empty">No official trailer available.</div>';
+            }
 
+            // Cast
             const castDiv = document.getElementById('cast-scroller');
             const cast = activeData.credits?.cast || [];
             if (cast.length > 0) {
                 castDiv.innerHTML = cast.slice(0, 15).map(actor => {
-                    const img = actor.profile_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w185${actor.profile_path}` : 'https://via.placeholder.com/120x180/14151a/8A2BE2?text=No+Image';
+                    const img = actor.profile_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w185${actor.profile_path}` : 'https://via.placeholder.com/130x195/14151a/8A2BE2?text=NA';
                     return `<div class="cast-card"><img src="${img}" alt="${actor.name}" loading="lazy"><h4>${actor.name}</h4><p>${actor.character}</p></div>`;
                 }).join('');
-            } else { castDiv.innerHTML = '<p style="color: var(--text-muted);">No cast info available.</p>'; }
+            } else { castDiv.innerHTML = '<p class="empty-note">No cast info available.</p>'; }
 
+            // Gallery
             const galDiv = document.getElementById('gallery-scroller');
             const images = activeData.images?.backdrops || [];
             if (images.length > 0) {
                 galDiv.innerHTML = images.slice(0, 10).map(img => {
                     const url = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${img.file_path}`;
-                    return `<div class="gallery-card"><img src="${url}" loading="lazy" onclick="window.open('${url}', '_blank')"></div>`;
+                    return `<div class="gallery-card"><img src="${url}" loading="lazy" alt="${title} snapshot" onclick="window.open('${url}', '_blank')"></div>`;
                 }).join('');
             } else { document.getElementById('gallery-section').style.display = 'none'; }
 
+            // Recommendations
             const recDiv = document.getElementById('ui-recs');
             let recs = activeData.recommendations?.results || [];
-            if (recs.length === 0) { recs = activeData.similar?.results || []; } 
+            if (recs.length === 0) recs = activeData.similar?.results || [];
 
             if (recs.length > 0) {
-                recDiv.innerHTML = recs.slice(0, 5).map(rec => {
-                    let p = rec.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w200${rec.poster_path}` : 'https://via.placeholder.com/60x90/14151a/8A2BE2?text=NA';
+                recDiv.innerHTML = recs.slice(0, 6).map(rec => {
+                    let p = rec.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w200${rec.poster_path}` : 'https://via.placeholder.com/65x95/14151a/8A2BE2?text=NA';
                     const t = rec.name || rec.title;
                     const r = rec.vote_average ? rec.vote_average.toFixed(1) : 'N/A';
                     return `
                     <a href="details.html?id=${rec.id}" class="rec-card">
                         <img src="${p}" alt="${t}" loading="lazy">
-                        <div class="rec-info"><h4>${t}</h4><p><i class="fas fa-star" style="color:var(--star-gold);"></i> ${r}</p></div>
+                        <div class="rec-info"><h4>${t}</h4><p><i class="fas fa-star"></i> ${r}</p></div>
                     </a>`;
                 }).join('');
-            } else { recDiv.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">No similar titles found.</p>'; }
+            } else { recDiv.innerHTML = '<p class="empty-note">No similar titles found.</p>'; }
+
+            // Reveal the "Read more" toggle only if the synopsis actually overflows
+            requestAnimationFrame(() => {
+                const el = document.getElementById('ui-synopsis');
+                const overflowing = el.scrollHeight > el.clientHeight + 2;
+                synopsisToggle.hidden = !overflowing;
+            });
         }
 
-        // Browser runtime title & history update
         function updateSEO() {
             const title = activeData.name || activeData.title;
             const portraitPoster = activeData.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${activeData.poster_path}` : 'https://dramakan.site/og-image.jpg';
@@ -752,7 +904,7 @@
             document.title = `${title} - Watch Online | DramaKan`;
             document.getElementById('canonical-url').href = url;
             document.getElementById('seo-description').content = synopsis.slice(0, 160);
-            
+
             document.getElementById('og-title').content = `${title} - DramaKan`;
             document.getElementById('og-description').content = synopsis.slice(0, 160);
             document.getElementById('og-image').content = portraitPoster;
@@ -767,7 +919,8 @@
             const stars = document.querySelectorAll('.dramakan-rate i');
             const reviewInputArea = document.getElementById('review-input-area');
             const loginMsg = document.getElementById('rating-login-msg');
-            
+            const reviewList = document.getElementById('user-reviews-list');
+
             onAuthStateChanged(auth, (user) => {
                 currentUser = user;
                 if (user) {
@@ -775,10 +928,10 @@
                     reviewInputArea.style.display = 'block';
                     fetchUserReview();
                 } else {
-                    loginMsg.style.display = 'block';
+                    loginMsg.style.display = 'flex';
                     reviewInputArea.style.display = 'none';
                 }
-                fetchAggregateRating(); 
+                fetchAggregateRating();
             });
 
             async function fetchAggregateRating() {
@@ -810,7 +963,7 @@
             function highlightStars(val, isHover = false) {
                 stars.forEach(s => {
                     const starVal = parseInt(s.dataset.val);
-                    if (isHover) { s.classList.toggle('hover-active', starVal <= val); } 
+                    if (isHover) { s.classList.toggle('hover-active', starVal <= val); }
                     else { s.classList.toggle('active', starVal <= val); }
                 });
             }
@@ -829,7 +982,7 @@
                 if (selectedStarValue === 0) { alert("Please select a star rating first."); return; }
                 const text = document.getElementById('review-text').value.trim();
                 const btn = document.getElementById('btn-submit-review');
-                
+
                 btn.textContent = "Saving...";
                 btn.disabled = true;
 
@@ -869,21 +1022,21 @@
 
             const reviewsQuery = query(collection(db, "dramaRatings", dramaId, "reviews"), orderBy("timestamp", "desc"));
             onSnapshot(reviewsQuery, (snapshot) => {
-                const reviewList = document.getElementById('user-reviews-list');
+                reviewList.classList.remove('skeleton');
                 reviewList.innerHTML = '';
                 if (snapshot.empty) {
-                    reviewList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; text-align: center;">No reviews yet. Be the first to review!</p>';
+                    reviewList.innerHTML = '<p class="empty-note" style="text-align: center; padding: 20px;">No reviews yet. Be the first to review!</p>';
                     return;
                 }
                 snapshot.forEach((docSnap) => {
                     const d = docSnap.data();
                     let starsHtml = '';
-                    for(let i=1; i<=5; i++) { starsHtml += `<i class="fas fa-star" style="color: ${i <= d.score ? 'var(--star-gold)' : '#3f3f46'};"></i>`; }
-                    
+                    for (let i = 1; i <= 5; i++) { starsHtml += `<i class="fas fa-star" style="color: ${i <= d.score ? 'var(--star-gold)' : '#3f3f46'};"></i>`; }
+
                     reviewList.insertAdjacentHTML('beforeend', `
                         <div class="user-review-item">
                             <div class="review-meta">
-                                <div class="reviewer-name"><img src="${d.photo}" alt="user"> ${d.username}</div>
+                                <div class="reviewer-name"><img src="${d.photo}" alt="${d.username}"> ${d.username}</div>
                                 <div class="reviewer-stars">${starsHtml}</div>
                             </div>
                             ${d.text ? `<div class="review-text">${d.text}</div>` : ''}
