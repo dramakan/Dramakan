@@ -4,7 +4,8 @@
     injectedStyles.innerHTML = `
         /* FIX: Prevent search text from overlapping icons */
         #searchInput { padding: 10px 40px 10px 40px !important; }
-        .search-bar i.fa-search, .search-filter-link { pointer-events: none; z-index: 2; }
+        .search-bar i.fa-search { pointer-events: none; }
+.search-filter-link { pointer-events: auto; z-index: 2; }
         
         /* WHO'S WATCHING OVERLAY STYLES */
         #home-profile-switcher-overlay {
