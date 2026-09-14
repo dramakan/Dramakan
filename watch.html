@@ -40,7 +40,7 @@
     <script src="feedback-popup.js" defer></script>
     <script src="admin_easter_egg.js" defer></script>
     <script type="module" src="global-login-popup.js" defer></script>
-
+ <link rel="manifest" href="/manifest.json">
     <style>
         :root {
             --bg-base: #0B0C10; 
@@ -1724,5 +1724,28 @@ function updateSEO(data, dramaId, season, ep) {
             }
         }, 1000); // Checks every 1 second
     </script>
+    <!-- AUTO-LANDSCAPE ON FULLSCREEN -->
+<script>
+    function handleFullscreenRotation() {
+        const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+        
+        if (isFullscreen) {
+            // Lock to landscape if the device supports it (mostly mobile)
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch((err) => {
+                    console.warn('Orientation lock not supported or denied:', err);
+                });
+            }
+        } else {
+            // Unlock orientation when exiting fullscreen
+            if (screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock();
+            }
+        }
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenRotation);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenRotation);
+</script>
 </body>
 </html>
