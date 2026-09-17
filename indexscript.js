@@ -5,7 +5,7 @@
         /* FIX: Prevent search text from overlapping icons */
         #searchInput { padding: 10px 40px 10px 40px !important; }
         .search-bar i.fa-search { pointer-events: none; }
-.search-filter-link { pointer-events: auto; z-index: 2; }
+        .search-filter-link { pointer-events: auto; z-index: 2; }
         
         /* WHO'S WATCHING OVERLAY STYLES */
         #home-profile-switcher-overlay {
@@ -71,6 +71,8 @@
     }
 })();
 
+// --- 1. CORE CONFIGURATION & FIREBASE ---
+const tmdbKey = "hidden_by_proxy"; 
 const firebaseConfig = {
     apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
     authDomain: "dramakan007.firebaseapp.com",
@@ -78,7 +80,7 @@ const firebaseConfig = {
 };
 
 let firebaseInstance = null;
-let unsubscribeHistory = null; // Store listener globally to handle cleanup
+let unsubscribeHistory = null; 
 
 async function getFirebase() {
     if (firebaseInstance) return firebaseInstance;
@@ -94,12 +96,11 @@ async function getFirebase() {
     return firebaseInstance;
 }
 
-// --- NEW CLOUD-FIRST CONTINUE WATCHING RENDERER ---
+// --- 2. GLOBAL UI UTILITIES & RENDERERS ---
 function renderContinueWatching(cloudHistoryArr = null) {
     try {
         let historyArr = cloudHistoryArr;
         
-        // Fallback to local storage only if cloud isn't passed (guest user)
         if (!historyArr) {
             const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
             historyArr = Object.values(historyObj)
@@ -129,476 +130,6 @@ function renderContinueWatching(cloudHistoryArr = null) {
     } catch(e) { console.error("CW Render Error:", e); }
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-
-    const menuToggle = document.getElementById('mobileMenuToggle');
-    const navLinks = document.getElementById('navLinks');
-    const overlay = document.createElement('div');
-    overlay.className = 'menu-overlay';
-    document.body.appendChild(overlay);
-
-    if (menuToggle && navLinks) {
-        menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            navLinks.classList.toggle('active');
-            overlay.classList.toggle('active');
-            const icon = menuToggle.querySelector('i');
-            if (icon) { icon.classList.toggle('fa-bars'); icon.classList.toggle('fa-times'); }
-        });
-        overlay.addEventListener('click', () => {
-            navLinks.classList.remove('active');
-            overlay.classList.remove('active');
-            if (menuToggle.querySelector('i')) { menuToggle.querySelector('i').className = 'fas fa-bars'; }
-        });
-    }
-
-    function shuffleArray(array) {
-        let shuffled = [...array];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        return shuffled;
-    }
-
-    let fuse;
-    const searchInput = document.getElementById('searchInput');
-    const searchResults = document.getElementById('searchResults');
-
-    function populateGrid(elementId, items) {
-        const grid = document.getElementById(elementId);
-        if (!grid) return;
-        
-        let htmlContent = '';
-        
-        items.forEach((drama, index) => {
-            const safeTitle = encodeURIComponent(drama.title);
-            const safeImg = encodeURIComponent(drama.img);
-            const safeLink = encodeURIComponent(drama.link);
-            
-            htmlContent += `
-            <a href="${drama.link}" class="drama-card">
-                <div class="drama-card-img"><img src="${drama.img}" alt="${drama.title}" loading="lazy" decoding="async"></div>
-                <div class="drama-card-info">
-                    <h3 class="drama-card-title">${drama.title}</h3>
-                    <p class="drama-card-meta">${drama.type}</p>
-                </div>
-                <button class="bookmark-btn" onclick="event.preventDefault(); window.toggleMyList(this, '${safeTitle}', '${safeImg}', '${safeLink}', '${drama.id || drama.tmdbId || ''}')" title="Add to My List">
-                    <i class="fas fa-plus"></i>
-                </button>
-            </a>
-            `;
-
-            if (index === 2) {
-                if (['trending-grid', 'everything-drama-grid', 'movie-grid', 'shows-grid', 'asian-grid', 'anime-grid'].includes(elementId)) {
-                    let adSlot = "8531757983"; 
-                    let layoutKey = "-6t+ed+2i-1n-4w"; 
-                    
-                    if (elementId === 'everything-drama-grid') {
-                        adSlot = "2322807703"; layoutKey = "+21+s4-18-23+8q";
-                    } else if (elementId === 'asian-grid') {
-                        adSlot = "6975017511"; layoutKey = "+2a+rx+1+2-3";
-                    } else if (elementId === 'shows-grid') {
-                        adSlot = "[INSERT_SHOWS_INFEED_ID_HERE]";
-                    } else if (elementId === 'trending-grid') {
-                        adSlot = "[INSERT_TRENDING_INFEED_ID_HERE]";
-                    } else if (elementId === 'movie-grid') {
-                        adSlot = "[INSERT_MOVIE_INFEED_ID_HERE]";
-                    } else if (elementId === 'anime-grid') {
-                        adSlot = "[INSERT_ANIME_INFEED_ID_HERE]";
-                    }
-
-                    htmlContent += `
-                    <div class="drama-card ad-card-wrapper">
-                        <ins class="adsbygoogle" 
-                            style="display:block; width:100%; height:100%;" 
-                            data-ad-format="fluid" 
-                            data-ad-layout-key="${layoutKey}" 
-                            data-ad-client="ca-pub-3854581977852778" 
-                            data-ad-slot="${adSlot}"></ins>
-                    </div>`;
-                }
-            }
-        });
-
-        grid.innerHTML = htmlContent;
-
-        setTimeout(() => {
-            const uninitializedAds = grid.querySelectorAll('.adsbygoogle:not([data-adsbygoogle-status="done"])');
-            uninitializedAds.forEach(() => {
-                try { (adsbygoogle = window.adsbygoogle || []).push({}); } 
-                catch (e) { console.error("Dynamic Ad Init Error", e); }
-            });
-        }, 500);
-    }
-
-    // --- CLOUD-FIRST GLOBAL MY LIST TOGGLE ---
-    window.toggleMyList = async function(btnElement, titleSafe, imgSafe, linkSafe, rawId) {
-        if(!rawId) return; // Fail safe
-        
-        let profileMyList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
-        let watchlistObj = JSON.parse(localStorage.getItem('dramakan_watchlist')) || {};
-
-        const title = decodeURIComponent(titleSafe);
-        const img = decodeURIComponent(imgSafe);
-        const link = decodeURIComponent(linkSafe);
-        
-        let inListIdx = profileMyList.findIndex(item => String(item.id) === String(rawId));
-        
-        if (inListIdx > -1) {
-            profileMyList.splice(inListIdx, 1);
-            delete watchlistObj[rawId];
-            btnElement.classList.remove('active');
-            btnElement.innerHTML = `<i class="fas fa-plus"></i> <span>My List</span>`;
-        } else {
-            const itemData = {
-                id: String(rawId), title: title, img: img, link: link, timestamp: Date.now()
-            };
-            profileMyList.push(itemData);
-            watchlistObj[rawId] = itemData;
-            btnElement.classList.add('active');
-            btnElement.innerHTML = `<i class="fas fa-check"></i> <span>In List</span>`;
-        }
-        localStorage.setItem('dramakan_mylist', JSON.stringify(profileMyList));
-        localStorage.setItem('dramakan_watchlist', JSON.stringify(watchlistObj));
-        
-        // Instantly sync up to Firebase as the absolute source of truth
-        if (firebaseInstance && firebaseInstance.auth.currentUser) {
-            try {
-                const user = firebaseInstance.auth.currentUser;
-                const { doc, getDoc, updateDoc } = firebaseInstance.firestoreModule;
-                const userRef = doc(firebaseInstance.db, "users", user.uid);
-                
-                const snap = await getDoc(userRef);
-                if(snap.exists()) {
-                    let data = snap.data();
-                    if(data.profiles && data.profiles.length > 0) {
-                        let activeId = localStorage.getItem('dramakan_active_profile_id');
-                        let pIdx = data.profiles.findIndex(p => p.id === activeId);
-                        if(pIdx === -1) pIdx = 0;
-                        data.profiles[pIdx].myList = profileMyList;
-                        await updateDoc(userRef, { profiles: data.profiles });
-                    } else {
-                        await updateDoc(userRef, { myList: profileMyList });
-                    }
-                }
-            } catch(err) { console.error("Cloud list sync failed", err); }
-        }
-    };
-
-    async function initializeDramaSite() {
-        let data = [];
-        try {
-            const response = await fetch('/dramas.json');
-            data = await response.json();
-            
-            localStorage.setItem('dramakan_master_db', JSON.stringify(data));
-            fuse = new Fuse(data, { keys: ['title'], threshold: 0.4 });
-            
-            try {
-                const trendResponse = await fetch('https://api.2embed.cc/trendingtv');
-                if (!trendResponse.ok) throw new Error(`HTTP error! status: ${trendResponse.status}`);
-                const trendData = await trendResponse.json();
-                
-                const resultsArray = trendData.results || [];
-                if (resultsArray.length === 0) throw new Error("No results found in API response.");
-
-                const apiTrendingItems = resultsArray.slice(0, 15).map(item => ({
-                    id: String(item.tmdb_id),
-                    title: item.name || item.title || "Unknown Title",
-                    img: item.poster || 'https://via.placeholder.com/500x750?text=No+Image',
-                    link: item.embed_tmdb || `details.html?id=${item.tmdb_id}`, 
-                    type: "Trending"
-                }));
-                
-                populateGrid('trending-grid', apiTrendingItems);
-                
-            } catch (err) {
-                console.error("2embed API failed, using fallback:", err);
-                let fallbackItems = data.filter(d => d.Trend === "T" || d.trending === true);
-                if (fallbackItems.length === 0) fallbackItems = data;
-                populateGrid('trending-grid', fallbackItems.slice(0, 15));
-            }
-
-            const gridConfigs = [
-                { id: 'everything-drama-grid', filterType: "Everything Drama" },
-                { id: 'movie-grid', filterType: "Movie" },
-                { id: 'shows-grid', filterType: "Shows" },
-                { id: 'asian-grid', filterType: "Asian" },
-                { id: 'anime-grid', filterType: "Anime" },
-                { id: 'upcoming-grid', isUpcoming: true }
-            ];
-
-            const gridObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const targetId = entry.target.id;
-                        const config = gridConfigs.find(c => c.id === targetId);
-
-                        if (config) {
-                            let sectionData = [];
-                            if (config.isUpcoming) {
-                                sectionData = shuffleArray(data.filter(d => d.status === "Upcoming" || d.release_date === "Upcoming")).slice(0, 15);
-                            } else {
-                                sectionData = shuffleArray(data.filter(d => d.type === config.filterType)).slice(0, 15);
-                            }
-                            
-                            // Map existing JSON data ids explicitly as strings
-                            const safeSectionData = sectionData.map(item => ({...item, id: String(item.id || item.tmdbId)}));
-                            populateGrid(targetId, safeSectionData);
-                            observer.unobserve(entry.target);
-                        }
-                    }
-                });
-            }, { rootMargin: '300px' });
-
-            gridConfigs.forEach(config => {
-                const el = document.getElementById(config.id);
-                if (el) gridObserver.observe(el);
-            });
-
-        } catch (err) { console.error("JSON Load Error:", err); }
-    }
-
-    if (searchInput) {
-        let debounceTimer; 
-        searchInput.addEventListener('input', () => {
-            clearTimeout(debounceTimer); 
-            debounceTimer = setTimeout(() => {
-                const query = searchInput.value.trim();
-                if (query.length < 1 || !fuse) { searchResults.style.display = 'none'; return; }
-                
-                const results = fuse.search(query, { limit: 10 });
-                searchResults.innerHTML = results.map(({ item }) => {
-                    return `
-                    <a href="${item.link}" class="search-result-item">
-                        <img src="${item.img}" width="45" height="60" loading="lazy" decoding="async">
-                        <div><div class="search-result-title">${item.title}</div><small style="color:var(--primary-color);">${item.type}</small></div>
-                    </a>`;
-                }).join('');
-                searchResults.style.display = 'block';
-            }, 300); 
-        });
-    }
-
-    const sliderWrapper = document.querySelector('.slider-wrapper');
-    if (sliderWrapper) {
-        let slideIndex = 0;
-        const heroSlides = document.querySelectorAll('.slide');
-        const prevBtn = document.getElementById('prevSlide');
-        const nextBtn = document.getElementById('nextSlide');
-        let autoSlideInterval;
-        let isAnimating = false; 
-
-        function initSlider() {
-            if (window.innerWidth <= 992 && heroSlides.length > 1) {
-                sliderWrapper.prepend(sliderWrapper.lastElementChild);
-                sliderWrapper.style.transition = 'none';
-                sliderWrapper.style.transform = `translateX(-100%)`;
-                Array.from(sliderWrapper.children).forEach(s => s.classList.remove('active'));
-                sliderWrapper.children[1].classList.add('active');
-            }
-            startAutoSlide();
-        }
-
-        function moveNext() {
-            if (isAnimating) return;
-            isAnimating = true;
-
-            if (window.innerWidth <= 992 && heroSlides.length > 1) {
-                sliderWrapper.style.transition = 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1)';
-                sliderWrapper.style.transform = `translateX(-200%)`;
-                sliderWrapper.children[1].classList.remove('active');
-                sliderWrapper.children[2].classList.add('active');
-
-                setTimeout(() => {
-                    sliderWrapper.style.transition = 'none';
-                    sliderWrapper.appendChild(sliderWrapper.firstElementChild);
-                    sliderWrapper.style.transform = `translateX(-100%)`;
-                    isAnimating = false;
-                }, 700);
-            } else {
-                slideIndex = (slideIndex + 1) % heroSlides.length;
-                sliderWrapper.style.transition = 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1)';
-                sliderWrapper.style.transform = `translateX(-${slideIndex * 100}%)`;
-                setTimeout(() => { isAnimating = false; }, 700);
-            }
-        }
-
-        function movePrev() {
-            if (isAnimating) return;
-            isAnimating = true;
-
-            if (window.innerWidth <= 992 && heroSlides.length > 1) {
-                sliderWrapper.style.transition = 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1)';
-                sliderWrapper.style.transform = `translateX(0%)`;
-                sliderWrapper.children[1].classList.remove('active');
-                sliderWrapper.children[0].classList.add('active');
-
-                setTimeout(() => {
-                    sliderWrapper.style.transition = 'none';
-                    sliderWrapper.prepend(sliderWrapper.lastElementChild);
-                    sliderWrapper.style.transform = `translateX(-100%)`;
-                    isAnimating = false;
-                }, 700);
-            } else {
-                slideIndex = (slideIndex - 1 + heroSlides.length) % heroSlides.length;
-                sliderWrapper.style.transition = 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1)';
-                sliderWrapper.style.transform = `translateX(-${slideIndex * 100}%)`;
-                setTimeout(() => { isAnimating = false; }, 700);
-            }
-        }
-
-        function startAutoSlide() { clearInterval(autoSlideInterval); autoSlideInterval = setInterval(moveNext, window.innerWidth <= 992 ? 3500 : 5000); }
-        function resetAutoSlide() { startAutoSlide(); }
-
-        if (nextBtn) nextBtn.addEventListener('click', () => { moveNext(); resetAutoSlide(); });
-        if (prevBtn) prevBtn.addEventListener('click', () => { movePrev(); resetAutoSlide(); });
-
-        let startX = 0;
-        let isDragging = false;
-        let dragThresholdMet = false;
-
-        function handleDragStart(e) {
-            if (isAnimating) return;
-            isDragging = true; dragThresholdMet = false;
-            startX = e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
-            clearInterval(autoSlideInterval); 
-        }
-
-        function handleDragMove(e) {
-            if (!isDragging) return;
-            const currentX = e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
-            if (Math.abs(startX - currentX) > 10) dragThresholdMet = true; 
-        }
-
-        function handleDragEnd(e) {
-            if (!isDragging) return;
-            isDragging = false;
-            const endX = e.type.includes('mouse') ? e.pageX : e.changedTouches[0].clientX;
-            const diffX = startX - endX;
-            if (Math.abs(diffX) > 50) { if (diffX > 0) moveNext(); else movePrev(); }
-            resetAutoSlide(); 
-        }
-
-        sliderWrapper.addEventListener('touchstart', handleDragStart, { passive: true });
-        sliderWrapper.addEventListener('touchmove', handleDragMove, { passive: true });
-        sliderWrapper.addEventListener('touchend', handleDragEnd);
-        
-        sliderWrapper.addEventListener('mousedown', handleDragStart);
-        sliderWrapper.addEventListener('mousemove', handleDragMove);
-        sliderWrapper.addEventListener('mouseup', handleDragEnd);
-        sliderWrapper.addEventListener('mouseleave', handleDragEnd);
-
-        heroSlides.forEach(slide => {
-            slide.addEventListener('click', (e) => {
-                if (dragThresholdMet) { e.preventDefault(); return; }
-                if (window.innerWidth <= 992 && !slide.classList.contains('active')) return;
-                const btn = slide.querySelector('.btn-primary');
-                const mobileLink = slide.querySelector('a[href^="details.html"]');
-                if (btn) window.location.href = btn.getAttribute('href');
-                else if (mobileLink) window.location.href = mobileLink.getAttribute('href');
-            });
-        });
-
-        initSlider();
-    }
-
-    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
-    const sectionObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                observer.unobserve(entry.target); 
-            }
-        });
-    }, observerOptions);
-
-    document.querySelectorAll('.latest-episodes').forEach(section => {
-        section.classList.add('fade-in-section');
-        sectionObserver.observe(section);
-    });
-
-    initializeDramaSite();
-});
-
-document.addEventListener("DOMContentLoaded", function() {
-    const modal = document.getElementById("dramaModal");
-    const openBtn = document.getElementById("dramaRequestBtn");
-    const closeBtn = document.getElementById("closeDramaModal");
-    const form = document.getElementById("dramaRequestForm");
-
-    if(openBtn && modal) {
-        openBtn.onclick = async () => {
-            const { auth } = await getFirebase();
-            if (!auth.currentUser) {
-                alert("You must be logged in to request content. Redirecting to Login...");
-                window.location.href = "login.html";
-            } else { modal.style.display = "flex"; }
-        };
-        closeBtn.onclick = () => modal.style.display = "none";
-        window.onclick = (e) => { if(e.target === modal) modal.style.display = "none"; }
-    }
-
-    if(form) {
-        form.onsubmit = async (e) => {
-            e.preventDefault();
-            const submitBtn = document.getElementById("submitBtn");
-            const status = document.getElementById("statusMessage");
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-            submitBtn.disabled = true;
-
-            try {
-                const { auth, db, firestoreModule } = await getFirebase();
-                const { collection, addDoc } = firestoreModule;
-                const user = auth.currentUser;
-                
-                if (!user) throw new Error("Authentication expired. Please login again.");
-                
-                const dramaName = document.getElementById("dramaName").value.trim();
-                await addDoc(collection(db, "requests"), {
-                    userId: user.uid,
-                    userEmail: user.email || "No email provided", 
-                    dramaName: dramaName,
-                    status: "Pending",
-                    notified: false, 
-                    createdAt: new Date().getTime()
-                });
-
-                status.style.display = "block";
-                status.style.color = "#10b981";
-                status.innerHTML = "<i class='fas fa-check-circle'></i> Request securely sent! Check your Profile later.";
-                form.reset();
-
-            } catch (err) {
-                console.error("FIREBASE ERROR:", err);
-                status.style.display = "block";
-                status.style.color = "#ef4444";
-                status.innerHTML = "<i class='fas fa-exclamation-circle'></i> Error: " + err.message;
-            } finally {
-                submitBtn.innerText = "Send Request";
-                submitBtn.disabled = false;
-            }
-        };
-    }
-});
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW Failed', err)); });
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-    const installPopup = document.getElementById('appInstallPopup');
-    const closeInstallBtn = document.getElementById('closeInstallPopup');
-    if (installPopup && closeInstallBtn) {
-        if (sessionStorage.getItem('hideInstallPopup') === 'true') installPopup.classList.add('hidden');
-        closeInstallBtn.addEventListener('click', () => {
-            installPopup.classList.add('hidden');
-            sessionStorage.setItem('hideInstallPopup', 'true');
-        });
-    }
-});
-
 function createProfileSwitcher(profiles) {
     if (document.getElementById('home-profile-switcher-overlay')) return;
 
@@ -620,26 +151,17 @@ function createProfileSwitcher(profiles) {
         `;
     });
 
-    overlay.innerHTML = `
-        <h2 class="switcher-title">Who's watching?</h2>
-        <div class="profiles-list">
-            ${profilesHtml}
-        </div>
-    `;
+    overlay.innerHTML = `<h2 class="switcher-title">Who's watching?</h2><div class="profiles-list">${profilesHtml}</div>`;
     document.body.appendChild(overlay);
 
     const cards = overlay.querySelectorAll('.profile-select-card');
     cards.forEach(card => {
         card.addEventListener('click', () => {
-            const selectedId = card.getAttribute('data-id');
-            
-            const todayStr = new Date().toDateString();
-            localStorage.setItem('dramakan_profile_prompt_date', todayStr);
-            localStorage.setItem('dramakan_active_profile_id', selectedId);
+            localStorage.setItem('dramakan_profile_prompt_date', new Date().toDateString());
+            localStorage.setItem('dramakan_active_profile_id', card.getAttribute('data-id'));
             
             overlay.classList.add('hidden');
             setTimeout(() => overlay.remove(), 800);
-
             window.dispatchEvent(new CustomEvent('profileSelected'));
         });
     });
@@ -671,7 +193,6 @@ function updateHeaderAvatar(profiles) {
         authBtn.style.padding = "0"; 
         authBtn.style.background = "transparent";
         authBtn.style.border = "none";
-        
         authBtn.onmouseover = () => authBtn.firstElementChild.style.transform = "scale(1.1)";
         authBtn.onmouseout = () => authBtn.firstElementChild.style.transform = "scale(1)";
     }
@@ -689,6 +210,57 @@ function updateHeaderAvatar(profiles) {
     }
 }
 
+// Global My List Toggle (Synchronizes with Firebase)
+window.toggleMyList = async function(btnElement, titleSafe, imgSafe, linkSafe, rawId) {
+    if(!rawId) return; 
+    
+    let profileMyList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
+    let watchlistObj = JSON.parse(localStorage.getItem('dramakan_watchlist')) || {};
+
+    const title = decodeURIComponent(titleSafe);
+    const img = decodeURIComponent(imgSafe);
+    const link = decodeURIComponent(linkSafe);
+    let inListIdx = profileMyList.findIndex(item => String(item.id) === String(rawId));
+    
+    if (inListIdx > -1) {
+        profileMyList.splice(inListIdx, 1);
+        delete watchlistObj[rawId];
+        btnElement.classList.remove('active');
+        btnElement.innerHTML = `<i class="fas fa-plus"></i> <span>My List</span>`;
+    } else {
+        const itemData = { id: String(rawId), title: title, img: img, link: link, timestamp: Date.now() };
+        profileMyList.push(itemData);
+        watchlistObj[rawId] = itemData;
+        btnElement.classList.add('active');
+        btnElement.innerHTML = `<i class="fas fa-check"></i> <span>In List</span>`;
+    }
+    localStorage.setItem('dramakan_mylist', JSON.stringify(profileMyList));
+    localStorage.setItem('dramakan_watchlist', JSON.stringify(watchlistObj));
+    
+    if (firebaseInstance && firebaseInstance.auth.currentUser) {
+        try {
+            const user = firebaseInstance.auth.currentUser;
+            const { doc, getDoc, updateDoc } = firebaseInstance.firestoreModule;
+            const userRef = doc(firebaseInstance.db, "users", user.uid);
+            
+            const snap = await getDoc(userRef);
+            if(snap.exists()) {
+                let data = snap.data();
+                if(data.profiles && data.profiles.length > 0) {
+                    let activeId = localStorage.getItem('dramakan_active_profile_id');
+                    let pIdx = data.profiles.findIndex(p => p.id === activeId);
+                    if(pIdx === -1) pIdx = 0;
+                    data.profiles[pIdx].myList = profileMyList;
+                    await updateDoc(userRef, { profiles: data.profiles });
+                } else {
+                    await updateDoc(userRef, { myList: profileMyList });
+                }
+            }
+        } catch(err) { console.error("Cloud list sync failed", err); }
+    }
+};
+
+// --- 3. AUTHENTICATION & SYNC LAYER ---
 async function initAuthSync() {
     try {
         const { auth, db, firestoreModule, authModule } = await getFirebase();
@@ -744,8 +316,6 @@ async function initAuthSync() {
                             const blockStyle = document.createElement('style');
                             blockStyle.innerHTML = '#dramakan-bottom-promo, .promo-banner, #promoBanner { display: none !important; }';
                             document.head.appendChild(blockStyle);
-                            const existingPromo = document.getElementById('dramakan-bottom-promo');
-                            if(existingPromo) existingPromo.style.display = 'none';
                         }
                     }
 
@@ -758,27 +328,23 @@ async function initAuthSync() {
                         updateHeaderAvatar(userProfiles);
                     }
 
-                    window.addEventListener('profileSelected', () => {
-                        updateHeaderAvatar(userProfiles);
-                    });
+                    window.addEventListener('profileSelected', () => { updateHeaderAvatar(userProfiles); });
 
-                    // --- REAL-TIME CLOUD HISTORY SYNC ---
+                    // Real-Time Cloud History Sync
                     const historyRef = collection(db, "users", user.uid, "history");
-                    if(unsubscribeHistory) unsubscribeHistory(); // Clear older bindings
+                    if(unsubscribeHistory) unsubscribeHistory(); 
                     
                     unsubscribeHistory = onSnapshot(historyRef, (snapshot) => {
                         let cloudHistory = {};
                         snapshot.forEach(doc => {
                             const histData = doc.data();
                             if(histData && histData.dramaId) {
-                                // Clean up old structures and enforce string IDs for TMDB compatibility
                                 histData.id = String(histData.dramaId);
                                 cloudHistory[histData.id] = histData;
                             }
                         });
                         
                         localStorage.setItem('dramakan_history', JSON.stringify(cloudHistory));
-                        
                         const historyArr = Object.values(cloudHistory)
                             .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
                             .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 10);
@@ -786,21 +352,14 @@ async function initAuthSync() {
                         renderContinueWatching(historyArr);
                     });
 
-                } catch (error) {
-                    console.error("Auth UI Error:", error);
-                }
+                } catch (error) { console.error("Auth UI Error:", error); }
             } else {
                 const authBtn = document.getElementById('topAuthBtn');
                 if (authBtn) {
                     authBtn.href = "login.html";
                     authBtn.innerHTML = `<i class="fas fa-user"></i> <span>Login / Sign Up</span>`;
-                    
-                    authBtn.style.padding = "";
-                    authBtn.style.background = "";
-                    authBtn.style.border = "";
-                    authBtn.style.borderRadius = "";
+                    authBtn.style.cssText = ""; 
                 }
-                
                 if(unsubscribeHistory) {
                     unsubscribeHistory();
                     unsubscribeHistory = null;
@@ -808,79 +367,310 @@ async function initAuthSync() {
                 renderContinueWatching(); 
             }
         });
-    } catch (err) {
-        console.error("Failed to initialize Auth Sync", err);
-    }
+    } catch (err) { console.error("Failed to initialize Auth Sync", err); }
 }
-
 initAuthSync();
-document.addEventListener("DOMContentLoaded", function() {
+
+
+// --- 4. MASTER DOMContentLoaded INITIALIZER ---
+document.addEventListener('DOMContentLoaded', () => {
+
+    // Helper functions
+    function shuffleArray(array) {
+        let shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
+    function populateGrid(elementId, items) {
+        const grid = document.getElementById(elementId);
+        if (!grid) return;
+        
+        let htmlContent = '';
+        items.forEach((drama, index) => {
+            const safeTitle = encodeURIComponent(drama.title);
+            const safeImg = encodeURIComponent(drama.img);
+            const safeLink = encodeURIComponent(drama.link);
+            
+            htmlContent += `
+            <a href="${drama.link}" class="drama-card">
+                <div class="drama-card-img"><img src="${drama.img}" alt="${drama.title}" loading="lazy" decoding="async"></div>
+                <div class="drama-card-info">
+                    <h3 class="drama-card-title">${drama.title}</h3>
+                    <p class="drama-card-meta">${drama.type}</p>
+                </div>
+                <button class="bookmark-btn" onclick="event.preventDefault(); window.toggleMyList(this, '${safeTitle}', '${safeImg}', '${safeLink}', '${drama.id || drama.tmdbId || ''}')" title="Add to My List">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </a>`;
+
+            // Ad injection loop
+            if (index === 2 && ['trending-grid', 'everything-drama-grid', 'movie-grid', 'shows-grid', 'asian-grid', 'anime-grid'].includes(elementId)) {
+                let adSlot = "8531757983"; 
+                let layoutKey = "-6t+ed+2i-1n-4w"; 
+                
+                if (elementId === 'everything-drama-grid') { adSlot = "2322807703"; layoutKey = "+21+s4-18-23+8q"; } 
+                else if (elementId === 'asian-grid') { adSlot = "6975017511"; layoutKey = "+2a+rx+1+2-3"; }
+                
+                htmlContent += `
+                <div class="drama-card ad-card-wrapper">
+                    <ins class="adsbygoogle" style="display:block; width:100%; height:100%;" 
+                        data-ad-format="fluid" data-ad-layout-key="${layoutKey}" 
+                        data-ad-client="ca-pub-3854581977852778" data-ad-slot="${adSlot}"></ins>
+                </div>`;
+            }
+        });
+
+        grid.innerHTML = htmlContent;
+        setTimeout(() => {
+            const uninitializedAds = grid.querySelectorAll('.adsbygoogle:not([data-adsbygoogle-status="done"])');
+            uninitializedAds.forEach(() => { try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e){} });
+        }, 500);
+    }
+
+    // A. Mobile Menu Toggle
+    const menuToggle = document.getElementById('mobileMenuToggle');
+    const navLinks = document.getElementById('navLinks');
+    const overlay = document.createElement('div');
+    overlay.className = 'menu-overlay';
+    document.body.appendChild(overlay);
+
+    if (menuToggle && navLinks) {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navLinks.classList.toggle('active');
+            overlay.classList.toggle('active');
+            const icon = menuToggle.querySelector('i');
+            if (icon) { icon.classList.toggle('fa-bars'); icon.classList.toggle('fa-times'); }
+        });
+        overlay.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            overlay.classList.remove('active');
+            if (menuToggle.querySelector('i')) menuToggle.querySelector('i').className = 'fas fa-bars'; 
+        });
+    }
+
+    // B. Main Data Initialization (Grids & Search)
+    let fuse;
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+
+    async function initializeDramaSite() {
+        try {
+            const response = await fetch('/dramas.json');
+            const data = await response.json();
+            
+            localStorage.setItem('dramakan_master_db', JSON.stringify(data));
+            fuse = new Fuse(data, { keys: ['title'], threshold: 0.4 });
+            
+            try {
+                const trendResponse = await fetch('https://api.2embed.cc/trendingtv');
+                if (!trendResponse.ok) throw new Error(`HTTP error! status: ${trendResponse.status}`);
+                const trendData = await trendResponse.json();
+                
+                const apiTrendingItems = (trendData.results || []).slice(0, 15).map(item => ({
+                    id: String(item.tmdb_id),
+                    title: item.name || item.title || "Unknown Title",
+                    img: item.poster || 'https://via.placeholder.com/500x750?text=No+Image',
+                    link: item.embed_tmdb || `details.html?id=${item.tmdb_id}`, 
+                    type: "Trending"
+                }));
+                populateGrid('trending-grid', apiTrendingItems);
+            } catch (err) {
+                console.error("2embed API failed, using fallback:", err);
+                let fallbackItems = data.filter(d => d.Trend === "T" || d.trending === true);
+                if (fallbackItems.length === 0) fallbackItems = data;
+                populateGrid('trending-grid', fallbackItems.slice(0, 15));
+            }
+
+            const gridConfigs = [
+                { id: 'everything-drama-grid', filterType: "Everything Drama" },
+                { id: 'movie-grid', filterType: "Movie" },
+                { id: 'shows-grid', filterType: "Shows" },
+                { id: 'asian-grid', filterType: "Asian" },
+                { id: 'anime-grid', filterType: "Anime" },
+                { id: 'upcoming-grid', isUpcoming: true }
+            ];
+
+            const gridObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const targetId = entry.target.id;
+                        const config = gridConfigs.find(c => c.id === targetId);
+
+                        if (config) {
+                            let sectionData = config.isUpcoming 
+                                ? shuffleArray(data.filter(d => d.status === "Upcoming" || d.release_date === "Upcoming")).slice(0, 15)
+                                : shuffleArray(data.filter(d => d.type === config.filterType)).slice(0, 15);
+                            
+                            const safeSectionData = sectionData.map(item => ({...item, id: String(item.id || item.tmdbId)}));
+                            populateGrid(targetId, safeSectionData);
+                            observer.unobserve(entry.target);
+                        }
+                    }
+                });
+            }, { rootMargin: '300px' });
+
+            gridConfigs.forEach(config => {
+                const el = document.getElementById(config.id);
+                if (el) gridObserver.observe(el);
+            });
+        } catch (err) { console.error("JSON Load Error:", err); }
+    }
+
+    if (searchInput) {
+        let debounceTimer; 
+        searchInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer); 
+            debounceTimer = setTimeout(() => {
+                const query = searchInput.value.trim();
+                if (query.length < 1 || !fuse) { searchResults.style.display = 'none'; return; }
+                
+                const results = fuse.search(query, { limit: 10 });
+                searchResults.innerHTML = results.map(({ item }) => {
+                    return `
+                    <a href="${item.link}" class="search-result-item">
+                        <img src="${item.img}" width="45" height="60" loading="lazy" decoding="async">
+                        <div><div class="search-result-title">${item.title}</div><small style="color:var(--primary-color);">${item.type}</small></div>
+                    </a>`;
+                }).join('');
+                searchResults.style.display = 'block';
+            }, 300); 
+        });
+    }
+
+    // C. Scroll Animations Setup
+    const sectionObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target); 
+            }
+        });
+    }, { root: null, rootMargin: '0px', threshold: 0.15 });
+
+    document.querySelectorAll('.latest-episodes').forEach(section => {
+        section.classList.add('fade-in-section');
+        sectionObserver.observe(section);
+    });
+
+    // D. Drama Request Modal 
+    const dramaModal = document.getElementById("dramaModal");
+    const dramaRequestBtn = document.getElementById("dramaRequestBtn");
+    const closeDramaModal = document.getElementById("closeDramaModal");
+    const dramaForm = document.getElementById("dramaRequestForm");
+
+    if (dramaRequestBtn && dramaModal) {
+        dramaRequestBtn.onclick = async () => {
+            const { auth } = await getFirebase();
+            if (!auth.currentUser) {
+                alert("You must be logged in to request content. Redirecting to Login...");
+                window.location.href = "login.html";
+            } else { dramaModal.style.display = "flex"; }
+        };
+        closeDramaModal.onclick = () => dramaModal.style.display = "none";
+        window.addEventListener('click', (e) => { if(e.target === dramaModal) dramaModal.style.display = "none"; });
+    }
+
+    if (dramaForm) {
+        dramaForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById("submitBtn");
+            const status = document.getElementById("statusMessage");
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            submitBtn.disabled = true;
+
+            try {
+                const { auth, db, firestoreModule } = await getFirebase();
+                const { collection, addDoc } = firestoreModule;
+                const user = auth.currentUser;
+                
+                if (!user) throw new Error("Authentication expired. Please login again.");
+                
+                await addDoc(collection(db, "requests"), {
+                    userId: user.uid,
+                    userEmail: user.email || "No email provided", 
+                    dramaName: document.getElementById("dramaName").value.trim(),
+                    status: "Pending",
+                    notified: false, 
+                    createdAt: Date.now()
+                });
+
+                status.style.display = "block";
+                status.style.color = "#10b981";
+                status.innerHTML = "<i class='fas fa-check-circle'></i> Request securely sent! Check your Profile later.";
+                dramaForm.reset();
+            } catch (err) {
+                console.error("FIREBASE ERROR:", err);
+                status.style.display = "block";
+                status.style.color = "#ef4444";
+                status.innerHTML = "<i class='fas fa-exclamation-circle'></i> Error: " + err.message;
+            } finally {
+                submitBtn.innerText = "Send Request";
+                submitBtn.disabled = false;
+            }
+        };
+    }
+
+    // E. Auth Modal Handling
     const authModal = document.getElementById("authModal");
     const closeAuthModal = document.getElementById("closeAuthModal");
     const authForm = document.getElementById("authForm");
-    const authTitle = document.getElementById("authTitle");
-    const authSubtitle = document.getElementById("authSubtitle");
-    const authSubmitBtn = document.getElementById("authSubmitBtn");
-    const nameInputGroup = document.getElementById("nameInputGroup");
-    const authToggleText = document.getElementById("authToggleText");
     
     let isLogin = true;
-
-    // Toggle logic for Login / Sign Up
-    function bindToggleEvent() {
+    function bindAuthToggle() {
         const authToggleBtn = document.getElementById("authToggleBtn");
         if(authToggleBtn) {
             authToggleBtn.addEventListener("click", () => {
                 isLogin = !isLogin;
+                const nameInputGroup = document.getElementById("nameInputGroup");
                 if(isLogin) {
-                    authTitle.innerText = "Welcome Back";
-                    authSubtitle.innerText = "Login to continue your journey";
+                    document.getElementById("authTitle").innerText = "Welcome Back";
+                    document.getElementById("authSubtitle").innerText = "Login to continue your journey";
                     nameInputGroup.style.display = "none";
                     document.getElementById("authName").removeAttribute("required");
-                    authSubmitBtn.innerText = "Login";
-                    authToggleText.innerHTML = `Don't have an account? <span id="authToggleBtn" class="auth-toggle-link">Sign Up</span>`;
+                    document.getElementById("authSubmitBtn").innerText = "Login";
+                    document.getElementById("authToggleText").innerHTML = `Don't have an account? <span id="authToggleBtn" class="auth-toggle-link">Sign Up</span>`;
                 } else {
-                    authTitle.innerText = "Create Account";
-                    authSubtitle.innerText = "Join us and start tracking your favorites";
+                    document.getElementById("authTitle").innerText = "Create Account";
+                    document.getElementById("authSubtitle").innerText = "Join us and start tracking your favorites";
                     nameInputGroup.style.display = "block";
                     document.getElementById("authName").setAttribute("required", "true");
-                    authSubmitBtn.innerText = "Sign Up";
-                    authToggleText.innerHTML = `Already have an account? <span id="authToggleBtn" class="auth-toggle-link">Login</span>`;
+                    document.getElementById("authSubmitBtn").innerText = "Sign Up";
+                    document.getElementById("authToggleText").innerHTML = `Already have an account? <span id="authToggleBtn" class="auth-toggle-link">Login</span>`;
                 }
-                bindToggleEvent(); // Re-bind after rewriting innerHTML
+                bindAuthToggle(); 
             });
         }
     }
-    bindToggleEvent();
+    bindAuthToggle();
 
-    // Close Modal Logic
     if(closeAuthModal) closeAuthModal.onclick = () => authModal.style.display = "none";
     window.addEventListener("click", (e) => { if(e.target === authModal) authModal.style.display = "none"; });
 
-    // Intercept Auth Button Clicks (Overrides navigation to login.html)
-    const topAuthBtn = document.getElementById("topAuthBtn");
-    const bottomAuthBtn = document.getElementById("bottomAuthBtn");
-
     function handleAuthInteraction(e) {
-        // If the button explicitly says "Login" or has the default user icon without an avatar, open the modal
         if (this.innerText.includes("Login") || (this.innerHTML.includes("fa-user") && !this.innerHTML.includes("img"))) {
             e.preventDefault();
             authModal.style.display = "flex";
         }
     }
 
+    const topAuthBtn = document.getElementById("topAuthBtn");
+    const bottomAuthBtn = document.getElementById("bottomAuthBtn");
     if (topAuthBtn) topAuthBtn.addEventListener("click", handleAuthInteraction);
     if (bottomAuthBtn) bottomAuthBtn.addEventListener("click", handleAuthInteraction);
 
-    // Form Submission UI Handler (Visual only - hook up your Firebase auth here)
-    if(authForm) {
+    if (authForm) {
         authForm.onsubmit = (e) => {
             e.preventDefault();
             const status = document.getElementById("authStatusMessage");
-            authSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-            authSubmitBtn.disabled = true;
+            const btn = document.getElementById("authSubmitBtn");
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            btn.disabled = true;
 
-            // TODO: Replace setTimeout with actual Firebase signInWithEmailAndPassword or createUserWithEmailAndPassword
             setTimeout(() => {
                 status.style.display = "block";
                 status.style.color = "#10b981";
@@ -889,51 +679,67 @@ document.addEventListener("DOMContentLoaded", function() {
                 setTimeout(() => { 
                     authModal.style.display = "none"; 
                     status.style.display = "none";
-                    authSubmitBtn.innerText = isLogin ? "Login" : "Sign Up";
-                    authSubmitBtn.disabled = false;
+                    btn.innerText = isLogin ? "Login" : "Sign Up";
+                    btn.disabled = false;
                     authForm.reset();
                 }, 1500);
             }, 1000);
         };
     }
-    // --- 1. AD-FREE REWARD SYSTEM LOGIC ---
-const adFreeKey = 'dramakan_ad_free_expiry';
-function checkAdFreeStatus() {
-    const expiry = localStorage.getItem(adFreeKey);
-    if (expiry && Date.now() < parseInt(expiry)) {
-        document.body.classList.add('premium-ad-free-mode');
-        const btn = document.getElementById('adFreeBtn');
-        if(btn) btn.innerHTML = '<i class="fas fa-check"></i> Ad-Free Active';
-    }
-}
-checkAdFreeStatus(); // Run instantly on load
 
-const adFreeBtn = document.getElementById('adFreeBtn');
-if (adFreeBtn) {
-    adFreeBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        // TRIGGER MONETAG REWARDED AD HERE.
-        // Example: if (typeof show_8531757 === 'function') { show_8531757().then(() => { ... }) }
-        
-        // Simulating the reward completion:
-        alert("Watch this short sponsor message to unlock 24 Hours of Ad-Free streaming!");
-        setTimeout(() => {
-            const oneDay = 24 * 60 * 60 * 1000;
-            localStorage.setItem(adFreeKey, Date.now() + oneDay);
-            alert("Thank you! Enjoy 24 hours of uninterrupted, ad-free streaming.");
-            location.reload(); // Reload to remove CSS ads
-        }, 2000); 
+    // F. App Install Popup
+    const installPopup = document.getElementById('appInstallPopup');
+    const closeInstallBtn = document.getElementById('closeInstallPopup');
+    if (installPopup && closeInstallBtn) {
+        if (sessionStorage.getItem('hideInstallPopup') === 'true') installPopup.classList.add('hidden');
+        closeInstallBtn.addEventListener('click', () => {
+            installPopup.classList.add('hidden');
+            sessionStorage.setItem('hideInstallPopup', 'true');
+        });
+    }
+
+    // G. Ad-Free Reward System Check
+    const adFreeKey = 'dramakan_ad_free_expiry';
+    function checkAdFreeStatus() {
+        const expiry = localStorage.getItem(adFreeKey);
+        if (expiry && Date.now() < parseInt(expiry)) {
+            document.body.classList.add('premium-ad-free-mode');
+            const btn = document.getElementById('adFreeBtn');
+            if(btn) btn.innerHTML = '<i class="fas fa-check"></i> Ad-Free Active';
+        }
+    }
+    checkAdFreeStatus();
+
+    const adFreeBtn = document.getElementById('adFreeBtn');
+    if (adFreeBtn) {
+        adFreeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert("Watch this short sponsor message to unlock 24 Hours of Ad-Free streaming!");
+            setTimeout(() => {
+                localStorage.setItem(adFreeKey, Date.now() + (24 * 60 * 60 * 1000));
+                alert("Thank you! Enjoy 24 hours of uninterrupted, ad-free streaming.");
+                location.reload(); 
+            }, 2000); 
+        });
+    }
+
+    // Final Init trigger
+    initializeDramaSite();
+});
+
+// --- 5. SERVICE WORKER ---
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => { 
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW Failed', err)); 
     });
 }
 
-// --- NETFLIX HOVER AUTOPLAY TRAILER LOGIC ---
+// --- 6. NETFLIX HOVER AUTOPLAY TRAILERS (Global Listener) ---
 const trailerCache = new Map();
-
 document.addEventListener('mouseover', (e) => {
     const card = e.target.closest('.drama-card');
     if (!card || window.innerWidth <= 992) return;
 
-    // Debounce hover to prevent API spam while scrolling
     card.hoverTimer = setTimeout(async () => {
         const imgWrap = card.querySelector('.drama-card-img');
         if (!imgWrap || imgWrap.querySelector('.card-hover-video')) return;
@@ -950,9 +756,7 @@ document.addEventListener('mouseover', (e) => {
                 if (res.ok) {
                     const data = await res.json();
                     const results = data.results || [];
-                    const trailer = results.find(v => v.type === 'Trailer' && v.site === 'YouTube') 
-                                 || results.find(v => v.site === 'YouTube') 
-                                 || results[0];
+                    const trailer = results.find(v => v.type === 'Trailer' && v.site === 'YouTube') || results.find(v => v.site === 'YouTube') || results[0];
                     if (trailer && trailer.key) {
                         trailerKey = trailer.key;
                         trailerCache.set(`${type}_${id}`, trailerKey);
@@ -968,10 +772,8 @@ document.addEventListener('mouseover', (e) => {
                 iframe.setAttribute('frameborder', '0');
                 imgWrap.appendChild(iframe);
             }
-        } catch (err) {
-            console.warn('Trailer autoplay failed:', err);
-        }
-    }, 700); // 700ms hover delay
+        } catch (err) { console.warn('Trailer autoplay failed:', err); }
+    }, 700); 
 }, true);
 
 document.addEventListener('mouseout', (e) => {
@@ -979,9 +781,7 @@ document.addEventListener('mouseout', (e) => {
     if (card) {
         clearTimeout(card.hoverTimer);
         const iframe = card.querySelector('.card-hover-video');
-        if (iframe) {
-            iframe.remove(); // Unload iframe to stop audio & free RAM
-        }
+        if (iframe) iframe.remove(); 
     }
 }, true);
-});
+
