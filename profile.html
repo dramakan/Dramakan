@@ -11,7 +11,8 @@
     <script src="bottom-bar.js" defer></script>
     <script src="feedback-popup.js" defer></script>
     <script src="admin_easter_egg.js" defer></script>
-    <script src="premium-manager.js" defer></script>
+    <!-- Ensure external scripts run -->
+    <script type="module" src="anykan-notifier.js"></script>
     
     <style>
         /* =========================================
@@ -431,8 +432,15 @@
                         <span class="hero-greeting">Welcome back,</span>
                         <h1 class="hero-name" id="headerName">Loading...</h1>
                         <div class="hero-actions">
-                            <button class="btn-vip" id="heroVipBtn"><i class="fas fa-crown"></i> Crown VIP</button>
-                            <button class="btn-switch" onclick="openModal('profilesModal')"><i class="fas fa-users"></i> Switch Profile</button>
+                            <div style="display:flex; flex-direction:column; gap:6px; align-items: flex-start;">
+                                <button class="btn-vip" id="heroVipBtn" onclick="window.location.href='subscription.html'">
+                                    <i class="fas fa-user"></i> Basic Plan
+                                </button>
+                                <span id="vipExpiryText" style="font-size: 0.75rem; color: var(--text-muted); display: none; font-weight: 600; padding-left: 4px; letter-spacing: 0.5px;"></span>
+                            </div>
+                            <button class="btn-switch" onclick="openModal('profilesModal')" style="height: fit-content;">
+                                <i class="fas fa-users"></i> Switch Profile
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1132,22 +1140,48 @@
                     if (docSnap.exists()) {
                         const data = docSnap.data();
                         
-                        // VIP Tiering Adjustments & Profile Creation Visibility
-                        const isPremium = data.isPremium && data.premiumExpiry > Date.now();
+                        // --- VIP TIERING & EXPIRY COUNTDOWN ---
+                        const now = Date.now();
+                        const isPremium = data.isPremium && data.premiumExpiry > now;
                         const btnVip = document.getElementById('heroVipBtn');
+                        const expiryText = document.getElementById('vipExpiryText');
                         const vipBox = document.getElementById('vip-profile-creation-zone');
                         
-                        if (isPremium && data.premiumPlan && data.premiumPlan.includes('Crown')) {
-                            btnVip.innerHTML = '<i class="fas fa-crown"></i> Crown VIP';
-                            btnVip.style.color = 'var(--vip-gold)';
-                            if(vipBox) vipBox.style.display = 'block';
+                        if (isPremium) {
+                            const daysLeft = Math.ceil((data.premiumExpiry - now) / (1000 * 60 * 60 * 24));
+                            expiryText.style.display = 'block';
+                            
+                            if (daysLeft <= 7) {
+                                expiryText.innerText = `⚠️ Expires in ${daysLeft} Days`;
+                                expiryText.style.color = '#ef4444'; // Red warning
+                            } else {
+                                expiryText.innerText = `Active: ${daysLeft} Days Left`;
+                                expiryText.style.color = '#10B981'; // Green safe
+                            }
+
+                            if (data.premiumPlan && (data.premiumPlan.includes('Premium') || data.premiumPlan.includes('Crown'))) {
+                                btnVip.innerHTML = '<i class="fas fa-crown"></i> Premium VIP';
+                                btnVip.style.color = '#fff';
+                                btnVip.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+                                btnVip.style.border = 'none';
+                                if(vipBox) vipBox.style.display = 'block';
+                            } else {
+                                btnVip.innerHTML = '<i class="fas fa-gem"></i> Plus VIP';
+                                btnVip.style.color = '#10B981';
+                                btnVip.style.background = 'rgba(16, 185, 129, 0.1)';
+                                btnVip.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+                                if(vipBox) vipBox.style.display = 'none';
+                            }
                         } else {
                             btnVip.innerHTML = '<i class="fas fa-user"></i> Basic Plan';
                             btnVip.style.color = 'var(--text-muted)';
+                            btnVip.style.background = 'rgba(255,255,255,0.05)';
                             btnVip.style.border = '1px solid var(--glass-border)';
+                            expiryText.style.display = 'none';
                             if(vipBox) vipBox.style.display = 'none';
                         }
 
+                        // --- MULTI-PROFILE SYNC ---
                         if(data.profiles && data.profiles.length > 0) {
                             userProfiles = data.profiles;
                         } else {
@@ -1171,7 +1205,6 @@
                         const activeList = userProfiles[activeProfileIndex].myList || [];
                         const activeFavs = userProfiles[activeProfileIndex].favorites || [];
                         
-                        // Push to cache so popups load instantly without fetching
                         localStorage.setItem('dramakan_mylist_cache', JSON.stringify(activeList));
                         localStorage.setItem('dramakan_favorites_cache', JSON.stringify(activeFavs));
 
@@ -1179,12 +1212,11 @@
                         renderPosterList(activeFavs, 'favorites-container', 'favorites');
                         document.getElementById('stat-completed').textContent = activeList.length;
 
-                        // Auto-refresh active modals
                         if(document.getElementById('mylistModal').classList.contains('active')) window.renderMylistModalList(activeList);
                         if(document.getElementById('favoritesModal').classList.contains('active')) window.renderFavoritesModalList(activeFavs);
                     }
                 });
-
+                
                 // 2. Watch History Snapshots
                 if(unsubscribeHistory) unsubscribeHistory();
                 unsubscribeHistory = onSnapshot(collection(db, "users", user.uid, "history"), (snapshot) => {
@@ -1223,6 +1255,62 @@
                 window.location.replace('login.html'); 
             }
         });
+
+// 4. Real-Time Notification Engine
+                onSnapshot(query(collection(db, "notifications"), where("target", "in", [user.uid, "all", "viewers"])), (notifSnap) => {
+                    const notifList = document.getElementById('globalNotifList');
+                    const badge = document.getElementById('globalNotifBadge');
+                    let notifs = [];
+                    
+                    notifSnap.forEach(n => { notifs.push({ id: n.id, ...n.data() }); });
+                    
+                    // Sort by newest first
+                    notifs.sort((a,b) => b.createdAt - a.createdAt);
+                    
+                    if (notifs.length > 0) {
+                        badge.style.display = 'flex';
+                        badge.innerText = notifs.length > 9 ? '9+' : notifs.length;
+                        
+                        notifList.innerHTML = notifs.map(n => {
+                            const dateStr = new Date(n.createdAt).toLocaleDateString();
+                            // Only allow users to delete personal notifications, not global community updates
+                            const deleteBtnHtml = n.target === user.uid 
+                                ? `<button class="global-notif-delete" onclick="window.deleteNotif('${n.id}')" title="Dismiss"><i class="fas fa-times"></i></button>` 
+                                : ``;
+
+                            return `
+                            <div class="global-notif-item">
+                                <div class="global-notif-icon"><i class="fas fa-bell"></i></div>
+                                <div class="global-notif-content">
+                                    <div class="global-notif-title">${n.title}</div>
+                                    <div class="global-notif-body">${n.message}</div>
+                                    <div class="global-notif-time">${dateStr}</div>
+                                    ${n.link ? `<a href="${n.link}" style="display:inline-block; margin-top:5px; font-size:0.75rem; color:var(--primary-color);">View Details &rarr;</a>` : ''}
+                                </div>
+                                ${deleteBtnHtml}
+                            </div>`;
+                        }).join('');
+                    } else {
+                        badge.style.display = 'none';
+                        notifList.innerHTML = '<div style="padding: 20px; text-align: center; color: #777; font-size: 0.85rem;">No new notifications.</div>';
+                    }
+                });
+
+                // Delete Personal Notification Function
+                window.deleteNotif = async (notifId) => {
+                    try { await deleteDoc(doc(db, "notifications", notifId)); } 
+                    catch(e) { console.error("Could not dismiss alert:", e); }
+                };
+                
+                // Clear All Personal Notifications
+                document.getElementById('clearNotifsBtn').addEventListener('click', async () => {
+                    if(!confirm("Clear all your personal notifications?")) return;
+                    try {
+                        const q = query(collection(db, "notifications"), where("target", "==", user.uid));
+                        const snap = await getDocs(q);
+                        snap.forEach(d => deleteDoc(doc(db, "notifications", d.id)));
+                    } catch(e) { console.error("Could not clear notifications:", e); }
+                });
 
         // --- DOCUMENT LEVEL CARD DELETIONS ---
         window.removeCard = async (type, identifier) => {
