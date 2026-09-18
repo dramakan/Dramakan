@@ -121,6 +121,41 @@
         .skeleton-text.short { width: 42%; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
+        /* --- DETAILS RESPONSIVE AD BANNER --- */
+.details-ad-section {
+    width: 100%; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    margin-bottom: 24px; 
+    box-sizing: border-box;
+}
+.details-ad-container {
+    width: 100%;
+    background: var(--bg-panel);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 15px;
+    box-shadow: var(--shadow-md);
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    overflow: hidden;
+}
+.adsterra-wrapper {
+    width: 728px; 
+    height: 90px;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
+.adsterra-wrapper iframe { border: none; max-width: 100%; }
+
+@media (max-width: 768px) {
+    .details-ad-container { max-width: 350px; height: 52px; padding: 0; border-radius: var(--radius-md); margin: 0 auto; }
+    .adsterra-wrapper { transform: scale(0.44); transform-origin: center center; flex-shrink: 0; }
+}
+
         /* --- LAYOUT --- */
         .container { max-width: var(--container-max); margin: 0 auto; padding: 0 5%; position: relative; z-index: 2; width: 100%; }
 
@@ -283,9 +318,10 @@
 
         /* Scrollers */
         .scroller { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x proximity; padding: 2px 2px 14px; }
-        .cast-card { flex: 0 0 128px; scroll-snap-align: start; }
+        .cast-card { flex: 0 0 120px; scroll-snap-align: start; display: flex; flex-direction: column; }
         .cast-card img {
-            width: 100%; aspect-ratio: 2 / 3; border-radius: var(--radius-sm); object-fit: cover;
+            width: 120px; height: 180px; /* Strictly enforces identical heights */
+            border-radius: var(--radius-sm); object-fit: cover;
             border: 1px solid var(--glass-border); margin-bottom: 10px; background: var(--bg-panel);
         }
         .cast-card h4 { font-size: .88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
@@ -497,6 +533,24 @@
         <div class="container content-grid" id="content-grid">
             <div class="main-content">
 
+<!-- PREMIUM AD BANNER -->
+                <div class="details-ad-section">
+                    <div class="details-ad-container">
+                        <div class="adsterra-wrapper">
+                            <script type="text/javascript">
+                                atOptions = {
+                                    'key' : '4fdd6864aba39e4c8a5b742055171953',
+                                    'format' : 'iframe',
+                                    'height' : 90,
+                                    'width' : 728,
+                                    'params' : {}
+                                };
+                            </script>
+                            <script type="text/javascript" src="https://www.highrevenueformat.com/4fdd6864aba39e4c8a5b742055171953/invoke.js"></script>
+                        </div>
+                    </div>
+                </div>
+
                 <section id="trailer-section">
                     <div class="section-heading">
                         <div class="section-heading-left">
@@ -506,6 +560,8 @@
                     </div>
                     <div class="trailer-container skeleton" id="trailer-container"></div>
                 </section>
+
+                
 
                 <section>
                     <div class="section-heading">
@@ -616,6 +672,23 @@
                     <div class="rec-list skeleton" id="ui-recs">
                         <div class="skeleton-text"></div>
                         <div class="skeleton-text short"></div>
+                    </div>
+                </div>
+                <!-- SIDEBAR ADSTERRA 300x250 BANNER -->
+                <div class="sidebar-widget" style="padding: 15px 0; min-height: 250px; display: flex; justify-content: center; align-items: center; background: rgba(26, 26, 29, 0.45); position: relative; overflow: hidden;">
+                    <span style="position: absolute; top: 8px; left: 12px; font-size: 0.6rem; color: rgba(255,255,255,0.4); font-weight: 600; letter-spacing: 1px; z-index: 10;">AD</span>
+                    
+                    <div style="width: 300px; height: 250px; display: flex; justify-content: center; align-items: center;">
+                        <script type="text/javascript">
+                            atOptions = {
+                                'key' : 'addf362578ed40f89958d30d95c6f346',
+                                'format' : 'iframe',
+                                'height' : 250,
+                                'width' : 300,
+                                'params' : {}
+                            };
+                        </script>
+                        <script type="text/javascript" src="https://mammothsubway.com/addf362578ed40f89958d30d95c6f346/invoke.js"></script>
                     </div>
                 </div>
             </aside>
@@ -854,7 +927,7 @@
             const castDiv = document.getElementById('cast-scroller');
             const cast = activeData.credits?.cast || [];
             if (cast.length > 0) {
-                castDiv.innerHTML = cast.slice(0, 15).map(actor => {
+                castDiv.innerHTML = cast.slice(0, 10).map(actor => {
                     const img = actor.profile_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w185${actor.profile_path}` : 'https://via.placeholder.com/130x195/14151a/8A2BE2?text=NA';
                     return `<div class="cast-card"><img src="${img}" alt="${actor.name}" loading="lazy"><h4>${actor.name}</h4><p>${actor.character}</p></div>`;
                 }).join('');
