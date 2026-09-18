@@ -47,7 +47,34 @@
     <script src="indexscript.js" defer></script>
     <script type="module" src="global-login-popup.js" defer></script>
     <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
-
+<style>
+        /* Instant Premium Ad Killer */
+        html.premium-ad-free-mode .section-divider-ad,
+        html.premium-ad-free-mode .premium-ad-container,
+        html.premium-ad-free-mode .ad-card-wrapper,
+        body.premium-ad-free-mode .section-divider-ad,
+        body.premium-ad-free-mode .premium-ad-container,
+        body.premium-ad-free-mode .ad-card-wrapper,
+        body.premium-ad-free-mode iframe[src*='ad-160x300'],
+        body.premium-ad-free-mode iframe[src*='highrevenueformat'] {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            width: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            pointer-events: none !important;
+        }
+    </style>
+    <script>
+        (function() {
+            const plan = localStorage.getItem("dramakan_user_plan") || "";
+            if (plan.includes("Premium") || plan.includes("Crown")) {
+                document.documentElement.classList.add("premium-ad-free-mode");
+            }
+        })();
+    </script>
 </head>
 <body>
     <header class="main-header">
@@ -1033,6 +1060,12 @@
                     const headerVipBtn = document.getElementById('headerVipBtn');
                     
                     if (user) {
+                        currentUser = user;
+
+                        // Check & Apply Subscription Privileges
+                        const sub = await getSubscriptionStatus(db, user.uid);
+                        applySubscriptionPrivileges(sub);
+
                         const docSnap = await getDoc(doc(db, "users", user.uid));
                         let userProfiles = [];
                         let legacyAvatar = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(user.displayName || user.email || "User")}`;
@@ -1041,26 +1074,20 @@
                             const data = docSnap.data();
                             if (data.avatarUrl) legacyAvatar = data.avatarUrl;
                             userProfiles = data.profiles && data.profiles.length > 0 ? data.profiles : [{ id: 'prof_default', name: data.username || "User", avatar: legacyAvatar }];
-                            // --- APPLY PREMIUM AD BLOCKING ---
-                        const sub = await getSubscriptionStatus(db, user.uid);
-                        applySubscriptionPrivileges(sub);
-                        
-                        const docSnap = await getDoc(doc(db, "users", user.uid));
-                        
+                            
                             const now = Date.now();
                             let activePlan = "Basic";
                             if (data.isPremium && data.premiumExpiry > now) {
                                 activePlan = data.premiumPlan || "";
                             }
                             if (headerVipBtn) {
-                                if (activePlan.includes('Crown')) {
+                                if (activePlan.includes('Crown') || activePlan.includes('Premium')) {
                                     headerVipBtn.style.display = 'none';
                                 } else {
                                     headerVipBtn.style.display = 'inline-flex';
                                 }
                             }
                         }
-                        
 
                         if (localStorage.getItem('dramakan_profile_prompt_date') !== new Date().toDateString() && userProfiles.length > 0) {
                             createProfileSwitcher(userProfiles);
@@ -1091,6 +1118,10 @@
                         });
 
                     } else {
+                        document.documentElement.classList.remove("premium-ad-free-mode");
+                        document.body.classList.remove("premium-ad-free-mode");
+                        localStorage.setItem("dramakan_user_plan", "Basic");
+
                         if (headerVipBtn) headerVipBtn.style.display = 'inline-flex';
                         if (unsubscribeHistory) {
                             unsubscribeHistory();

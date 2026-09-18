@@ -1,11 +1,8 @@
 // subscription.js
-import { doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 /**
  * Checks if a user has an active subscription and what tier it is.
- * @param {object} db - Firestore database instance
- * @param {string} uid - Firebase Auth User UID
- * @returns {Promise<{isActive: boolean, plan: string, daysLeft: number}>}
  */
 export async function getSubscriptionStatus(db, uid) {
     if (!uid) return { isActive: false, plan: "Basic", daysLeft: 0 };
@@ -24,7 +21,6 @@ export async function getSubscriptionStatus(db, uid) {
         const expiry = data.premiumExpiry || 0;
         const isExpired = now > expiry;
 
-        // If the plan has expired, treat them as a Basic free user
         if (!isPremium || isExpired) {
             return { isActive: false, plan: "Basic", daysLeft: 0 };
         }
@@ -34,7 +30,7 @@ export async function getSubscriptionStatus(db, uid) {
 
         return {
             isActive: true,
-            plan: plan, // "Plus_VIP_29" or "Premium_VIP_49"
+            plan: plan,
             daysLeft: daysLeft
         };
     } catch (err) {
@@ -44,22 +40,31 @@ export async function getSubscriptionStatus(db, uid) {
 }
 
 /**
- * Automatically applies ad-blocking and VIP styling site-wide.
- * @param {object} sub - Subscription object from getSubscriptionStatus
+ * Automatically applies ad-blocking site-wide.
  */
 export function applySubscriptionPrivileges(sub) {
-    // 1. If Premium VIP (₹49), kill all banner ads on the page
-    if (sub.isActive && sub.plan === "Premium_VIP_49") {
-        // Add a global class to the body to trigger CSS hiding
+    const isPremiumUser = sub.isActive && (
+        sub.plan === "Premium_VIP_49" || 
+        sub.plan === "Crown_VIP_99" || 
+        sub.plan.includes("Premium") || 
+        sub.plan.includes("Crown")
+    );
+
+    if (isPremiumUser) {
+        // 1. Add class to both html and body for instant CSS hiding
+        document.documentElement.classList.add("premium-ad-free-mode");
         document.body.classList.add("premium-ad-free-mode");
 
-        // Forcefully remove any hardcoded ad containers found in the DOM
+        // 2. Remove all ad containers from the DOM
         const adElements = document.querySelectorAll(
-            ".watch-ad-section, .section-divider-ad, .ad-card-wrapper, .sidebar-ad-widget"
+            ".watch-ad-section, .section-divider-ad, .premium-ad-container, .ad-card-wrapper, .details-ad-section, .details-ad-container, .sidebar-ad-widget, .adsterra-wrapper, iframe[src*='ad-160x300'], iframe[src*='highrevenueformat'], iframe[src*='mammothsubway']"
         );
         adElements.forEach(el => el.remove());
-    }
 
-    // 2. Save active plan in localStorage for instant UI checks
-    localStorage.setItem("dramakan_user_plan", sub.isActive ? sub.plan : "Basic");
+        localStorage.setItem("dramakan_user_plan", "Premium_VIP_49");
+    } else {
+        document.documentElement.classList.remove("premium-ad-free-mode");
+        document.body.classList.remove("premium-ad-free-mode");
+        localStorage.setItem("dramakan_user_plan", sub.isActive ? sub.plan : "Basic");
+    }
 }
