@@ -392,6 +392,8 @@
     </div>
 
     <script type="module">
+
+        import { getSubscriptionStatus, applySubscriptionPrivileges } from "./subscription.js";
         const firebaseConfig = {
             apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
             authDomain: "dramakan007.firebaseapp.com",
@@ -1039,7 +1041,12 @@
                             const data = docSnap.data();
                             if (data.avatarUrl) legacyAvatar = data.avatarUrl;
                             userProfiles = data.profiles && data.profiles.length > 0 ? data.profiles : [{ id: 'prof_default', name: data.username || "User", avatar: legacyAvatar }];
-                            
+                            // --- APPLY PREMIUM AD BLOCKING ---
+                        const sub = await getSubscriptionStatus(db, user.uid);
+                        applySubscriptionPrivileges(sub);
+                        
+                        const docSnap = await getDoc(doc(db, "users", user.uid));
+                        
                             const now = Date.now();
                             let activePlan = "Basic";
                             if (data.isPremium && data.premiumExpiry > now) {
@@ -1053,6 +1060,7 @@
                                 }
                             }
                         }
+                        
 
                         if (localStorage.getItem('dramakan_profile_prompt_date') !== new Date().toDateString() && userProfiles.length > 0) {
                             createProfileSwitcher(userProfiles);

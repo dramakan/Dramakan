@@ -721,6 +721,7 @@
     </nav>
 
     <script type="module">
+        import { getSubscriptionStatus, applySubscriptionPrivileges } from "./subscription.js";
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
@@ -749,8 +750,19 @@
         let isMovieType = false;
         let selectedStarValue = 0;
 
+        // --- NEW GLOBAL AUTH & AD CHECK ---
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            if (user) {
+                const sub = await getSubscriptionStatus(db, user.uid);
+                applySubscriptionPrivileges(sub);
+            }
+        });
+
         if (!dramaId) { window.location.replace('index.html'); }
         document.getElementById('btn-watch-now').href = WATCH_DOMAIN_URL + dramaId;
+
+        
 
         /* Header shadow on scroll */
         const headerEl = document.getElementById('mainHeader');
@@ -771,6 +783,8 @@
             synopsisToggle.textContent = expanded ? 'Show less' : 'Read more';
         });
 
+
+        
         /* Toast & Share */
         function showToast(msg = "Link copied to clipboard!") {
             const toast = document.getElementById('shareToast');
