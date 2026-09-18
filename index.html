@@ -455,7 +455,10 @@
 
                 // Ad Insertion Logic
                 const supportedGrids = ['trending-grid', 'everything-drama-grid', 'movie-grid', 'shows-grid', 'asian-grid', 'anime-grid', 'trending-india-grid'];
-                if (index === randomAdIndex && supportedGrids.includes(elementId)) {
+                const userPlan = localStorage.getItem("dramakan_user_plan");
+                
+                // Only inject ad cards if the user is NOT Premium VIP
+                if (index === randomAdIndex && supportedGrids.includes(elementId) && userPlan !== "Premium_VIP_49") {
                     
                     const uniqueFrameSrc = `ad-160x300.html?slot=${elementId}&rnd=${Math.random().toString(36).substring(7)}`;
                     

@@ -50,11 +50,12 @@ export async function getSubscriptionStatus(db, uid) {
 export function applySubscriptionPrivileges(sub) {
     // 1. If Premium VIP (₹49), kill all banner ads on the page
     if (sub.isActive && sub.plan === "Premium_VIP_49") {
+        // Add a global class to the body to trigger CSS hiding
         document.body.classList.add("premium-ad-free-mode");
 
-        // Hide all ad containers and iframes
+        // Forcefully remove any hardcoded ad containers found in the DOM
         const adElements = document.querySelectorAll(
-            ".watch-ad-section, .sidebar-widget:has(iframe[src*='ad']), .section-divider-ad, .ad-card-wrapper"
+            ".watch-ad-section, .section-divider-ad, .ad-card-wrapper, .sidebar-ad-widget"
         );
         adElements.forEach(el => el.remove());
     }
