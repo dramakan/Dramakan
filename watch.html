@@ -2,7 +2,7 @@
 <html lang="en" id="html-root">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title id="seo-title">Watch Drama - DramaKan</title>
 
     <meta http-equiv="x-dns-prefetch-control" content="off">
@@ -408,6 +408,86 @@
             body { padding-bottom: 100px; }
         }
         @media (min-width: 993px) { .bottom-nav { display: none !important; } }
+
+        /* --- VIDEO PAYWALL OVERLAY --- */
+        .paywall-overlay {
+            position: absolute; inset: 0; z-index: 1000;
+            background: rgba(11, 12, 16, 0.90); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 1; transition: opacity 0.5s ease;
+        }
+        .paywall-overlay.unlocked { opacity: 0; pointer-events: none; }
+        .paywall-content {
+            background: rgba(20, 20, 25, 0.75); border: 1px solid rgba(138,43,226,0.3);
+            border-radius: 16px; padding: 35px 25px; max-width: 90%; text-align: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+        }
+        .paywall-content h4 { color: #fff; font-size: 1.25rem; margin: 0 0 10px 0; font-weight: 600; }
+        .paywall-content p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 25px; line-height: 1.5; }
+        
+        .paywall-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .paywall-premium-btn { background: rgba(241, 196, 15, 0.1); border-color: rgba(241, 196, 15, 0.4); color: #fbbf24; }
+        .paywall-premium-btn:hover { background: rgba(241, 196, 15, 0.2); border-color: #fbbf24; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(241, 196, 15, 0.2); }
+        
+        #ad-countdown-container { display: none; margin-top: 20px; font-size: 0.9rem; color: #fff; }
+        .timer-circle { 
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary);
+            font-weight: 700; color: var(--primary); margin-bottom: 10px;
+        }
+
+        /* --- MOBILE FIX FOR VIDEO PAYWALL (ULTRA COMPACT) --- */
+        @media (max-width: 768px) {
+            .paywall-content {
+                padding: 10px;
+                border-radius: 8px;
+                width: 95%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                gap: 8px;
+            }
+            /* Hide the giant lock icon & paragraph entirely on mobile to save vertical space */
+            .paywall-content i.fa-lock, 
+            .paywall-content p {
+                display: none !important; 
+            }
+            .paywall-content h4 {
+                font-size: 0.95rem;
+                margin: 0;
+            }
+            .paywall-buttons {
+                display: flex;
+                flex-direction: row;
+                gap: 6px;
+                flex-wrap: nowrap; 
+            }
+            .paywall-buttons .action-btn {
+                padding: 8px 6px;
+                font-size: 0.7rem;
+                flex: 1;
+                justify-content: center;
+                white-space: nowrap;
+                border-radius: 6px;
+            }
+            .paywall-buttons .action-btn i {
+                font-size: 0.75rem;
+            }
+            #ad-countdown-container {
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            }
+            .timer-circle {
+                width: 24px;
+                height: 24px;
+                font-size: 0.75rem;
+                margin-bottom: 0;
+                border-width: 2px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -459,16 +539,30 @@
                 <div class="video-player-container" id="video-wrapper">
                     <iframe id="video-player-iframe" src="" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" referrerpolicy="no-referrer" frameborder="0" scrolling="no" sandbox="allow-scripts allow-forms allow-presentation allow-same-origin"></iframe>
                     
-                    <div id="catchup-overlay" class="catchup-overlay hidden">
-                        <div class="catchup-content">
-                            <button class="catchup-close" onclick="document.getElementById('catchup-overlay').classList.add('hidden')" title="Dismiss">&times;</button>
-                            <h5><i class="fas fa-history"></i> Welcome back! Need a refresher?</h5>
-                            <h6>Previously on Episode <span id="catchup-ep-num"></span>:</h6>
-                            <p id="catchup-synopsis">Loading...</p>
-                            <button class="action-btn btn-primary" onclick="document.getElementById('catchup-overlay').classList.add('hidden')"><i class="fas fa-play"></i> Got it, let's watch!</button>
+                    <!-- NEW: PAYWALL OVERLAY -->
+                    <div id="video-paywall" class="paywall-overlay">
+                        <div class="paywall-content">
+                            <i class="fas fa-lock" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px;"></i>
+                            <h4 id="paywall-title">Unlock to Watch Free</h4>
+                            <p>Support DramaKan by watching a quick sponsor message, or upgrade to Premium for an ad-free experience.</p>
+
+                            <div class="paywall-buttons" id="paywall-action-btns">
+                                <button id="btn-watch-sponsor" class="action-btn btn-primary">
+                                    <i class="fas fa-play"></i> <span>Watch Ad to Unlock</span>
+                                </button>
+                                <a href="subscription.html" class="action-btn paywall-premium-btn">
+                                    <i class="fas fa-crown"></i> <span>Premium Starting (₹29)</span>
+                                </a>
+                            </div>
+
+                            <div id="ad-countdown-container">
+                                <div class="timer-circle" id="ad-timer">10</div>
+                                <p>Unlocking video...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
+                
 
                 <div class="server-notice" style="margin-top: 0; margin-bottom: 0;">
                     <i class="fas fa-info-circle"></i> <span>If the video is not playing or buffering, try switching servers.</span>
@@ -702,6 +796,7 @@
     </nav>
 
    <script type="module">
+    import { getSubscriptionStatus, applySubscriptionPrivileges } from "./subscription.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, serverTimestamp, query, orderBy, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
@@ -858,6 +953,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (user) {
             avatarImg.src = user.photoURL || defaultAvatar;
+
+// =========================================================
+            // REAL-TIME SUBSCRIPTION CHECK
+            // =========================================================
+            const sub = await getSubscriptionStatus(db, user.uid);
+            applySubscriptionPrivileges(sub);
+
+            const paywall = document.getElementById('video-paywall');
+
+            // If user bought Plus VIP (₹29) or Premium VIP (₹49), REMOVE THE PAYWALL
+            if (sub.isActive && (sub.plan === "Plus_VIP_29" || sub.plan === "Premium_VIP_49")) {
+                if (paywall) paywall.classList.add('unlocked');
+                console.log(`Active VIP detected (${sub.plan}). Video paywall unlocked!`);
+            } else {
+                // Free user: only unlock if they watched the ad this session
+                if (sessionStorage.getItem(`unlocked_${dramaId}`) === 'true') {
+                    if (paywall) paywall.classList.add('unlocked');
+                }
+            }
 
             // --- CLOUD-FIRST USER DOC LISTENER ---
             onSnapshot(doc(db, "users", user.uid), (docSnap) => {
@@ -1767,6 +1881,59 @@ function updateSEO(data, dramaId, season, ep) {
 
     document.addEventListener('fullscreenchange', handleFullscreenRotation);
     document.addEventListener('webkitfullscreenchange', handleFullscreenRotation);
+
+    // =========================================================
+        // AD UNLOCK PAYWALL LOGIC
+        // =========================================================
+        const paywallOverlay = document.getElementById('video-paywall');
+        const watchAdBtn = document.getElementById('btn-watch-sponsor');
+        const actionBtns = document.getElementById('paywall-action-btns');
+        const countdownContainer = document.getElementById('ad-countdown-container');
+        const timerText = document.getElementById('ad-timer');
+
+        // Optional: Check if user is Premium to auto-hide the paywall
+        function checkPremiumStatus() {
+            // If you have premium logic in your activeData or currentUser, you can auto-unlock:
+            // if (currentUser && isPremium) { paywallOverlay.classList.add('unlocked'); }
+            
+            // For now, let's also check if they already unlocked it during this browsing session
+            if (sessionStorage.getItem(`unlocked_${dramaId}`) === 'true') {
+                paywallOverlay.classList.add('unlocked');
+            }
+        }
+
+        if (watchAdBtn) {
+            watchAdBtn.addEventListener('click', () => {
+                // 1. Hide the buttons, show the countdown timer
+                actionBtns.style.display = 'none';
+                countdownContainer.style.display = 'block';
+
+                // 2. OPTIONAL: Open your Adsterra Direct Link in a new tab 
+                 window.open('https://mammothsubway.com/jv6x19fs?key=fca57385ae8621e726940d6510f8aaab', '_blank');
+
+                // 3. Start the 10-second countdown
+                let secondsLeft = 10;
+                timerText.textContent = secondsLeft;
+
+                const timerInterval = setInterval(() => {
+                    secondsLeft--;
+                    timerText.textContent = secondsLeft;
+
+                    if (secondsLeft <= 0) {
+                        clearInterval(timerInterval);
+                        
+                        // Unlock the video
+                        paywallOverlay.classList.add('unlocked');
+                        
+                        // Save session state so they don't have to watch an ad every time they change episodes
+                        sessionStorage.setItem(`unlocked_${dramaId}`, 'true');
+                    }
+                }, 1000);
+            });
+        }
+
+        // Call this when the episode loads
+        checkPremiumStatus();
 </script>
 </body>
 </html>

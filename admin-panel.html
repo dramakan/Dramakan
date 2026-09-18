@@ -57,8 +57,8 @@
         /* Badges */
         .badge { padding: 5px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;}
         .badge-basic { background: rgba(156, 163, 175, 0.15); color: #9ca3af; border: 1px solid rgba(156, 163, 175, 0.3); }
-        .badge-elite { background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); }
-        .badge-crown { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-plus { background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-premium { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
         .badge-expired { background: rgba(239, 68, 68, 0.15); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.3); }
 
         /* Action Buttons Small */
@@ -128,8 +128,8 @@
             <div class="form-group">
                 <label>Select Plan</label>
                 <select id="giftPlan">
-                    <option value="Elite_VIP_35">Elite VIP (No UI Ads)</option>
-                    <option value="Crown_VIP_99">Crown VIP (Zero Ads)</option>
+                    <option value="Plus_VIP_29">Plus VIP (No Video Ads)</option>
+                    <option value="Premium_VIP_49">Premium VIP (Zero Ads Site-Wide)</option>
                 </select>
             </div>
             
@@ -190,7 +190,7 @@
                         <span id="filterDescription">Showing all registered users.</span>
                         <div class="action-btn-group">
                             <button class="fix-accident-btn" id="btnFixAccident" onclick="window.fixAccidentalSubscriptions()"><i class="fas fa-tools"></i> Fix 1-Year Accident</button>
-                            <button class="early-adopter-btn" id="btnEarlyAdopter" onclick="window.bulkUpgradeEarlyAdopters()"><i class="fas fa-gift"></i> Grant Pre-June 1st Elite VIPs</button>
+                            <button class="early-adopter-btn" id="btnEarlyAdopter" onclick="window.bulkUpgradeEarlyAdopters()"><i class="fas fa-gift"></i> Grant Pre-June 1st Plus VIPs</button>
                         </div>
                     </div>
                 </div>
@@ -434,9 +434,9 @@
             } else if (filterType === 'vip') {
                 earlyBtn.style.display = 'none';
                 fixBtn.style.display = 'none';
-                const crown = globalUsersArray.filter(u => u.isPremium && u.premiumExpiry > Date.now() && u.premiumPlan === 'Crown_VIP_99').length;
-                const elite = globalUsersArray.filter(u => u.isPremium && u.premiumExpiry > Date.now() && u.premiumPlan !== 'Crown_VIP_99').length;
-                infoText.innerHTML = `Active VIPs &mdash; <strong style="color:#f59e0b;"><i class="fas fa-crown"></i> Crown: ${crown}</strong> | <strong style="color:#10B981;"><i class="fas fa-gem"></i> Elite: ${elite}</strong>`;
+                const premium = globalUsersArray.filter(u => u.isPremium && u.premiumExpiry > Date.now() && u.premiumPlan === 'Premium_VIP_49').length;
+                const plus = globalUsersArray.filter(u => u.isPremium && u.premiumExpiry > Date.now() && u.premiumPlan !== 'Premium_VIP_49').length;
+                infoText.innerHTML = `Active VIPs &mdash; <strong style="color:#f59e0b;"><i class="fas fa-crown"></i> Premium: ${premium}</strong> | <strong style="color:#10B981;"><i class="fas fa-gem"></i> Plus: ${plus}</strong>`;
             } else if (filterType === 'expiring') {
                 earlyBtn.style.display = 'none';
                 fixBtn.style.display = 'none';
@@ -495,12 +495,12 @@
                 
                 if (u.isPremium && u.premiumExpiry > now) {
                     isPrem = true;
-                    const planName = u.premiumPlan ? u.premiumPlan.replace(/_/g, ' ') : "Legacy Premium";
+                    const planName = u.premiumPlan ? u.premiumPlan.replace(/_/g, ' ') : "Plus VIP 29";
                     
-                    if (planName.includes("Crown")) {
-                        planBadge = `<span class="badge badge-crown"><i class="fas fa-crown"></i> ${planName}</span>`;
+                    if (planName.includes("Premium")) {
+                        planBadge = `<span class="badge badge-premium"><i class="fas fa-crown"></i> ${planName}</span>`;
                     } else {
-                        planBadge = `<span class="badge badge-elite"><i class="fas fa-gem"></i> ${planName}</span>`;
+                        planBadge = `<span class="badge badge-plus"><i class="fas fa-gem"></i> ${planName}</span>`;
                     }
                     
                     expiryText = new Date(u.premiumExpiry).toLocaleDateString();
@@ -516,7 +516,7 @@
                 if(u.createdAt) joined = new Date(u.createdAt).toLocaleDateString();
                 
                 const safeName = (u.username || "User").replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                const safePlan = u.premiumPlan ? u.premiumPlan : 'Elite_VIP_35';
+                const safePlan = u.premiumPlan ? u.premiumPlan : 'Plus_VIP_29';
 
                 html += `
                     <tr>
@@ -583,7 +583,7 @@
 
         // --- BULK PRE-JUNE 1ST EARLY ADOPTER UPGRADE (FIXED TO 1-MONTH) ---
         window.bulkUpgradeEarlyAdopters = async () => {
-            if(!confirm("Warning: This will scan for all basic users registered before June 1, 2026, and automatically upgrade them to a 1-Month Elite VIP plan. Proceed?")) return;
+            if(!confirm("Warning: This will scan for all basic users registered before June 1, 2026, and automatically upgrade them to a 1-Month Plus VIP plan. Proceed?")) return;
             
             const btn = document.getElementById('btnEarlyAdopter');
             btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Processing Users...";
@@ -596,7 +596,7 @@
             
             if (eligibleUsers.length === 0) {
                 alert("No eligible early adopters found. They may have already been upgraded.");
-                btn.innerHTML = `<i class="fas fa-gift"></i> Grant Pre-June 1st Elite VIPs`;
+                btn.innerHTML = `<i class="fas fa-gift"></i> Grant Pre-June 1st Plus VIPs`;
                 return;
             }
 
@@ -605,15 +605,15 @@
                 try {
                     await updateDoc(doc(db, "users", u.uid), {
                         isPremium: true,
-                        premiumPlan: "Elite_VIP_35",
-                        premiumExpiry: now + (30 * 24 * 60 * 60 * 1000), // FIXED: Now exactly 1 Month instead of 365 days
+                        premiumPlan: "Plus_VIP_29",
+                        premiumExpiry: now + (30 * 24 * 60 * 60 * 1000), // EXACTLY 1 Month
                         expiryReminded: deleteField() // Reset reminder block
                     });
                     
                     await addDoc(collection(db, "notifications"), {
                         target: u.uid,
                         title: "🎁 Early Adopter Bonus!",
-                        message: "Thank you for joining Dramakan early! As a token of our appreciation, we've upgraded your account to a 1-Month Elite VIP membership. Enjoy zero ads!",
+                        message: "Thank you for joining Dramakan early! As a token of our appreciation, we've upgraded your account to a 1-Month Plus VIP membership. Enjoy zero video ads!",
                         link: "profile.html",
                         createdAt: Date.now()
                     });
@@ -621,9 +621,9 @@
                 } catch(e) { console.error("Failed upgrading user: " + u.uid, e); }
             }
             
-            alert(`Success! Granted 1-Month Elite VIP to ${upgradeCount} early adopters.`);
+            alert(`Success! Granted 1-Month Plus VIP to ${upgradeCount} early adopters.`);
             btn.innerHTML = `<i class="fas fa-check"></i> Process Complete`;
-            setTimeout(() => { btn.innerHTML = `<i class="fas fa-gift"></i> Grant Pre-June 1st Elite VIPs`; }, 3000);
+            setTimeout(() => { btn.innerHTML = `<i class="fas fa-gift"></i> Grant Pre-June 1st Plus VIPs`; }, 3000);
         };
 
 
@@ -674,7 +674,7 @@
                 statusDiv.innerHTML = `<i class="fas fa-times-circle" style="color:#EF4444;"></i> <strong>Status:</strong> No active subscription.`;
                 statusDiv.style.borderLeft = "4px solid #EF4444";
                 actionSelect.value = "replace";
-                planSelect.value = "Elite_VIP_35";
+                planSelect.value = "Plus_VIP_29";
             }
             
             document.getElementById('giftVipModal').style.display = 'flex';
