@@ -176,17 +176,7 @@
                 </div>
             </div>
         </section>
-<!-- NEW SECTION: Featured For You -->
-<section id="featured-for-you-section" class="latest-episodes ui-variant-1" style="display: none;">
-    <div class="container">
-        <div class="section-glass-box" style="background: rgba(138, 43, 226, 0.08); border-color: #8A2BE2; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
-            <div class="section-header">
-                <h2 class="section-title"><i class="fas fa-magic" style="color: #8A2BE2;"></i> Featured For You</h2>
-            </div>
-            <div id="featured-for-you-grid" class="drama-grid carousel-mode"></div>
-        </div>
-    </div>
-</section>
+
    <!-- NEW SECTION: Trending in India -->
     <section class="latest-episodes ui-variant-2" style="margin-top: 20px;">
         <div class="container">
@@ -514,54 +504,7 @@
             grid.innerHTML = htmlContent;
         }
        
-async function loadFeaturedForYou(historyArr) {
-    const featuredSection = document.getElementById('featured-for-you-section');
-    // The sections to disable when personalized content is active
-    const genericSections = ['everything-drama-grid', 'movie-grid', 'shows-grid', 'anime-grid', 'asian-grid'];
 
-    if (historyArr && historyArr.length > 0) {
-        featuredSection.style.display = 'block';
-
-        // Hide standard discovery sections
-        genericSections.forEach(id => {
-            const section = document.getElementById(id);
-            if (section && section.closest('.latest-episodes')) {
-                section.closest('.latest-episodes').style.display = 'none';
-            }
-        });
-
-        // Fetch recommendations based on the last watched item
-        const lastWatchedId = historyArr[0].id;
-        try {
-            // Attempt TV recommendations first, fallback to movie if necessary
-            let recRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${lastWatchedId}/recommendations?api_key=${tmdbKey}`);
-            if (!recRes.ok) recRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${lastWatchedId}/recommendations?api_key=${tmdbKey}`);
-            
-            if (recRes.ok) {
-                const recData = await recRes.json();
-                const items = (recData.results || []).slice(0, 15).map(i => ({
-                    id: String(i.id),
-                    title: i.name || i.title,
-                    img: i.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${i.poster_path}` : 'default-poster.jpg',
-                    link: `details.html?id=${i.id}`,
-                    type: "Recommended for You"
-                }));
-                populateGrid('featured-for-you-grid', items);
-            }
-        } catch (e) {
-            console.error("Recommendation fetch failed", e);
-        }
-    } else {
-        // No history: hide Featured, show standard discovery sections
-        if (featuredSection) featuredSection.style.display = 'none';
-        genericSections.forEach(id => {
-            const section = document.getElementById(id);
-            if (section && section.closest('.latest-episodes')) {
-                section.closest('.latest-episodes').style.display = 'block';
-            }
-        });
-    }
-}
         async function renderContinueWatching(cloudHistoryArr = null) {
     try {
         let historyArr = cloudHistoryArr;
@@ -1190,7 +1133,6 @@ if (trendRes.ok) {
                                 .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 10);
                             
                             renderContinueWatching(historyArr);
-                            loadFeaturedForYou(historyArr); // <-- Add this line here
                         });
 
                     } else {
