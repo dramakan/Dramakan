@@ -198,7 +198,138 @@
             .qr-container { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-right: 0; padding-bottom: 30px; width: 100%;}
             .guidelines-box { padding: 20px; border-radius: 20px; margin: 0 20px; }
         }
+ /* =========================================
+   ULTRA-PREMIUM LIQUID GLASS MODAL
+========================================= */
+.modal-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(5, 5, 8, 0.8); 
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+    padding: 16px; /* Prevents edge-touching on small screens */
+}
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+.modal-content {
+    background: linear-gradient(145deg, rgba(35, 35, 45, 0.55), rgba(15, 15, 20, 0.85));
+    backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 28px; padding: 40px 35px;
+    max-width: 440px; width: 100%; text-align: center;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(138, 43, 226, 0.1);
+    transform: scale(0.95) translateY(30px);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    box-sizing: border-box;
+    
+    /* FIX: Responsive height and internal scrolling */
+    max-height: 90vh;
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+}
+.modal-content::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+.modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
+
+/* Glowing Pulse Checkmark */
+.success-checkmark {
+    width: 75px; height: 75px; border-radius: 50%;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05));
+    border: 2px solid rgba(16, 185, 129, 0.5);
+    display: flex; justify-content: center; align-items: center;
+    margin: 0 auto 20px auto; 
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.2), inset 0 0 15px rgba(16, 185, 129, 0.2);
+    position: relative;
+    flex-shrink: 0;
+}
+.success-checkmark::before {
+    content: ''; position: absolute; inset: -5px; border-radius: 50%;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    animation: pulseRing 2s infinite cubic-bezier(0.16, 1, 0.3, 1);
+}
+.success-checkmark i {
+    color: #10B981; font-size: 2.5rem; text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.modal-content h2 { color: #fff; font-size: 1.8rem; margin: 0 0 8px 0; font-weight: 700; letter-spacing: -0.5px; }
+.modal-subtitle { color: #a1a1aa; font-size: 0.95rem; line-height: 1.5; margin: 0 0 25px 0; }
+
+/* Inset Glass Receipt Box */
+.receipt-box {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 18px; padding: 16px 20px; margin-bottom: 25px;
+    box-shadow: inset 0 4px 15px rgba(0,0,0,0.5);
+}
+.receipt-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; color: #8a8a93; font-size: 0.95rem; font-weight: 500;
+}
+.receipt-row:not(:last-child) { border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+.receipt-val { color: #fff; font-weight: 600; text-align: right; }
+.receipt-val.mono { 
+    font-family: 'Courier New', Courier, monospace; font-size: 1.05rem; 
+    color: #d8b4fe; letter-spacing: 1px; background: rgba(138,43,226,0.15); 
+    padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(138,43,226,0.25);
+    word-break: break-all;
+}
+
+.status-badge.pending {
+    background: rgba(245, 158, 11, 0.15); color: #f59e0b;
+    padding: 5px 12px; border-radius: 20px; font-size: 0.75rem;
+    font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.1);
+}
+
+.modal-highlight-box {
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.12), rgba(138, 43, 226, 0.03)); 
+    border: 1px solid rgba(138, 43, 226, 0.25);
+    border-radius: 18px; padding: 18px; margin-bottom: 25px;
+    display: flex; align-items: center; gap: 15px; text-align: left;
+}
+.modal-highlight-box .icon-col {
+    background: rgba(138, 43, 226, 0.25); width: 40px; height: 40px; border-radius: 50%;
+    display: flex; justify-content: center; align-items: center; flex-shrink: 0;
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.2);
+}
+.modal-highlight-box .icon-col i { color: #d8b4fe; font-size: 1.1rem; }
+.modal-highlight-box .text-col span { color: #d1d1d6; font-size: 0.85rem; line-height: 1.5; display: block; }
+.modal-highlight-box .text-col strong { color: #fff; }
+
+.btn-modal-close {
+    width: 100%; padding: 16px; border-radius: 14px; border: none;
+    background: linear-gradient(135deg, var(--primary), var(--primary-rich)); 
+    color: #fff; font-size: 1.05rem; font-weight: 600; letter-spacing: 0.5px;
+    cursor: pointer; transition: 0.3s; 
+    box-shadow: 0 10px 25px rgba(138, 43, 226, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+    font-family: inherit;
+}
+.btn-modal-close:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(138, 43, 226, 0.6), inset 0 1px 0 rgba(255,255,255,0.2); }
+
+@keyframes pulseRing { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.3); opacity: 0; } }
+
+/* Mobile Aggressive Compaction */
+@media (max-width: 768px) {
+    .modal-content { padding: 30px 20px; max-height: 92vh; border-radius: 24px; }
+    .success-checkmark { width: 60px; height: 60px; margin-bottom: 15px; }
+    .success-checkmark i { font-size: 2rem; }
+    .modal-content h2 { font-size: 1.5rem; margin-bottom: 5px; }
+    .modal-subtitle { font-size: 0.85rem; margin-bottom: 20px; }
+    
+    .receipt-box { padding: 12px 15px; margin-bottom: 20px; }
+    .receipt-row { padding: 8px 0; font-size: 0.85rem; }
+    .receipt-val.mono { font-size: 0.95rem; padding: 2px 6px; }
+    
+    .modal-highlight-box { padding: 15px; margin-bottom: 20px; gap: 12px; }
+    .modal-highlight-box .icon-col { width: 35px; height: 35px; }
+    .modal-highlight-box .icon-col i { font-size: 1rem; }
+    .modal-highlight-box .text-col span { font-size: 0.8rem; }
+    
+    .btn-modal-close { padding: 15px; font-size: 1rem; }
+}
     </style>
+    
 </head>
 <body>
     <div class="liquid-bg"></div>
@@ -300,7 +431,42 @@
             </ul>
         </div>
     </div>
-
+<!-- High-Trust Success Modal Overlay -->
+<div id="successModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="success-checkmark">
+            <i class="fas fa-check"></i>
+        </div>
+        <h2>Verification Pending</h2>
+        <p class="modal-subtitle">Your transaction details have been securely transmitted for manual verification.</p>
+        
+        <div class="receipt-box">
+            <div class="receipt-row">
+                <span>Reference (UTR)</span>
+                <span id="displayUtr" class="receipt-val mono">Loading...</span>
+            </div>
+            <div class="receipt-row">
+                <span>Est. Time</span>
+                <span class="receipt-val">2 to 4 Hours</span>
+            </div>
+            <div class="receipt-row">
+                <span>Status</span>
+                <span class="status-badge pending">In Review</span>
+            </div>
+        </div>
+        
+        <div class="modal-highlight-box">
+            <div class="icon-col">
+                <i class="fas fa-bell"></i>
+            </div>
+            <div class="text-col">
+                <span>You can safely close this page. We will notify you via <strong>profile notifications</strong> the exact moment your VIP status is activated.</span>
+            </div>
+        </div>
+        
+        <button class="btn-modal-close" onclick="closeModal()">Return to Profile</button>
+    </div>
+</div>
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
@@ -376,41 +542,7 @@
                     }
                 });
 
-                // Check Early Adopter Free Trial Eligibility
-                const accountCreationTime = new Date(user.metadata.creationTime).getTime();
-                const isEligibleForTrial = accountCreationTime < PROMO_CUTOFF_DATE;
-                const hasClaimedTrial = userData && userData.trialClaimed === true;
                 
-                if (isEligibleForTrial && !hasClaimedTrial && activePlan === "Basic") {
-                    
-                    document.getElementById('promoBanner').style.display = 'block';
-                    document.getElementById('promoBanner').innerHTML = `
-                        <h2><i class="fas fa-gift" style="color: #f1c40f;"></i> Claim Your Free Trial!</h2>
-                        <p>Because you registered before June 1st, you get <strong>1 Month of Plus VIP</strong> absolutely free.</p>
-                        <button id="activateTrialBtn" class="btn-activate-trial">Activate Plus Trial Now</button>
-                    `;
-
-                    document.getElementById('activateTrialBtn').addEventListener('click', async () => {
-                        const btn = document.getElementById('activateTrialBtn');
-                        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Activating...';
-                        btn.disabled = true;
-                        try {
-                            await setDoc(doc(db, "users", currentUser.uid), {
-                                isPremium: true,
-                                premiumPlan: 'Plus_VIP_29',
-                                premiumExpiry: Date.now() + (30 * 24 * 60 * 60 * 1000),
-                                trialClaimed: true
-                            }, { merge: true });
-                            
-                            alert("Success! 30 Days of Plus VIP has been activated.");
-                            window.location.reload();
-                        } catch(e) {
-                            alert("Error: " + e.message);
-                            btn.innerHTML = 'Activate Plus Trial Now';
-                            btn.disabled = false;
-                        }
-                    });
-                }
                 
                 // Pulse upgrade if on Plus
                 if (activePlan === "Plus_VIP_29" || activePlan === "Elite_VIP_35") {
@@ -495,31 +627,47 @@
             btn.disabled = true;
 
             try {
-                const durationDays = 30;
+        const durationDays = 30;
 
-                await addDoc(collection(db, "premium_requests"), {
-                    userId: currentUser.uid || "",
-                    userEmail: currentUser.email || "No Email Provided",
-                    username: (userData && userData.username) ? userData.username : (currentUser.displayName || "User"),
-                    plan: selectedPlan || "Plus_VIP_29",
-                    durationDays: durationDays,
-                    transactionId: trxId,
-                    status: "Pending",
-                    createdAt: Date.now()
-                });
+        await addDoc(collection(db, "premium_requests"), {
+            userId: currentUser.uid || "",
+            userEmail: currentUser.email || "No Email Provided",
+            username: (userData && userData.username) ? userData.username : (currentUser.displayName || "User"),
+            plan: selectedPlan || "Plus_VIP_29",
+            durationDays: durationDays,
+            transactionId: trxId,
+            status: "Pending",
+            createdAt: Date.now()
+        });
 
-                document.getElementById('paymentForm').style.display = 'none';
-                document.querySelector('.qr-container').style.display = 'none';
-                status.style.color = "#10B981";
-                status.innerHTML = "<i class='fas fa-check-circle' style='font-size:4rem; margin-bottom:20px; display:block;'></i><br><strong style='font-size:1.3rem; color:#fff;'>Verification Pending</strong><br><br><span style='color:#a1a1aa;'>We have successfully received your UTR number. Your VIP status will be activated within 2 to 4 hours. You can safely close this page.</span>";
-                
-            } catch (err) {
-                console.error("Firebase Error:", err);
-                status.style.color = "#EF4444";
-                status.innerText = "Error: " + err.message;
-                btn.innerHTML = '<i class="fas fa-shield-alt"></i> Verify Payment';
-                btn.disabled = false;
-            }
+        // Restore original button state
+        btn.innerHTML = '<i class="fas fa-shield-alt"></i> Verify Payment';
+        btn.disabled = false;
+        
+        // FIX: Inject the typed UTR directly into the modal's receipt box
+        document.getElementById('displayUtr').innerText = trxId;
+        
+        // Clear the input only after capturing the value
+        document.getElementById('trxId').value = '';
+
+        // Trigger the upgraded fintech-style popup
+        document.getElementById('successModal').classList.add('active');
+        
+    
+} catch (err) {
+    console.error("Firebase Error:", err);
+    status.style.color = "#EF4444";
+    status.innerText = "Error: " + err.message;
+    btn.innerHTML = '<i class="fas fa-shield-alt"></i> Verify Payment';
+    btn.disabled = false;
+}
+
+// Make sure to add the close modal function globally
+window.closeModal = function() {
+    document.getElementById('successModal').classList.remove('active');
+    // Optional: Redirect them to their profile immediately after closing
+    window.location.href = 'profile.html';
+};
         });
     </script>
 </body>
