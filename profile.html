@@ -614,8 +614,8 @@
                 
                 <!-- Navigation Tabs -->
                 <div class="settings-tabs">
-                    <button class="tab-btn active" onclick="window.switchTab('profile-tab')"><i class="fas fa-user-edit"></i> Profile</button>
-                    <button class="tab-btn" onclick="window.switchTab('security-tab')"><i class="fas fa-shield-alt"></i> Security</button>
+                    <button class="tab-btn active" onclick="window.switchTab('profile-tab', this)"><i class="fas fa-user-edit"></i> Profile</button>
+<button class="tab-btn" onclick="window.switchTab('security-tab', this)"><i class="fas fa-shield-alt"></i> Security</button>
                 </div>
 
                 <!-- 1. Profile Tab Content -->
@@ -712,11 +712,16 @@
         });
 
         // Tabs Logic for Settings Modal
-        window.switchTab = function(tabId) {
+        window.switchTab = function(tabId, btnElement = null) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            
+            if (btnElement) {
+                btnElement.classList.add('active');
+            } else if (window.event && window.event.currentTarget) {
+                window.event.currentTarget.classList.add('active');
+            }
         };
 
         // Base Modals
@@ -1251,20 +1256,13 @@
                     }
                 });
 
-            } else { 
-                window.location.replace('login.html'); 
-            }
-        });
-
-// 4. Real-Time Notification Engine
+                // 4. Real-Time Notification Engine (Kept inside if (user) so user.uid is valid)
                 onSnapshot(query(collection(db, "notifications"), where("target", "in", [user.uid, "all", "viewers"])), (notifSnap) => {
                     const notifList = document.getElementById('globalNotifList');
                     const badge = document.getElementById('globalNotifBadge');
                     let notifs = [];
                     
                     notifSnap.forEach(n => { notifs.push({ id: n.id, ...n.data() }); });
-                    
-                    // Sort by newest first
                     notifs.sort((a,b) => b.createdAt - a.createdAt);
                     
                     if (notifs.length > 0) {
@@ -1273,7 +1271,6 @@
                         
                         notifList.innerHTML = notifs.map(n => {
                             const dateStr = new Date(n.createdAt).toLocaleDateString();
-                            // Only allow users to delete personal notifications, not global community updates
                             const deleteBtnHtml = n.target === user.uid 
                                 ? `<button class="global-notif-delete" onclick="window.deleteNotif('${n.id}')" title="Dismiss"><i class="fas fa-times"></i></button>` 
                                 : ``;
@@ -1296,21 +1293,29 @@
                     }
                 });
 
-                // Delete Personal Notification Function
-                window.deleteNotif = async (notifId) => {
-                    try { await deleteDoc(doc(db, "notifications", notifId)); } 
-                    catch(e) { console.error("Could not dismiss alert:", e); }
-                };
-                
                 // Clear All Personal Notifications
-                document.getElementById('clearNotifsBtn').addEventListener('click', async () => {
-                    if(!confirm("Clear all your personal notifications?")) return;
-                    try {
-                        const q = query(collection(db, "notifications"), where("target", "==", user.uid));
-                        const snap = await getDocs(q);
-                        snap.forEach(d => deleteDoc(doc(db, "notifications", d.id)));
-                    } catch(e) { console.error("Could not clear notifications:", e); }
-                });
+                const clearBtn = document.getElementById('clearNotifsBtn');
+                if (clearBtn) {
+                    clearBtn.onclick = async () => {
+                        if(!confirm("Clear all your personal notifications?")) return;
+                        try {
+                            const q = query(collection(db, "notifications"), where("target", "==", user.uid));
+                            const snap = await getDocs(q);
+                            snap.forEach(d => deleteDoc(doc(db, "notifications", d.id)));
+                        } catch(e) { console.error("Could not clear notifications:", e); }
+                    };
+                }
+
+            } else { 
+                window.location.replace('login.html'); 
+            }
+        });
+
+        // Global Delete Notification Function
+        window.deleteNotif = async (notifId) => {
+            try { await deleteDoc(doc(db, "notifications", notifId)); } 
+            catch(e) { console.error("Could not dismiss alert:", e); }
+        };
 
         // --- DOCUMENT LEVEL CARD DELETIONS ---
         window.removeCard = async (type, identifier) => {

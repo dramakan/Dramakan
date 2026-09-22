@@ -175,7 +175,17 @@
                 </div>
             </div>
         </section>
-
+<!-- NEW SECTION: Featured For You -->
+<section id="featured-for-you-section" class="latest-episodes ui-variant-1" style="display: none;">
+    <div class="container">
+        <div class="section-glass-box" style="background: rgba(138, 43, 226, 0.08); border-color: #8A2BE2; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-magic" style="color: #8A2BE2;"></i> Featured For You</h2>
+            </div>
+            <div id="featured-for-you-grid" class="drama-grid carousel-mode"></div>
+        </div>
+    </div>
+</section>
    <!-- NEW SECTION: Trending in India -->
     <section class="latest-episodes ui-variant-2" style="margin-top: 20px;">
         <div class="container">
@@ -502,109 +512,163 @@
 
             grid.innerHTML = htmlContent;
         }
+       
+async function loadFeaturedForYou(historyArr) {
+    const featuredSection = document.getElementById('featured-for-you-section');
+    // The sections to disable when personalized content is active
+    const genericSections = ['everything-drama-grid', 'movie-grid', 'shows-grid', 'anime-grid', 'asian-grid'];
 
+    if (historyArr && historyArr.length > 0) {
+        featuredSection.style.display = 'block';
+
+        // Hide standard discovery sections
+        genericSections.forEach(id => {
+            const section = document.getElementById(id);
+            if (section && section.closest('.latest-episodes')) {
+                section.closest('.latest-episodes').style.display = 'none';
+            }
+        });
+
+        // Fetch recommendations based on the last watched item
+        const lastWatchedId = historyArr[0].id;
+        try {
+            // Attempt TV recommendations first, fallback to movie if necessary
+            let recRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${lastWatchedId}/recommendations?api_key=${tmdbKey}`);
+            if (!recRes.ok) recRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${lastWatchedId}/recommendations?api_key=${tmdbKey}`);
+            
+            if (recRes.ok) {
+                const recData = await recRes.json();
+                const items = (recData.results || []).slice(0, 15).map(i => ({
+                    id: String(i.id),
+                    title: i.name || i.title,
+                    img: i.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${i.poster_path}` : 'default-poster.jpg',
+                    link: `details.html?id=${i.id}`,
+                    type: "Recommended for You"
+                }));
+                populateGrid('featured-for-you-grid', items);
+            }
+        } catch (e) {
+            console.error("Recommendation fetch failed", e);
+        }
+    } else {
+        // No history: hide Featured, show standard discovery sections
+        if (featuredSection) featuredSection.style.display = 'none';
+        genericSections.forEach(id => {
+            const section = document.getElementById(id);
+            if (section && section.closest('.latest-episodes')) {
+                section.closest('.latest-episodes').style.display = 'block';
+            }
+        });
+    }
+}
         async function renderContinueWatching(cloudHistoryArr = null) {
-            try {
-                let historyArr = cloudHistoryArr;
-                
-                if (!historyArr) {
-                    const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-                    historyArr = Object.values(historyObj)
-                        .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
-                        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 10);
-                }
-                
-                const cwSection = document.getElementById('continue-watching-section');
-                const cwGrid = document.getElementById('continue-watching-grid');
-                
-                if (cwSection && cwGrid) {
-                    if (historyArr.length > 0) {
-                        cwSection.style.display = 'block';
+    try {
+        let historyArr = cloudHistoryArr;
+        
+        if (!historyArr) {
+            const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+            historyArr = Object.values(historyObj)
+                .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
+                .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 10);
+        }
+        
+        const cwSection = document.getElementById('continue-watching-section');
+        const cwGrid = document.getElementById('continue-watching-grid');
+        
+        if (cwSection && cwGrid) {
+            if (historyArr.length > 0) {
+                cwSection.style.display = 'block';
 
-                        const updatedItems = await Promise.all(historyArr.map(async (item) => {
-                            let imgUrl = item.backdrop_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${item.backdrop_path}` : (item.backdrop || item.bgImg);
-                            
-                            if (!imgUrl) {
-                                try {
-                                    if (item.id) {
-                                        let tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${item.id}?api_key=${tmdbKey}`);
-                                        if (!tmdbRes.ok) tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${item.id}?api_key=${tmdbKey}`);
-                                        
-                                        if (tmdbRes.ok) {
-                                            const tmdbData = await tmdbRes.json();
-                                            if (tmdbData.backdrop_path) {
-                                                imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${tmdbData.backdrop_path}`;
-                                            }
-                                        }
+                const updatedItems = await Promise.all(historyArr.map(async (item) => {
+                    let imgUrl = item.backdrop_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${item.backdrop_path}` : (item.backdrop || item.bgImg);
+                    
+                    if (!imgUrl) {
+                        try {
+                            if (item.id) {
+                                let tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${item.id}?api_key=${tmdbKey}`);
+                                if (!tmdbRes.ok) tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${item.id}?api_key=${tmdbKey}`);
+                                
+                                if (tmdbRes.ok) {
+                                    const tmdbData = await tmdbRes.json();
+                                    if (tmdbData.backdrop_path) {
+                                        imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${tmdbData.backdrop_path}`;
                                     }
-                                    
-                                    if (!imgUrl && item.title) {
-                                        const searchRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(item.title)}`);
-                                        if (searchRes.ok) {
-                                            const searchData = await searchRes.json();
-                                            if (searchData.results && searchData.results.length > 0 && searchData.results[0].backdrop_path) {
-                                                imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${searchData.results[0].backdrop_path}`;
-                                            }
-                                        }
-                                    }
-                                    
-                                    if (imgUrl) {
-                                        item.backdrop_path = imgUrl.replace('https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780', '');
-                                        let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-                                        if(localHistory[item.id]) {
-                                            localHistory[item.id].backdrop_path = item.backdrop_path;
-                                            localStorage.setItem('dramakan_history', JSON.stringify(localHistory));
-                                        }
-                                    }
-                                } catch(err) { console.warn("Backdrop fetch failed", err); }
+                                }
                             }
                             
-                            item.finalImgUrl = imgUrl || item.img;
-                            return item;
-                        }));
+                            if (!imgUrl && item.title) {
+                                const searchRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(item.title)}`);
+                                if (searchRes.ok) {
+                                    const searchData = await searchRes.json();
+                                    if (searchData.results && searchData.results.length > 0 && searchData.results[0].backdrop_path) {
+                                        imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${searchData.results[0].backdrop_path}`;
+                                    }
+                                }
+                            }
+                            
+                            if (imgUrl) {
+                                item.backdrop_path = imgUrl.replace('https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780', '');
+                                let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                                if(localHistory[item.id]) {
+                                    localHistory[item.id].backdrop_path = item.backdrop_path;
+                                    localStorage.setItem('dramakan_history', JSON.stringify(localHistory));
+                                }
+                            }
+                        } catch(err) { console.warn("Backdrop fetch failed", err); }
+                    }
+                    
+                    item.finalImgUrl = imgUrl || item.img;
+                    return item;
+                }));
 
-                        cwGrid.innerHTML = updatedItems.map(item => {
-                            const progress = item.progress || Math.floor(Math.random() * 50 + 20); 
-                            const season = item.season || 1;
-                            const episode = item.episode || 1;
+                cwGrid.innerHTML = updatedItems.map(item => {
+                    const progress = item.progress || Math.floor(Math.random() * 50 + 20); 
+                    const season = item.season || 1;
+                    const episode = item.episode || 1;
 
-                            return `
-                            <a href="${item.link}" class="cw-landscape-card">
-                                <img src="${item.finalImgUrl}" alt="${item.title}" class="cw-landscape-img" loading="lazy" decoding="async" onerror="this.src='${item.img}'">
-                                <div class="cw-progress-container">
-                                    <div class="cw-progress-bar" style="width: ${progress}%;"></div>
-                                </div>
-                                <div class="cw-landscape-info">
-                                    <h3 class="cw-landscape-title">${item.title}</h3>
-                                    <div class="cw-landscape-meta">
-                                        <span class="cw-play-badge"><i class="fas fa-play"></i> S${season} • E${episode}</span>
-                                        <span>${item.timeLeft ? item.timeLeft + 'm left' : ''}</span>
-                                    </div>
-                                </div>
-                            </a>
-                            `;
-                        }).join('');
-                    } else { cwSection.style.display = 'none'; }
-                }
-            } catch(e) { console.error("CW Engine exception", e); }
+                    return `
+                    <a href="${item.link}" class="cw-landscape-card">
+                        <img src="${item.finalImgUrl}" alt="${item.title}" class="cw-landscape-img" loading="lazy" decoding="async" onerror="this.src='${item.img}'">
+                        <div class="cw-progress-container">
+                            <div class="cw-progress-bar" style="width: ${progress}%;"></div>
+                        </div>
+                        <div class="cw-landscape-info">
+                            <h3 class="cw-landscape-title">${item.title}</h3>
+                            <div class="cw-landscape-meta">
+                                <span class="cw-play-badge"><i class="fas fa-play"></i> S${season} • E${episode}</span>
+                                <span>${item.timeLeft ? item.timeLeft + 'm left' : ''}</span>
+                            </div>
+                        </div>
+                    </a>
+                    `;
+                }).join('');
+            } else { cwSection.style.display = 'none'; }
         }
+    } catch(e) { console.error("CW Engine exception", e); }
+}
 
         async function initializeDramaSite() {
             try {
-                const [dramaRes, movieRes] = await Promise.all([
-                    fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/discover/tv?api_key=${tmdbKey}&sort_by=popularity.desc&page=1`),
-                    fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/discover/movie?api_key=${tmdbKey}&sort_by=popularity.desc&page=1`)
-                ]);
+                // Replace lines ~698 to 715 with this:
+const [bannerTrendRes, animeRes, showsRes] = await Promise.all([
+    fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/trending/all/week?api_key=${tmdbKey}`),
+    fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/discover/tv?api_key=${tmdbKey}&with_genres=16&with_original_language=ja`),
+    fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/discover/tv?api_key=${tmdbKey}`)
+]);
 
-                const dramaData = await dramaRes.json();
-                const movieData = await movieRes.json();
+const trendData = await bannerTrendRes.json();
+const animeData = await animeRes.json();
+const showsData = await showsRes.json();
 
-                let bannerItems = [
-                    { data: dramaData.results[0], label: "Dramakan Exclusive" },
-                    { data: movieData.results[0], label: "Dramakan Exclusive" }
-                ].filter(item => item.data); 
+let bannerItems = [
+    { data: trendData.results[0], label: "Trending on Dramakan" },
+    { data: trendData.results[3], label: "Trending Now" },
+    { data: animeData.results[2], label: "Trending Anime" },
+    { data: showsData.results[0], label: "Trending Show" },
+    { data: showsData.results[1], label: "Featured on Dramakan" }
+].filter(item => item.data); 
 
-                bannerItems.sort(() => Math.random() - 0.5);
+bannerItems.sort(() => Math.random() - 0.5);
 
                 const wrapper = document.getElementById('hero-slider-wrapper');
                 const dotsContainer = document.getElementById('hero-slider-dots');
@@ -754,19 +818,24 @@
                 startSlideShow();
 
                 // Fetch Main Trending
-                const trendRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/trending/all/week?api_key=${tmdbKey}`);
-                if (trendRes.ok) {
-                    const dataTrend = await trendRes.json();
-                    const items = (dataTrend.results || []).slice(0, 15).map(i => ({
-                        id: String(i.id),
-                        title: i.name || i.title,
-                        img: i.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${i.poster_path}` : 'default-poster.jpg',
-                        link: `details.html?id=${i.id}`,
-                        type: "Trending Now"
-                    }));
-                    populateGrid('trending-grid', items);
-                    fuse = new Fuse(items, { keys: ['title'], threshold: 0.4 });
-                }
+                const trendRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/trending/tv/week?api_key=${tmdbKey}`);
+if (trendRes.ok) {
+    const dataTrend = await trendRes.json();
+    const items = (dataTrend.results || []).slice(0, 15).map(i => {
+        const year = (i.first_air_date || i.release_date || "").substring(0, 4);
+        const rating = i.vote_average ? i.vote_average.toFixed(1) : "NR";
+        return {
+            id: String(i.id),
+            title: i.name || i.title,
+            img: i.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${i.poster_path}` : 'default-poster.jpg',
+            link: `details.html?id=${i.id}`,
+            type: `${year} • ⭐ ${rating}`, // Formatted to match trending.html
+            media_type: 'tv'
+        };
+    });
+    populateGrid('trending-grid', items);
+    fuse = new Fuse(items, { keys: ['title'], threshold: 0.4 });
+}
 
                // --- NEW: FETCH ACTUAL LATEST IN INDIA ---
                 const today = new Date();
@@ -1110,11 +1179,12 @@
                             
                             localStorage.setItem('dramakan_history', JSON.stringify(cloudHistory));
                             
-                            const historyArr = Object.values(cloudHistory)
+                           const historyArr = Object.values(cloudHistory)
                                 .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
                                 .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 10);
                             
                             renderContinueWatching(historyArr);
+                            loadFeaturedForYou(historyArr); // <-- Add this line here
                         });
 
                     } else {
