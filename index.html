@@ -155,11 +155,12 @@
     <main>
         <section class="latest-episodes" id="continue-watching-section" style="display: none;">
             <div class="container">
-                <div class="section-glass-box" style="background: rgba(var(--bg-rgb), 0.05); border-color: var(--primary-color);">
+                <div class="section-glass-box" style="background: rgba(138, 43, 226, 0.05); border-color: #8A2BE2;">
                     <div class="section-header">
-                        <h2 class="section-title"><i class="fas fa-play-circle" style="color: var(--primary-color);"></i> Continue Watching</h2>
+                        <h2 class="section-title"><i class="fas fa-play-circle" style="color: #8A2BE2;"></i> Continue Watching</h2>
                     </div>
-                    <div id="continue-watching-grid" class="drama-grid carousel-mode"></div>
+                    <!-- FIX: Using h-scroll instead of drama-grid to enforce landscape orientation -->
+                    <div id="continue-watching-grid" class="h-scroll"></div>
                 </div>
             </div>
         </section>
@@ -267,7 +268,7 @@
             <div class="container">
                 <div class="section-glass-box">
                     <div class="section-header">
-                        <h2 class="section-title">Asian</h2>
+                        <h2 class="section-title" style="--primary: #ec4899;">Asian</h2>
                         <a href="asian.html" class="view-all-link">View All <i class="fas fa-chevron-right"></i></a>
                     </div>
                     <div id="asian-grid" class="drama-grid carousel-mode"></div>
@@ -628,7 +629,12 @@ async function loadFeaturedForYou(historyArr) {
 
                     return `
                     <a href="${item.link}" class="cw-landscape-card">
-                        <img src="${item.finalImgUrl}" alt="${item.title}" class="cw-landscape-img" loading="lazy" decoding="async" onerror="this.src='${item.img}'">
+                        <div class="cw-landscape-img-wrap">
+                            <img src="${item.finalImgUrl}" alt="${item.title}" class="cw-landscape-img" loading="lazy" decoding="async" onerror="this.src='${item.img}'">
+                            <button class="cw-remove-btn" onclick="event.preventDefault(); window.removeCard('history', '${item.id}')" title="Remove">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
                         <div class="cw-progress-container">
                             <div class="cw-progress-bar" style="width: ${progress}%;"></div>
                         </div>
@@ -1202,6 +1208,25 @@ if (trendRes.ok) {
                 });
             } catch (e) { console.warn("Authentication configuration sync failed", e); }
         }
+        window.removeCard = async (type, identifier) => {
+            if (type === 'history') {
+                let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                if(localHistory[identifier]) {
+                    delete localHistory[identifier];
+                    localStorage.setItem('dramakan_history', JSON.stringify(localHistory));
+                }
+                
+                if (firebaseInstance && firebaseInstance.auth.currentUser) {
+                    try {
+                        const { doc, deleteDoc } = firebaseInstance.firestoreModule;
+                        await deleteDoc(doc(firebaseInstance.db, "users", firebaseInstance.auth.currentUser.uid, "history", String(identifier)));
+                    } catch(e) { console.error("Could not remove history from cloud", e); }
+                }
+                
+                const historyArr = Object.values(localHistory).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 10);
+                renderContinueWatching(historyArr);
+            }
+        };
 
         document.addEventListener("DOMContentLoaded", () => {
             const modal = document.getElementById("dramaModal");

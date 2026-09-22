@@ -860,34 +860,110 @@ let updateFavoriteUI = () => {};
 const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
 const tmdbKey = "hidden_by_proxy";
 
-// --- AUTOMATIC TMDB GENERATOR FUNCTION ---
+// --- DIAGNOSTIC ERROR RENDERER FOR LOADER ---
+function renderLoaderError(err) {
+    const loader = document.getElementById('page-loader');
+    if (!loader) return;
+    loader.innerHTML = `
+        <div style="background: rgba(20, 20, 25, 0.9); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 24px; padding: 40px 30px; max-width: 480px; width: 90%; text-align: center; backdrop-filter: blur(30px); box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
+            <div style="width: 68px; height: 68px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 2px solid rgba(239, 68, 68, 0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: #ef4444; font-size: 1.8rem;">
+                <i class="${err.icon || 'fas fa-triangle-exclamation'}"></i>
+            </div>
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #fff; margin: 0 0 10px 0;">${err.title}</h2>
+            <p style="color: #a1a1aa; font-size: 0.9rem; line-height: 1.6; margin: 0 0 20px 0;">${err.message}</p>
+            <div style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 8px 12px; font-family: monospace; font-size: 0.78rem; color: #f87171; margin-bottom: 25px; word-break: break-all;">
+                ${err.code}
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <button onclick="window.location.reload()" style="background: var(--primary); color: #fff; border: none; padding: 12px 24px; border-radius: 50px; font-weight: 600; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-rotate-right"></i> Retry
+                </button>
+                <a href="index.html" style="background: rgba(255,255,255,0.06); color: #fff; border: 1px solid var(--glass-border); padding: 12px 24px; border-radius: 50px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-home"></i> Home
+                </a>
+            </div>
+        </div>
+    `;
+}
+
+// --- AUTOMATIC TMDB GENERATOR FUNCTION WITH PRECISE STATUS CHECKS ---
 async function autoGenerateFromTMDB(idStr) {
+    if (!navigator.onLine) {
+        throw {
+            title: "No Internet Connection",
+            message: "Your device is currently offline. Please reconnect to the internet and refresh.",
+            code: "ERR_INTERNET_DISCONNECTED",
+            icon: "fas fa-wifi"
+        };
+    }
+
     let mediaType = 'tv';
-    let res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/tv/${idStr}?append_to_response=external_ids,credits`);
+    let res = null;
+    let lastStatus = null;
+
+    try {
+        res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/tv/${idStr}?append_to_response=external_ids,credits`);
+        lastStatus = res.status;
+    } catch(err) {
+        throw {
+            title: "TMDB Gateway Unreachable",
+            message: "Unable to establish a connection to the TMDB Cloudflare proxy. Check your connection or ad-block settings.",
+            code: "FETCH_PROXY_FAILED: " + err.message,
+            icon: "fas fa-network-wired"
+        };
+    }
     
     if (!res.ok) {
-        res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/movie/${idStr}?append_to_response=external_ids,credits`);
-        mediaType = 'movie';
-        if (!res.ok) return null; 
+        try {
+            res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/movie/${idStr}?append_to_response=external_ids,credits`);
+            lastStatus = res.status;
+            mediaType = 'movie';
+        } catch(err) {
+            throw {
+                title: "TMDB Gateway Unreachable",
+                message: "Unable to contact the secondary movie endpoint.",
+                code: "FETCH_MOVIE_FAILED: " + err.message,
+                icon: "fas fa-network-wired"
+            };
+        }
+
+        if (!res.ok) {
+            if (lastStatus === 404) {
+                throw {
+                    title: "Drama Not Found (404)",
+                    message: `Content ID "${idStr}" does not exist on TMDB. It may have been removed or an invalid link was provided.`,
+                    code: "TMDB_HTTP_404_NOT_FOUND",
+                    icon: "fas fa-film"
+                };
+            } else if (lastStatus >= 500) {
+                throw {
+                    title: `TMDB Server Error (${lastStatus})`,
+                    message: "The upstream TMDB servers are currently down or reporting errors.",
+                    code: `TMDB_HTTP_STATUS_${lastStatus}`,
+                    icon: "fas fa-server"
+                };
+            } else {
+                throw {
+                    title: "TMDB Request Failed",
+                    message: `Metadata lookup failed with HTTP status ${lastStatus}.`,
+                    code: `TMDB_ERROR_CODE_${lastStatus}`,
+                    icon: "fas fa-circle-exclamation"
+                };
+            }
+        }
     }
     
     const data = await res.json();
     
-    // Dynamic Type Detection (Movie, Anime, Drama, or Show)
     let typeStr = 'Show';
     if (mediaType === 'movie') {
         typeStr = 'Movie';
     } else {
         const isAnimation = data.genres && data.genres.some(g => g.id === 16);
         const country = (data.origin_country && data.origin_country.length > 0) ? data.origin_country[0] : '';
-        
-        if (isAnimation && country === 'JP') {
-            typeStr = 'Anime';
-        } else if (['KR', 'CN', 'JP', 'TH', 'TW'].includes(country)) {
-            typeStr = 'Drama'; 
-        } else {
-            typeStr = 'Show';
-        }
+        if (isAnimation && country === 'JP') typeStr = 'Anime';
+        else if (['KR', 'CN', 'JP', 'TH', 'TW'].includes(country)) typeStr = 'Drama';
+        else typeStr = 'Show';
     }
 
     let epsArr = [1];
@@ -1061,10 +1137,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        // =========================================================
-        // 1. DYNAMIC FETCH: FIREBASE OR TMDB API AUTO-GENERATION
-        // =========================================================
-        const docSnap = await getDoc(doc(db, "dramas", dramaId));
+        if (!navigator.onLine) {
+            throw {
+                title: "No Internet Connection",
+                message: "Please check your network settings and reload the page.",
+                code: "ERR_OFFLINE",
+                icon: "fas fa-wifi"
+            };
+        }
+
+        let docSnap;
+        try {
+            docSnap = await getDoc(doc(db, "dramas", dramaId));
+        } catch(dbErr) {
+            throw {
+                title: "Database Fetch Error",
+                message: "Unable to query the Firestore database. You may be offline or experiencing permission/quota restrictions.",
+                code: "FIRESTORE_ERROR: " + (dbErr.code || dbErr.message),
+                icon: "fas fa-database"
+            };
+        }
         
         if (docSnap.exists()) {
             activeData = docSnap.data();
@@ -1089,35 +1181,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 activeData.totalEps === 0
             ) {
                 document.getElementById('loader-text').textContent = "Fetching latest updates for this drama...";
-                
                 const freshData = await autoGenerateFromTMDB(activeData.tmdbId);
-                
                 if (freshData) {
                     activeData = { ...activeData, ...freshData, id: activeData.id, tmdbId: activeData.tmdbId };
-                    
-                    if (currentUser && currentUser.email === "zabaazcreations@gmail.com") {
-                        try {
-                            await setDoc(doc(db, "dramas", String(dramaId)), activeData, { merge: true });
-                        } catch (e) { console.warn("Failed to update incomplete drama in database.", e); }
-                    }
                 }
             }
-
         } else {
-            document.getElementById('loader-text').innerHTML = "Oh! A new content? Hold on, brewing some magic to fetch it for you... <i class='fas fa-coffee' style='color:var(--primary); margin: 0 5px;'></i>✨";
-            
+            document.getElementById('loader-text').innerHTML = "Fetching title metadata... <i class='fas fa-spinner fa-spin' style='color:var(--primary); margin-left: 6px;'></i>";
             activeData = await autoGenerateFromTMDB(dramaId);
-            
-            if (!activeData) {
-                document.getElementById('loader-text').textContent = "Drama not found in TMDB database.";
-                return;
-            }
-
-            if (currentUser && currentUser.email === "zabaazcreations@gmail.com") {
-                try {
-                    await setDoc(doc(db, "dramas", String(dramaId)), activeData);
-                } catch (saveError) { console.warn("Failed to save to database.", saveError); }
-            }
         }
 
         activeTmdbId = activeData.tmdbId || dramaId;
@@ -1159,7 +1230,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         document.getElementById('bread-title').textContent = activeData.title;
         document.getElementById('ui-title').textContent = activeData.title;
-        // Update "ABOUT THIS..." text dynamically
         const displayType = activeData.type ? activeData.type.toUpperCase() : "TITLE";
         document.getElementById('ui-about-heading').textContent = `ABOUT THIS ${displayType}`;
         document.getElementById('ui-poster').src = activeData.img;
@@ -1691,7 +1761,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch (error) { 
         console.error("Critical Load Error:", error);
-        document.getElementById('page-loader').innerHTML = "<p style='color:var(--danger);'>Error loading drama details.</p>";
+        renderLoaderError(error.title ? error : {
+            title: "Playback Initialization Failed",
+            message: error.message || "An unexpected error occurred while preparing this drama.",
+            code: error.code || "UNKNOWN_INITIALIZATION_ERROR",
+            icon: "fas fa-triangle-exclamation"
+        });
     }
 
     // --- FIREBASE COMMENT SYSTEM ---
