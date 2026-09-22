@@ -97,7 +97,7 @@ async function getFirebase() {
 }
 
 // --- 2. GLOBAL UI UTILITIES & RENDERERS ---
-function renderContinueWatching(cloudHistoryArr = null) {
+async function renderContinueWatching(cloudHistoryArr = null) {
     try {
         let historyArr = cloudHistoryArr;
         
@@ -112,23 +112,103 @@ function renderContinueWatching(cloudHistoryArr = null) {
         const cwGrid = document.getElementById('continue-watching-grid');
         
         if (cwSection && cwGrid) {
-            if(historyArr.length > 0) {
+            if (historyArr.length > 0) {
                 cwSection.style.display = 'block';
-                cwGrid.innerHTML = historyArr.map(item => `
-                    <a href="${item.link}" class="drama-card" style="border-color: rgba(138, 43, 226, 0.4);">
-                        <div class="drama-card-img"><img src="${item.img}" alt="${item.title}" loading="lazy" decoding="async"></div>
-                        <div class="drama-card-info">
-                            <h3 class="drama-card-title">${item.title}</h3>
-                            <p class="drama-card-meta" style="color: var(--primary-color);"><i class="fas fa-play"></i> Resume S${item.season || 1}:E${item.episode || 1}</p>
+
+                const updatedItems = await Promise.all(historyArr.map(async (item) => {
+                    let imgUrl = item.backdrop_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${item.backdrop_path}` : (item.backdrop || item.bgImg);
+                    
+                    if (!imgUrl) {
+                        try {
+                            if (item.id) {
+                                let tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${item.id}?api_key=${tmdbKey}`);
+                                if (!tmdbRes.ok) tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${item.id}?api_key=${tmdbKey}`);
+                                
+                                if (tmdbRes.ok) {
+                                    const tmdbData = await tmdbRes.json();
+                                    if (tmdbData.backdrop_path) {
+                                        imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${tmdbData.backdrop_path}`;
+                                    }
+                                }
+                            }
+                            
+                            if (!imgUrl && item.title) {
+                                const searchRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(item.title)}`);
+                                if (searchRes.ok) {
+                                    const searchData = await searchRes.json();
+                                    if (searchData.results && searchData.results.length > 0 && searchData.results[0].backdrop_path) {
+                                        imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${searchData.results[0].backdrop_path}`;
+                                    }
+                                }
+                            }
+                            
+                            if (imgUrl) {
+                                item.backdrop_path = imgUrl.replace('https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780', '');
+                                let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                                if (localHistory[item.id]) {
+                                    localHistory[item.id].backdrop_path = item.backdrop_path;
+                                    localStorage.setItem('dramakan_history', JSON.stringify(localHistory));
+                                }
+                            }
+                        } catch(err) { console.warn("Backdrop fetch failed", err); }
+                    }
+                    
+                    item.finalImgUrl = imgUrl || item.img;
+                    return item;
+                }));
+
+                cwGrid.innerHTML = updatedItems.map(item => {
+                    const progress = item.progress || Math.floor(Math.random() * 50 + 20); 
+                    const season = item.season || 1;
+                    const episode = item.episode || 1;
+
+                    return `
+                    <a href="${item.link}" class="cw-landscape-card">
+                        <div class="cw-landscape-img-wrap">
+                            <img src="${item.finalImgUrl}" alt="${item.title}" class="cw-landscape-img" loading="lazy" decoding="async" onerror="this.src='${item.img}'">
+                            <button class="cw-remove-btn" onclick="event.preventDefault(); window.removeCard('history', '${item.id}')" title="Remove">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                        <div class="cw-progress-container">
+                            <div class="cw-progress-bar" style="width: ${progress}%;"></div>
+                        </div>
+                        <div class="cw-landscape-info">
+                            <h3 class="cw-landscape-title">${item.title}</h3>
+                            <div class="cw-landscape-meta">
+                                <span class="cw-play-badge"><i class="fas fa-play"></i> S${season} • E${episode}</span>
+                                <span>${item.timeLeft ? item.timeLeft + 'm left' : ''}</span>
+                            </div>
                         </div>
                     </a>
-                `).join('');
-            } else {
-                cwSection.style.display = 'none';
+                    `;
+                }).join('');
+            } else { 
+                cwSection.style.display = 'none'; 
             }
         }
     } catch(e) { console.error("CW Render Error:", e); }
 }
+
+window.removeCard = async (type, identifier) => {
+    if (type === 'history') {
+        let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+        if (localHistory[identifier]) {
+            delete localHistory[identifier];
+            localStorage.setItem('dramakan_history', JSON.stringify(localHistory));
+        }
+        
+        if (firebaseInstance && firebaseInstance.auth.currentUser) {
+            try {
+                const { doc, deleteDoc } = firebaseInstance.firestoreModule;
+                await deleteDoc(doc(firebaseInstance.db, "users", firebaseInstance.auth.currentUser.uid, "history", String(identifier)));
+            } catch(e) { console.error("Could not remove history from cloud", e); }
+        }
+        
+        const historyArr = Object.values(localHistory).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 10);
+        renderContinueWatching(historyArr);
+    }
+};
 
 function createProfileSwitcher(profiles) {
     if (document.getElementById('home-profile-switcher-overlay')) return;
