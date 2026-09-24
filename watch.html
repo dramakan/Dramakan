@@ -2,35 +2,18 @@
 <html lang="en" id="html-root">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title id="seo-title">Watch Drama - DramaKan</title>
 
     <meta http-equiv="x-dns-prefetch-control" content="off">
-
     <meta id="seo-description" name="description" content="Watch your favorite Korean, Chinese, and Japanese dramas online in HD with English subtitles on DramaKan.">
-    <meta id="seo-keywords" name="keywords" content="watch drama online, kdrama, chinese drama, japanese drama, asian drama, english sub, hindi dub, dramakan, hd streaming, latest episodes">
+    <meta id="seo-keywords" name="keywords" content="watch drama online, kdrama, chinese drama, japanese drama, asian drama, english sub, hindi dub, dramakan, hd streaming">
     <meta id="seo-robots" name="robots" content="index, follow, max-image-preview:large">
-    <meta id="seo-author" name="author" content="DramaKan">
-    <meta id="seo-theme-color" name="theme-color" content="#8A2BE2">
-    <link id="seo-canonical" rel="canonical" href="">
-    <link id="seo-alternate" rel="alternate" hreflang="en" href="">
-
-    <meta id="og-type" property="og:type" content="video.tv_show">
-    <meta id="og-site-name" property="og:site_name" content="DramaKan">
-    <meta id="og-title" property="og:title" content="Watch Drama - DramaKan">
-    <meta id="og-description" property="og:description" content="Watch your favorite Korean, Chinese, and Japanese dramas online in HD with English subtitles on DramaKan.">
-    <meta id="og-image" property="og:image" content="">
-    <meta id="og-url" property="og:url" content="">
-    <meta id="og-locale" property="og:locale" content="en_US">
-
-    <meta id="tw-card" name="twitter:card" content="summary_large_image">
-    <meta id="tw-title" name="twitter:title" content="Watch Drama - DramaKan">
-    <meta id="tw-description" name="twitter:description" content="Watch your favorite Korean, Chinese, and Japanese dramas online in HD with English subtitles on DramaKan.">
-    <meta id="tw-image" name="twitter:image" content="">
+    <meta id="seo-theme-color" name="theme-color" content="#0B0C10">
 
     <script type="application/ld+json" id="seo-jsonld">{}</script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <link rel="stylesheet" href="style.css">
@@ -38,475 +21,353 @@
 
     <script src="bottom-bar.js" defer></script>
     <script src="feedback-popup.js" defer></script>
-    <script src="admin_easter_egg.js" defer></script>
     <script type="module" src="global-login-popup.js" defer></script>
- <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/manifest.json">
+    
     <style>
         :root {
-            --bg-base: #0B0C10; 
-            --bg-panel: #14151A;
-            --primary: #8A2BE2; 
-            --primary-rich: #6a1b9a;
-            --primary-glow: rgba(138, 43, 226, 0.4); 
-            --glass-bg: rgba(20, 20, 25, 0.6);
+            --bg-base: #050507; 
+            --bg-panel: #141414; 
+            --primary: #9D4EDD; 
+            --primary-rich: #7b2cbf;
+            --primary-glow: rgba(157, 78, 221, 0.4); 
+            --glass-bg: rgba(20, 20, 28, 0.45);
             --glass-border: rgba(255, 255, 255, 0.08); 
-            --glass-blur: blur(20px);
-            --text-main: #F8F8F8;
-            --text-muted: #a1a1aa;
-            --danger: #ff4757;
-            --star-gold: #f59e0b;
+            --glass-blur: blur(25px);
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --danger: #EF4444;
+            --star-gold: #FBBF24;
+            --success: #10B981;
+            
+            /* Bottom Nav Matching index.html */
+            --bottom-nav-bg: rgba(20, 20, 25, 0.45);
+            --bottom-nav-border: rgba(255, 255, 255, 0.08);
+            --bottom-nav-item: rgba(255, 255, 255, 0.5);
+            --bottom-nav-item-active: #fff;
         }
 
-        body { 
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body, html { 
             background-color: var(--bg-base); 
             color: var(--text-main); 
-            font-family: 'Poppins', sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            overflow-x: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            overflow-x: hidden; width: 100%;
             -webkit-font-smoothing: antialiased;
-            position: relative;
         }
+        
+        a { text-decoration: none; color: inherit; }
+        button { font-family: inherit; cursor: pointer; outline: none; border: none; background: transparent;}
 
-        /* --- AMBILIGHT BACKDROP CLASS --- */
+        /* --- SKELETONS --- */
+        .skeleton {
+            background: linear-gradient(100deg, rgba(255,255,255,0.03) 30%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 70%);
+            background-size: 250% 100%; animation: shimmer 1.5s infinite; color: transparent !important; pointer-events: none; border-color: transparent !important;
+        }
+        .skeleton * { visibility: hidden; }
+        .skeleton-text { display: block; height: 1em; border-radius: 6px; width: 100%; margin-bottom: 0.5em; }
+        .skeleton-text.short { width: 40%; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* --- AMBILIGHT BACKDROP --- */
         .ambilight-glow-backdrop {
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100vw;
-            height: 100vh;
-            z-index: -2;
-            opacity: 0.25;
-            filter: blur(80px) saturate(220%);
-            object-fit: cover;
-            pointer-events: none;
-            transition: src 0.8s ease-in-out, opacity 0.5s;
+            position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100vw; height: 100vh;
+            z-index: -2; opacity: 0.25; filter: blur(90px) saturate(180%); object-fit: cover; pointer-events: none;
+            transition: src 0.8s ease-in-out;
         }
 
         /* --- LAYOUT GRID --- */
-        .container { max-width: 1500px; margin: 0 auto; padding: 20px 4%; position: relative; z-index: 1; }
-        .breadcrumbs { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
-        .breadcrumbs span { color: var(--text-main); font-weight: 500; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px 4%; position: relative; z-index: 1; width: 100%; box-sizing: border-box;}
         
-        .watch-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 360px; 
-            gap: 30px; 
-            align-items: start;
-        }
+        .watch-grid { display: grid; grid-template-columns: 1fr 340px; gap: 30px; align-items: start; width: 100%; margin-top: 20px;}
+        .main-column { display: flex; flex-direction: column; gap: 20px; min-width: 0; width: 100%;}
+        .sidebar-column { display: flex; flex-direction: column; gap: 20px; min-width: 0; width: 100%; position: sticky; top: 80px;}
 
-        .main-column { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
-        .sidebar-column { display: flex; flex-direction: column; gap: 20px; }
-
-        /* --- HEADER & TITLE SECTION --- */
+        /* --- HEADER --- */
         .main-header {
-            background: rgba(11, 12, 16, 0.85); backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 15px 4%; position: sticky; top: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 1000;
+            display: flex; align-items: center; justify-content: space-between; padding: 15px 4%;
+            background: rgba(5, 5, 7, 0.85); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--glass-border); width: 100%; box-sizing: border-box;
         }
-        .logo { font-size: 1.8rem; font-weight: 700; color: #fff; text-decoration: none; }
-        .logo span { color: var(--primary); }
+        .logo { font-size: 1.6rem; font-weight: 800; letter-spacing: -1px; color:#fff; }
 
-        .title-header-wrapper { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;}
-        .title-left h1 { font-size: 2.5rem; font-weight: 700; margin: 0 0 10px 0; line-height: 1.2; }
-        .meta-tags { font-size: 0.9rem; color: var(--text-muted); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .meta-tags span::after { content: '•'; margin-left: 10px; color: rgba(255,255,255,0.2); }
-        .meta-tags span:last-child::after { content: ''; }
-        
-        .title-actions { display: flex; gap: 10px; }
-        .action-btn { 
-            background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--glass-border); 
-            padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; 
-            display: inline-flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.9rem;
+        .header-nav { display: flex; align-items: center; gap: 15px; }
+        .header-nav a { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); transition: 0.3s; }
+        .header-nav a:hover { color: #fff; }
+
+        /* --- GLASSMORPHISM PANELS --- */
+        .glass-panel {
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border); border-radius: 16px; padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 100%; box-sizing: border-box;
         }
-        .action-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(138, 43, 226, 0.4); }
-        .btn-primary { background: var(--primary); border-color: var(--primary); }
-        .btn-primary:hover { background: var(--primary-rich); box-shadow: 0 4px 15px var(--primary-glow); }
-        
-        .btn-favorite-active { background: rgba(255, 71, 87, 0.15); border-color: #ff4757; color: #ff4757; }
-        .btn-favorite-active:hover { background: rgba(255, 71, 87, 0.25); border-color: #ff4757; box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3); }
 
-        /* --- VIDEO PLAYER & CATCH-UP OVERLAY --- */
+        /* --- VIDEO PLAYER & PAYWALL --- */
         .video-player-container {
             position: relative; background: #000; border-radius: 16px; overflow: hidden;
             aspect-ratio: 16/9; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid var(--glass-border);
-            transition: all 0.3s ease;
         }
         .video-player-container iframe { width: 100%; height: 100%; border: none; position: absolute; top:0; left:0; z-index: 1;}
 
-        .catchup-overlay {
-            position: absolute; inset: 0; z-index: 500;
-            background: rgba(11, 12, 16, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            display: flex; align-items: center; justify-content: center;
-            opacity: 1; transition: opacity 0.5s ease;
-        }
-        .catchup-overlay.hidden { opacity: 0; pointer-events: none; }
-        .catchup-content {
-            background: rgba(20, 20, 25, 0.6); border: 1px solid rgba(138,43,226,0.3);
-            border-radius: 16px; padding: 30px; max-width: 80%; text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8); position: relative;
-            animation: popIn 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        .catchup-close { position: absolute; top: 15px; right: 20px; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: 0.3s; }
-        .catchup-close:hover { color: #fff; }
-        .catchup-content h5 { color: var(--primary); font-size: 1.2rem; margin: 0 0 10px 0; font-weight: 600;}
-        .catchup-content h6 { color: #fff; font-size: 0.95rem; margin: 0 0 15px 0; font-weight: 500;}
-        .catchup-content p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; margin: 0 0 25px 0; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
-
-        /* Server Notice Banner */
-        .server-notice {
-            background: rgba(138, 43, 226, 0.1); border-left: 4px solid var(--primary); color: #e2e8f0;
-            padding: 12px 15px; border-radius: 0 8px 8px 0; 
-            margin-top: 0; 
-            margin-bottom: 0;
-            font-size: 0.85rem;
-            display: flex; align-items: center; gap: 10px;
-        }
-        .server-notice i { color: var(--primary); font-size: 1.1rem; }
-
-        /* =====================================================
-           PREMIUM WATCH ACTION BAR
-        ===================================================== */
-        .watch-action-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(20, 20, 28, 0.55);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 12px 25px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .server-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 10px 18px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-        }
-        
-        .server-wrapper i { color: var(--primary); font-size: 1.1rem; }
-        
-        .server-dropdown {
-            background: transparent;
-            color: #fff;
-            border: none;
-            outline: none;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-        }
-        .server-dropdown option { background: var(--bg-panel); color: #fff; }
-        
-        .quick-actions { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
-        
-        .q-action {
-            display: flex; flex-direction: column; align-items: center; gap: 6px; 
-            color: var(--text-muted); background: none; border: none; cursor: pointer; transition: 0.3s; 
-        }
-        .q-action i {
-            font-size: 1.1rem; 
-            background: rgba(255,255,255,0.05); 
-            width: 42px; height: 42px; 
-            display: flex; justify-content: center; align-items: center;
-            border-radius: 50%; 
-            border: 1px solid var(--glass-border); 
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
-        }
-        .q-action span { font-size: 0.75rem; font-weight: 500; font-family: 'Poppins'; }
-        
-        .q-action:hover { color: #fff; }
-        .q-action:hover i { 
-            background: var(--primary); 
-            border-color: var(--primary); 
-            color: #fff; 
-            box-shadow: 0 4px 15px var(--primary-glow); 
-            transform: translateY(-3px); 
-        }
-        .q-action.disabled { opacity: 0.3 !important; pointer-events: none !important; }
-
-        /* =====================================================
-           WATCH PAGE CLEAN RESPONSIVE AD STYLES
-        ===================================================== */
-        .watch-ad-section {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: -5px 0; /* Pulls ad tight into the natural gap */
-            box-sizing: border-box;
-        }
-
-        .watch-ad-container {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            background: var(--bg-panel);
-            border: 1px solid var(--glass-border);
-            border-radius: 14px;
-            padding: 8px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            overflow: hidden;
-        }
-
-        .adcash-watch-wrapper {
-            width: 728px;
-            height: 90px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .adcash-watch-wrapper iframe {
-            border: none;
-            max-width: 100%;
-        }
-
-        /* Auto-Hide Logic via CSS */
-        .adcash-watch-wrapper:empty,
-        .adcash-watch-wrapper iframe[height="0"] {
-            display: none;
-        }
-        .watch-ad-container:has(.adcash-watch-wrapper:empty) {
-            display: none;
-        }
-
-        #light-off-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 990; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
-        #light-off-overlay.active { opacity: 1; pointer-events: auto; cursor: pointer; }
-        .video-player-container.light-on { z-index: 995; position: relative; box-shadow: 0 0 50px rgba(138, 43, 226, 0.2); }
-        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0;} 100% { transform: scale(1); opacity: 1;} }
-
-        /* Report Modal Styles */
-        .drama-modal-overlay { position: fixed; inset: 0; background: rgba(5,5,7,0.85); backdrop-filter: blur(5px); z-index: 9999; display: none; align-items: center; justify-content: center; }
-        .drama-modal-card { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; width: 90%; max-width: 450px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .drama-modal-close { position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
-        .drama-modal-close:hover { color: #fff; }
-        .drama-input { width: 100%; padding: 12px 15px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; outline: none; margin-bottom: 15px; font-family: inherit; }
-        .drama-input:focus { border-color: var(--primary); }
-        .drama-input option { background-color: var(--bg-panel); color: #fff; padding: 10px; }
-        .drama-submit-btn { width: 100%; padding: 12px; background: var(--primary); border: none; border-radius: 10px; color: #fff; font-weight: 600; cursor: pointer; transition: 0.3s; font-family: inherit; font-size: 0.95rem; }
-        .drama-submit-btn:hover { background: var(--primary-rich); }
-        .share-social-btn:hover { color: #fff; }
-        .share-social-btn:hover i { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
-
-      
-        /* --- ABOUT THIS DRAMA --- */
-        .about-drama { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; gap: 20px; }
-        .about-poster { width: 140px; border-radius: 12px; object-fit: cover; flex-shrink: 0; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .about-info { flex: 1; }
-        .about-info h3 { margin: 0 0 10px 0; font-size: 1rem; color: #fff; }
-        .about-info p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin: 0 0 15px 0; }
-        .meta-grid { display: grid; grid-template-columns: auto 1fr; gap: 15px; font-size: 0.85rem; row-gap: 8px; }
-        .meta-label { color: var(--text-muted); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-        .meta-val { color: #fff; font-weight: 500; }
-        .tag-pill { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 2px 8px; border-radius: 50px; font-size: 0.75rem; color: var(--text-muted); margin-right: 5px; display: inline-block; }
-
-        /* --- CONTROL PANELS --- */
-        .control-panel { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; }
-        .panel-title { color: var(--primary); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px; }
-
-       /* --- CAST SCROLLER SECTION --- */
-        .cast-scroller { 
-            display: flex; 
-            gap: 15px; 
-            overflow-x: auto; 
-            padding-bottom: 12px; 
-            scrollbar-width: thin; 
-            scrollbar-color: var(--primary) rgba(255,255,255,0.05);
-            max-width: calc((100px * 8) + (15px * 7)); 
-            width: 100%;
-        }
-        .cast-scroller::-webkit-scrollbar { height: 6px; }
-        .cast-scroller::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
-        .cast-scroller::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
-        .cast-card { flex: 0 0 100px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; }
-        .cast-img { width: 90px; height: 120px; border-radius: 12px; object-fit: cover; border: 1px solid var(--glass-border); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .cast-name { font-size: 0.8rem; color: #fff; font-weight: 500; line-height: 1.2; margin-top: 4px; }
-        .cast-char { font-size: 0.7rem; color: var(--text-muted); line-height: 1.2; }
-        
-        /* --- SIDEBAR: EPISODES (PC) --- */
-        .sidebar-widget { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; }
-        .sidebar-title { font-size: 1rem; font-weight: 600; color: #fff; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .episodes-timeline { display: flex; flex-direction: column; gap: 10px; max-height: 500px; overflow-y: auto; padding-right: 5px; }
-        .episodes-timeline::-webkit-scrollbar { width: 4px; }
-        .episodes-timeline::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
-        
-        .ep-timeline-item { display: flex; align-items: center; gap: 15px; cursor: pointer; padding: 10px; border-radius: 8px; transition: 0.3s; position: relative; }
-        .ep-timeline-item:hover { background: rgba(255,255,255,0.03); }
-        .ep-timeline-item.active { background: rgba(138,43,226,0.1); border: 1px solid rgba(138,43,226,0.3); }
-        
-        .ep-icon { width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); display: flex; justify-content: center; align-items: center; color: transparent; font-size: 0.8rem; transition: 0.3s; }
-        .ep-timeline-item.active .ep-icon { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 0 10px var(--primary-glow); }
-        .ep-info-text { flex: 1; }
-        .ep-info-text h4 { margin: 0; font-size: 0.9rem; color: #fff; font-weight: 500; }
-        .ep-info-text p { margin: 0; font-size: 0.75rem; color: var(--primary); }
-        .ep-duration { font-size: 0.8rem; color: var(--text-muted); }
-
-        /* --- RECOMMENDATIONS --- */
-        .rec-list { display: flex; flex-direction: column; gap: 15px; }
-        .rec-card { display: flex; gap: 15px; align-items: center; text-decoration: none; transition: 0.3s; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 12px; border: 1px solid transparent;}
-        .rec-card:hover { background: rgba(255,255,255,0.05); border-color: var(--glass-border); transform: translateX(5px); }
-        .rec-card img { width: 60px; height: 90px; object-fit: cover; border-radius: 8px; }
-        .rec-info h4 { margin: 0 0 5px 0; font-size: 0.9rem; color: #fff; font-weight: 500; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
-        .rec-info p { margin: 0; font-size: 0.8rem; color: var(--primary); font-weight: 600;}
-
-        /* --- MOBILE RESPONSIVE UPDATES --- */
-        .mobile-only { display: none; }
-        @media (max-width: 1024px) {
-            .watch-grid { display: flex; flex-direction: column; }
-            .main-column, .sidebar-column { display: contents; }
-            .video-player-container { order: 1; }
-            .server-notice { order: 2; margin-top: -10px; margin-bottom: 10px; }
-            .watch-action-bar { order: 4; flex-direction: column; gap: 15px; padding: 15px; width: 100%; box-sizing: border-box; }
-            .server-wrapper { width: 100%; justify-content: space-between; box-sizing: border-box; }
-            .quick-actions { width: 100%; justify-content: space-between; }
-            
-            .watch-ad-section { order: 5; margin: 10px 0; padding: 0; }
-            .watch-ad-container { width: 100%; max-width: 350px; height: 52px; padding: 0; border-radius: 10px; }
-            .adcash-watch-wrapper { transform: scale(0.44); transform-origin: center center; flex-shrink: 0; }
-            
-            .sidebar-widget.episodes-widget { order: 6; margin-top: 10px; width: 100%; box-sizing: border-box; }
-            .episodes-timeline { flex-direction: column; max-height: 300px; gap: 10px; padding-bottom: 0; }
-            .ep-timeline-item { flex-direction: row; min-width: 0; background: transparent; border: none; padding: 10px; justify-content: flex-start; text-align: left; }
-            .ep-timeline-item.active { background: rgba(138,43,226,0.1); border: 1px solid rgba(138,43,226,0.3); }
-            .ep-icon { display: flex; } .ep-duration { display: block; }
-            .ep-info-text h4 { font-size: 0.9rem; font-weight: 500; }
-            
-            .about-drama { order: 7; flex-direction: column; margin-top: 10px; width: 100%; box-sizing: border-box; }
-            .about-poster { width: 100%; height: auto; aspect-ratio: 16/9; object-position: center; }
-            
-            .cast-section { order: 8; width: 100%; box-sizing: border-box; }
-            .control-panel.comments-widget { order: 9; width: 100%; box-sizing: border-box; }
-            .sidebar-widget:not(.episodes-widget) { order: 10; margin-top: 10px; width: 100%; box-sizing: border-box; }
-            .title-actions { width: 100%; justify-content: space-between; }
-            .action-btn { flex: 1; justify-content: center; }
-        }
-
-       /* --- APPLE LIQUID GLASS BOTTOM BAR --- */
-        @media (max-width: 992px) {
-            .bottom-nav {
-                display: flex !important; position: fixed !important; bottom: 15px !important; left: 50% !important; transform: translateX(-50%) !important;
-                width: 90% !important; max-width: 400px !important; background: rgba(20, 20, 25, 0.45) !important; backdrop-filter: blur(40px) saturate(180%) !important;
-                -webkit-backdrop-filter: blur(40px) saturate(180%) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 50px !important;
-                z-index: 9999 !important; padding: 5px 10px !important; box-shadow: 0 25px 50px rgba(0,0,0,0.2) !important;
-            }
-            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 0; color: rgba(255, 255, 255, 0.5); text-decoration: none; transition: all 0.4s ease; }
-            .bottom-nav-item.active { color: #fff; }
-            .nav-icon { font-size: 1.35rem; margin-bottom: 4px; transition: transform 0.4s ease; }
-            .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-4px) scale(1.15); color: var(--primary); }
-            .nav-label { font-size: 0.65rem; font-weight: 500; }
-            body { padding-bottom: 100px; }
-        }
-        @media (min-width: 993px) { .bottom-nav { display: none !important; } }
-
-        /* --- VIDEO PAYWALL OVERLAY --- */
         .paywall-overlay {
             position: absolute; inset: 0; z-index: 1000;
-            background: rgba(11, 12, 16, 0.90); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            background: radial-gradient(circle at center, rgba(15, 10, 25, 0.95) 0%, rgba(5, 5, 7, 0.98) 100%);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             display: flex; align-items: center; justify-content: center;
-            opacity: 1; transition: opacity 0.5s ease;
+            opacity: 1; transition: opacity 0.4s ease; padding: 15px; box-sizing: border-box;
         }
-        .paywall-overlay.unlocked { opacity: 0; pointer-events: none; }
-        .paywall-content {
-            background: rgba(20, 20, 25, 0.75); border: 1px solid rgba(138,43,226,0.3);
-            border-radius: 16px; padding: 35px 25px; max-width: 90%; text-align: center;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+        
+        .paywall-card {
+            background: rgba(20, 20, 28, 0.6); border: 1px solid rgba(157, 78, 221, 0.35);
+            border-radius: 16px; padding: 30px; max-width: 420px; width: 100%; text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px var(--primary-glow);
+            animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-sizing: border-box;
         }
-        .paywall-content h4 { color: #fff; font-size: 1.25rem; margin: 0 0 10px 0; font-weight: 600; }
-        .paywall-content p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 25px; line-height: 1.5; }
         
-        .paywall-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-        .paywall-premium-btn { background: rgba(241, 196, 15, 0.1); border-color: rgba(241, 196, 15, 0.4); color: #fbbf24; }
-        .paywall-premium-btn:hover { background: rgba(241, 196, 15, 0.2); border-color: #fbbf24; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(241, 196, 15, 0.2); }
-        
-        #ad-countdown-container { display: none; margin-top: 20px; font-size: 0.9rem; color: #fff; }
-        .timer-circle { 
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary);
-            font-weight: 700; color: var(--primary); margin-bottom: 10px;
+        .paywall-badge-icon {
+            width: 54px; height: 54px; border-radius: 50%; background: rgba(138, 43, 226, 0.15); 
+            border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 15px auto; color: var(--primary); font-size: 1.4rem; box-shadow: 0 0 15px var(--primary-glow);
         }
 
-        /* --- MOBILE FIX FOR VIDEO PAYWALL (ULTRA COMPACT) --- */
+        .paywall-card h4 { color: #fff; font-size: 1.25rem; margin: 0 0 8px 0; font-weight: 700; }
+        .paywall-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin: 0 0 20px 0; }
+
+        .paywall-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        
+        .paywall-unlock-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-rich)); color: #fff; 
+            border: 1px solid rgba(255, 255, 255, 0.15); padding: 10px 20px; border-radius: 8px; 
+            font-weight: 600; font-size: 0.9rem; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .paywall-unlock-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(138, 43, 226, 0.5); }
+
+        .paywall-premium-btn {
+            background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.4); color: var(--star-gold); 
+            padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; transition: 0.3s; 
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .paywall-premium-btn:hover { background: rgba(251, 191, 36, 0.2); transform: translateY(-2px); }
+
+        #ad-countdown-container { display: none; margin-top: 15px; font-size: 0.85rem; color: #fff; }
+        .timer-circle { 
+            display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; 
+            border-radius: 50%; border: 2px solid var(--primary); font-weight: 700; color: var(--primary); 
+            margin-bottom: 8px; font-size: 1rem;
+        }
+
+        /* Mobile Paywall Fix */
         @media (max-width: 768px) {
-            .paywall-content {
-                padding: 10px;
-                border-radius: 8px;
-                width: 95%;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                gap: 8px;
+            .paywall-card { padding: 15px; border-radius: 12px; max-width: 95%; }
+            .paywall-badge-icon { display: none; }
+            .paywall-card h4 { font-size: 1rem; margin-bottom: 4px; }
+            .paywall-card p { display: none; } 
+            .paywall-buttons { flex-direction: row; gap: 8px; flex-wrap: nowrap; }
+            .paywall-unlock-btn, .paywall-premium-btn { padding: 8px 10px; font-size: 0.75rem; flex: 1; justify-content: center; white-space: nowrap; border-radius: 6px; }
+            .timer-circle { width: 32px; height: 32px; font-size: 0.85rem; margin-bottom: 4px; }
+            #ad-countdown-container p { font-size: 0.75rem; margin: 0; }
+        }
+
+        /* --- PRECISE PC HIGHLIGHTED BAR --- */
+        .details-top-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 15px; }
+        .details-title-meta { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+        
+        .watch-title { font-size: clamp(1.8rem, 3vw, 2.2rem); font-weight: 800; line-height: 1.1; margin: 0; color: #fff; letter-spacing: -0.5px;}
+        
+        .meta-tags { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-weight: 600; color: var(--text-muted); font-size: 0.85rem;}
+        .meta-tags span { display: flex; align-items: center; }
+        .meta-match { color: #46d369; font-weight: 700; }
+        .meta-chip { border: 1px solid rgba(255,255,255,0.3); padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; color: #fff;}
+
+        /* Unified Buttons Block */
+        .details-actions-row { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
+        .mobile-row-1, .mobile-row-2 { display: contents; } 
+        
+        .btn-action-primary {
+            background: #fff; color: #000; padding: 10px 22px; border-radius: 8px; 
+            font-size: 0.95rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; 
+            transition: 0.2s; border: none; white-space: nowrap;
+        }
+        .btn-action-primary:hover { background: rgba(255,255,255,0.8); }
+
+        .icon-btn-square {
+            width: 38px; height: 38px; border-radius: 8px; background: rgba(255, 255, 255, 0.08); 
+            border: 1px solid rgba(255,255,255,0.1); color: #fff; display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; transition: 0.3s; cursor: pointer; flex-shrink: 0;
+        }
+        .icon-btn-square:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
+        .icon-btn-square.disabled { opacity: 0.3; pointer-events: none; }
+
+        .synopsis-text { font-size: 0.95rem; color: #e2e8f0; line-height: 1.6; margin: 0 0 12px 0; max-width: 95%;}
+        .cast-inline { font-size: 0.85rem; color: var(--text-muted); margin: 0;}
+        .cast-inline span { color: #fff; font-weight: 500;}
+
+        /* --- ADS FIX --- */
+        .watch-ad-section { width: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; box-sizing: border-box; }
+        .watch-ad-container { display: inline-flex; justify-content: center; align-items: center; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 8px; overflow: hidden; max-width: 100%; }
+        .adcash-watch-wrapper { width: 728px; max-width: 728px; height: 90px; display: flex; justify-content: center; align-items: center; transform-origin: top center; }
+        .adcash-watch-wrapper iframe { border: none; max-width: 100%; }
+
+        /* --- CUSTOM SEASON SELECTOR --- */
+        .season-selector {
+            background: #14151A; color: #fff; border: 1px solid var(--glass-border);
+            padding: 12px 15px; border-radius: 8px; width: 100%; font-family: inherit; font-size: 0.95rem; font-weight: 600;
+            outline: none; cursor: pointer; appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238A2BE2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto; margin-bottom: 15px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .season-selector:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.3); }
+        .season-selector option { background: #14151A; color: #fff; padding: 10px;}
+
+        /* --- EPISODES TIMELINE --- */
+        .sidebar-title { font-size: 1.05rem; font-weight: 700; color: #fff; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px;}
+        .episodes-timeline { display: flex; flex-direction: column; gap: 8px; max-height: 450px; overflow-y: auto; padding-right: 5px; scrollbar-width: thin; scrollbar-color: var(--primary) transparent;}
+        .ep-timeline-item { display: flex; align-items: center; gap: 15px; cursor: pointer; padding: 12px; border-radius: 10px; transition: 0.2s; background: rgba(255,255,255,0.02); border: 1px solid transparent;}
+        .ep-timeline-item:hover { background: rgba(255,255,255,0.05); }
+        .ep-timeline-item.active { background: rgba(138, 43, 226, 0.15); border: 1px solid rgba(138, 43, 226, 0.3); }
+        .ep-icon { width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); display: flex; justify-content: center; align-items: center; color: transparent; font-size: 0.8rem; transition: 0.3s; flex-shrink: 0;}
+        .ep-timeline-item.active .ep-icon { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 0 10px var(--primary-glow); }
+        .ep-info-text { flex: 1; min-width: 0; }
+        .ep-info-text h4 { margin: 0 0 4px 0; font-size: 0.9rem; color: #fff; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .ep-duration { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* Recommendations */
+        .rec-list { display: flex; flex-direction: column; gap: 12px; }
+        .rec-wrapper { position: relative; display: block; }
+        .rec-card { display: flex; gap: 12px; align-items: center; text-decoration: none; transition: 0.3s; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 10px; border: 1px solid transparent;}
+        .rec-card:hover { background: rgba(255,255,255,0.05); border-color: var(--glass-border); transform: translateX(5px); }
+        .rec-card img { width: 60px; height: 85px; object-fit: cover; border-radius: 6px; }
+        .rec-info { flex: 1; min-width: 0; }
+        .rec-info h4 { margin: 0 0 4px 0; font-size: 0.9rem; color: #fff; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
+        .rec-info p { margin: 0; font-size: 0.8rem; color: var(--success); font-weight: 600;}
+        
+        .rec-add-btn {
+            position: absolute; top: 12px; right: 10px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.3);
+            color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; 
+            justify-content: center; font-size: 0.8rem; cursor: pointer; transition: 0.3s; z-index: 5;
+        }
+        .rec-add-btn:hover { background: #fff; color: #000; border-color: #fff; transform: scale(1.1); }
+
+        /* Comments Form */
+        .drama-input { width: 100%; padding: 12px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; outline: none; font-family: inherit; }
+        .drama-input:focus { border-color: var(--primary); }
+
+        /* Lazy Load */
+        .fade-in-section { opacity: 0; transform: translateY(15px); transition: opacity 0.5s ease-out, transform 0.5s ease-out; will-change: opacity, transform; }
+        .fade-in-section.is-visible { opacity: 1; transform: none; }
+
+        /* Toast */
+        .dk-toast {
+            position: fixed; top: 90px; right: 5%; background: var(--primary); color: #fff;
+            padding: 12px 20px; border-radius: 8px; font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 10px; z-index: 2000;
+            opacity: 0; transform: translateY(-20px); pointer-events: none; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .dk-toast.show { opacity: 1; transform: translateY(0); }
+
+        /* Modals */
+        .dk-modal-overlay, .drama-modal-overlay { 
+            position: fixed; inset: 0; background: rgba(5,5,7,0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            z-index: 9999; display: none; align-items: center; justify-content: center; 
+        }
+        .dk-modal-card { 
+            background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; 
+            padding: 30px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); 
+            text-align: center; 
+        }
+        .dk-modal-close { 
+            position: absolute; top: 15px; right: 20px; background: none; border: none; 
+            font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: 0.3s; 
+        }
+        .dk-modal-close:hover { color: #fff; }
+
+        .btn-dl-option { 
+            padding: 15px; border-radius: 10px; border: 1px solid var(--glass-border); 
+            display: flex; flex-direction: column; align-items: center; gap: 5px; 
+            cursor: pointer; transition: 0.3s; color: #fff; background: rgba(255,255,255,0.02); 
+            margin-bottom: 12px; width: 100%;
+        }
+        .btn-dl-option.premium { border-color: rgba(251, 191, 36, 0.4); }
+        .btn-dl-option.premium i { color: var(--star-gold); font-size: 1.5rem; margin-bottom: 5px;}
+        .btn-dl-option.premium:hover { background: rgba(251, 191, 36, 0.1); transform: translateY(-3px); }
+        
+        .btn-dl-option.free { border-color: var(--primary); }
+        .btn-dl-option.free i { color: var(--primary); font-size: 1.5rem; margin-bottom: 5px;}
+        .btn-dl-option.free:hover { background: rgba(138, 43, 226, 0.15); transform: translateY(-3px); }
+
+        /* =========================================
+           RESPONSIVE MOBILE OPTIMIZATIONS
+        ========================================= */
+        .mobile-only { display: none; }
+        
+        @media (max-width: 1024px) {
+            .watch-grid { grid-template-columns: 1fr; gap: 25px; }
+            .sidebar-column { position: static; }
+            .details-top-row { flex-direction: column; gap: 15px; }
+            .details-actions-row { width: 100%; }
+        }
+
+        @media (max-width: 768px) {
+            .main-header { padding: 12px 4%; }
+            .header-nav { display: none; }
+            .mobile-only { display: inline-flex; }
+            
+            .video-player-container { border-radius: 0; border: none; border-bottom: 1px solid var(--glass-border); margin: -20px -5% 0 -5%; width: 100vw; max-width: 100vw;}
+            
+            .watch-grid { display: flex; flex-direction: column; gap: 15px; width: 100%;}
+            .main-column, .sidebar-column { display: contents; }
+            
+            #video-wrapper { order: 1; }
+            #mobile-details { order: 2; padding: 15px; border-radius: 12px;}
+            #watch-ad-section { order: 3; margin: 10px 0; }
+            #mobile-episodes { order: 4; }
+            #mobile-comments { order: 5; } 
+            #mobile-recs { order: 6; }
+            #mobile-sidebar-ad { order: 7; }
+
+            .details-actions-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; width: 100%; }
+            .mobile-row-1 { display: flex; width: 100%; gap: 8px; }
+            .mobile-row-2 { display: flex; width: 100%; gap: 8px; }
+            .mobile-row-1 .icon-btn-square { flex: 1; }
+            .mobile-row-2 .icon-btn-square { flex: 1; }
+            #btn-download-popup { flex: 1 1 100%; margin: 4px 0; justify-content: center; }
+
+            .paywall-card { padding: 12px 15px; border-radius: 12px; max-width: 90%; background: rgba(15, 10, 20, 0.85); backdrop-filter: blur(10px); border-color: rgba(157, 78, 221, 0.5);}
+            .paywall-badge-icon { display: none; }
+            .paywall-card h4 { font-size: 0.95rem; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);}
+            .paywall-card p { display: none; } 
+            .paywall-buttons { flex-direction: row; gap: 6px; flex-wrap: nowrap; }
+            .paywall-unlock-btn, .paywall-premium-btn { padding: 8px 10px; font-size: 0.75rem; flex: 1; justify-content: center; white-space: nowrap; border-radius: 6px; }
+            .timer-circle { width: 30px; height: 30px; font-size: 0.8rem; margin-bottom: 0; border-width: 2px;}
+            #ad-countdown-container p { font-size: 0.75rem; margin: 4px 0 0 0; }
+
+            .adcash-watch-wrapper { transform: scale(calc(100vw / 800)); transform-origin: top center; height: 45px;}
+            .watch-ad-container { padding: 5px; height: auto; border-radius: 8px; width: 100%;}
+            .sidebar-ad-widget { display: flex; justify-content: center; overflow: hidden; width: 100%; box-sizing: border-box;}
+            
+            body { padding-bottom: 90px; }
+            .bottom-nav {
+                display: flex !important; position: fixed !important; bottom: 15px !important; left: 50% !important; transform: translateX(-50%) !important;
+                width: 90% !important; max-width: 400px !important; background: var(--bottom-nav-bg) !important; backdrop-filter: blur(40px) saturate(180%) !important; -webkit-backdrop-filter: blur(40px) saturate(180%) !important; border: 1px solid var(--bottom-nav-border) !important; border-radius: 50px !important; z-index: 9999 !important; padding: 5px 10px !important; box-shadow: 0 25px 50px rgba(0,0,0,0.2) !important;
             }
-            /* Hide the giant lock icon & paragraph entirely on mobile to save vertical space */
-            .paywall-content i.fa-lock, 
-            .paywall-content p {
-                display: none !important; 
-            }
-            .paywall-content h4 {
-                font-size: 0.95rem;
-                margin: 0;
-            }
-            .paywall-buttons {
-                display: flex;
-                flex-direction: row;
-                gap: 6px;
-                flex-wrap: nowrap; 
-            }
-            .paywall-buttons .action-btn {
-                padding: 8px 6px;
-                font-size: 0.7rem;
-                flex: 1;
-                justify-content: center;
-                white-space: nowrap;
-                border-radius: 6px;
-            }
-            .paywall-buttons .action-btn i {
-                font-size: 0.75rem;
-            }
-            #ad-countdown-container {
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-            }
-            .timer-circle {
-                width: 24px;
-                height: 24px;
-                font-size: 0.75rem;
-                margin-bottom: 0;
-                border-width: 2px;
-            }
+            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 0; color: var(--bottom-nav-item); text-decoration: none; transition: all 0.4s ease; }
+            .bottom-nav-item.active { color: var(--bottom-nav-item-active); }
+            .bottom-nav-item .nav-icon { font-size: 1.35rem; margin-bottom: 4px; transition: transform 0.4s ease; }
+            .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-4px) scale(1.15); color: var(--primary); }
+            .bottom-nav-item .nav-label { font-size: 0.65rem; font-weight: 500; }
         }
     </style>
     <style>
-        /* Watch Page Premium Ad Killer */
         html.premium-ad-free-mode .watch-ad-section,
-        html.premium-ad-free-mode .watch-ad-container,
         html.premium-ad-free-mode .sidebar-ad-widget,
         body.premium-ad-free-mode .watch-ad-section,
-        body.premium-ad-free-mode .watch-ad-container,
         body.premium-ad-free-mode .sidebar-ad-widget,
         body.premium-ad-free-mode iframe[src*='mammothsubway'],
         body.premium-ad-free-mode iframe[src*='highrevenueformat'] {
-            display: none !important;
-            visibility: hidden !important;
-            height: 0 !important;
-            width: 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            border: none !important;
-            pointer-events: none !important;
+            display: none !important; pointer-events: none !important;
         }
     </style>
     <script>
@@ -522,294 +383,241 @@
 
     <img id="ambilight-bg" class="ambilight-glow-backdrop" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
 
-    <div id="light-off-overlay"></div>
-
-    <div id="page-loader" style="position: fixed; inset: 0; background: var(--bg-base); z-index: 10000; display: flex; justify-content: center; align-items: center; flex-direction: column; color: #fff;">
-        <div style="width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.05); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;"></div>
-        <p style="font-weight: 500; letter-spacing: 0.5px; text-align: center; max-width: 80%; line-height: 1.5;" id="loader-text">Loading Drama...</p>
-    </div>
-    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
-
     <header class="main-header">
         <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="index.html" class="mobile-only" style="color: #fff; font-size: 1.2rem;"><i class="fas fa-bars"></i></a>
             <a href="index.html" class="logo">Drama<span>Kan</span></a>
         </div>
+        <nav class="header-nav">
+            <a href="index.html">Home</a>
+            <a href="community.html">Updates</a>
+            <a href="mylist.html">My List</a>
+            <a href="profile.html">Profile</a>
+        </nav>
         <div class="mobile-only">
             <a href="mylist.html" style="color: #fff; font-size: 1.2rem;"><i class="far fa-bookmark"></i></a>
         </div>
     </header>
 
-    <main class="container" style="display: none;" id="main-content">
-        <div class="breadcrumbs">
-            Home > Drama > <span id="bread-title">Loading...</span> > <span id="bread-ep">Episode 1</span>
-        </div>
+    <div id="shareToast" class="dk-toast">
+        <i class="fas fa-check-circle"></i>
+        <span>Link copied!</span>
+    </div>
 
-        <div class="title-header-wrapper" style="margin-bottom: 20px;">
-            <div class="title-left">
-                <h1 id="ui-title">Loading...</h1>
-                <div class="meta-tags">
-                    <span id="ui-year"></span>
-                    <span id="ui-country"></span>
-                    <span id="ui-genre"></span>
-                    <span id="ui-total-eps-top"></span>
-                </div>
-            </div>
-            <div class="title-actions">
-                <button class="action-btn" id="add-to-list-btn"><i class="fas fa-plus"></i> <span>My List</span></button>
-                <button class="action-btn" id="favorite-btn"><i class="far fa-heart"></i> <span>Favorite</span></button>
-            </div>
-        </div>
+    <main class="container" id="main-content">
 
         <div class="watch-grid">
             
+            <!-- MAIN PLAYER AND DETAILS COLUMN -->
             <div class="main-column">
+                
                 <div class="video-player-container" id="video-wrapper">
-                    <iframe id="video-player-iframe" src="" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" referrerpolicy="no-referrer" frameborder="0" scrolling="no" sandbox="allow-scripts allow-forms allow-presentation allow-same-origin"></iframe>
+                    <iframe id="video-player-iframe" src="" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="true" frameborder="0" scrolling="no"></iframe>
                     
-                    <!-- NEW: PAYWALL OVERLAY -->
-                    <div id="video-paywall" class="paywall-overlay">
-                        <div class="paywall-content">
-                            <i class="fas fa-lock" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px;"></i>
+                    <!-- VIP Verification Spinner -->
+                    <div id="video-loading-spinner" style="position: absolute; inset: 0; z-index: 1005; background: var(--glass-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);">
+                        <i class="fas fa-circle-notch fa-spin fa-3x" style="color: #8A2BE2; margin-bottom: 15px; filter: drop-shadow(0 0 12px rgba(138, 43, 226, 0.5));"></i>
+                        <p style="color: #fff; font-size: 0.95rem; font-weight: 600;">Verifying Access...</p>
+                    </div>
+
+                    <!-- Paywall starts hidden -->
+                    <div id="video-paywall" class="paywall-overlay" style="display: none;">
+                        <div class="paywall-card">
+                            <div class="paywall-badge-icon"><i class="fas fa-lock"></i></div>
                             <h4 id="paywall-title">Unlock to Watch Free</h4>
-                            <p>Support DramaKan by watching a quick sponsor message, or upgrade to Premium for an ad-free experience.</p>
+                            <p>Support DramaKan by watching a quick sponsor message, or unlock high-speed VIP streaming.</p>
 
                             <div class="paywall-buttons" id="paywall-action-btns">
-                                <button id="btn-watch-sponsor" class="action-btn btn-primary">
+                                <button id="btn-watch-sponsor" class="paywall-unlock-btn">
                                     <i class="fas fa-play"></i> <span>Watch Ad to Unlock</span>
                                 </button>
-                                <a href="subscription.html" class="action-btn paywall-premium-btn">
-                                    <i class="fas fa-crown"></i> <span>Premium Starting (₹29)</span>
+                                <a href="subscription.html" class="paywall-premium-btn">
+                                    <i class="fas fa-crown"></i> <span>VIP Ad-Free (₹29)</span>
                                 </a>
                             </div>
 
                             <div id="ad-countdown-container">
                                 <div class="timer-circle" id="ad-timer">10</div>
-                                <p>Unlocking video...</p>
+                                <p>Unlocking stream...</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                
 
-                <div class="server-notice" style="margin-top: 0; margin-bottom: 0;">
-                    <i class="fas fa-info-circle"></i> <span>If the video is not playing or buffering, try switching servers.</span>
+                <!-- PRECISE GLASSMORPHISM DETAILS SECTION -->
+                <div class="glass-panel" id="mobile-details">
+                    <div class="details-top-row">
+                        <div class="details-title-meta">
+                            <h1 class="watch-title skeleton skeleton-text" id="ui-title">Loading Details...</h1>
+                            <div class="meta-tags skeleton" id="meta-container">
+                                <span class="meta-match" id="ui-tmdb-score">-- Match</span>
+                                <span id="ui-year">----</span>
+                                <span class="meta-chip border" id="ui-rating">TV-MA</span>
+                                <span id="ui-eps">-- Episodes</span>
+                                <span class="meta-chip border">HD</span>
+                                <span class="meta-chip border" style="border: 1px solid rgba(255,255,255,0.4);">Stream Online Free</span>
+                            </div>
+                        </div>
+
+                        <div class="details-actions-row skeleton">
+                            <div class="mobile-row-1">
+                                <button class="icon-btn-square disabled" id="btn-prev-ep" title="Previous Episode">
+                                    <i class="fas fa-step-backward"></i>
+                                </button>
+                                <button class="icon-btn-square" id="btn-next-ep" title="Next Episode">
+                                    <i class="fas fa-step-forward"></i>
+                                </button>
+                            </div>
+                            <button class="btn-action-primary" id="btn-download-popup">
+                                <i class="fas fa-download"></i> Download Free
+                            </button>
+                            <div class="mobile-row-2">
+                                <button class="icon-btn-square" id="add-to-list-btn" title="My List"><i class="fas fa-plus"></i></button>
+                                <button class="icon-btn-square" id="btn-share" title="Share"><i class="fas fa-share-alt"></i></button>
+                                <button class="icon-btn-square" id="btn-report" title="Report Issue"><i class="fas fa-exclamation-triangle"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="synopsis-text skeleton skeleton-text" id="ui-synopsis"></p>
+                    <p class="cast-inline skeleton skeleton-text short" id="hero-cast-inline">
+                        <span>Cast:</span> <span id="ui-cast-inline-names">Loading...</span>
+                    </p>
                 </div>
 
-                <!-- NEW UNIFIED ACTION BAR -->
-                <div class="watch-action-bar">
-                    <div class="server-wrapper">
-                        <i class="fas fa-server"></i>
-                        <select id="server-selector-dropdown" class="server-dropdown">
-                            <option value="nxsha" selected>Server 1 - Multi Lang</option>
-                            <option value="2embed">Server 2 - 2embed Fast</option>
-                            <option value="vsrc">Server 3 - Vidsrc Backup</option>
-                            <option value="hindi" hidden>Server 4 - Hindi Dubbed</option>
-                        </select>
-                    </div>
-                    
-                    <div class="quick-actions">
-                        <button class="q-action disabled" id="btn-prev-ep" title="Previous"><i class="fas fa-step-backward"></i><span>Prev</span></button>
-                        <button class="q-action" id="btn-next-ep" title="Next"><i class="fas fa-step-forward"></i><span>Next</span></button>
-                        <button class="q-action" id="btn-download" title="Download"><i class="fas fa-download"></i><span>Download</span></button>
-                        <button class="q-action" id="btn-share" title="Share"><i class="fas fa-share-alt"></i><span>Share</span></button>
-                        <button class="q-action" id="btn-report" title="Report"><i class="fas fa-exclamation-triangle"></i><span>Report</span></button>
-                    </div>
-                </div>
-                
-                <!-- CLEAN RESPONSIVE AD BANNER (Matched with index.html) -->
-<div class="watch-ad-section" id="watch-ad-section">
-    <div class="watch-ad-container">
-        <div class="adcash-watch-wrapper" id="adcash-watch-frame">
-            <script type="text/javascript">
-                atOptions = {
-                    'key' : '4fdd6864aba39e4c8a5b742055171953',
-                    'format' : 'iframe',
-                    'height' : 90,
-                    'width' : 728,
-                    'params' : {}
-                };
-            </script>
-            <script type="text/javascript" src="https://www.highrevenueformat.com/4fdd6864aba39e4c8a5b742055171953/invoke.js"></script>
-        </div>
-    </div>
-</div>
-                
-                <div class="about-drama">
-                    <picture style="display: contents;">
-                        <source media="(max-width: 1024px)" id="ui-poster-mobile" srcset="">
-                        <img id="ui-poster" src="" alt="Poster" class="about-poster">
-                    </picture>
-                    <div class="about-info">
-                        <h3 id="ui-about-heading">ABOUT THIS TITLE</h3>
-                        <p id="synopsis-text">Loading synopsis...</p>
-                        <div class="meta-grid">
-                            <div class="meta-label"><i class="far fa-user"></i> Director</div>
-                            <div class="meta-val" id="ui-director">Unknown</div>
-                            
-                            <div class="meta-label"><i class="fas fa-users"></i> Cast</div>
-                            <div class="meta-val" id="ui-cast" style="max-height: 80px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--primary) transparent; line-height: 1.5;">Unknown</div>
-
-                            <div class="meta-label"><i class="fas fa-tags"></i> Genres</div>
-                            <div class="meta-val" id="ui-genre-tags"></div>
-
-                            <div class="meta-label"><i class="far fa-calendar"></i> Status</div>
-                            <div class="meta-val" id="ui-status">Ongoing</div>
+                <div class="watch-ad-section fade-in-section" id="watch-ad-section">
+                    <div class="watch-ad-container">
+                        <div class="adcash-watch-wrapper" id="adcash-watch-frame">
+                            <script type="text/javascript">
+                                atOptions = { 'key' : '4fdd6864aba39e4c8a5b742055171953', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
+                            </script>
+                            <script type="text/javascript" src="https://www.highrevenueformat.com/4fdd6864aba39e4c8a5b742055171953/invoke.js"></script>
                         </div>
                     </div>
                 </div>
 
-                <div class="cast-section control-panel">
-                    <h4 class="panel-title"><i class="fas fa-users" style="color: var(--primary);"></i> Top Cast</h4>
-                    <div class="cast-scroller" id="ui-cast-scroller">
-                        <p style="color:var(--text-muted); font-size:0.85rem;">Loading cast...</p>
-                    </div>
-                </div>
-
-                <div class="control-panel comments-widget">
-                    <h4 class="panel-title" style="color: #fff;"><i class="fas fa-comments" style="color: var(--primary);"></i> Comments</h4>
-                    <form id="comment-form" style="display: flex; gap: 15px; margin-bottom: 20px;">
-                        <img id="current-user-avatar" src="" style="width: 40px; height: 40px; border-radius: 50%;">
+                <!-- Comments Section -->
+                <div class="glass-panel fade-in-section" id="mobile-comments" style="margin-top: 5px;">
+                    <h4 class="sidebar-title" style="margin-bottom: 20px;"><i class="fas fa-comments" style="color: var(--primary);"></i> Community Reviews</h4>
+                    <form id="comment-form" style="display: flex; gap: 15px; margin-bottom: 25px;">
+                        <img id="current-user-avatar" src="" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover;">
                         <div style="flex: 1;">
-                            <textarea id="comment-text-input" placeholder="Add a comment..." style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 12px; color: #fff; outline: none;"></textarea>
+                            <textarea id="comment-text-input" class="drama-input" placeholder="What are your thoughts?" style="resize:vertical; min-height:60px;"></textarea>
                             <div style="text-align: right; margin-top: 10px;">
-                                <button type="submit" id="submit-comment-btn" class="action-btn btn-primary" style="padding: 8px 20px;"><i class="fas fa-paper-plane"></i></button>
+                                <button type="submit" id="submit-comment-btn" class="btn-action-primary"><i class="fas fa-paper-plane"></i> Post</button>
                             </div>
                         </div>
                     </form>
                     <div id="comments-list" style="display: flex; flex-direction: column; gap: 15px;"></div>
                 </div>
+
             </div>
 
+            <!-- SIDEBAR COLUMN -->
             <div class="sidebar-column">
-                <div class="sidebar-widget episodes-widget">
-                    <h3 class="sidebar-title">Episodes</h3>
-                    <select id="season-selector" style="display: none; width: 100%; background: #14151a; color: #fff; padding: 10px; border: 1px solid var(--glass-border); border-radius: 8px; margin-bottom: 15px; outline: none;"></select>
-                    
-                    <div class="episodes-timeline" id="episodes-list-container"></div>
+                
+                <div class="glass-panel fade-in-section" id="mobile-episodes" style="padding: 20px 15px;">
+                    <h3 class="sidebar-title"><i class="fas fa-list-ul" style="color:var(--primary);"></i> Episodes</h3>
+                    <select id="season-selector" class="season-selector" style="display: none;"></select>
+                    <div class="episodes-timeline" id="episodes-list-container">
+                        <div class="skeleton-text"></div>
+                        <div class="skeleton-text"></div>
+                    </div>
                 </div>
                 
-                <div class="sidebar-widget">
-                    <h3 class="sidebar-title">You Might Like</h3>
-                    <div class="rec-list" id="ui-recs">
-                        <p style="color:var(--text-muted); font-size:0.85rem;">Fetching recommendations...</p>
+                <div class="glass-panel fade-in-section" id="mobile-recs" style="padding: 20px 15px;">
+                    <h3 class="sidebar-title"><i class="fas fa-magic" style="color:var(--primary);"></i> More Like This</h3>
+                    <div class="rec-list skeleton" id="ui-recs">
+                        <div class="skeleton-text"></div>
+                        <div class="skeleton-text short"></div>
                     </div>
                 </div>
 
-                <!-- SIDEBAR ADSTERRA 300x250 BANNER -->
-<div class="sidebar-widget sidebar-ad-widget" style="padding: 15px 0; min-height: 250px; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden;">
-    <span style="position: absolute; top: 8px; left: 12px; font-size: 0.6rem; color: rgba(255,255,255,0.4); font-weight: 600; letter-spacing: 1px; z-index: 10;">AD</span>
-    
-    <div style="width: 300px; height: 250px; display: flex; justify-content: center; align-items: center; z-index: 1;">
-        <script type="text/javascript">
-            atOptions = {
-                'key' : 'addf362578ed40f89958d30d95c6f346',
-                'format' : 'iframe',
-                'height' : 250,
-                'width' : 300,
-                'params' : {}
-            };
-        </script>
-        <script type="text/javascript" src="https://mammothsubway.com/addf362578ed40f89958d30d95c6f346/invoke.js"></script>
-    </div>
-</div>
-
+                <div class="glass-panel sidebar-ad-widget fade-in-section" id="mobile-sidebar-ad" style="padding: 15px 0; min-height: 250px; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden;">
+                    <span style="position: absolute; top: 8px; left: 12px; font-size: 0.6rem; color: rgba(255,255,255,0.3); font-weight: 600; letter-spacing: 1px; z-index: 10;">AD</span>
+                    <div style="width: 300px; height: 250px; display: flex; justify-content: center; align-items: center; z-index: 1;">
+                        <script type="text/javascript">
+                            atOptions = { 'key' : 'addf362578ed40f89958d30d95c6f346', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };
+                        </script>
+                        <script type="text/javascript" src="https://mammothsubway.com/addf362578ed40f89958d30d95c6f346/invoke.js"></script>
+                    </div>
+                </div>
             </div>
             
         </div>
-        
     </main>
 
-    <div id="reportModal" class="drama-modal-overlay">
-        <div class="drama-modal-card">
-            <button class="drama-modal-close" id="closeReportModal">&times;</button>
+    <!-- UNIFIED DOWNLOAD MODAL -->
+    <div id="downloadModal" class="dk-modal-overlay" style="display: none;">
+        <div class="dk-modal-card">
+            <button class="dk-modal-close" id="closeDownloadModal">&times;</button>
+            <h3 style="color:#fff; margin-bottom:5px; font-size:1.3rem; font-weight:700;">Download Content</h3>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">Select your download speed and option.</p>
+            <div class="download-options">
+                <button id="btn-dl-premium" class="btn-dl-option premium">
+                    <i class="fas fa-crown"></i>
+                    <span>Get Premium (Starting ₹29)</span>
+                    <small>Direct high-speed & ad-free download</small>
+                </button>
+                <button id="btn-dl-ad" class="btn-dl-option free">
+                    <i class="fas fa-play-circle"></i>
+                    <span>Unlock Free</span>
+                    <small>Watch one ad to initiate download</small>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REPORT MODAL -->
+    <div id="reportModal" class="drama-modal-overlay" style="display: none;">
+        <div class="dk-modal-card" style="text-align: left;">
+            <button class="dk-modal-close" id="closeReportModal">&times;</button>
             <div style="margin-bottom: 20px;">
-                <h4 style="font-size: 1.2rem; color: #fff; margin-bottom: 5px;">Report Broken Link</h4>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Is the video not playing or subtitle missing? Let us know.</p>
+                <h4 style="font-size: 1.2rem; color: #fff; margin-bottom: 5px; font-weight:700;">Report Issue</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Let us know if there's a playback problem.</p>
             </div>
             <form id="reportForm">
-                <select id="reportIssue" class="drama-input" required>
+                <select id="reportIssue" class="drama-input" required style="margin-bottom:15px; appearance:none; background-image:url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat:no-repeat; background-position:right 15px top 50%; background-size:12px auto;">
                     <option value="" disabled selected>Select an issue...</option>
                     <option value="Video not playing">Video not playing</option>
                     <option value="Wrong episode/drama">Wrong episode/drama</option>
                     <option value="Subtitles missing or out of sync">Subtitles missing or out of sync</option>
                     <option value="Audio missing">Audio missing</option>
-                    <option value="Other">Other</option>
                 </select>
-                <textarea id="reportDetails" class="drama-input" rows="3" placeholder="Additional details (optional)..." style="resize: none;"></textarea>
-                <button type="submit" class="drama-submit-btn" id="reportSubmitBtn">Send Report</button>
+                <textarea id="reportDetails" class="drama-input" rows="3" placeholder="Additional details..." style="resize: none; margin-bottom:15px;"></textarea>
+                <button type="submit" id="reportSubmitBtn" class="btn-action-primary" style="width:100%; justify-content:center;">Send Report</button>
             </form>
             <div id="reportStatusMessage" style="margin-top: 15px; font-size: 0.85rem; display: none;"></div>
         </div>
     </div>
 
-    <div id="shareCardOverlay" class="drama-modal-overlay">
-        <div class="drama-modal-card" style="max-width: 420px;">
-            <button class="drama-modal-close" id="closeShareCard">&times;</button>
+    <!-- SHARE MODAL -->
+    <div id="shareCardOverlay" class="dk-modal-overlay" style="display: none;">
+        <div class="dk-modal-card" style="text-align:left;">
+            <button class="dk-modal-close" id="closeShareCard">&times;</button>
             <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-                <img id="share-card-poster" src="" alt="Poster" style="width: 80px; height: 115px; object-fit: cover; border-radius: 10px; flex-shrink: 0; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
+                <img id="share-card-poster" src="" alt="Poster" style="width: 80px; height: 115px; object-fit: cover; border-radius: 8px; flex-shrink: 0; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
                 <div style="flex: 1; min-width: 0;">
-                    <h4 id="share-card-title" style="font-size: 1.05rem; color: #fff; margin: 0 0 6px 0; line-height: 1.3;">Drama Title</h4>
-                    <p style="margin: 0 0 8px 0; font-size: 0.8rem; color: var(--primary); font-weight: 500;" id="share-card-ep">Episode 1</p>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
-                        <span class="tag-pill" id="share-card-genre" style="margin-right: 0;"></span>
-                        <span class="tag-pill" id="share-card-year" style="margin-right: 0;"></span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 0.75rem; font-weight: 600;">
-                        <span class="logo" style="font-size: 0.85rem;">Drama<span>Kan</span></span>
+                    <h4 id="share-card-title" style="font-size: 1.05rem; color: #fff; margin: 0 0 6px 0; line-height: 1.3; font-weight:700;">Drama Title</h4>
+                    <p style="margin: 0 0 8px 0; font-size: 0.85rem; color: var(--primary); font-weight: 600;" id="share-card-ep">Episode 1</p>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <span class="meta-chip border" id="share-card-year"></span>
                     </div>
                 </div>
             </div>
-            <p id="share-card-desc" style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; margin: 0 0 18px 0; max-height: 60px; overflow: hidden;"></p>
-
-            <div style="display: flex; gap: 8px; margin-bottom: 18px;">
+            <div style="display: flex; gap: 8px;">
                 <input type="text" id="share-card-url" class="drama-input" readonly style="margin-bottom: 0; flex: 1; font-size: 0.8rem;">
-                <button class="action-btn btn-primary" id="share-copy-link" style="white-space: nowrap;"><i class="fas fa-link"></i> <span>Copy</span></button>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; text-align: center;">
-                <button class="share-social-btn" data-network="whatsapp" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
-                    <i class="fab fa-whatsapp" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.75rem;">WhatsApp</span>
-                </button>
-                <button class="share-social-btn" data-network="instagram" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
-                    <i class="fab fa-instagram" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.75rem;">Instagram</span>
-                </button>
-                <button class="share-social-btn" data-network="facebook" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
-                    <i class="fab fa-facebook" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.75rem;">Facebook</span>
-                </button>
-                <button class="share-social-btn" data-network="telegram" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
-                    <i class="fab fa-telegram" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.75rem;">Telegram</span>
-                </button>
-                <button class="share-social-btn" data-network="twitter" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
-                    <i class="fab fa-x-twitter" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.75rem;">X</span>
-                </button>
-                <button class="share-social-btn" data-network="reddit" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
-                    <i class="fab fa-reddit" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.75rem;">Reddit</span>
-                </button>
-                <button class="share-social-btn" data-network="discord" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
-                    <i class="fab fa-discord" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.75rem;">Discord</span>
-                </button>
-                <button class="share-social-btn" data-network="email" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s;">
-                    <i class="fas fa-envelope" style="font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center;"></i>
-                    <span style="font-size: 0.75rem;">Email</span>
-                </button>
+                <button class="btn-action-primary" id="share-copy-link" style="white-space: nowrap;"><i class="fas fa-link"></i> <span>Copy</span></button>
             </div>
         </div>
     </div>
 
-   <nav class="bottom-nav">
+    <!-- Exact Index.html Bottom Bar -->
+    <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item">
             <i class="fa-solid fa-house nav-icon"></i>
             <span class="nav-label">Home</span>
         </a>
-        <a href="updates.html" class="bottom-nav-item">
+       <a href="community.html" class="bottom-nav-item">
             <i class="fa-solid fa-bell nav-icon"></i>
             <span class="nav-label">Updates</span>
         </a>
@@ -817,1229 +625,720 @@
             <i class="fa-solid fa-bookmark nav-icon"></i>
             <span class="nav-label">My List</span>
         </a>
-        <a href="profile.html" class="bottom-nav-item" id="bottomAuthBtn">
+        <a href="login.html" class="bottom-nav-item" id="bottomAuthBtn">
             <i class="fa-solid fa-user nav-icon"></i>
-            <span class="nav-label">Profile</span>
+            <span class="nav-label" style="opacity: 0;">Profile</span>
         </a>
     </nav>
 
-   <script type="module">
-    import { getSubscriptionStatus, applySubscriptionPrivileges } from "./subscription.js";
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, serverTimestamp, query, orderBy, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    <script type="module">
+        import { getSubscriptionStatus, applySubscriptionPrivileges } from "./subscription.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-// --- FIREBASE CONFIGURATION ---
-const firebaseConfig = {
-    apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
-    authDomain: "dramakan007.firebaseapp.com",
-    projectId: "dramakan007"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app); 
-
-let currentServer = 'nxsha'; 
-let currentUser = null;
-let seasonsArr = [1]; 
-let activeImdbId = null; 
-let activeTmdbId = null;
-let activeData = null; 
-let initialPageLoad = true;
-
-// Cloud First Synchronized Arrays
-let profileMyList = [];
-let profileFavorites = [];
-let activeProfileIndex = 0;
-
-// UI Updaters (hoisted for scope)
-let updateWatchlistUI = () => {};
-let updateFavoriteUI = () => {};
-
-const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
-const tmdbKey = "hidden_by_proxy";
-
-// --- DIAGNOSTIC ERROR RENDERER FOR LOADER ---
-function renderLoaderError(err) {
-    const loader = document.getElementById('page-loader');
-    if (!loader) return;
-    loader.innerHTML = `
-        <div style="background: rgba(20, 20, 25, 0.9); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 24px; padding: 40px 30px; max-width: 480px; width: 90%; text-align: center; backdrop-filter: blur(30px); box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
-            <div style="width: 68px; height: 68px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 2px solid rgba(239, 68, 68, 0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: #ef4444; font-size: 1.8rem;">
-                <i class="${err.icon || 'fas fa-triangle-exclamation'}"></i>
-            </div>
-            <h2 style="font-size: 1.4rem; font-weight: 700; color: #fff; margin: 0 0 10px 0;">${err.title}</h2>
-            <p style="color: #a1a1aa; font-size: 0.9rem; line-height: 1.6; margin: 0 0 20px 0;">${err.message}</p>
-            <div style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 8px 12px; font-family: monospace; font-size: 0.78rem; color: #f87171; margin-bottom: 25px; word-break: break-all;">
-                ${err.code}
-            </div>
-            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-                <button onclick="window.location.reload()" style="background: var(--primary); color: #fff; border: none; padding: 12px 24px; border-radius: 50px; font-weight: 600; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 8px;">
-                    <i class="fas fa-rotate-right"></i> Retry
-                </button>
-                <a href="index.html" style="background: rgba(255,255,255,0.06); color: #fff; border: 1px solid var(--glass-border); padding: 12px 24px; border-radius: 50px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
-                    <i class="fas fa-home"></i> Home
-                </a>
-            </div>
-        </div>
-    `;
-}
-
-// --- AUTOMATIC TMDB GENERATOR FUNCTION WITH PRECISE STATUS CHECKS ---
-async function autoGenerateFromTMDB(idStr) {
-    if (!navigator.onLine) {
-        throw {
-            title: "No Internet Connection",
-            message: "Your device is currently offline. Please reconnect to the internet and refresh.",
-            code: "ERR_INTERNET_DISCONNECTED",
-            icon: "fas fa-wifi"
+        const firebaseConfig = {
+            apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
+            authDomain: "dramakan007.firebaseapp.com",
+            projectId: "dramakan007"
         };
-    }
 
-    let mediaType = 'tv';
-    let res = null;
-    let lastStatus = null;
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app); 
 
-    try {
-        res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/tv/${idStr}?append_to_response=external_ids,credits`);
-        lastStatus = res.status;
-    } catch(err) {
-        throw {
-            title: "TMDB Gateway Unreachable",
-            message: "Unable to establish a connection to the TMDB Cloudflare proxy. Check your connection or ad-block settings.",
-            code: "FETCH_PROXY_FAILED: " + err.message,
-            icon: "fas fa-network-wired"
-        };
-    }
-    
-    if (!res.ok) {
-        try {
-            res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/movie/${idStr}?append_to_response=external_ids,credits`);
-            lastStatus = res.status;
-            mediaType = 'movie';
-        } catch(err) {
-            throw {
-                title: "TMDB Gateway Unreachable",
-                message: "Unable to contact the secondary movie endpoint.",
-                code: "FETCH_MOVIE_FAILED: " + err.message,
-                icon: "fas fa-network-wired"
+        const currentServer = 'nxsha'; 
+        let currentUser = null;
+        let isVipUser = false; 
+
+        // Coordination Promise for VIP Verification
+        let authResolved = false;
+        let authResolve;
+        const authReady = new Promise(resolve => {
+            authResolve = () => {
+                if (!authResolved) {
+                    authResolved = true;
+                    resolve();
+                }
             };
-        }
-
-        if (!res.ok) {
-            if (lastStatus === 404) {
-                throw {
-                    title: "Drama Not Found (404)",
-                    message: `Content ID "${idStr}" does not exist on TMDB. It may have been removed or an invalid link was provided.`,
-                    code: "TMDB_HTTP_404_NOT_FOUND",
-                    icon: "fas fa-film"
-                };
-            } else if (lastStatus >= 500) {
-                throw {
-                    title: `TMDB Server Error (${lastStatus})`,
-                    message: "The upstream TMDB servers are currently down or reporting errors.",
-                    code: `TMDB_HTTP_STATUS_${lastStatus}`,
-                    icon: "fas fa-server"
-                };
-            } else {
-                throw {
-                    title: "TMDB Request Failed",
-                    message: `Metadata lookup failed with HTTP status ${lastStatus}.`,
-                    code: `TMDB_ERROR_CODE_${lastStatus}`,
-                    icon: "fas fa-circle-exclamation"
-                };
-            }
-        }
-    }
-    
-    const data = await res.json();
-    
-    let typeStr = 'Show';
-    if (mediaType === 'movie') {
-        typeStr = 'Movie';
-    } else {
-        const isAnimation = data.genres && data.genres.some(g => g.id === 16);
-        const country = (data.origin_country && data.origin_country.length > 0) ? data.origin_country[0] : '';
-        if (isAnimation && country === 'JP') typeStr = 'Anime';
-        else if (['KR', 'CN', 'JP', 'TH', 'TW'].includes(country)) typeStr = 'Drama';
-        else typeStr = 'Show';
-    }
-
-    let epsArr = [1];
-    if (mediaType === 'tv' && data.seasons) {
-        const validSeasons = data.seasons.filter(s => s.season_number > 0);
-        if(validSeasons.length > 0) {
-            epsArr = validSeasons.map(s => s.episode_count || 1);
-        }
-    }
-
-    return {
-        id: String(idStr),
-        title: data.name || data.title || "Unknown",
-        synopsis: data.overview || "No synopsis available.",
-        img: data.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${data.poster_path}` : "default-poster.jpg",
-        backdrop_path: data.backdrop_path || "",
-        imdbId: data.external_ids?.imdb_id || "",
-        tmdbId: String(idStr),
-        year: (data.first_air_date || data.release_date || "Unknown").substring(0, 4),
-        status: data.status || "Ongoing",
-        genre: data.genres ? data.genres.map(g => g.name).join(', ') : "Drama",
-        totalEps: epsArr.reduce((a, b) => a + b, 0) || 1,
-        seasons: epsArr,
-        type: typeStr,
-        imdb: data.vote_average ? data.vote_average.toFixed(1) : "",
-        director: data.credits?.crew?.filter(c => c.job === 'Director' || c.department === 'Directing').map(c => c.name).join(', ') || "Unknown",
-        actors: data.credits?.cast?.slice(0, 4).map(c => c.name) || [],
-        createdAt: Date.now()
-    };
-}
-
-function renderCastSection(castArray) {
-    const container = document.getElementById('ui-cast-scroller');
-    if (!castArray || castArray.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">Cast information not available.</p>';
-        return;
-    }
-    
-    const topCast = castArray.slice(0, 15);
-    container.innerHTML = topCast.map(actor => {
-        const fallbackInitial = encodeURIComponent(actor.name.charAt(0));
-        const fallbackColor = "14151a";
-        const imgUrl = actor.profile_path 
-            ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w185${actor.profile_path}` 
-            : `https://via.placeholder.com/185x278/${fallbackColor}/8A2BE2?text=${fallbackInitial}`;
-        
-        return `
-        <div class="cast-card">
-            <img src="${imgUrl}" alt="${actor.name}" class="cast-img" loading="lazy">
-            <span class="cast-name">${actor.name}</span>
-            <span class="cast-char">${actor.character || "Unknown"}</span>
-        </div>
-        `;
-    }).join('');
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const dramaId = urlParams.get('id');
-
-    if (!dramaId) { window.location.replace('index.html'); return; }
-
-    const addToListBtn = document.getElementById('add-to-list-btn');
-    const favoriteBtn = document.getElementById('favorite-btn');
-
-    updateWatchlistUI = () => {
-        const inList = profileMyList.some(item => String(item.id) === String(dramaId));
-        if (inList) {
-            addToListBtn.innerHTML = '<i class="fas fa-check"></i> <span>In List</span>';
-            addToListBtn.classList.add('btn-primary');
-        } else {
-            addToListBtn.innerHTML = '<i class="fas fa-plus"></i> <span>My List</span>';
-            addToListBtn.classList.remove('btn-primary');
-        }
-    };
-
-    updateFavoriteUI = () => {
-        const isFav = profileFavorites.some(item => String(item.id) === String(dramaId));
-        if (isFav) {
-            favoriteBtn.innerHTML = '<i class="fas fa-heart"></i> <span>Favorited</span>';
-            favoriteBtn.classList.add('btn-favorite-active');
-        } else {
-            favoriteBtn.innerHTML = '<i class="far fa-heart"></i> <span>Favorite</span>';
-            favoriteBtn.classList.remove('btn-favorite-active');
-        }
-    };
-
-    onAuthStateChanged(auth, async (user) => {
-        currentUser = user;
-        const avatarImg = document.getElementById('current-user-avatar');
-        
-        if (user) {
-            avatarImg.src = user.photoURL || defaultAvatar;
-
-// Check & Apply Subscription Privileges
-            const sub = await getSubscriptionStatus(db, user.uid);
-            applySubscriptionPrivileges(sub);
-
-            const paywall = document.getElementById('video-paywall');
-            
-            // Checks if user has either Plus VIP (₹29) or Premium VIP (₹49)
-            const isVideoAdFree = sub.isActive && (
-                sub.plan.includes("Plus") || 
-                sub.plan.includes("Premium") || 
-                sub.plan.includes("Elite") || 
-                sub.plan.includes("Crown")
-            );
-
-            if (isVideoAdFree) {
-                if (paywall) paywall.classList.add('unlocked');
-            } else {
-                if (sessionStorage.getItem(`unlocked_${dramaId}`) === 'true') {
-                    if (paywall) paywall.classList.add('unlocked');
-                }
-            }
-
-            // --- CLOUD-FIRST USER DOC LISTENER ---
-            onSnapshot(doc(db, "users", user.uid), (docSnap) => {
-                if (docSnap.exists()) {
-                    const userData = docSnap.data();
-                    if (userData.profiles && userData.profiles.length > 0) {
-                        const activeProfileId = localStorage.getItem('dramakan_active_profile_id');
-                        activeProfileIndex = userData.profiles.findIndex(p => p.id === activeProfileId);
-                        if (activeProfileIndex === -1) activeProfileIndex = 0;
-                        profileMyList = userData.profiles[activeProfileIndex].myList || [];
-                        profileFavorites = userData.profiles[activeProfileIndex].favorites || [];
-                    } else {
-                        profileMyList = userData.myList || [];
-                        profileFavorites = userData.favorites || [];
-                    }
-                    
-                    profileMyList.forEach(i => i.id = String(i.id || i.tmdbId));
-                    profileFavorites.forEach(i => i.id = String(i.id || i.tmdbId));
-
-                    updateWatchlistUI();
-                    updateFavoriteUI();
-                }
-            });
-
-            // --- REAL-TIME CLOUD HISTORY CROSS-DEVICE SYNC ---
-            if (dramaId) {
-                const historyRef = doc(db, "users", user.uid, "history", String(dramaId));
-                onSnapshot(historyRef, (historySnap) => {
-                    if (historySnap.exists()) {
-                        const cloudData = historySnap.data();
-                        const cloudSeason = parseInt(cloudData.season);
-                        const cloudEp = parseInt(cloudData.episode);
-                        
-                        if (cloudSeason && cloudEp && (cloudSeason !== window.currentSeason || cloudEp !== window.currentEpisode)) {
-                            console.log("Cross-device sync detected. Switching to S" + cloudSeason + " E" + cloudEp);
-                            window.loadEpisode(cloudSeason, cloudEp, true); 
-                        }
-                    }
-                }, (err) => {
-                    console.warn("Cloud history sync error:", err);
-                });
-            }
-        } else {
-            avatarImg.src = defaultAvatar;
-        }
-    });
-
-    const serverDropdown = document.getElementById('server-selector-dropdown');
-    if (serverDropdown) {
-        serverDropdown.addEventListener('change', (e) => {
-            currentServer = e.target.value;
-            if (window.currentSeason && window.currentEpisode) {
-                window.loadEpisode(window.currentSeason, window.currentEpisode);
-            }
-        });
-    }
-
-    try {
-        if (!navigator.onLine) {
-            throw {
-                title: "No Internet Connection",
-                message: "Please check your network settings and reload the page.",
-                code: "ERR_OFFLINE",
-                icon: "fas fa-wifi"
-            };
-        }
-
-        let docSnap;
-        try {
-            docSnap = await getDoc(doc(db, "dramas", dramaId));
-        } catch(dbErr) {
-            throw {
-                title: "Database Fetch Error",
-                message: "Unable to query the Firestore database. You may be offline or experiencing permission/quota restrictions.",
-                code: "FIRESTORE_ERROR: " + (dbErr.code || dbErr.message),
-                icon: "fas fa-database"
-            };
-        }
-        
-        if (docSnap.exists()) {
-            activeData = docSnap.data();
-            activeData.id = dramaId;
-            if(!activeData.tmdbId) activeData.tmdbId = dramaId; 
-            document.getElementById('loader-text').textContent = "Loading Drama...";
-
-            const statusStr = activeData.status ? activeData.status.toLowerCase() : "";
-            const synStr = activeData.synopsis ? activeData.synopsis.toLowerCase() : "";
-            const dirStr = activeData.director ? activeData.director.toLowerCase() : "";
-            const isMissingActors = !activeData.actors || activeData.actors.length === 0 || activeData.actors[0] === "Unknown";
-
-            if (
-                statusStr.includes("coming soon") || 
-                statusStr.includes("upcoming") || 
-                synStr.includes("coming soon") || 
-                synStr === "" ||
-                synStr === "no synopsis available." ||
-                dirStr === "unknown" || 
-                dirStr === "" ||
-                isMissingActors ||
-                activeData.totalEps === 0
-            ) {
-                document.getElementById('loader-text').textContent = "Fetching latest updates for this drama...";
-                const freshData = await autoGenerateFromTMDB(activeData.tmdbId);
-                if (freshData) {
-                    activeData = { ...activeData, ...freshData, id: activeData.id, tmdbId: activeData.tmdbId };
-                }
-            }
-        } else {
-            document.getElementById('loader-text').innerHTML = "Fetching title metadata... <i class='fas fa-spinner fa-spin' style='color:var(--primary); margin-left: 6px;'></i>";
-            activeData = await autoGenerateFromTMDB(dramaId);
-        }
-
-        activeTmdbId = activeData.tmdbId || dramaId;
-        activeImdbId = activeData.imdbId || activeData.imdb_id || activeData.imdb;
-
-        // =========================================================
-        // 2. FETCH SIMILAR RECOMMENDATIONS & FULL CAST
-        // =========================================================
-        try {
-            const isMovie = activeData.type?.toLowerCase().includes('movie') ? 'movie' : 'tv';
-            
-            if (!activeData.backdrop_path && activeTmdbId) {
-                const detailRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/${isMovie}/${activeTmdbId}`);
-                if (detailRes.ok) {
-                    const detailData = await detailRes.json();
-                    if (detailData.backdrop_path) activeData.backdrop_path = detailData.backdrop_path;
-                }
-            }
-
-            const simRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/${isMovie}/${activeTmdbId}/similar?page=1`);
-            if (simRes.ok) {
-                const simData = await simRes.json();
-                activeData.similar = simData.results || [];
-            }
-            
-            const castRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/${isMovie}/${activeTmdbId}/credits`);
-            if (castRes.ok) {
-                const castData = await castRes.json();
-                activeData.fullCast = castData.cast || [];
-            }
-        } catch (err) { console.warn("Could not fetch extra TMDB API data.", err); }
-
-        if (typeof activeData.genre !== 'string') { activeData.genre = "Drama"; }
-
-        // =========================================================
-        // 3. POPULATE UI & INITIAL AMBILIGHT
-        // =========================================================
-        updateSEO(activeData, dramaId);
-
-        document.getElementById('bread-title').textContent = activeData.title;
-        document.getElementById('ui-title').textContent = activeData.title;
-        const displayType = activeData.type ? activeData.type.toUpperCase() : "TITLE";
-        document.getElementById('ui-about-heading').textContent = `ABOUT THIS ${displayType}`;
-        document.getElementById('ui-poster').src = activeData.img;
-        const backdropUrl = activeData.backdrop_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${activeData.backdrop_path}` : activeData.img;
-        const mobilePosterSource = document.getElementById('ui-poster-mobile');
-        if(mobilePosterSource) mobilePosterSource.srcset = backdropUrl;
-
-        document.getElementById('synopsis-text').textContent = activeData.synopsis;
-        document.getElementById('ui-total-eps-top').textContent = `${activeData.totalEps} Episodes`;
-        document.getElementById('ui-status').textContent = activeData.status;
-        document.getElementById('ui-genre').textContent = activeData.genre;
-        document.getElementById('ui-year').textContent = activeData.year;
-        document.getElementById('ui-country').textContent = activeData.type || "Asia"; 
-        
-        document.getElementById('ui-director').textContent = activeData.director || "Unknown";
-        
-        if (activeData.actors && Array.isArray(activeData.actors) && activeData.actors.length > 0) {
-            document.getElementById('ui-cast').textContent = activeData.actors.join(', ');
-        } else {
-            document.getElementById('ui-cast').textContent = "Unknown";
-        }
-
-        const tagsHTML = activeData.genre.split(',').map(g => `<span class="tag-pill">${g.trim()}</span>`).join('');
-        document.getElementById('ui-genre-tags').innerHTML = tagsHTML;
-
-        if (activeData.backdrop_path) {
-            document.getElementById('ambilight-bg').src = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${activeData.backdrop_path}`;
-        } else {
-            document.getElementById('ambilight-bg').src = activeData.img;
-        }
-
-        renderRecommendations(activeData.similar);
-        renderCastSection(activeData.fullCast);
-        initCommentSystem(dramaId); 
-
-        // --- CLOUD-FIRST MY LIST TOGGLE ---
-        addToListBtn.addEventListener('click', async () => {
-            if (!currentUser) return alert("Please log in to manage your list.");
-            
-            let inListIdx = profileMyList.findIndex(item => String(item.id) === String(dramaId));
-            if (inListIdx > -1) {
-                profileMyList.splice(inListIdx, 1);
-            } else {
-                profileMyList.push({ id: String(dramaId), title: activeData.title, img: activeData.img, link: `watch.html?id=${dramaId}`, timestamp: Date.now() });
-            }
-            
-            updateWatchlistUI();
-            
-            try {
-                const userDocRef = doc(db, "users", currentUser.uid);
-                const snap = await getDoc(userDocRef);
-                if(snap.exists()) {
-                    let d = snap.data();
-                    if(d.profiles && d.profiles.length > 0) {
-                        d.profiles[activeProfileIndex].myList = profileMyList;
-                        await updateDoc(userDocRef, { profiles: d.profiles });
-                    } else {
-                        await updateDoc(userDocRef, { myList: profileMyList });
-                    }
-                }
-            } catch(e) { console.error("Cloud List update failed:", e); }
         });
 
-        // --- CLOUD-FIRST FAVORITE TOGGLE ---
-        favoriteBtn.addEventListener('click', async () => {
-            if (!currentUser) return alert("Please log in to add to favorites.");
-            
-            let inFavIdx = profileFavorites.findIndex(item => String(item.id) === String(dramaId));
-            if (inFavIdx > -1) {
-                profileFavorites.splice(inFavIdx, 1);
-            } else {
-                profileFavorites.push({ id: String(dramaId), title: activeData.title, img: activeData.img, link: `watch.html?id=${dramaId}`, timestamp: Date.now() });
-            }
-            
-            updateFavoriteUI();
-
-            try {
-                const userDocRef = doc(db, "users", currentUser.uid);
-                const snap = await getDoc(userDocRef);
-                if(snap.exists()) {
-                    let d = snap.data();
-                    if(d.profiles && d.profiles.length > 0) {
-                        d.profiles[activeProfileIndex].favorites = profileFavorites;
-                        await updateDoc(userDocRef, { profiles: d.profiles });
-                    } else {
-                        await updateDoc(userDocRef, { favorites: profileFavorites });
-                    }
+        // 3.5s Safety fallback: prevents infinite spinner if network hangs
+        setTimeout(() => {
+            if (!authResolved) {
+                const videoSpinner = document.getElementById('video-loading-spinner');
+                if (videoSpinner) videoSpinner.style.display = 'none';
+                const paywall = document.getElementById('video-paywall');
+                if (sessionStorage.getItem(`unlocked_${dramaId}`) !== 'true') {
+                    if (paywall) paywall.style.display = 'flex';
                 }
-            } catch(e) { console.error("Cloud Favorites update failed:", e); }
-        });
-
-        // =========================================================
-        // 4. EPISODES LOGIC - EXTRACT HISTORY BEFORE RENDERING
-        // =========================================================
-        seasonsArr = activeData.seasons || [activeData.totalEps || 1];
-        
-        let initSeason = 1;
-        let initEp = 1;
-        
-        const globalHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-        if (globalHistory[dramaId] && globalHistory[dramaId].season && globalHistory[dramaId].episode) {
-            initSeason = parseInt(globalHistory[dramaId].season);
-            initEp = parseInt(globalHistory[dramaId].episode);
-        } else {
-            const savedEpRaw = localStorage.getItem(`dramakan_ep_${dramaId}`);
-            if (savedEpRaw && savedEpRaw !== "0") {
-                if (savedEpRaw.includes('-')) {
-                    const parts = savedEpRaw.split('-');
-                    initSeason = parseInt(parts[0]);
-                    initEp = parseInt(parts[1]);
-                } else { 
-                    initEp = parseInt(savedEpRaw); 
-                }
+                authResolve();
             }
-        }
+        }, 3500);
 
-        window.currentSeason = initSeason;
-        window.currentEpisode = initEp;
+        let seasonsArr = [1]; 
+        let activeImdbId = null; 
+        let activeTmdbId = null;
+        let activeData = null; 
+        let initialPageLoad = true;
 
-        const seasonSelector = document.getElementById('season-selector');
+        let profileMyList = [];
+        let activeProfileIndex = 0;
+        const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
 
-        if (seasonsArr.length > 1) {
-            seasonSelector.style.display = 'block';
-            seasonSelector.innerHTML = seasonsArr.map((_, idx) => `<option value="${idx + 1}">Season ${idx + 1}</option>`).join('');
-            seasonSelector.value = initSeason; 
-        }
-
-        seasonSelector.addEventListener('change', (e) => {
-            renderEpisodeGrid(e.target.value);
-        });
-
-        window.renderEpisodeGrid = async function(seasonNum) {
-            window.currentSeason = parseInt(seasonNum);
-            const grid = document.getElementById('episodes-list-container');
-            grid.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Loading episodes...</div>';
-
-            let epsInThisSeason = seasonsArr[window.currentSeason - 1] || 1;
-            let episodesData = null;
-
-            const isMovieType = activeData.type?.toLowerCase().includes('movie');
-            
-            if (!isMovieType && activeTmdbId) {
-                try {
-                    const seasonRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/tv/${activeTmdbId}/season/${window.currentSeason}`);
-                    if (seasonRes.ok) {
-                        const seasonDetails = await seasonRes.json();
-                        if (seasonDetails.episodes) {
-                            episodesData = seasonDetails.episodes;
-                            epsInThisSeason = episodesData.length;
-                            seasonsArr[window.currentSeason - 1] = epsInThisSeason; 
-                        }
-                    }
-                } catch(err) { console.warn("Failed to load season details", err); }
-            }
-
-            let buttonsHtml = '';
-            for (let i = 1; i <= epsInThisSeason; i++) {
-                const epInfo = episodesData ? episodesData[i-1] : null;
-                const epTitle = epInfo && epInfo.name ? (isMovieType ? epInfo.name : `Episode ${i} - ${epInfo.name}`) : (isMovieType ? 'Full Movie' : `Episode ${i}`);
-                const runtime = epInfo && epInfo.runtime ? `${epInfo.runtime}m` : (isMovieType ? '120m' : '45:00');
-
-                buttonsHtml += `
-                    <div class="ep-timeline-item" data-season="${window.currentSeason}" data-index="${window.currentSeason}-${i}" onclick="loadEpisode(${window.currentSeason}, ${i})">
-                        <div class="ep-icon"><i class="fas fa-play"></i></div>
-                        <div class="ep-info-text">
-                            <h4>${epTitle}</h4>
-                            <p style="display:none; color: var(--primary); margin:0; font-size:0.75rem;" class="now-playing-text">Now Playing</p>
+        function showExplicitError(err) {
+            document.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton', 'skeleton-text'));
+            const mainContent = document.getElementById('main-content');
+            mainContent.innerHTML = `
+                <div style="min-height: 60vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+                    <div class="glass-panel" style="border-color: rgba(239, 68, 68, 0.4); max-width: 480px; text-align: center;">
+                        <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 2px solid rgba(239, 68, 68, 0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: var(--danger); font-size: 1.5rem;">
+                            <i class="${err.icon || 'fas fa-triangle-exclamation'}"></i>
                         </div>
-                        <div class="ep-duration">${runtime}</div>
-                    </div>`;
-            }
-            grid.innerHTML = buttonsHtml;
-            updateActiveButton();
-            updateQuickActionStates();
-        }
-
-        function updateQuickActionStates() {
-            const btnPrev = document.getElementById('btn-prev-ep');
-            const btnNext = document.getElementById('btn-next-ep');
-            const epsInSeason = seasonsArr[window.currentSeason - 1] || 1;
-
-            if (window.currentEpisode <= 1 && window.currentSeason <= 1) {
-                btnPrev.classList.add('disabled');
-            } else {
-                btnPrev.classList.remove('disabled');
-            }
-
-            if (window.currentEpisode >= epsInSeason && window.currentSeason >= seasonsArr.length) {
-                btnNext.classList.add('disabled');
-            } else {
-                btnNext.classList.remove('disabled');
-            }
-        }
-
-        function updateActiveButton() {
-            document.querySelectorAll('.ep-timeline-item').forEach((item) => {
-                const isMatch = parseInt(item.dataset.season) === window.currentSeason && item.getAttribute('data-index') === `${window.currentSeason}-${window.currentEpisode}`;
-                item.classList.toggle('active', isMatch);
-                const textP = item.querySelector('.now-playing-text');
-                if(textP) textP.style.display = isMatch ? 'block' : 'none';
-            });
-        }
-
-        // =========================================================
-        // CORE FEATURE INTERFACE: SECURE WATCH ENGINE PROXY
-        // =========================================================
-        window.loadEpisode = async function(season, ep, fromCloudSync = false) {
-            const targetSeason = parseInt(season);
-            const targetEp = parseInt(ep);
-            
-            if (seasonSelector && seasonsArr.length > 1) {
-                if (parseInt(seasonSelector.value) !== targetSeason) {
-                    seasonSelector.value = targetSeason;
-                    await window.renderEpisodeGrid(targetSeason);
-                }
-            }
-
-            window.currentSeason = targetSeason;
-            window.currentEpisode = targetEp;
-            
-            const isMovie = activeData.type?.toLowerCase().includes('movie');
-            document.getElementById('bread-ep').textContent = isMovie ? 'Full Movie' : `Episode ${targetEp}`;
-
-            // --- CATCH-UP MEMORY JOGGER LOGIC ---
-            const globalHist = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-            const lastSession = globalHist[dramaId];
-            
-            if (lastSession && lastSession.timestamp && (Date.now() - lastSession.timestamp > 172800000)) {
-                if (!isMovie && activeTmdbId && targetEp > 1) {
-                    try {
-                        const prevEpNum = targetEp - 1;
-                        const prevRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/tv/${activeTmdbId}/season/${targetSeason}/episode/${prevEpNum}`);
-                        if (prevRes.ok) {
-                            const prevData = await prevRes.json();
-                            if (prevData.overview) {
-                                document.getElementById('catchup-ep-num').textContent = prevEpNum;
-                                document.getElementById('catchup-synopsis').textContent = prevData.overview;
-                                document.getElementById('catchup-overlay').classList.remove('hidden');
-                            }
-                        }
-                    } catch (e) { console.warn("Catch-up failed to load.", e); }
-                }
-            }
-
-            // --- EPISODE X-RAY SYNC FACTORY ---
-            if (!isMovie && activeTmdbId) {
-                try {
-                    const epRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/tv/${activeTmdbId}/season/${targetSeason}/episode/${targetEp}`);
-                    if (epRes.ok) {
-                        const epData = await epRes.json();
-                        
-                        if (epData.overview) {
-                            document.getElementById('synopsis-text').textContent = epData.overview;
-                        } else {
-                            document.getElementById('synopsis-text').textContent = activeData.synopsis;
-                        }
-                        
-                        if (epData.name) {
-                            document.getElementById('bread-ep').textContent = `${epData.name} (S${targetSeason}:E${targetEp})`;
-                        }
-
-                        if (epData.still_path) {
-                            document.getElementById('ambilight-bg').src = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${epData.still_path}`;
-                        }
-                    }
-                } catch (xrayErr) {
-                    console.warn("X-Ray Fetch failure safely skipped.", xrayErr);
-                }
-            }
-
-            // --- SECURE DISPATCH VIA CLOAKED BACKEND GATEWAY ---
-            const videoPlayer = document.getElementById('video-player-iframe');
-            const seasonParam = isMovie ? "movie" : targetSeason;
-            const epParam = isMovie ? "1" : targetEp;
-
-            try {
-                const response = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/stream-gateway/${currentServer}/${activeTmdbId}/${seasonParam}/${epParam}`);
-                if (!response.ok) throw new Error("Stream generation rejected.");
-                
-                const data = await response.json();
-                videoPlayer.src = data.target;
-                
-            } catch(err) {
-                console.error("Watch authorization failed:", err);
-                videoPlayer.src = "about:blank";
-                alert("Streaming authentication error. Please refresh your page.");
-            }
-            
-            updateActiveButton();
-            updateQuickActionStates();
-            
-            localStorage.setItem(`dramakan_ep_${dramaId}`, `${targetSeason}-${targetEp}`);
-            
-            const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-            historyObj[dramaId] = {
-                title: activeData.title,
-                img: activeData.img,
-                link: `watch.html?id=${dramaId}`,
-                timestamp: Date.now(),
-                season: targetSeason,
-                episode: targetEp,
-                backdrop_path: activeData.backdrop_path
-            };
-            localStorage.setItem('dramakan_history', JSON.stringify(historyObj));
-            window.dispatchEvent(new Event('historySynced'));
-
-            if (currentUser && !fromCloudSync) {
-                try {
-                    if (initialPageLoad) {
-                        const historyRef = doc(db, "users", currentUser.uid, "history", String(dramaId));
-                        const snap = await getDoc(historyRef);
-                        if (snap.exists()) {
-                            const cloudData = snap.data();
-                            const cloudSeason = parseInt(cloudData.season);
-                            const cloudEp = parseInt(cloudData.episode);
-                            if (cloudSeason > targetSeason || (cloudSeason === targetSeason && cloudEp > targetEp)) {
-                                initialPageLoad = false;
-                                return;
-                            }
-                        }
-                    }
-                    
-                    initialPageLoad = false;
-                    
-                    await setDoc(doc(db, "users", currentUser.uid, "history", String(dramaId)), {
-                        id: String(dramaId),
-                        dramaId: String(dramaId),
-                        title: activeData.title,
-                        img: activeData.img,
-                        link: `watch.html?id=${dramaId}`,
-                        season: targetSeason,
-                        episode: targetEp,
-                        timestamp: Date.now()
-                    }, { merge: true });
-                } catch(err) { console.warn("Could not save progress to cloud:", err); }
-            }
-            
-            initialPageLoad = false;
-            updateSEO(activeData, dramaId, targetSeason, targetEp);
-        };
-
-        await window.renderEpisodeGrid(initSeason);
-        window.loadEpisode(initSeason, initEp);
-
-        document.getElementById('btn-prev-ep').addEventListener('click', () => {
-            if (window.currentEpisode > 1) { 
-                window.loadEpisode(window.currentSeason, window.currentEpisode - 1); 
-            } else if (window.currentSeason > 1) {
-                const prevSeasonEps = seasonsArr[window.currentSeason - 2];
-                window.loadEpisode(window.currentSeason - 1, prevSeasonEps);
-            }
-        });
-
-        document.getElementById('btn-next-ep').addEventListener('click', () => {
-            const epsInSeason = seasonsArr[window.currentSeason - 1];
-            if (window.currentEpisode < epsInSeason) { 
-                window.loadEpisode(window.currentSeason, window.currentEpisode + 1); 
-            } else if (window.currentSeason < seasonsArr.length) {
-                window.loadEpisode(window.currentSeason + 1, 1);
-            }
-        });
-
-        const shareBtn = document.getElementById('btn-share');
-        const playerContainer = document.querySelector('.video-player-container');
-
-        function buildShareData() {
-            const shareUrl = window.location.href;
-            const epLabel = activeData.type?.toLowerCase().includes('movie') ? 'Full Movie' : `Episode ${window.currentEpisode || 1}`;
-            const title = activeData.title || 'Drama';
-            const shareText = `Watch ${title} - ${epLabel} on DramaKan`;
-            return { shareUrl, epLabel, title, shareText };
-        }
-
-        shareBtn.addEventListener('click', async () => {
-            const { shareUrl, shareText, title } = buildShareData();
-
-            if (navigator.share) {
-                try {
-                    await navigator.share({
-                        title: `${title} - DramaKan`, text: shareText, url: shareUrl
-                    });
-                    return;
-                } catch (err) { if (err && err.name === 'AbortError') return; }
-            }
-            openShareCard();
-        });
-
-        function openShareCard() {
-            const { shareUrl, epLabel, title } = buildShareData();
-            const overlay = document.getElementById('shareCardOverlay');
-            document.getElementById('share-card-poster').src = activeData.img || '';
-            document.getElementById('share-card-title').textContent = title;
-            document.getElementById('share-card-ep').textContent = epLabel;
-            document.getElementById('share-card-genre').textContent = activeData.genre || '';
-            document.getElementById('share-card-year').textContent = activeData.year || '';
-            document.getElementById('share-card-desc').textContent = activeData.synopsis || '';
-            document.getElementById('share-card-url').value = shareUrl;
-            overlay.style.display = 'flex';
-        }
-
-        document.getElementById('closeShareCard').addEventListener('click', () => { document.getElementById('shareCardOverlay').style.display = 'none'; });
-        document.getElementById('shareCardOverlay').addEventListener('click', (e) => { if (e.target.id === 'shareCardOverlay') document.getElementById('shareCardOverlay').style.display = 'none'; });
-
-        document.getElementById('share-copy-link').addEventListener('click', () => {
-            const { shareUrl } = buildShareData();
-            navigator.clipboard.writeText(shareUrl).then(() => {
-                const btn = document.getElementById('share-copy-link');
-                const original = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-check"></i><span>Copied!</span>';
-                setTimeout(() => { btn.innerHTML = original; }, 2000);
-            }).catch(() => {
-                const urlInput = document.getElementById('share-card-url');
-                urlInput.select();
-                document.execCommand('copy');
-            });
-        });
-
-        document.querySelectorAll('.share-social-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const { shareUrl, shareText } = buildShareData();
-                const network = btn.getAttribute('data-network');
-                const encodedUrl = encodeURIComponent(shareUrl);
-                const encodedText = encodeURIComponent(shareText);
-                let link = '';
-
-                switch (network) {
-                    case 'whatsapp': link = `https://api.whatsapp.com/send?text=${encodedText}%20${encodedUrl}`; break;
-                    case 'facebook': link = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`; break;
-                    case 'telegram': link = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`; break;
-                    case 'twitter': link = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`; break;
-                    case 'reddit': link = `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedText}`; break;
-                    case 'email': link = `mailto:?subject=${encodeURIComponent(activeData.title || 'Drama')}&body=${encodedText}%20${encodedUrl}`; break;
-                    case 'instagram': navigator.clipboard.writeText(shareUrl).catch(() => {}); link = `https://www.instagram.com/`; break;
-                    case 'discord': navigator.clipboard.writeText(shareUrl).catch(() => {}); link = `https://discord.com/app`; break;
-                }
-                if (link) window.open(link, '_blank', 'noopener,noreferrer');
-            });
-        });
-
-        // --- DYNAMIC DOWNLOAD BUTTON LOGIC ---
-        const downloadBtn = document.getElementById('btn-download');
-        if (downloadBtn) {
-            downloadBtn.addEventListener('click', () => {
-                const isMovie = activeData.type?.toLowerCase().includes('movie');
-                let dlUrl = '';
-                
-                if (isMovie) {
-                    // Movie Format: https://nxsha.space/dl/movie/imdbid
-                    const imdbId = activeImdbId || activeData.imdbId || activeData.imdb_id || '';
-                    if (!imdbId) {
-                        alert("Download link not available for this movie yet.");
-                        return;
-                    }
-                    dlUrl = `https://nxsha.space/dl/movie/${imdbId}`;
-                } else {
-                    // TV Format: https://nxsha.space/dl/tv/tmdbid/season/episode
-                    if (!activeTmdbId || !window.currentSeason || !window.currentEpisode) {
-                        alert("Download link not available for this episode yet.");
-                        return;
-                    }
-                    dlUrl = `https://nxsha.space/dl/tv/${activeTmdbId}/${window.currentSeason}/${window.currentEpisode}`;
-                }
-                
-                // Opens the download gateway in a new tab securely
-                window.open(dlUrl, '_blank', 'noopener,noreferrer');
-            });
-        }
-
-        const reportBtn = document.getElementById('btn-report');
-        const reportModal = document.getElementById('reportModal');
-        const closeReportModal = document.getElementById('closeReportModal');
-        const reportForm = document.getElementById('reportForm');
-
-        reportBtn.addEventListener('click', () => {
-            if (!currentUser) { alert("Please log in to report an issue."); return; }
-            reportModal.style.display = 'flex';
-        });
-
-        closeReportModal.addEventListener('click', () => { reportModal.style.display = 'none'; });
-
-        reportForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitBtn = document.getElementById('reportSubmitBtn');
-            const statusMsg = document.getElementById('reportStatusMessage');
-            const issueType = document.getElementById('reportIssue').value;
-            const details = document.getElementById('reportDetails').value.trim();
-
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-            submitBtn.disabled = true;
-
-            try {
-                await addDoc(collection(db, "reports"), {
-                    userId: currentUser.uid,
-                    userEmail: currentUser.email || "No email",
-                    username: currentUser.displayName || "User",
-                    dramaId: dramaId,
-                    dramaName: activeData.title,
-                    season: window.currentSeason,
-                    episode: window.currentEpisode,
-                    issue: issueType,
-                    details: details,
-                    server: currentServer,
-                    timestamp: serverTimestamp(),
-                    status: "Pending"
-                });
-
-                statusMsg.style.display = "block";
-                statusMsg.style.color = "#10b981";
-                statusMsg.innerHTML = "<i class='fas fa-check-circle'></i> Report sent successfully! We'll fix it ASAP.";
-                reportForm.reset();
-                
-                setTimeout(() => {
-                    reportModal.style.display = 'none';
-                    statusMsg.style.display = 'none';
-                }, 2500);
-
-            } catch (err) {
-                statusMsg.style.display = "block";
-                statusMsg.style.color = "#ef4444";
-                statusMsg.innerHTML = "<i class='fas fa-exclamation-circle'></i> Error: " + err.message;
-            } finally {
-                submitBtn.innerHTML = "Send Report";
-                submitBtn.disabled = false;
-            }
-        });
-
-        document.getElementById('page-loader').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
-
-    } catch (error) { 
-        console.error("Critical Load Error:", error);
-        renderLoaderError(error.title ? error : {
-            title: "Playback Initialization Failed",
-            message: error.message || "An unexpected error occurred while preparing this drama.",
-            code: error.code || "UNKNOWN_INITIALIZATION_ERROR",
-            icon: "fas fa-triangle-exclamation"
-        });
-    }
-
-    // --- FIREBASE COMMENT SYSTEM ---
-    function initCommentSystem(dramaId) {
-        const commentForm = document.getElementById('comment-form');
-        const commentInput = document.getElementById('comment-text-input');
-        const commentsList = document.getElementById('comments-list');
-        
-        commentForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = commentInput.value.trim();
-            
-            if (!currentUser) { alert("Please log in to post a comment."); return; }
-            if (text === "") return;
-
-            const submitBtn = document.getElementById('submit-comment-btn');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-            try {
-                await addDoc(collection(db, "dramas", dramaId, "comments"), {
-                    text: text,
-                    userId: currentUser.uid,
-                    username: currentUser.displayName || "DramaFan",
-                    userAvatar: currentUser.photoURL || defaultAvatar,
-                    timestamp: serverTimestamp()
-                });
-                commentInput.value = '';
-            } catch (error) {
-                console.error("Error adding comment: ", error);
-                alert("Failed to post comment.");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
-            }
-        });
-
-        const commentsQuery = query(collection(db, "dramas", dramaId, "comments"), orderBy("timestamp", "desc"));
-        
-        onSnapshot(commentsQuery, (snapshot) => {
-            commentsList.innerHTML = ''; 
-            if (snapshot.empty) {
-                commentsList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; text-align: center;">No comments yet. Be the first!</p>';
-                return;
-            }
-            snapshot.forEach((doc) => {
-                const commentData = doc.data();
-                let timeAgo = "Just now";
-                if (commentData.timestamp) {
-                    const date = commentData.timestamp.toDate();
-                    timeAgo = date.toLocaleDateString() + " " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                }
-
-                const commentHTML = `
-                    <div style="display: flex; gap: 15px; animation: fadeIn 0.3s ease;">
-                        <img src="${commentData.userAvatar}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">
-                        <div style="flex: 1; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center;">
-                                <span style="font-weight: 600; color: #fff; font-size: 0.9rem;">${commentData.username}</span>
-                                <span style="font-size: 0.75rem; color: var(--text-muted);">${timeAgo}</span>
-                            </div>
-                            <p style="margin: 0; font-size: 0.85rem; color: #d1d5db; line-height: 1.6;">${commentData.text}</p>
+                        <h2 style="font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 10px;">${err.title}</h2>
+                        <p style="color: #a3a3a3; font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px;">${err.message}</p>
+                        <div style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 8px 12px; font-family: monospace; font-size: 0.8rem; color: #f87171; margin-bottom: 25px; word-break: break-all;">
+                            ${err.code}
+                        </div>
+                        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                            <button onclick="window.location.reload()" class="btn-action-primary"><i class="fas fa-rotate-right"></i> Retry</button>
+                            <a href="index.html" class="btn-action-secondary"><i class="fas fa-home"></i> Home</a>
                         </div>
                     </div>
-                `;
-                commentsList.insertAdjacentHTML('beforeend', commentHTML);
-            });
-        });
-    }
-});
-
-function renderRecommendations(similarItems) {
-    const recsContainer = document.getElementById('ui-recs');
-    if (similarItems && similarItems.length > 0) {
-        const resultsArray = similarItems.slice(0, 5);
-        recsContainer.innerHTML = resultsArray.map(rec => {
-            let poster = rec.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w200${rec.poster_path}` : 'default-poster.jpg';
-            const title = rec.name || rec.title || "Unknown";
-            const rating = rec.vote_average ? rec.vote_average.toFixed(1) : 'N/A';
-            
-            return `
-            <a href="watch.html?id=${rec.id}" class="rec-card">
-                <img src="${poster}" alt="${title}" loading="lazy" onerror="this.src='default-poster.jpg'">
-                <div class="rec-info">
-                    <h4>${title}</h4>
-                    <p><i class="fas fa-star" style="color:var(--star-gold);"></i> ${rating}</p>
                 </div>
-            </a>
             `;
-        }).join('');
-    } else {
-        recsContainer.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">Could not load recommendations.</p>';
-    }
-}
+        }
 
-function updateSEO(data, dramaId, season, ep) {
-    try {
-        const siteName = "DramaKan";
-        const title = data.title || "Drama";
-        const year = data.year || "";
-        const country = data.country || "";
-        const genre = data.genre || "";
-        const status = data.status || "";
-        const totalEps = data.totalEps || "";
-        const synopsis = data.synopsis || `Watch ${title} online in HD on ${siteName}.`;
-        const poster = data.img || "";
-        const currentUrl = window.location.href;
-        const epNum = ep || window.currentEpisode || 1;
-        const seasonNum = season || window.currentSeason || 1;
-        const isMovie = data.type?.toLowerCase().includes('movie');
+        const urlParams = new URLSearchParams(window.location.search);
+        const dramaId = urlParams.get('id');
+        if (!dramaId) { window.location.replace('index.html'); }
 
-        const pageTitle = isMovie
-            ? `Watch ${title} (${year}) Online Free - ${siteName}`
-            : `Watch ${title} Episode ${epNum} Online Free - ${siteName}`;
+        const lazyObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { rootMargin: '0px 0px 50px 0px', threshold: 0.1 });
 
-        const metaDescription = `Watch ${title} online for free in HD on ${siteName}. ${synopsis}`.slice(0, 300);
-
-        const genreList = genre ? genre.split(',').map(g => g.trim()).filter(Boolean) : [];
-        const baseKeywords = [
-            title, `Watch ${title}`, `${title} Online`,
-            isMovie ? `${title} Full Movie` : `${title} Episode ${epNum}`,
-            `${title} English Sub`, `${title} Hindi Dub`, `${title} ${year}`,
-            "Watch Online", siteName, "Kdrama", "Chinese Drama", "Japanese Drama",
-            "Asian Drama", "HD Streaming", country, status
-        ];
-        const keywords = [...baseKeywords, ...genreList].filter(Boolean).join(', ');
-
-        document.getElementById('seo-title').textContent = pageTitle;
-        document.title = pageTitle;
-
-        document.getElementById('seo-description').setAttribute('content', metaDescription);
-        document.getElementById('seo-keywords').setAttribute('content', keywords);
-        document.getElementById('seo-canonical').setAttribute('href', currentUrl);
-        document.getElementById('seo-alternate').setAttribute('href', currentUrl);
-
-        document.getElementById('og-type').setAttribute('content', isMovie ? 'video.movie' : 'video.tv_show');
-        document.getElementById('og-title').setAttribute('content', pageTitle);
-        document.getElementById('og-description').setAttribute('content', metaDescription);
-        document.getElementById('og-image').setAttribute('content', poster);
-        document.getElementById('og-url').setAttribute('content', currentUrl);
-
-        document.getElementById('tw-title').setAttribute('content', pageTitle);
-        document.getElementById('tw-description').setAttribute('content', metaDescription);
-        document.getElementById('tw-image').setAttribute('content', poster);
-
-        const jsonLd = {
-            "@context": "https://schema.org",
-            "@type": isMovie ? "Movie" : "TVSeries",
-            "name": title,
-            "description": synopsis,
-            "image": poster,
-            "genre": genreList,
-            "datePublished": year ? String(year) : undefined,
-            "numberOfEpisodes": totalEps || undefined,
-            "publisher": { "@type": "Organization", "name": siteName, "logo": { "@type": "ImageObject", "url": window.location.origin + "/favicon.png" } }
+        window.showInlineToast = function(msg) {
+            const toast = document.getElementById('shareToast');
+            toast.querySelector('span').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
         };
 
-        if (data.imdb || data.rating) {
-            jsonLd.aggregateRating = { "@type": "AggregateRating", "ratingValue": data.imdb || data.rating, "bestRating": "10", "ratingCount": data.ratingCount || 1 };
+        function updateWatchlistUI() {
+            const btn = document.getElementById('add-to-list-btn');
+            const inList = profileMyList.some(item => String(item.id) === String(dramaId));
+            if (inList) {
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                btn.style.color = 'var(--success)';
+                btn.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+            } else {
+                btn.innerHTML = '<i class="fas fa-plus"></i>';
+                btn.style.color = '#fff';
+                btn.style.borderColor = 'rgba(255,255,255,0.1)';
+            }
         }
 
-        if (Array.isArray(data.actors) && data.actors.length) {
-            jsonLd.actor = data.actors.map(name => ({ "@type": "Person", "name": name }));
-        }
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            const bottomAuthBtn = document.getElementById('bottomAuthBtn');
+            const paywall = document.getElementById('video-paywall');
+            const videoSpinner = document.getElementById('video-loading-spinner');
+            
+            if (user) {
+                try {
+                    const sub = await getSubscriptionStatus(db, user.uid);
+                    applySubscriptionPrivileges(sub);
 
-        if (!isMovie) {
-            jsonLd.episode = { "@type": "Episode", "episodeNumber": epNum, "partOfSeason": { "@type": "CreativeWorkSeason", "seasonNumber": seasonNum }, "url": currentUrl };
-        }
+                    const userPlan = (sub && sub.plan) ? sub.plan : "";
+                    const localPlan = localStorage.getItem("dramakan_user_plan") || "";
+                    const hasVipName = (p) => p.includes("Plus") || p.includes("Premium") || p.includes("Elite") || p.includes("Crown") || p.includes("VIP");
 
-        jsonLd.mainEntityOfPage = { "@type": "WebPage", "@id": currentUrl };
-        
-        const cleanJsonLd = JSON.parse(JSON.stringify(jsonLd));
-        document.getElementById('seo-jsonld').textContent = JSON.stringify(cleanJsonLd);
+                    isVipUser = Boolean((sub && sub.isActive && hasVipName(userPlan)) || hasVipName(localPlan));
+                } catch (error) {
+                    console.warn("Sub verification failed:", error);
+                    const localPlan = localStorage.getItem("dramakan_user_plan") || "";
+                    isVipUser = localPlan.includes("Plus") || localPlan.includes("Premium") || localPlan.includes("Elite") || localPlan.includes("Crown") || localPlan.includes("VIP");
+                }
 
-    } catch (e) { console.warn("SEO update skipped due to error:", e); }
-}
-</script>
-<!-- SMARTER AUTO-HIDE FOR ADBLOCKERS & LOCALHOST -->
-    <script>
-        // Set an interval to check the ad ONLY after the TMDB loading screen finishes
-        const adCheckInterval = setInterval(() => {
-            const mainContent = document.getElementById('main-content');
-            const adSection = document.getElementById('watch-ad-section');
-            const adFrame = document.getElementById('adcash-watch-frame');
+                if (videoSpinner) videoSpinner.style.display = 'none';
 
-            // Wait until the loading screen disappears and the main content is visible
-            if (mainContent && mainContent.style.display === 'block') {
+                const isUnlocked = isVipUser || (sessionStorage.getItem(`unlocked_${dramaId}`) === 'true');
+
+                if (isUnlocked) {
+                    if (paywall) paywall.style.display = 'none';
+                } else {
+                    if (paywall) paywall.style.display = 'flex';
+                }
+
+                authResolve();
+
+                onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        let activeProf = { avatar: defaultAvatar };
+                        if (userData.profiles && userData.profiles.length > 0) {
+                            const activeProfileId = localStorage.getItem('dramakan_active_profile_id');
+                            activeProfileIndex = userData.profiles.findIndex(p => p.id === activeProfileId);
+                            if (activeProfileIndex === -1) activeProfileIndex = 0;
+                            profileMyList = userData.profiles[activeProfileIndex].myList || [];
+                            activeProf = userData.profiles[activeProfileIndex];
+                        } else {
+                            profileMyList = userData.myList || [];
+                        }
+                        profileMyList.forEach(i => i.id = String(i.id || i.tmdbId));
+                        updateWatchlistUI();
+
+                        if (bottomAuthBtn) {
+                            const avatarUrl = activeProf.avatar || userData.avatarUrl || defaultAvatar;
+                            const navIcon = bottomAuthBtn.querySelector('.nav-icon');
+                            if (navIcon) {
+                                navIcon.outerHTML = (avatarUrl && avatarUrl.length <= 10 && !avatarUrl.includes('http') && !avatarUrl.includes('data:image'))
+                                    ? `<div class="nav-icon" style="width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin-bottom: 4px; border: 1px solid var(--primary); color: #fff;">${avatarUrl}</div>`
+                                    : `<img src="${avatarUrl}" class="nav-icon" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; margin-bottom: 4px; border: 1px solid var(--primary);">`;
+                            }
+                            bottomAuthBtn.href = "profile.html";
+                        }
+                    }
+                });
+
+                if (dramaId) {
+                    onSnapshot(doc(db, "users", user.uid, "history", String(dramaId)), (historySnap) => {
+                        if (historySnap.exists()) {
+                            const cloudData = historySnap.data();
+                            const cloudSeason = parseInt(cloudData.season);
+                            const cloudEp = parseInt(cloudData.episode);
+                            if (cloudSeason && cloudEp && (cloudSeason !== window.currentSeason || cloudEp !== window.currentEpisode)) {
+                                window.loadEpisode(cloudSeason, cloudEp, true); 
+                            }
+                        }
+                    }, (err) => console.warn("Cloud history sync error:", err));
+                }
+            } else {
+                isVipUser = false;
+                if (videoSpinner) videoSpinner.style.display = 'none';
                 
-                // If the ad frame is less than 50px tall, Adcash served a blank ad (Localhost/Adblock)
-                if (adFrame && adFrame.offsetHeight < 50) {
-                    adSection.style.display = 'none'; // Kill the empty box
+                const isUnlocked = sessionStorage.getItem(`unlocked_${dramaId}`) === 'true';
+                if (isUnlocked) {
+                    if (paywall) paywall.style.display = 'none';
+                } else {
+                    if (paywall) paywall.style.display = 'flex';
                 }
                 
-                // Stop checking once we've made a decision
-                clearInterval(adCheckInterval); 
-            }
-        }, 1000); // Checks every 1 second
-    </script>
-    <!-- AUTO-LANDSCAPE ON FULLSCREEN -->
-<script>
-    function handleFullscreenRotation() {
-        const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
-        
-        if (isFullscreen) {
-            // Lock to landscape if the device supports it (mostly mobile)
-            if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock('landscape').catch((err) => {
-                    console.warn('Orientation lock not supported or denied:', err);
-                });
-            }
-        } else {
-            // Unlock orientation when exiting fullscreen
-            if (screen.orientation && screen.orientation.unlock) {
-                screen.orientation.unlock();
-            }
-        }
-    }
+                if (bottomAuthBtn) {
+                    bottomAuthBtn.innerHTML = '<i class="fa-solid fa-user nav-icon"></i>';
+                    bottomAuthBtn.href = "login.html";
+                }
 
-    document.addEventListener('fullscreenchange', handleFullscreenRotation);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenRotation);
+                authResolve();
+            }
+        });
 
-    // =========================================================
-        // AD UNLOCK PAYWALL LOGIC
-        // =========================================================
-        const paywallOverlay = document.getElementById('video-paywall');
-        const watchAdBtn = document.getElementById('btn-watch-sponsor');
-        const actionBtns = document.getElementById('paywall-action-btns');
-        const countdownContainer = document.getElementById('ad-countdown-container');
-        const timerText = document.getElementById('ad-timer');
-
-        // Optional: Check if user is Premium to auto-hide the paywall
-        function checkPremiumStatus() {
-            // If you have premium logic in your activeData or currentUser, you can auto-unlock:
-            // if (currentUser && isPremium) { paywallOverlay.classList.add('unlocked'); }
+        async function autoGenerateFromTMDB(idStr) {
+            if (!navigator.onLine) throw { title: "No Internet Connection", message: "Please check your network settings.", code: "ERR_OFFLINE", icon: "fas fa-wifi" };
+            let mediaType = 'tv', res = null, lastStatus = null;
             
-            // For now, let's also check if they already unlocked it during this browsing session
-            if (sessionStorage.getItem(`unlocked_${dramaId}`) === 'true') {
-                paywallOverlay.classList.add('unlocked');
+            try {
+                res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/tv/${idStr}?append_to_response=external_ids,credits`);
+                lastStatus = res.status;
+            } catch(err) { throw { title: "Proxy Unreachable", message: "Cloudflare proxy gateway failure.", code: "ERR_PROXY", icon: "fas fa-network-wired" }; }
+            
+            if (!res.ok) {
+                try {
+                    res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/movie/${idStr}?append_to_response=external_ids,credits`);
+                    lastStatus = res.status;
+                    mediaType = 'movie';
+                } catch(err) { throw { title: "Proxy Unreachable", message: "Secondary gateway failure.", code: "ERR_PROXY_2", icon: "fas fa-network-wired" }; }
+
+                if (!res.ok) {
+                    if (lastStatus === 404) throw { title: "Title Not Found", message: `ID "${idStr}" has been removed.`, code: "HTTP_404", icon: "fas fa-film" };
+                    else throw { title: "API Error", message: `Server error ${lastStatus}.`, code: `HTTP_${lastStatus}`, icon: "fas fa-server" };
+                }
             }
+            
+            const data = await res.json();
+            let typeStr = mediaType === 'movie' ? 'Movie' : 'Show';
+            if (mediaType !== 'movie') {
+                const isAnimation = data.genres && data.genres.some(g => g.id === 16);
+                const country = (data.origin_country && data.origin_country.length > 0) ? data.origin_country[0] : '';
+                if (isAnimation && country === 'JP') typeStr = 'Anime';
+                else if (['KR', 'CN', 'JP', 'TH', 'TW'].includes(country)) typeStr = 'Drama';
+            }
+
+            let epsArr = [1];
+            if (mediaType === 'tv' && data.seasons) {
+                const validSeasons = data.seasons.filter(s => s.season_number > 0);
+                if(validSeasons.length > 0) epsArr = validSeasons.map(s => s.episode_count || 1);
+            }
+
+            return {
+                id: String(idStr),
+                title: data.name || data.title || "Unknown",
+                synopsis: data.overview || "No synopsis available.",
+                img: data.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${data.poster_path}` : "default-poster.jpg",
+                backdrop_path: data.backdrop_path || "",
+                imdbId: data.external_ids?.imdb_id || "",
+                tmdbId: String(idStr),
+                year: (data.first_air_date || data.release_date || "Unknown").substring(0, 4),
+                status: data.status || "Ongoing",
+                genre: data.genres ? data.genres.map(g => g.name).join(', ') : "Drama",
+                totalEps: epsArr.reduce((a, b) => a + b, 0) || 1,
+                seasons: epsArr,
+                type: typeStr,
+                imdb: data.vote_average ? data.vote_average.toFixed(1) : "",
+                actors: data.credits?.cast?.slice(0, 5).map(c => c.name) || [],
+            };
         }
 
-        if (watchAdBtn) {
-            watchAdBtn.addEventListener('click', () => {
-                // 1. Hide the buttons, show the countdown timer
-                actionBtns.style.display = 'none';
-                countdownContainer.style.display = 'block';
+        // INIT SEQUENCE
+        (async () => {
+            try {
+                if (!navigator.onLine) throw { title: "No Internet Connection", message: "Check network settings.", code: "ERR_OFFLINE", icon: "fas fa-wifi" };
+                
+                let docSnap;
+                try { docSnap = await getDoc(doc(db, "dramas", dramaId)); } 
+                catch(e) { throw { title: "Database Error", message: "Firestore connection blocked.", code: "DB_ERR", icon: "fas fa-database" }; }
+                
+                if (docSnap.exists()) {
+                    activeData = docSnap.data();
+                    activeData.id = dramaId;
+                    if(!activeData.tmdbId) activeData.tmdbId = dramaId; 
+                } else {
+                    activeData = await autoGenerateFromTMDB(dramaId);
+                }
 
-                // 2. OPTIONAL: Open your Adsterra Direct Link in a new tab 
-                 window.open('https://mammothsubway.com/jv6x19fs?key=fca57385ae8621e726940d6510f8aaab', '_blank');
+                activeTmdbId = activeData.tmdbId || dramaId;
+                activeImdbId = activeData.imdbId || activeData.imdb_id || activeData.imdb;
 
-                // 3. Start the 10-second countdown
-                let secondsLeft = 10;
-                timerText.textContent = secondsLeft;
-
-                const timerInterval = setInterval(() => {
-                    secondsLeft--;
-                    timerText.textContent = secondsLeft;
-
-                    if (secondsLeft <= 0) {
-                        clearInterval(timerInterval);
-                        
-                        // Unlock the video
-                        paywallOverlay.classList.add('unlocked');
-                        
-                        // Save session state so they don't have to watch an ad every time they change episodes
-                        sessionStorage.setItem(`unlocked_${dramaId}`, 'true');
+                try {
+                    const isMovie = activeData.type?.toLowerCase().includes('movie') ? 'movie' : 'tv';
+                    const simRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/${isMovie}/${activeTmdbId}/similar?page=1`);
+                    if (simRes.ok) {
+                        const simData = await simRes.json();
+                        activeData.similar = simData.results || [];
                     }
-                }, 1000);
-            });
-        }
+                } catch (err) {}
 
-        // Call this when the episode loads
-        checkPremiumStatus();
-</script>
+                document.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton', 'skeleton-text', 'short'));
+
+                // Render UI
+                document.getElementById('ui-title').textContent = activeData.title;
+                document.getElementById('ui-synopsis').textContent = activeData.synopsis;
+                document.getElementById('ui-year').textContent = activeData.year;
+                
+                if(activeData.actors && activeData.actors.length > 0) {
+                    document.getElementById('ui-cast-inline-names').textContent = activeData.actors.join(', ');
+                } else {
+                    document.getElementById('hero-cast-inline').style.display = 'none';
+                }
+
+                const scoreEl = document.getElementById('ui-tmdb-score');
+                if (activeData.vote_average || activeData.imdb) {
+                    const rating = activeData.vote_average || activeData.imdb;
+                    scoreEl.textContent = `${Math.round(rating * 10)}% Match`;
+                } else { scoreEl.textContent = "New"; }
+
+                if (activeData.backdrop_path) {
+                    document.getElementById('ambilight-bg').src = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${activeData.backdrop_path}`;
+                }
+
+                // Render Recs
+                const recsContainer = document.getElementById('ui-recs');
+                if (activeData.similar && activeData.similar.length > 0) {
+                    recsContainer.innerHTML = activeData.similar.slice(0, 5).map(rec => {
+                        let p = rec.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w200${rec.poster_path}` : 'default-poster.jpg';
+                        const t = rec.name || rec.title;
+                        const r = rec.vote_average ? `${Math.round(rec.vote_average * 10)}% Match` : 'New';
+                        return `
+                        <div class="rec-wrapper">
+                            <a href="watch.html?id=${rec.id}" class="rec-card">
+                                <img src="${p}" alt="${t}" loading="lazy" onerror="this.src='default-poster.jpg'">
+                                <div class="rec-info"><h4>${t}</h4><p>${r}</p></div>
+                            </a>
+                            <button class="rec-add-btn" title="Add to List" onclick="event.preventDefault(); window.showInlineToast('Added to My List');"><i class="fas fa-plus"></i></button>
+                        </div>`;
+                    }).join('');
+                } else { recsContainer.innerHTML = '<p style="color:#a3a3a3; font-size:0.85rem;">No recommendations found.</p>'; }
+
+                document.querySelectorAll('.fade-in-section').forEach(el => lazyObserver.observe(el));
+
+                // My List toggle
+                document.getElementById('add-to-list-btn').addEventListener('click', async () => {
+                    if (!currentUser) return alert("Please log in to manage your list.");
+                    let inListIdx = profileMyList.findIndex(item => String(item.id) === String(dramaId));
+                    if (inListIdx > -1) profileMyList.splice(inListIdx, 1);
+                    else profileMyList.push({ id: String(dramaId), title: activeData.title, img: activeData.img, link: `watch.html?id=${dramaId}`, timestamp: Date.now() });
+                    updateWatchlistUI();
+                    
+                    try {
+                        const userDocRef = doc(db, "users", currentUser.uid);
+                        const snap = await getDoc(userDocRef);
+                        if(snap.exists()) {
+                            let d = snap.data();
+                            if(d.profiles && d.profiles.length > 0) {
+                                d.profiles[activeProfileIndex].myList = profileMyList;
+                                await updateDoc(userDocRef, { profiles: d.profiles });
+                            } else {
+                                await updateDoc(userDocRef, { myList: profileMyList });
+                            }
+                        }
+                    } catch(e) {}
+                });
+
+                // Episode logic
+                seasonsArr = activeData.seasons || [activeData.totalEps || 1];
+                let initSeason = 1;
+                let initEp = 1;
+                
+                const globalHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                if (globalHistory[dramaId] && globalHistory[dramaId].season && globalHistory[dramaId].episode) {
+                    initSeason = parseInt(globalHistory[dramaId].season);
+                    initEp = parseInt(globalHistory[dramaId].episode);
+                } else {
+                    const savedEpRaw = localStorage.getItem(`dramakan_ep_${dramaId}`);
+                    if (savedEpRaw && savedEpRaw !== "0") {
+                        if (savedEpRaw.includes('-')) {
+                            const parts = savedEpRaw.split('-');
+                            initSeason = parseInt(parts[0]);
+                            initEp = parseInt(parts[1]);
+                        } else { initEp = parseInt(savedEpRaw); }
+                    }
+                }
+
+                window.currentSeason = initSeason;
+                window.currentEpisode = initEp;
+
+                const seasonSelector = document.getElementById('season-selector');
+                if (seasonsArr.length > 1) {
+                    seasonSelector.style.display = 'block';
+                    seasonSelector.innerHTML = seasonsArr.map((_, idx) => `<option value="${idx + 1}">Season ${idx + 1}</option>`).join('');
+                    seasonSelector.value = initSeason; 
+                }
+
+                seasonSelector.addEventListener('change', (e) => { window.renderEpisodeGrid(e.target.value); });
+
+                window.renderEpisodeGrid = async function(seasonNum) {
+                    window.currentSeason = parseInt(seasonNum);
+                    const grid = document.getElementById('episodes-list-container');
+                    grid.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+
+                    let epsInThisSeason = seasonsArr[window.currentSeason - 1] || 1;
+                    let episodesData = null;
+                    const isMovieType = activeData.type?.toLowerCase().includes('movie');
+                    
+                    if (!isMovieType && activeTmdbId) {
+                        try {
+                            const seasonRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/tv/${activeTmdbId}/season/${window.currentSeason}`);
+                            if (seasonRes.ok) {
+                                const seasonDetails = await seasonRes.json();
+                                if (seasonDetails.episodes) {
+                                    episodesData = seasonDetails.episodes;
+                                    epsInThisSeason = episodesData.length;
+                                    seasonsArr[window.currentSeason - 1] = epsInThisSeason; 
+                                }
+                            }
+                        } catch(err) {}
+                    }
+
+                    let buttonsHtml = '';
+                    for (let i = 1; i <= epsInThisSeason; i++) {
+                        const epInfo = episodesData ? episodesData[i-1] : null;
+                        const epTitle = epInfo && epInfo.name ? (isMovieType ? epInfo.name : `Episode ${i} - ${epInfo.name}`) : (isMovieType ? 'Full Movie' : `Episode ${i}`);
+                        const runtime = epInfo && epInfo.runtime ? `${epInfo.runtime}m` : (isMovieType ? '120m' : '45m');
+
+                        buttonsHtml += `
+                            <div class="ep-timeline-item" data-season="${window.currentSeason}" data-index="${window.currentSeason}-${i}" onclick="loadEpisode(${window.currentSeason}, ${i})">
+                                <div class="ep-icon"><i class="fas fa-play"></i></div>
+                                <div class="ep-info-text">
+                                    <h4>${epTitle}</h4>
+                                    <p style="display:none; color: var(--primary); margin:0; font-size:0.75rem;" class="now-playing-text">Now Playing</p>
+                                </div>
+                                <div class="ep-duration">${runtime}</div>
+                            </div>`;
+                    }
+                    grid.innerHTML = buttonsHtml;
+                    updateActiveButton();
+                    updateQuickActionStates();
+                };
+
+                function updateQuickActionStates() {
+                    const btnPrev = document.getElementById('btn-prev-ep');
+                    const btnNext = document.getElementById('btn-next-ep');
+                    const epsInSeason = seasonsArr[window.currentSeason - 1] || 1;
+
+                    if (window.currentEpisode <= 1 && window.currentSeason <= 1) btnPrev.classList.add('disabled');
+                    else btnPrev.classList.remove('disabled');
+
+                    if (window.currentEpisode >= epsInSeason && window.currentSeason >= seasonsArr.length) btnNext.classList.add('disabled');
+                    else btnNext.classList.remove('disabled');
+                }
+
+                function updateActiveButton() {
+                    document.querySelectorAll('.ep-timeline-item').forEach((item) => {
+                        const isMatch = parseInt(item.dataset.season) === window.currentSeason && item.getAttribute('data-index') === `${window.currentSeason}-${window.currentEpisode}`;
+                        item.classList.toggle('active', isMatch);
+                        const textP = item.querySelector('.now-playing-text');
+                        if(textP) textP.style.display = isMatch ? 'block' : 'none';
+                    });
+                }
+
+                // Dispatcher
+                window.loadEpisode = async function(season, ep, fromCloudSync = false) {
+                    const targetSeason = parseInt(season);
+                    const targetEp = parseInt(ep);
+                    
+                    if (seasonSelector && seasonsArr.length > 1 && parseInt(seasonSelector.value) !== targetSeason) {
+                        seasonSelector.value = targetSeason;
+                        await window.renderEpisodeGrid(targetSeason);
+                    }
+
+                    window.currentSeason = targetSeason;
+                    window.currentEpisode = targetEp;
+                    const isMovie = activeData.type?.toLowerCase().includes('movie');
+
+                    // Await authorization before triggering player stream
+                    await authReady;
+
+                    const videoPlayer = document.getElementById('video-player-iframe');
+                    const seasonParam = isMovie ? "movie" : targetSeason;
+                    const epParam = isMovie ? "1" : targetEp;
+                    const isUnlocked = isVipUser || (sessionStorage.getItem(`unlocked_${dramaId}`) === 'true');
+
+                    if (!isUnlocked) {
+                        videoPlayer.src = "";
+                    } else {
+                        try {
+                            const response = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/stream-gateway/${currentServer}/${activeTmdbId}/${seasonParam}/${epParam}`);
+                            if (!response.ok) throw new Error("Stream rejected");
+                            const data = await response.json();
+                            videoPlayer.src = data.target;
+                        } catch(err) {
+                            videoPlayer.src = "about:blank";
+                            showExplicitError({ title: "Stream Failed", message: "Unable to authorize stream server.", code: "ERR_STREAM", icon: "fas fa-shield-halved" });
+                        }
+                    }
+                    
+                    updateActiveButton();
+                    updateQuickActionStates();
+                    
+                    localStorage.setItem(`dramakan_ep_${dramaId}`, `${targetSeason}-${targetEp}`);
+                    const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                    historyObj[dramaId] = {
+                        title: activeData.title, img: activeData.img, link: `watch.html?id=${dramaId}`,
+                        timestamp: Date.now(), season: targetSeason, episode: targetEp, backdrop_path: activeData.backdrop_path
+                    };
+                    localStorage.setItem('dramakan_history', JSON.stringify(historyObj));
+                    window.dispatchEvent(new Event('historySynced'));
+
+                    if (currentUser && !fromCloudSync) {
+                        try {
+                            await setDoc(doc(db, "users", currentUser.uid, "history", String(dramaId)), {
+                                id: String(dramaId), dramaId: String(dramaId), title: activeData.title,
+                                img: activeData.img, link: `watch.html?id=${dramaId}`,
+                                season: targetSeason, episode: targetEp, timestamp: Date.now()
+                            }, { merge: true });
+                        } catch(err) {}
+                    }
+                    
+                    try {
+                        const pageTitle = isMovie ? `Watch ${activeData.title} Online Free - DramaKan` : `Watch ${activeData.title} Episode ${targetEp} Online Free - DramaKan`;
+                        document.getElementById('seo-title').textContent = pageTitle;
+                        document.title = pageTitle;
+                    } catch(e) {}
+                };
+
+                await window.renderEpisodeGrid(initSeason);
+                window.loadEpisode(initSeason, initEp);
+
+                document.getElementById('btn-prev-ep').addEventListener('click', () => {
+                    if (window.currentEpisode > 1) { window.loadEpisode(window.currentSeason, window.currentEpisode - 1); } 
+                    else if (window.currentSeason > 1) { window.loadEpisode(window.currentSeason - 1, seasonsArr[window.currentSeason - 2]); }
+                });
+
+                document.getElementById('btn-next-ep').addEventListener('click', () => {
+                    const epsInSeason = seasonsArr[window.currentSeason - 1];
+                    if (window.currentEpisode < epsInSeason) { window.loadEpisode(window.currentSeason, window.currentEpisode + 1); } 
+                    else if (window.currentSeason < seasonsArr.length) { window.loadEpisode(window.currentSeason + 1, 1); }
+                });
+
+                // Unified Download Modal Logic
+                const dlModal = document.getElementById('downloadModal');
+                
+                document.querySelectorAll('[id="btn-download-popup"]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (!activeData) return;
+                        
+                        const isUnlocked = isVipUser || (sessionStorage.getItem(`unlocked_${dramaId}`) === 'true');
+                        
+                        if (isUnlocked) {
+                            executeDirectDownload();
+                        } else {
+                            dlModal.style.display = 'flex';
+                        }
+                    });
+                });
+
+                document.getElementById('closeDownloadModal')?.addEventListener('click', () => { dlModal.style.display = 'none'; });
+                dlModal.addEventListener('click', (e) => { if (e.target === dlModal) dlModal.style.display = 'none'; });
+
+                function executeDirectDownload() {
+                    const isMovie = activeData.type?.toLowerCase().includes('movie');
+                    let dlUrl = '';
+                    if (isMovie) {
+                        const imdbId = activeImdbId || activeData.imdbId || activeData.imdb_id || '';
+                        if (!imdbId) { alert("Download link not available for this movie yet."); return; }
+                        dlUrl = `https://nxsha.space/dl/movie/${imdbId}`;
+                    } else {
+                        if (!activeTmdbId || !window.currentSeason || !window.currentEpisode) { alert("Download not available yet."); return; }
+                        dlUrl = `https://nxsha.space/dl/tv/${activeTmdbId}/${window.currentSeason}/${window.currentEpisode}`;
+                    }
+                    window.open(dlUrl, '_blank', 'noopener,noreferrer');
+                }
+
+                document.getElementById('btn-dl-premium')?.addEventListener('click', () => { window.location.href = 'subscription.html'; });
+
+                document.getElementById('btn-dl-ad')?.addEventListener('click', () => {
+                    window.open('https://mammothsubway.com/jv6x19fs?key=fca57385ae8621e726940d6510f8aaab', '_blank');
+                    sessionStorage.setItem(`unlocked_${dramaId}`, 'true');
+                    dlModal.style.display = 'none';
+                    window.showInlineToast("Content unlocked! Starting download...");
+                    setTimeout(() => { executeDirectDownload(); }, 1200);
+                });
+
+                // Paywall Buttons Logic
+                const paywallOverlay = document.getElementById('video-paywall');
+                const watchAdBtn = document.getElementById('btn-watch-sponsor');
+                const actionBtns = document.getElementById('paywall-action-btns');
+                const countdownContainer = document.getElementById('ad-countdown-container');
+                const timerText = document.getElementById('ad-timer');
+
+                if (watchAdBtn) {
+                    watchAdBtn.addEventListener('click', () => {
+                        actionBtns.style.display = 'none';
+                        countdownContainer.style.display = 'block';
+                        window.open('https://mammothsubway.com/jv6x19fs?key=fca57385ae8621e726940d6510f8aaab', '_blank');
+
+                        let secondsLeft = 10;
+                        timerText.textContent = secondsLeft;
+                        const timerInterval = setInterval(() => {
+                            secondsLeft--;
+                            timerText.textContent = secondsLeft;
+                            if (secondsLeft <= 0) {
+                                clearInterval(timerInterval);
+                                paywallOverlay.style.display = 'none';
+                                sessionStorage.setItem(`unlocked_${dramaId}`, 'true');
+                                
+                                window.loadEpisode(window.currentSeason, window.currentEpisode);
+                            }
+                        }, 1000);
+                    });
+                }
+
+                // Share
+                document.getElementById('btn-share').addEventListener('click', async () => {
+                    const shareUrl = window.location.href;
+                    if (navigator.share) {
+                        try { await navigator.share({ title: `${activeData.title} - DramaKan`, url: shareUrl }); return; } catch (err) { }
+                    }
+                    document.getElementById('share-card-poster').src = activeData.img || '';
+                    document.getElementById('share-card-title').textContent = activeData.title || 'Drama';
+                    document.getElementById('share-card-ep').textContent = activeData.type?.toLowerCase().includes('movie') ? 'Full Movie' : `Episode ${window.currentEpisode || 1}`;
+                    document.getElementById('share-card-year').textContent = activeData.year || '';
+                    document.getElementById('share-card-url').value = shareUrl;
+                    document.getElementById('shareCardOverlay').style.display = 'flex';
+                });
+                document.getElementById('closeShareCard').addEventListener('click', () => { document.getElementById('shareCardOverlay').style.display = 'none'; });
+                document.getElementById('shareCardOverlay').addEventListener('click', (e) => { if (e.target.id === 'shareCardOverlay') document.getElementById('shareCardOverlay').style.display = 'none'; });
+                document.getElementById('share-copy-link').addEventListener('click', () => {
+                    navigator.clipboard.writeText(window.location.href).then(() => window.showInlineToast("Link copied!"));
+                });
+
+                // Comments Initialization
+                const commentsList = document.getElementById('comments-list');
+                document.getElementById('comment-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const text = document.getElementById('comment-text-input').value.trim();
+                    if (!currentUser) { alert("Please log in to comment."); return; }
+                    if (text === "") return;
+                    document.getElementById('submit-comment-btn').disabled = true;
+                    try {
+                        await addDoc(collection(db, "dramas", dramaId, "comments"), {
+                            text: text, userId: currentUser.uid, username: currentUser.displayName || "DramaFan",
+                            userAvatar: currentUser.photoURL || defaultAvatar, timestamp: serverTimestamp()
+                        });
+                        document.getElementById('comment-text-input').value = '';
+                    } catch (error) {}
+                    document.getElementById('submit-comment-btn').disabled = false;
+                });
+
+                onSnapshot(query(collection(db, "dramas", dramaId, "comments"), orderBy("timestamp", "desc")), (snapshot) => {
+                    commentsList.innerHTML = ''; 
+                    if (snapshot.empty) {
+                        commentsList.innerHTML = '<p style="color:#a3a3a3; font-size: 0.85rem; text-align: center;">No comments yet.</p>';
+                        return;
+                    }
+                    snapshot.forEach((doc) => {
+                        const c = doc.data();
+                        const timeAgo = c.timestamp ? c.timestamp.toDate().toLocaleDateString() : "Just now";
+                        commentsList.insertAdjacentHTML('beforeend', `
+                            <div style="display:flex; gap:15px;">
+                                <img src="${c.userAvatar}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                                <div style="flex:1; background:rgba(255,255,255,0.02); border:1px solid var(--glass-border); padding:15px; border-radius:12px;">
+                                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                                        <span style="font-weight:600; color:#fff; font-size:0.9rem;">${c.username}</span>
+                                        <span style="font-size:0.75rem; color:#a3a3a3;">${timeAgo}</span>
+                                    </div>
+                                    <p style="margin:0; font-size:0.85rem; color:#d1d5db;">${c.text}</p>
+                                </div>
+                            </div>
+                        `);
+                    });
+                });
+
+            } catch(e) {
+                console.error(e);
+                showExplicitError(e.title ? e : { title: "Initialization Error", message: "Failed to load watch logic.", code: "ERR_INIT", icon: "fas fa-bug" });
+            }
+        })();
+
+        // Report Fix
+        const reportModal = document.getElementById('reportModal');
+        document.getElementById('btn-report')?.addEventListener('click', () => {
+            if (!currentUser) return alert("Log in to report issues.");
+            reportModal.style.display = 'flex';
+        });
+        document.getElementById('closeReportModal')?.addEventListener('click', () => reportModal.style.display = 'none');
+        reportModal.addEventListener('click', (e) => { if (e.target === reportModal) reportModal.style.display = 'none'; });
+        
+        document.getElementById('reportForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('reportSubmitBtn');
+            btn.innerHTML = 'Sending...'; btn.disabled = true;
+            try {
+                await addDoc(collection(db, "reports"), {
+                    userId: currentUser.uid, dramaId: dramaId, dramaName: activeData.title,
+                    season: window.currentSeason, episode: window.currentEpisode,
+                    issue: document.getElementById('reportIssue').value, details: document.getElementById('reportDetails').value,
+                    server: 'nxsha', timestamp: serverTimestamp(), status: "Pending"
+                });
+                window.showInlineToast("Report sent! We'll fix it ASAP.");
+                setTimeout(() => { reportModal.style.display = 'none'; document.getElementById('reportForm').reset();}, 1500);
+            } catch (err) {} finally { btn.innerHTML = "Send Report"; btn.disabled = false; }
+        });
+
+        const adCheckInterval = setInterval(() => {
+            document.querySelectorAll('.ad-glass-panel, .sidebar-ad-widget').forEach(container => {
+                const iframe = container.querySelector('iframe');
+                if (iframe && (iframe.offsetHeight < 50 || container.offsetHeight < 50)) container.style.display = 'none';
+            });
+        }, 1500);
+        setTimeout(() => clearInterval(adCheckInterval), 15000);
+
+    </script>
 </body>
 </html>

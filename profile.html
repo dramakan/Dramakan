@@ -74,7 +74,7 @@
         }
 
         /* =========================================
-           3. TOP HEADER
+           3. TOP HEADER & NOTIFICATIONS
         ========================================= */
         .top-header { 
             display: flex; justify-content: space-between; align-items: center; 
@@ -86,7 +86,8 @@
         .site-logo span { color: var(--primary); }
         .site-logo:hover { opacity: 0.8; }
 
-        .header-actions { display: flex; gap: 15px; align-items: center; }
+        /* FIX: Added position relative so the dropdown aligns perfectly */
+        .header-actions { display: flex; gap: 15px; align-items: center; position: relative; }
 
         .header-icon-btn {
             width: 44px; height: 44px; border-radius: 14px; background: var(--bg-surface); 
@@ -97,9 +98,9 @@
         .header-icon-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--glass-highlight); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.3);}
         
         .notif-badge-dot {
-            position: absolute; top: -4px; right: -4px; width: 18px; height: 18px; background: var(--danger); 
-            border-radius: 50%; border: 3px solid var(--bg-void); box-sizing: content-box;
-            color: #fff; font-size: 0.6rem; display: flex; align-items: center; justify-content: center; font-weight: 800;
+            position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 4px; background: var(--danger); 
+            border-radius: 50px; border: 3px solid var(--bg-void); box-sizing: content-box;
+            color: #fff; font-size: 0.65rem; display: flex; align-items: center; justify-content: center; font-weight: 800;
         }
 
         .btn-switch { 
@@ -109,37 +110,36 @@
         }
         .btn-switch:hover { background: rgba(255,255,255,0.1); border-color: var(--glass-highlight); transform: translateY(-2px); }
 
-        /* Notifications Dropdown Container */
+        /* FIX: Better readability, opacity, and positioning for Dropdown */
         .notif-dropdown {
-            position: absolute; top: 60px; right: 0; width: 380px; max-height: 500px; 
-            background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(40px) saturate(150%); -webkit-backdrop-filter: blur(40px) saturate(150%);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; display: none; flex-direction: column;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1); z-index: 1500; overflow: hidden;
+            position: absolute; top: 60px; right: 0; width: 380px; max-height: 450px; 
+            background: rgba(15, 15, 20, 0.95); backdrop-filter: blur(40px) saturate(150%); -webkit-backdrop-filter: blur(40px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px; display: none; flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1); z-index: 1500; overflow: hidden;
             transform-origin: top right; animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .notif-dropdown.active { display: flex; }
         
-        .notif-dropdown-header { padding: 18px 24px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02);}
-        .notif-dropdown-header h3 { font-size: 1rem; font-weight: 700; margin: 0;}
-        .notif-dropdown-header button { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; transition: 0.2s;}
-        .notif-dropdown-header button:hover { color: var(--text-main); }
+        .notif-dropdown-header { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03);}
+        .notif-dropdown-header h3 { font-size: 1.05rem; font-weight: 700; margin: 0; color: #fff;}
+        .notif-dropdown-header button { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; transition: 0.2s; background: transparent; border: none; cursor: pointer;}
+        .notif-dropdown-header button:hover { color: var(--danger); }
         
-        .notif-dropdown-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;}
+        .notif-dropdown-list { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;}
         .notif-dropdown-list::-webkit-scrollbar { width: 6px; }
         .notif-dropdown-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
 
-        .global-notif-item { display: flex; gap: 15px; padding: 15px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid transparent; transition: 0.3s; position: relative; }
-        .global-notif-item:hover { background: rgba(255,255,255,0.06); border-color: var(--glass-border); transform: translateX(4px);}
-        .global-notif-icon { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), transparent); color: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; border: 1px solid rgba(157, 78, 221, 0.3);}
+        .global-notif-item { display: flex; gap: 15px; padding: 15px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid transparent; transition: 0.3s; position: relative; }
+        .global-notif-item:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.1); transform: translateX(4px);}
+        .global-notif-icon { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), transparent); color: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; border: 1px solid rgba(157, 78, 221, 0.3);}
         .global-notif-content { flex: 1; min-width: 0; }
-        .global-notif-title { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 4px; letter-spacing: -0.3px;}
-        .global-notif-body { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
-        .global-notif-time { font-size: 0.7rem; color: #64748B; margin-top: 8px; font-weight: 500;}
-        .global-notif-delete { position: absolute; top: 15px; right: 15px; background: rgba(239, 68, 68, 0.1); width: 28px; height: 28px; border-radius: 50%; color: var(--danger); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; opacity: 0; transition: 0.3s; transform: scale(0.8);}
+        .global-notif-title { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 5px; letter-spacing: -0.3px;}
+        .global-notif-body { font-size: 0.85rem; color: #d1d5db; line-height: 1.5; }
+        .global-notif-time { font-size: 0.75rem; color: #64748B; margin-top: 8px; font-weight: 600;}
+        .global-notif-delete { position: absolute; top: 15px; right: 15px; background: rgba(239, 68, 68, 0.15); width: 30px; height: 30px; border-radius: 50%; color: var(--danger); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; opacity: 0; transition: 0.3s; transform: scale(0.8); border: none;}
         .global-notif-item:hover .global-notif-delete { opacity: 1; transform: scale(1); }
         .global-notif-delete:hover { background: var(--danger); color: #fff; }
-
         /* =========================================
            4. DASHBOARD HERO SECTION
         ========================================= */
@@ -407,7 +407,7 @@
             .list-card { min-width: 140px; max-width: 140px; }
             
             .cw-remove-btn, .remove-list-btn { opacity: 1; background: rgba(0,0,0,0.6); transform: scale(1);}
-            .notif-dropdown { width: calc(100vw - 40px); right: 0; position: fixed; top: 80px; left: 20px;}
+            .notif-dropdown { width: calc(100vw - 30px); right: -15px; position: absolute; top: 60px; left: auto;}
 
             #home-nav-btn { display: none !important; }
         }

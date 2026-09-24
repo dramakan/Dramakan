@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refer & Earn - Dramakan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8A2BE2;
+            --primary-rich: #6a1b9a;
+            --primary-glow: rgba(138, 43, 226, 0.4);
+            --glass-bg: rgba(20, 20, 25, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --success: #10B981;
+        }
+        body { 
+            font-family: 'Poppins', sans-serif; background: #0B0C10; color: #F8F8F8; 
+            margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden;
+        }
+        .liquid-bg { 
+            position: fixed; inset: 0; 
+            background: radial-gradient(circle at 15% 50%, rgba(138, 43, 226, 0.08), transparent 50%), 
+                        radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.05), transparent 50%); 
+            z-index: -1; 
+        }
+        .container { max-width: 900px; width: 100%; z-index: 1; padding: 40px 5%; box-sizing: border-box;}
+        .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .nav-header a { color: #a1a1aa; text-decoration: none; transition: color 0.3s; font-weight: 500; display: flex; align-items: center; gap: 8px;}
+        .nav-header a:hover { color: var(--primary); }
+
+        .header-text { text-align: center; margin-bottom: 40px; animation: fadeDown 0.6s ease; }
+        .header-text h1 { font-size: 2.8rem; margin-bottom: 10px; background: linear-gradient(135deg, #fff, #d8b4fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; letter-spacing: -1px; font-weight: 800;}
+        .header-text p { color: #a1a1aa; font-size: 1.05rem; max-width: 600px; margin: 0 auto;}
+
+        .glass-panel {
+            background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 30px; position: relative; overflow: hidden;
+        }
+        
+        .code-display { font-family: monospace; font-size: 2rem; color: #fff; background: rgba(0,0,0,0.4); padding: 15px 30px; border-radius: 12px; border: 1px dashed var(--primary); margin: 20px 0; letter-spacing: 2px; position: relative;}
+        
+        .btn-primary { background: var(--primary); color: #fff; padding: 14px 30px; border: none; border-radius: 12px; font-weight: 600; font-size: 1.05rem; cursor: pointer; transition: 0.3s; box-shadow: 0 8px 20px var(--primary-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: inherit;}
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(138, 43, 226, 0.6); background: var(--primary-rich);}
+        
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px;}
+        .stat-box { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px;}
+        .stat-box h3 { font-size: 2rem; margin: 0 0 5px 0; color: #d8b4fe;}
+        .stat-box p { margin: 0; font-size: 0.85rem; color: #a1a1aa; text-transform: uppercase; letter-spacing: 1px;}
+
+        .share-actions { display: flex; justify-content: center; gap: 15px; margin-top: 30px; flex-wrap: wrap;}
+        .share-btn { padding: 12px 25px; border-radius: 50px; font-weight: 600; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #fff; transition: 0.3s;}
+        .share-whatsapp { background: #25D366; } .share-whatsapp:hover { background: #1ebe5d; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);}
+        .share-telegram { background: #0088cc; } .share-telegram:hover { background: #007ab8; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 136, 204, 0.4);}
+
+        .guidelines-box { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border); border-radius: 16px; padding: 25px 30px; text-align: left;}
+        .guidelines-box h3 { margin: 0 0 15px 0; color: #fff; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;}
+        .guidelines-box ul { padding-left: 20px; margin: 0; color: #a1a1aa; font-size: 0.9rem; line-height: 1.6;}
+        .guidelines-box li { margin-bottom: 10px; }
+
+        @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @media (max-width: 768px) {
+            .header-text h1 { font-size: 2.2rem; }
+            .glass-panel { padding: 30px 20px; }
+            .code-display { font-size: 1.5rem; padding: 12px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .share-btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="liquid-bg"></div>
+
+    <div class="container">
+        <div class="nav-header">
+            <a href="subscription.html"><i class="fas fa-arrow-left" style="font-size: 1.2rem;"></i> <span>Back</span></a>
+            <a href="profile.html"><span>Profile</span> <i class="fas fa-user-circle" style="font-size: 1.3rem;"></i></a>
+        </div>
+        
+        <div class="header-text">
+            <h1>Invite Friends, Get VIP Free</h1>
+            <p>Give your friends 7 Days of Plus VIP, and get 7 Days added to your own account when they join!</p>
+        </div>
+
+        <div class="glass-panel" id="codePanel">
+            <h2 style="margin:0 0 10px 0; color:#fff;">Your Unique Invite Code</h2>
+            <p style="color:#a1a1aa; font-size:0.9rem; margin-bottom:20px;">Share this code with friends. They can enter it on the Subscription page.</p>
+            
+            <div id="loadingCode" style="padding: 20px;"><i class="fas fa-spinner fa-spin fa-2x" style="color:var(--primary);"></i></div>
+            
+            <div id="myCodeBlock" style="display: none;">
+                <div class="code-display" id="myReferralCode">DK-XXXXXX</div>
+                <button class="btn-primary" id="copyCodeBtn"><i class="fas fa-copy"></i> Copy Code</button>
+                
+                <div class="share-actions">
+                    <a href="#" id="shareWhatsapp" class="share-btn share-whatsapp" target="_blank"><i class="fab fa-whatsapp"></i> Share on WhatsApp</a>
+                    <a href="#" id="shareTelegram" class="share-btn share-telegram" target="_blank"><i class="fab fa-telegram-plane"></i> Share on Telegram</a>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <h3 id="statInvites">0</h3>
+                        <p>Friends Invited</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 id="statDays">0</h3>
+                        <p>VIP Days Earned</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="guidelines-box">
+            <h3><i class="fas fa-info-circle" style="color: var(--primary);"></i> How it Works</h3>
+            <ul>
+                <li><strong>Share your code:</strong> Send your unique `DK-` code to friends who don't have VIP.</li>
+                <li><strong>They Redeem:</strong> Your friend creates an account and pastes your code in the "Redeem Code" section on the Subscription page.</li>
+                <li><strong>Instant Rewards:</strong> Both you and your friend instantly receive <strong>7 Days of Plus VIP</strong>.</li>
+                <li><strong>Unlimited Uses:</strong> You can invite as many friends as you want. 10 friends = 70 Days of free VIP!</li>
+                <li><strong>Restrictions:</strong> A friend can only use your code once. You cannot redeem your own code.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", authDomain: "dramakan007.firebaseapp.com", projectId: "dramakan007" };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                loadReferralCode();
+            } else {
+                alert("Please login to view your referral code.");
+                window.location.href = "login.html";
+            }
+        });
+
+        async function loadReferralCode() {
+            try {
+                // FIXED: Using deterministic code based on UID to prevent Firestore query permission errors
+                const codeSuffix = currentUser.uid.substring(0, 8).toUpperCase();
+                const myCodeId = "DK-" + codeSuffix;
+                
+                const codeRef = doc(db, "referral_codes", myCodeId);
+                const codeSnap = await getDoc(codeRef);
+                
+                let usedCount = 0;
+
+                if (codeSnap.exists()) {
+                    const data = codeSnap.data();
+                    if(data.usedBy) usedCount = data.usedBy.length;
+                } else {
+                    // Generate new code document
+                    await setDoc(codeRef, {
+                        ownerUid: currentUser.uid,
+                        ownerEmail: currentUser.email || "",
+                        createdAt: Date.now(),
+                        usedBy: []
+                    });
+                }
+
+                document.getElementById('myReferralCode').innerText = myCodeId;
+                document.getElementById('statInvites').innerText = usedCount;
+                document.getElementById('statDays').innerText = usedCount * 7;
+                
+                document.getElementById('loadingCode').style.display = 'none';
+                document.getElementById('myCodeBlock').style.display = 'block';
+
+                setupShareButtons(myCodeId);
+
+            } catch (e) {
+                console.error("Firebase Error:", e);
+                document.getElementById('loadingCode').innerHTML = `
+                    <p style='color:#ef4444;'>Failed to load code: ${e.message}</p>
+                    <button onclick="window.location.reload()" style="margin-top: 10px; background: var(--primary); color: #fff; padding: 8px 20px; border: none; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: 600;">Retry</button>
+                `;
+            }
+        }
+
+        function setupShareButtons(code) {
+            const shareText = `Watch Asian Dramas & Anime for free without ads! Use my invite code *${code}* on Dramakan to get 7 Days of free VIP. \n\nRedeem here: https://dramakan.site/subscription.html`;
+            const encodedText = encodeURIComponent(shareText);
+            
+            document.getElementById('shareWhatsapp').href = `https://api.whatsapp.com/send?text=${encodedText}`;
+            document.getElementById('shareTelegram').href = `https://t.me/share/url?url=${encodeURIComponent('https://dramakan.site')}&text=${encodedText}`;
+            
+            document.getElementById('copyCodeBtn').addEventListener('click', () => {
+                navigator.clipboard.writeText(code).then(() => {
+                    const btn = document.getElementById('copyCodeBtn');
+                    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy Code', 2000);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -155,7 +155,7 @@
     <main>
         <section class="latest-episodes" id="continue-watching-section" style="display: none;">
             <div class="container">
-                <div class="section-glass-box" style="background: rgba(138, 43, 226, 0.05); border-color: #8A2BE2;">
+                <div class="section-glass-box" style=" border-color: #8A2BE2;">
                     <div class="section-header">
                         <h2 class="section-title"><i class="fas fa-play-circle" style="color: #8A2BE2;"></i> Continue Watching</h2>
                     </div>
@@ -1068,88 +1068,133 @@ if (trendRes.ok) {
             }
         }
 
-        async function initAuthSync() {
-            try {
-                const { auth, db, firestoreModule, authModule } = await getFirebase();
-                const { doc, getDoc, collection, onSnapshot } = firestoreModule;
-                const { onAuthStateChanged } = authModule;
+        // --- 3. AUTHENTICATION & SYNC LAYER ---
+async function initAuthSync() {
+    try {
+        const { auth, db, firestoreModule, authModule } = await getFirebase();
+        const { doc, collection, onSnapshot } = firestoreModule; // Switched to onSnapshot
+        const { onAuthStateChanged } = authModule;
 
-                onAuthStateChanged(auth, async (user) => {
-                    const headerVipBtn = document.getElementById('headerVipBtn');
-                    
-                    if (user) {
-                        currentUser = user;
-
-                        // Check & Apply Subscription Privileges
-                        const sub = await getSubscriptionStatus(db, user.uid);
-                        applySubscriptionPrivileges(sub);
-
-                        const docSnap = await getDoc(doc(db, "users", user.uid));
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    // FIX: Real-time listener instead of one-time getDoc
+                    onSnapshot(doc(db, "users", user.uid), (docSnap) => {
                         let userProfiles = [];
                         let legacyAvatar = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(user.displayName || user.email || "User")}`;
                         
                         if (docSnap.exists()) {
                             const data = docSnap.data();
                             if (data.avatarUrl) legacyAvatar = data.avatarUrl;
-                            userProfiles = data.profiles && data.profiles.length > 0 ? data.profiles : [{ id: 'prof_default', name: data.username || "User", avatar: legacyAvatar }];
+                            
+                            if (data.profiles && data.profiles.length > 0) {
+                                userProfiles = data.profiles;
+                                if (userProfiles[0].avatar.includes('Netflix-avatar.png') || !userProfiles[0].avatar) {
+                                    userProfiles[0].avatar = legacyAvatar;
+                                }
+                            } else {
+                                userProfiles = [{ id: 'prof_default', name: data.username || "User", avatar: legacyAvatar }];
+                            }
                             
                             const now = Date.now();
                             let activePlan = "Basic";
-                            if (data.isPremium && data.premiumExpiry > now) {
-                                activePlan = data.premiumPlan || "";
+                            const isPremiumActive = data.isPremium && data.premiumExpiry > now;
+                            
+                            if (isPremiumActive) {
+                                activePlan = data.premiumPlan || "Plus_VIP_29";
+                                
+                                // --- FIX: INSTANT REAL-TIME VIP ACTIVATION ---
+                                document.documentElement.classList.add("premium-ad-free-mode");
+                                document.body.classList.add("premium-ad-free-mode");
+                                localStorage.setItem("dramakan_user_plan", activePlan);
+                            } else {
+                                // Instantly downgrade if expired
+                                document.documentElement.classList.remove("premium-ad-free-mode");
+                                document.body.classList.remove("premium-ad-free-mode");
+                                localStorage.setItem("dramakan_user_plan", "Basic");
                             }
+                        
+                            const headerVipBtn = document.querySelector('.vip-header-btn');
                             if (headerVipBtn) {
                                 if (activePlan.includes('Crown') || activePlan.includes('Premium')) {
-                                    headerVipBtn.style.display = 'none';
+                                    headerVipBtn.style.display = 'none'; 
+                                } else if (activePlan.includes('Elite')) {
+                                    headerVipBtn.className = 'vip-header-btn status-crown';
+                                    headerVipBtn.innerHTML = '<i class="fas fa-arrow-up"></i> Upgrade Crown';
+                                    headerVipBtn.style.display = 'inline-flex';
                                 } else {
+                                    headerVipBtn.className = 'vip-header-btn status-basic';
+                                    headerVipBtn.innerHTML = '<i class="fas fa-bolt"></i> Upgrade VIP';
                                     headerVipBtn.style.display = 'inline-flex';
                                 }
                             }
+                        
+                            const hasClaimedTrial = data.trialClaimed === true;
+                            
+                            if (hasClaimedTrial || isPremiumActive) {
+                                localStorage.setItem('dramakan_promo_closed', 'true');
+                                const blockStyle = document.createElement('style');
+                                blockStyle.innerHTML = '#dramakan-bottom-promo, .promo-banner, #promoBanner { display: none !important; }';
+                                document.head.appendChild(blockStyle);
+                            }
                         }
 
-                        if (localStorage.getItem('dramakan_profile_prompt_date') !== new Date().toDateString() && userProfiles.length > 0) {
+                        const todayStr = new Date().toDateString();
+                        const lastPromptDate = localStorage.getItem('dramakan_profile_prompt_date');
+
+                        if (lastPromptDate !== todayStr && userProfiles.length > 0) {
                             createProfileSwitcher(userProfiles);
-                        } else { updateHeaderAvatar(userProfiles); }
+                        } else {
+                            updateHeaderAvatar(userProfiles);
+                        }
 
                         window.addEventListener('profileSelected', () => { updateHeaderAvatar(userProfiles); });
+                    });
 
-                        const historyRef = collection(db, "users", user.uid, "history");
-                        if(unsubscribeHistory) unsubscribeHistory(); 
-                        
-                        unsubscribeHistory = onSnapshot(historyRef, (snapshot) => {
-                            let cloudHistory = {};
-                            snapshot.forEach(doc => {
-                                const histData = doc.data();
-                                if(histData && histData.dramaId) {
-                                    histData.id = String(histData.dramaId);
-                                    cloudHistory[histData.id] = histData;
-                                }
-                            });
-                            
-                            localStorage.setItem('dramakan_history', JSON.stringify(cloudHistory));
-                            
-                           const historyArr = Object.values(cloudHistory)
-                                .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
-                                .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 10);
-                            
-                            renderContinueWatching(historyArr);
+                    // Real-Time Cloud History Sync
+                    const historyRef = collection(db, "users", user.uid, "history");
+                    if(unsubscribeHistory) unsubscribeHistory(); 
+                    
+                    unsubscribeHistory = onSnapshot(historyRef, (snapshot) => {
+                        let cloudHistory = {};
+                        snapshot.forEach(doc => {
+                            const histData = doc.data();
+                            if(histData && histData.dramaId) {
+                                histData.id = String(histData.dramaId);
+                                cloudHistory[histData.id] = histData;
+                            }
                         });
+                        
+                        localStorage.setItem('dramakan_history', JSON.stringify(cloudHistory));
+                        const historyArr = Object.values(cloudHistory)
+                            .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
+                            .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 10);
+                        
+                        renderContinueWatching(historyArr);
+                    });
 
-                    } else {
-                        document.documentElement.classList.remove("premium-ad-free-mode");
-                        document.body.classList.remove("premium-ad-free-mode");
-                        localStorage.setItem("dramakan_user_plan", "Basic");
-
-                        if (headerVipBtn) headerVipBtn.style.display = 'inline-flex';
-                        if (unsubscribeHistory) {
-                            unsubscribeHistory();
-                            unsubscribeHistory = null;
-                        }
-                        renderContinueWatching();
-                    }
-                });
-            } catch (e) { console.warn("Authentication configuration sync failed", e); }
-        }
+                } catch (error) { console.error("Auth UI Error:", error); }
+            } else {
+                // Instantly remove VIP status if they log out
+                document.documentElement.classList.remove("premium-ad-free-mode");
+                document.body.classList.remove("premium-ad-free-mode");
+                localStorage.setItem("dramakan_user_plan", "Basic");
+                
+                const authBtn = document.getElementById('topAuthBtn');
+                if (authBtn) {
+                    authBtn.href = "login.html";
+                    authBtn.innerHTML = `<i class="fas fa-user"></i> <span>Login / Sign Up</span>`;
+                    authBtn.style.cssText = ""; 
+                }
+                if(unsubscribeHistory) {
+                    unsubscribeHistory();
+                    unsubscribeHistory = null;
+                }
+                renderContinueWatching(); 
+            }
+        });
+    } catch (err) { console.error("Failed to initialize Auth Sync", err); }
+}
         window.removeCard = async (type, identifier) => {
             if (type === 'history') {
                 let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};

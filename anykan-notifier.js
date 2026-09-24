@@ -95,7 +95,7 @@ window.renderGlobalHistory = function() {
     const displayNotifs = globalNotifs.filter(n => !deletedRef.includes(n.id));
 
     if (displayNotifs.length === 0) {
-        list.innerHTML = `<div class="empty-notifs" style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.85rem; padding: 30px 0;">No updates right now.</div>`;
+        list.innerHTML = `<div class="empty-notifs" style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.9rem; padding: 40px 0;">No updates right now.</div>`;
         if (badge) badge.style.display = 'none';
         return;
     }
@@ -111,16 +111,17 @@ window.renderGlobalHistory = function() {
         const iconClass = isPromo ? "fas fa-gift" : "fas fa-bell";
         
         const actionBtn = n.link ? 
-            `<a href="${n.link}" style="display: inline-block; margin-top: 10px; padding: 8px 16px; background: linear-gradient(135deg, #8A2BE2, #6a1b9a); color: #fff; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.3s;">
+            `<a href="${n.link}" style="display: inline-block; margin-top: 10px; padding: 8px 16px; background: linear-gradient(135deg, #8A2BE2, #6a1b9a); color: #fff; border-radius: 8px; font-size: 0.8rem; font-weight: 700; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.3s;">
                 View Details <i class="fas fa-arrow-right" style="margin-left: 5px;"></i>
             </a>` : '';
 
+        // FIX: Removed opacity:0.6 to make read text readable. Used background shift instead.
         return `
-        <div class="${customClass}" style="${isRead ? 'opacity: 0.6;' : 'border-left: 3px solid #8A2BE2; background: rgba(255,255,255,0.05);'}">
+        <div class="${customClass}" style="${isRead ? 'background: rgba(255,255,255,0.02);' : 'border-left: 3px solid #8A2BE2; background: rgba(255,255,255,0.08);'}">
             <div class="global-notif-icon"><i class="${iconClass}"></i></div>
             <div class="global-notif-content" style="flex-grow: 1;">
-                <div class="global-notif-title">${n.title}</div>
-                <div class="global-notif-body" style="white-space: normal;">${n.body}</div>
+                <div class="global-notif-title" style="${isRead ? 'color: #d1d5db;' : 'color: #fff;'}">${n.title}</div>
+                <div class="global-notif-body" style="white-space: normal; ${isRead ? 'color: #9ca3af;' : 'color: #e2e8f0;'}">${n.body}</div>
                 ${actionBtn}
                 <div class="global-notif-time">${new Date(n.timestamp).toLocaleString()}</div>
             </div>
@@ -128,7 +129,15 @@ window.renderGlobalHistory = function() {
         </div>
     `}).join('');
 
-    if (badge) badge.style.display = unreadCount > 0 ? 'block' : 'none';
+    // FIX: Force the innerText to match the true dynamic unread count
+    if (badge) {
+        if (unreadCount > 0) {
+            badge.style.display = 'flex';
+            badge.innerText = unreadCount;
+        } else {
+            badge.style.display = 'none';
+        }
+    }
 };
 
 window.deleteGlobalNotif = async (id) => {
