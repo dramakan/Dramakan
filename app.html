@@ -107,6 +107,14 @@
             margin-left: auto;
             margin-right: auto;
         }
+
+        .install-buttons-wrapper {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
         .install-action-btn {
             background: var(--primary);
             color: #fff;
@@ -124,6 +132,24 @@
             transform: translateY(-3px);
             background: var(--primary-rich);
             box-shadow: 0 15px 35px rgba(138, 43, 226, 0.6);
+        }
+
+        /* Platform specific button modifiers */
+        .btn-android {
+            background: var(--google-green) !important;
+            box-shadow: 0 10px 25px rgba(52, 168, 83, 0.4) !important;
+        }
+        .btn-android:hover {
+            background: #2b8a44 !important;
+            box-shadow: 0 15px 35px rgba(52, 168, 83, 0.6) !important;
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.08) !important;
+            box-shadow: none !important;
+            border: 1px solid rgba(255,255,255,0.2) !important;
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.15) !important;
         }
 
         /* Features */
@@ -335,11 +361,19 @@
     <main>
         <section class="download-hero">
             <h1>Get the DramaKan App</h1>
-            <p>Experience ultra-fast loading, fullscreen immersion, and instant access right from your home screen. No App Store required—install directly securely from your browser.</p>
+            <p>Experience ultra-fast loading, fullscreen immersion, and instant access right from your home screen. Download the Android APK or install our Web App securely from your browser.</p>
             
-            <button id="pwa-install-btn" class="install-action-btn">
-                <i class="fas fa-download"></i> Install App Automatically
-            </button>
+            <div class="install-buttons-wrapper">
+                <!-- Native APK Download (Hidden by default, revealed for Android) -->
+                <a href="Dramakan-v1.0.apk" download id="apk-install-btn" class="install-action-btn btn-android" style="display: none;">
+                    <i class="fab fa-android" style="font-size: 1.2rem;"></i> Download Android APK
+                </a>
+                
+                <!-- Universal PWA Web App Install -->
+                <button id="pwa-install-btn" class="install-action-btn">
+                    <i class="fas fa-download"></i> Install Web App
+                </button>
+            </div>
 
             <div class="app-features">
                 <div class="feature-item"><i class="fas fa-bolt"></i> Zero Background Data</div>
@@ -350,36 +384,36 @@
 
         <section class="guide-section">
             <div class="platform-tabs">
-                <button class="tab-btn active" data-target="android"><i class="fab fa-android"></i> Android (Chrome)</button>
+                <button class="tab-btn active" data-target="android"><i class="fab fa-android"></i> Android APK</button>
                 <button class="tab-btn" data-target="ios"><i class="fab fa-apple"></i> iOS (Safari)</button>
                 <button class="tab-btn" data-target="pc"><i class="fab fa-windows"></i> Desktop (PC/Mac)</button>
             </div>
 
-            <!-- ANDROID GUIDE -->
+            <!-- ANDROID APK GUIDE -->
             <div id="guide-android" class="guide-content active">
                 <div class="steps-grid">
                     <div class="step-card">
                         <div class="step-number">1</div>
-                        <div class="step-icon-wrap"><i class="fas fa-ellipsis-v" style="color: var(--text-muted);"></i></div>
-                        <h3>Open Browser Menu</h3>
-                        <p>While visiting DramaKan in <span class="highlight-chrome">Google Chrome</span> on your Android device, tap the <strong>3-dot menu icon</strong> in the top right corner of the screen.</p>
+                        <div class="step-icon-wrap"><i class="fas fa-download" style="color: var(--google-green);"></i></div>
+                        <h3>Download APK</h3>
+                        <p>Click the <strong>Download Android APK</strong> button above to save the official DramaKan .apk file to your device.</p>
                     </div>
                     <div class="step-card">
                         <div class="step-number">2</div>
-                        <div class="step-icon-wrap"><i class="fas fa-download" style="color: var(--google-green);"></i></div>
-                        <h3>Select Install App</h3>
-                        <p>Scroll down the menu list and tap on <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</p>
+                        <div class="step-icon-wrap"><i class="fas fa-shield-alt" style="color: var(--primary);"></i></div>
+                        <h3>Allow Unknown Sources</h3>
+                        <p>Open the downloaded file. If prompted by your browser, go to Settings and enable <strong>"Allow from this source"</strong>.</p>
                     </div>
                     <div class="step-card">
                         <div class="step-number">3</div>
-                        <div class="step-icon-wrap"><i class="fas fa-mobile-alt" style="color: var(--primary);"></i></div>
-                        <h3>Confirm & Launch</h3>
-                        <p>Tap <strong>"Install"</strong> on the pop-up prompt. The DramaKan app will now appear in your app drawer and home screen for instant access.</p>
+                        <div class="step-icon-wrap"><i class="fas fa-mobile-alt" style="color: var(--text-main);"></i></div>
+                        <h3>Install & Launch</h3>
+                        <p>Tap <strong>"Install"</strong>. Once finished, you'll find the native DramaKan app in your app drawer ready for streaming!</p>
                     </div>
                 </div>
             </div>
 
-            <!-- IOS GUIDE -->
+            <!-- IOS GUIDE (Web App) -->
             <div id="guide-ios" class="guide-content">
                 <div class="steps-grid">
                     <div class="step-card">
@@ -403,7 +437,7 @@
                 </div>
             </div>
 
-            <!-- DESKTOP GUIDE -->
+            <!-- DESKTOP GUIDE (Web App) -->
             <div id="guide-pc" class="guide-content">
                 <div class="steps-grid">
                     <div class="step-card">
@@ -478,45 +512,33 @@
 
         // --- PWA INSTALL PROMPT LOGIC ---
         let deferredPrompt;
-        const installBtn = document.getElementById('pwa-install-btn');
+        const pwaInstallBtn = document.getElementById('pwa-install-btn');
+        const apkBtn = document.getElementById('apk-install-btn');
 
-        // Initially hide the button if the browser hasn't fired the event yet (or doesn't support it)
-        installBtn.style.display = 'none';
+        // Initially hide the PWA button if the browser hasn't fired the event yet (or doesn't support it)
+        pwaInstallBtn.style.display = 'none';
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent the mini-infobar from appearing on mobile automatically
             e.preventDefault();
-            // Stash the event so it can be triggered later.
             deferredPrompt = e;
-            // Update UI notify the user they can install the PWA
-            installBtn.style.display = 'inline-flex';
-            
-            // Revert button text to original if it was previously clicked but canceled
-            installBtn.innerHTML = '<i class="fas fa-download"></i> Install App Automatically';
+            pwaInstallBtn.style.display = 'inline-flex';
         });
 
-        installBtn.addEventListener('click', async () => {
+        pwaInstallBtn.addEventListener('click', async () => {
             if (deferredPrompt) {
-                // Show the install prompt
                 deferredPrompt.prompt();
-                
-                // Wait for the user to respond to the prompt
                 const { outcome } = await deferredPrompt.userChoice;
                 
                 if (outcome === 'accepted') {
                     console.log('User accepted the install prompt');
-                    installBtn.style.display = 'none'; // Hide button once installed
+                    pwaInstallBtn.style.display = 'none'; 
                 } else {
                     console.log('User dismissed the install prompt');
                 }
-                
-                // We've used the prompt, and can't use it again, discard it
                 deferredPrompt = null;
             } else {
-                // Fallback: If prompt isn't available (e.g. iOS Safari), alert the user to follow the guide below
-                alert("Automatic installation isn't supported on this browser (e.g., iOS Safari). Please follow the manual step-by-step guide below!");
-                
-                // Auto-scroll to iOS tab if on Apple device
+                // Fallback for iOS
+                alert("Automatic installation isn't supported on this browser. Please follow the manual step-by-step guide below!");
                 if(/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
                     document.querySelector('.tab-btn[data-target="ios"]').click();
                     document.querySelector('.guide-section').scrollIntoView({behavior: "smooth"});
@@ -525,28 +547,40 @@
         });
 
         window.addEventListener('appinstalled', () => {
-            // Clear the deferredPrompt so it can be garbage collected
             deferredPrompt = null;
-            installBtn.style.display = 'none';
+            pwaInstallBtn.style.display = 'none';
             console.log('DramaKan was successfully installed as a PWA.');
         });
         
-        // Auto-detect OS on page load to switch to the correct tab immediately
+        // Auto-detect OS on page load to adjust UI dynamically
         window.addEventListener('DOMContentLoaded', () => {
             const userAgent = navigator.userAgent || navigator.vendor || window.opera;
             
             if (/windows phone/i.test(userAgent) || /android/i.test(userAgent)) {
+                // Show APK configuration for Android
                 document.querySelector('.tab-btn[data-target="android"]').click();
+                apkBtn.style.display = 'inline-flex';
+                
+                // Downgrade PWA button visually so the APK is primary
+                pwaInstallBtn.classList.add('btn-secondary');
+                pwaInstallBtn.innerHTML = '<i class="fas fa-globe"></i> Or Install Web App';
+                
+                // Show PWA button even if prompt event hasn't fired yet to ensure it's available as fallback
+                pwaInstallBtn.style.display = 'inline-flex';
             } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                // iOS Configuration
                 document.querySelector('.tab-btn[data-target="ios"]').click();
-                installBtn.innerHTML = '<i class="fas fa-info-circle"></i> View iOS Install Steps';
-                installBtn.style.display = 'inline-flex';
-                installBtn.onclick = (e) => {
+                pwaInstallBtn.innerHTML = '<i class="fas fa-info-circle"></i> View iOS Install Steps';
+                pwaInstallBtn.style.display = 'inline-flex';
+                pwaInstallBtn.onclick = (e) => {
                     e.preventDefault();
                     document.querySelector('.guide-section').scrollIntoView({behavior: "smooth"});
                 };
             } else {
+                // PC Configuration
                 document.querySelector('.tab-btn[data-target="pc"]').click();
+                // Ensure the PWA button is shown on desktop
+                pwaInstallBtn.style.display = 'inline-flex';
             }
         });
     </script>
