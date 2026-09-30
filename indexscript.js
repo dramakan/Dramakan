@@ -122,7 +122,11 @@ async function renderContinueWatching(cloudHistoryArr = null) {
                         try {
                             if (item.id) {
                                 let tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${item.id}?api_key=${tmdbKey}`);
-                                if (!tmdbRes.ok) tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${item.id}?api_key=${tmdbKey}`);
+                                // If it's not a TV show, fetch as a movie and add a custom flag
+                                if (!tmdbRes.ok) {
+                                    tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${item.id}?api_key=${tmdbKey}`);
+                                    item.isMovie = true; 
+                                }
                                 
                                 if (tmdbRes.ok) {
                                     const tmdbData = await tmdbRes.json();
@@ -159,14 +163,17 @@ async function renderContinueWatching(cloudHistoryArr = null) {
 
                 cwGrid.innerHTML = updatedItems.map(item => {
                     const progress = item.progress || Math.floor(Math.random() * 50 + 20); 
-                    const season = item.season || 1;
-                    const episode = item.episode || 1;
+                    
+                    // FIX 1: Use the isMovie flag (and other fallbacks) to determine the text
+                    const isMovie = item.isMovie || item.media_type === 'movie' || item.type === 'Movie';
+                    const badgeText = isMovie ? 'Movie' : `S${item.season || 1} • E${item.episode || 1}`;
 
                     return `
                     <a href="${item.link}" class="cw-landscape-card">
                         <div class="cw-landscape-img-wrap">
                             <img src="${item.finalImgUrl}" alt="${item.title}" class="cw-landscape-img" loading="lazy" decoding="async" onerror="this.src='${item.img}'">
-                            <button class="cw-remove-btn" onclick="event.preventDefault(); window.removeCard('history', '${item.id}')" title="Remove">
+                            <!-- FIX 2: Added event.stopPropagation() and return false; to kill the link click completely -->
+                            <button class="cw-remove-btn" onclick="event.preventDefault(); event.stopPropagation(); window.removeCard('history', '${item.id}'); return false;" title="Remove">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </div>
@@ -176,7 +183,7 @@ async function renderContinueWatching(cloudHistoryArr = null) {
                         <div class="cw-landscape-info">
                             <h3 class="cw-landscape-title">${item.title}</h3>
                             <div class="cw-landscape-meta">
-                                <span class="cw-play-badge"><i class="fas fa-play"></i> S${season} • E${episode}</span>
+                                <span class="cw-play-badge"><i class="fas fa-play"></i> ${badgeText}</span>
                                 <span>${item.timeLeft ? item.timeLeft + 'm left' : ''}</span>
                             </div>
                         </div>
