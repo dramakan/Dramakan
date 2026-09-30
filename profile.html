@@ -935,7 +935,7 @@
         };
 
         // DYNAMIC TMDB ASYNC CONTINUE WATCHING RENDERER 
-        async function renderContinueWatching(cloudHistoryArr = null) {
+       async function renderContinueWatching(cloudHistoryArr = null) {
             try {
                 let historyArr = cloudHistoryArr;
                 if (!historyArr) {
@@ -955,50 +955,79 @@
                         const updatedItems = await Promise.all(limitedData.map(async (item) => {
                             let imgUrl = item.backdrop_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${item.backdrop_path}` : (item.backdrop || item.bgImg);
                             
-                            if (!imgUrl) {
-                                try {
-                                    if (item.id) {
-                                        let tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${item.id}?api_key=${tmdbKey}`);
-                                        if (!tmdbRes.ok) tmdbRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${item.id}?api_key=${tmdbKey}`);
-                                        if (tmdbRes.ok) {
-                                            const tmdbData = await tmdbRes.json();
-                                            if (tmdbData.backdrop_path) imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${tmdbData.backdrop_path}`;
-                                        }
+                            // FORCING CACHE REPAIR: Bypass corrupted cache and recalculate truth.
+                            let isMovie = undefined; 
+                            
+                            try {
+                                if (item.id) {
+                                    const [tvRes, movieRes] = await Promise.all([
+                                        fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${item.id}?api_key=${tmdbKey}`),
+                                        fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${item.id}?api_key=${tmdbKey}`)
+                                    ]);
+                                    
+                                    const tvData = tvRes.ok ? await tvRes.json() : null;
+                                    const movieData = movieRes.ok ? await movieRes.json() : null;
+                                    
+                                    const titleLower = (item.title || "").toLowerCase();
+                                    let tvMatch = false;
+                                    let movieMatch = false;
+                                    
+                                    if (tvData && tvData.name) {
+                                        const tvTitle = tvData.name.toLowerCase();
+                                        const tvOrig = (tvData.original_name || "").toLowerCase();
+                                        if (titleLower.includes(tvTitle) || tvTitle.includes(titleLower) || titleLower.includes(tvOrig)) tvMatch = true;
                                     }
-                                    if (!imgUrl && item.title) {
+                                    
+                                    if (movieData && movieData.title) {
+                                        const mTitle = movieData.title.toLowerCase();
+                                        const mOrig = (movieData.original_title || "").toLowerCase();
+                                        if (titleLower.includes(mTitle) || mTitle.includes(titleLower) || titleLower.includes(mOrig)) movieMatch = true;
+                                    }
+                                    
+                                    if (movieMatch && !tvMatch) {
+                                        isMovie = true;
+                                        if (!item.backdrop_path && movieData.backdrop_path) imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${movieData.backdrop_path}`;
+                                    } else if (tvMatch && !movieMatch) {
+                                        isMovie = false;
+                                        if (!item.backdrop_path && tvData.backdrop_path) imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${tvData.backdrop_path}`;
+                                    } else {
                                         const searchRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(item.title)}`);
                                         if (searchRes.ok) {
                                             const searchData = await searchRes.json();
-                                            if (searchData.results && searchData.results.length > 0 && searchData.results[0].backdrop_path) {
-                                                imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${searchData.results[0].backdrop_path}`;
+                                            if (searchData.results && searchData.results.length > 0) {
+                                                isMovie = searchData.results[0].media_type === 'movie';
                                             }
                                         }
                                     }
+                                }
+                                
+                                // Overwrite corrupted profile cache
+                                let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
+                                if (localHistory[item.id]) {
+                                    localHistory[item.id].isMovie = isMovie;
                                     if (imgUrl) {
                                         item.backdrop_path = imgUrl.replace('https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780', '');
-                                        let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-                                        if(localHistory[item.id]) {
-                                            localHistory[item.id].backdrop_path = item.backdrop_path;
-                                            localStorage.setItem('dramakan_history', JSON.stringify(localHistory));
-                                        }
+                                        localHistory[item.id].backdrop_path = item.backdrop_path;
                                     }
-                                } catch(err) { console.warn("Backdrop fetch failed", err); }
-                            }
+                                    localStorage.setItem('dramakan_history', JSON.stringify(localHistory));
+                                }
+                            } catch(err) { console.warn("Cache repair fetch failed", err); }
                             
                             item.finalImgUrl = imgUrl || item.img;
+                            item.computedIsMovie = (isMovie === true); 
                             return item;
                         }));
 
                         cwGrid.innerHTML = updatedItems.map(item => {
                             const progress = item.progress || Math.floor(Math.random() * 50 + 20);
-                            const season = item.season || 1;
-                            const episode = item.episode || 1;
+                            const badgeText = item.computedIsMovie ? 'Movie' : `S${item.season || 1} • E${item.episode || 1}`;
 
+                            // THE ULTIMATE CLICK FIX: JS Routing instead of Anchor Tags
                             return `
-                            <a href="${item.link}" class="cw-landscape-card">
+                            <div class="cw-landscape-card" style="cursor: pointer;" onclick="if(!event.target.closest('.cw-remove-btn')) { window.location.href='${item.link}'; }">
                                 <div class="cw-landscape-img-wrap">
                                     <img src="${item.finalImgUrl}" alt="${item.title}" class="cw-landscape-img" loading="lazy" decoding="async" onerror="this.src='${item.img}'">
-                                    <button class="cw-remove-btn" onclick="event.preventDefault(); window.removeCard('history', '${item.id}')" title="Remove">
+                                    <button class="cw-remove-btn" onclick="window.removeCard('history', '${item.id}')" title="Remove">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
@@ -1008,11 +1037,11 @@
                                 <div class="cw-landscape-info">
                                     <h3 class="cw-landscape-title">${item.title}</h3>
                                     <div class="cw-landscape-meta">
-                                        <span class="cw-play-badge"><i class="fas fa-play"></i> S${season} • E${episode}</span>
+                                        <span class="cw-play-badge"><i class="fas fa-play"></i> ${badgeText}</span>
                                         <span>${item.timeLeft ? item.timeLeft + 'm left' : ''}</span>
                                     </div>
                                 </div>
-                            </a>
+                            </div>
                             `;
                         }).join('');
                         
