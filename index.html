@@ -714,8 +714,10 @@
                                         <span>${releaseYear}</span>
                                     </div>
                                     <div class="hero-actions">
-                                        <a href="details.html?id=${d.id}" class="btn-n btn-play"><i class="fas fa-play"></i> Play</a>
-                                        <button class="${listBtnClass}" id="hero-list-btn-${d.id}" onclick="event.preventDefault(); window.toggleMyList(this, '${encodeURIComponent(titleText).replace(/'/g, "%27")}', '${encodeURIComponent(mobileImg).replace(/'/g, "%27")}', 'details.html?id=${d.id}', '${d.id}')">
+                                        <a href="watch.html
+?id=${d.id}" class="btn-n btn-play"><i class="fas fa-play"></i> Play</a>
+                                        <button class="${listBtnClass}" id="hero-list-btn-${d.id}" onclick="event.preventDefault(); window.toggleMyList(this, '${encodeURIComponent(titleText).replace(/'/g, "%27")}', '${encodeURIComponent(mobileImg).replace(/'/g, "%27")}', 'watch.html
+?id=${d.id}', '${d.id}')">
                                             <i class="fas ${listBtnIcon}"></i> <span>${listBtnText}</span>
                                         </button>
                                     </div>
@@ -773,7 +775,8 @@
                     const items = (dataTrend.results || []).slice(0, 15).map(i => ({
                         id: String(i.id), title: i.name || i.title,
                         img: i.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${i.poster_path}` : 'default-poster.jpg',
-                        link: `details.html?id=${i.id}`, type: `${(i.first_air_date || "").substring(0, 4)} • ⭐ ${i.vote_average.toFixed(1)}`, media_type: 'tv'
+                        link: `watch.html
+?id=${i.id}`, type: `${(i.first_air_date || "").substring(0, 4)} • ⭐ ${i.vote_average.toFixed(1)}`, media_type: 'tv'
                     }));
                     populateGrid('trending-grid', items);
                 }
@@ -798,7 +801,8 @@ if (indiaMovieRes.ok) {
         id: String(i.id),
         title: i.title || i.name,
         img: i.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${i.poster_path}` : 'default-poster.jpg',
-        link: `details.html?id=${i.id}`,
+        link: `watch.html
+?id=${i.id}`,
         type: `${(i.release_date || "").substring(0, 4)} • ⭐ ${i.vote_average ? i.vote_average.toFixed(1) : 'NR'}`,
         media_type: 'movie'
     }));
@@ -812,7 +816,8 @@ if (indiaTvRes.ok) {
         id: String(i.id),
         title: i.name || i.title,
         img: i.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${i.poster_path}` : 'default-poster.jpg',
-        link: `details.html?id=${i.id}`,
+        link: `watch.html
+?id=${i.id}`,
         type: `${(i.first_air_date || "").substring(0, 4)} • ⭐ ${i.vote_average ? i.vote_average.toFixed(1) : 'NR'}`,
         media_type: 'tv'
     }));
@@ -839,7 +844,8 @@ populateGrid('trending-india-grid', indiaItems.slice(0, 15));
                                     if (sectionRes.ok) {
                                         const resData = await sectionRes.json();
                                         const cleanMapped = (resData.results || []).slice(0, 15).map(i => ({
-                                            id: String(i.id), title: i.name || i.title, img: i.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${i.poster_path}` : 'default-poster.jpg', link: `details.html?id=${i.id}`, type: config.label
+                                            id: String(i.id), title: i.name || i.title, img: i.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${i.poster_path}` : 'default-poster.jpg', link: `watch.html
+?id=${i.id}`, type: config.label
                                         }));
                                         populateGrid(config.id, cleanMapped);
                                     }
@@ -913,7 +919,8 @@ populateGrid('trending-india-grid', indiaItems.slice(0, 15));
                             const sNum = item.season !== undefined ? item.season : 1;
                             const eNum = item.episode !== undefined ? item.episode : "New";
                             return `
-                                <a href="details.html?id=${item.id}" class="schedule-item">
+                                <a href="watch.html
+?id=${item.id}" class="schedule-item">
                                     <img src="${imgUrl}" alt="${title}">
                                     <div class="schedule-info">
                                         <h4 class="schedule-title">${title}</h4>
@@ -981,7 +988,8 @@ populateGrid('trending-india-grid', indiaItems.slice(0, 15));
                                         const title = item.name || item.title;
                                         const poster = item.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w92${item.poster_path}` : 'default-poster.jpg';
                                         return `
-                                        <a href="details.html?id=${item.id}" class="search-result-item">
+                                        <a href="watch.html
+?id=${item.id}" class="search-result-item">
                                             <img src="${poster}" width="42" height="58" loading="lazy" decoding="async">
                                             <div class="search-result-info">
                                                 <div class="search-result-title">${title}</div>
@@ -1199,8 +1207,10 @@ populateGrid('trending-india-grid', indiaItems.slice(0, 15));
                     <div class="jh-hover-info">
                         <div class="jh-hover-title">${title}</div>
                         <div class="jh-hover-actions">
-                            <a href="details.html?id=${id}" class="jh-hover-btn-play"><i class="fas fa-play"></i> Watch Now</a>
-                            <button class="jh-hover-btn-add" onclick="window.toggleMyList(this, '${safeTitlePopup}', '${safeImgPopup}', 'details.html?id=${id}', '${id}')" title="Add to List"><i class="fas fa-plus"></i></button>
+                            <a href="watch.html
+?id=${id}" class="jh-hover-btn-play"><i class="fas fa-play"></i> Watch Now</a>
+                            <button class="jh-hover-btn-add" onclick="window.toggleMyList(this, '${safeTitlePopup}', '${safeImgPopup}', 'watch.html
+?id=${id}', '${id}')" title="Add to List"><i class="fas fa-plus"></i></button>
                         </div>
                         <div class="jh-hover-meta" id="hoverMeta">
                             <i class="fas fa-spinner fa-spin"></i> Loading...
