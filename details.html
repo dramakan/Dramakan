@@ -8,7 +8,7 @@
 
     <meta id="seo-description" name="description" content="Watch high quality Movies, Shows, Anime, and Dramas for free on DramaKan.">
     <meta id="seo-keywords" name="keywords" content="movies, tv shows, anime, watch online, Asian dramas, Dramakan">
-    <link id="canonical-url" rel="canonical" href="https://dramakan.site/">
+    
 
     <meta id="og-type" property="og:type" content="video.other">
     <meta id="og-site-name" property="og:site_name" content="DramaKan">
@@ -1003,24 +1003,41 @@ onAuthStateChanged(auth, async (user) => {
         }
 
         function updateSEO() {
-            const title = activeData.name || activeData.title;
-            const portraitPoster = activeData.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${activeData.poster_path}` : 'https://dramakan.site/og-image.jpg';
-            const synopsis = activeData.overview || "Watch your favorite movies, dramas, and anime on DramaKan.";
-            const url = window.location.href;
+    const title = activeData.name || activeData.title;
+    const portraitPoster = activeData.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${activeData.poster_path}` : 'https://dramakan.site/og-image.jpg';
+    const synopsis = activeData.overview || "Watch your favorite movies, dramas, and anime on DramaKan.";
+    const url = window.location.href;
 
-            document.title = `${title} - Watch Online | DramaKan`;
-            document.getElementById('canonical-url').href = url;
-            document.getElementById('seo-description').content = synopsis.slice(0, 160);
+    // Update Titles
+    const pageTitle = `${title} - Watch Online | DramaKan`;
+    document.title = pageTitle;
+    document.getElementById('og-title').content = pageTitle;
+    document.getElementById('tw-title').content = pageTitle;
 
-            document.getElementById('og-title').content = `${title} - DramaKan`;
-            document.getElementById('og-description').content = synopsis.slice(0, 160);
-            document.getElementById('og-image').content = portraitPoster;
-            document.getElementById('og-url').content = url;
+    // Update Descriptions
+    const shortSynopsis = synopsis.slice(0, 160);
+    document.getElementById('seo-description').content = shortSynopsis;
+    document.getElementById('og-description').content = shortSynopsis;
+    document.getElementById('tw-description').content = shortSynopsis;
 
-            document.getElementById('tw-title').content = `${title} - DramaKan`;
-            document.getElementById('tw-description').content = synopsis.slice(0, 160);
-            document.getElementById('tw-image').content = portraitPoster;
-        }
+    // Update Images & URLs
+    document.getElementById('og-image').content = portraitPoster;
+    document.getElementById('tw-image').content = portraitPoster;
+    document.getElementById('og-url').content = url;
+
+    // Fix Canonical Tag Dynamically
+    let canonical = document.getElementById('canonical-url');
+    if (!canonical) {
+        canonical = document.createElement('link');
+        canonical.id = 'canonical-url';
+        canonical.rel = 'canonical';
+        document.head.appendChild(canonical);
+    }
+    canonical.href = url;
+
+    // Inject JSON-LD Structured Data (Crucial for Google)
+    injectStructuredData(title, portraitPoster, synopsis, url);
+}
 
         function initReviews() {
             const stars = document.querySelectorAll('.dramakan-rate i');
@@ -1233,6 +1250,37 @@ onAuthStateChanged(auth, async (user) => {
         }, 1500);
 
         fetchDramaDetails();
+        function injectStructuredData(title, image, synopsis, url) {
+    let schema = document.getElementById('seo-jsonld');
+    if (!schema) {
+        schema = document.createElement('script');
+        schema.type = 'application/ld+json';
+        schema.id = 'seo-jsonld';
+        document.head.appendChild(schema);
+    }
+
+    const isMovie = isMovieType;
+    const releaseYear = (activeData.first_air_date || activeData.release_date || "").substring(0, 4);
+    const rating = activeData.vote_average ? activeData.vote_average.toFixed(1) : "0";
+
+    const schemaData = {
+        "@context": "https://schema.org",
+        "@type": isMovie ? "Movie" : "TVSeries",
+        "name": title,
+        "image": image,
+        "description": synopsis,
+        "url": url,
+        "dateCreated": releaseYear,
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": rating,
+            "bestRating": "10",
+            "ratingCount": activeData.vote_count || 1
+        }
+    };
+
+    schema.text = JSON.stringify(schemaData);
+}
     </script>
 </body>
 </html>

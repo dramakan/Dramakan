@@ -8,218 +8,170 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
+    <!-- Using Global Index Styles -->
+    <link rel="stylesheet" href="indexstyle.css">
+    
     <script src="bottom-bar.js" defer></script>
     <script src="admin_easter_egg.js" defer></script>
+    <script type="module" src="global-login-popup.js" defer></script>
 
     <style>
         /* =========================================
-           1. PREMIUM VARIABLES & RESET
+           MY LIST SPECIFIC OVERRIDES
         ========================================= */
-        :root {
-            --primary: #9D4EDD;
-            --primary-rich: #7b2cbf;
-            --primary-glow: rgba(157, 78, 221, 0.4);
-            
-            --bg-base: #0a0a0f; 
-            --glass-bg: rgba(20, 20, 28, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-border-light: rgba(255, 255, 255, 0.15);
-            --glass-blur: blur(25px);
-            
-            --text-main: #FFFFFF;
-            --text-muted: #9CA3AF;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body { 
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-base); 
-            color: var(--text-main);
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding-bottom: 100px;
-        }
-
-        a { text-decoration: none; color: inherit; outline: none; }
-        button { border: none; background: transparent; font-family: inherit; cursor: pointer; outline: none; }
-
-        /* --- CUTE FLOATING ORBS --- */
-        .liquid-orb { position: fixed; border-radius: 50%; filter: blur(100px); z-index: -1; animation: floatOrb 20s infinite alternate ease-in-out; pointer-events: none;}
-        .orb-1 { width: 400px; height: 400px; background: rgba(157, 78, 221, 0.15); top: -10%; left: -5%; }
-        .orb-2 { width: 500px; height: 500px; background: rgba(236, 72, 153, 0.1); bottom: -10%; right: -5%; animation-delay: -5s; }
+        main { padding-top: 110px; min-height: 80vh; }
         
-        @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(50px, 50px) scale(1.1); }
-        }
-
-        /* --- HEADER --- */
-        .main-header {
-            background: rgba(10, 10, 15, 0.85);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 15px 5%;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .logo { font-size: 1.6rem; font-weight: 800; text-decoration: none; color: #fff; letter-spacing: -0.5px;}
-        .logo span { color: var(--primary); }
-
-        .back-link {
-            color: var(--text-muted); font-weight: 500; display: flex; align-items: center; gap: 8px; transition: 0.3s;
-            background: rgba(255,255,255,0.03); padding: 8px 16px; border-radius: 50px; border: 1px solid var(--glass-border);
-        }
-        .back-link:hover { color: #fff; background: rgba(255,255,255,0.1); }
-
-        /* --- MAIN CONTAINER --- */
-        .page-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 40px 5%;
-            width: 100%;
-            flex: 1;
-            animation: slideUp 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        @keyframes slideUp { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
-
         .page-header-banner {
             background: var(--glass-bg);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 35px 40px;
+            border-radius: 20px;
+            padding: 30px 40px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 40px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-            position: relative;
-            overflow: hidden;
+            margin-bottom: 35px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            animation: slideUp 0.6s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        
-        .header-content { display: flex; align-items: center; gap: 20px; z-index: 1; position: relative;}
+        @keyframes slideUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        .header-content { display: flex; align-items: center; gap: 20px; }
         .header-icon {
-            width: 65px; height: 65px; background: linear-gradient(135deg, var(--primary), var(--primary-rich));
-            border-radius: 18px; display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; color: #fff; box-shadow: 0 10px 25px var(--primary-glow);
+            width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary-color), #6a1b9a);
+            border-radius: 16px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; color: #fff; box-shadow: 0 10px 25px var(--primary-glow);
         }
-        .page-title { font-size: 2.2rem; font-weight: 800; color: #fff; margin: 0 0 5px 0; letter-spacing: -0.5px;}
-        .page-subtitle { color: var(--text-muted); font-size: 1rem; margin: 0; }
+        .page-title { font-size: 2rem; font-weight: 800; color: #fff; margin: 0 0 5px 0; }
+        .page-subtitle { color: var(--text-muted-color); font-size: 0.95rem; margin: 0; }
         
         .list-stats {
             background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 12px 25px;
-            border-radius: 16px; text-align: center; z-index: 1; position: relative;
+            border-radius: 16px; text-align: center;
         }
-        .stat-num { display: block; font-size: 1.8rem; font-weight: 700; color: var(--primary); line-height: 1; margin-bottom: 4px;}
-        .stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 1px;}
+        .stat-num { display: block; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); line-height: 1; margin-bottom: 4px;}
+        .stat-label { font-size: 0.75rem; color: var(--text-muted-color); font-weight: 500; text-transform: uppercase; letter-spacing: 1px;}
 
-        /* --- GRID LAYOUT --- */
-        .drama-grid {
+        /* Grid Alignment (Matching DramaKan Standard) */
+        .my-list-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 20px;
+            padding-bottom: 50px;
         }
-
-        /* --- PREMIUM CARD DESIGN --- */
-        .list-card { display: flex; flex-direction: column; gap: 12px; position: relative; text-decoration: none;}
-        .list-poster-wrap { 
-            width: 100%; aspect-ratio: 2/3; border-radius: 16px; overflow: hidden; position: relative; 
-            border: 1px solid var(--glass-border); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            background: #111; box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-        }
-        .list-card:hover .list-poster-wrap { 
-            border-color: var(--primary); transform: translateY(-8px); 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 20px var(--primary-glow);
-        }
-        .list-poster-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-        .list-card:hover .list-poster-wrap img { transform: scale(1.08); }
         
-        /* Remove Button */
-        .remove-list-btn {
-            position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; 
-            background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 10; font-size: 0.95rem;
+        /* Red Delete Button Override */
+        .bookmark-btn.delete-btn {
+            background: rgba(239, 68, 68, 0.8) !important; 
+            border-color: #ef4444 !important; 
         }
-        .list-card:hover .remove-list-btn { opacity: 1; }
-        .remove-list-btn:hover { background: #ef4444; border-color: #ef4444; transform: scale(1.15); box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);}
+        .bookmark-btn.delete-btn:hover {
+            background: #ef4444 !important;
+            transform: scale(1.15);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.5);
+        }
 
-        /* Info Area */
-        .list-info { display: flex; flex-direction: column; padding: 0 5px; }
-        .list-title { font-size: 1rem; font-weight: 600; color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; margin-bottom: 6px; transition: color 0.3s;}
-        .list-card:hover .list-title { color: var(--primary); }
-        .list-date { font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; font-weight: 500;}
-
-        /* --- STATES --- */
+        /* States */
         .empty-state, .loading-state { 
             grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center;
             padding: 80px 20px; background: var(--glass-bg); border: 1px dashed var(--glass-border-light); 
-            border-radius: 24px; backdrop-filter: var(--glass-blur); text-align: center;
+            border-radius: 20px; backdrop-filter: var(--glass-blur); text-align: center;
         }
-        .empty-icon { width: 100px; height: 100px; background: rgba(157, 78, 221, 0.1); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin-bottom: 20px; border: 2px solid rgba(157, 78, 221, 0.2); }
-        .empty-state h3 { font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0 0 10px 0; }
-        .empty-state p { color: var(--text-muted); font-size: 0.95rem; margin: 0 0 25px 0; max-width: 400px; line-height: 1.6;}
-        .btn-browse { background: linear-gradient(135deg, var(--primary), var(--primary-rich)); color: #fff; padding: 12px 30px; border-radius: 50px; font-weight: 600; text-decoration: none; transition: 0.3s; box-shadow: 0 10px 25px var(--primary-glow); display: flex; align-items: center; gap: 10px;}
-        .btn-browse:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(157, 78, 221, 0.6); }
+        .empty-icon { width: 90px; height: 90px; background: rgba(138, 43, 226, 0.1); color: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 20px; border: 1px solid rgba(138, 43, 226, 0.3); }
+        .empty-state h3 { font-size: 1.4rem; font-weight: 700; color: #fff; margin: 0 0 10px 0; }
+        .empty-state p { color: var(--text-muted-color); font-size: 0.95rem; margin: 0 0 25px 0; max-width: 400px; line-height: 1.6;}
+        .btn-browse { background: var(--primary-color); color: #fff; padding: 12px 30px; border-radius: 50px; font-weight: 600; transition: 0.3s; box-shadow: 0 10px 25px var(--primary-glow); display: inline-flex; align-items: center; gap: 8px;}
+        .btn-browse:hover { transform: translateY(-3px); background: #9d4edd; }
         
-        .loading-state i { font-size: 3rem; color: var(--primary); margin-bottom: 15px; }
+        .loading-state i { font-size: 3rem; color: var(--primary-color); margin-bottom: 15px; }
 
-        /* --- MOBILE RESPONSIVE TWEAKS --- */
-        @media (max-width: 768px) {
-            .page-container { padding: 25px 5%; }
-            .page-header-banner { flex-direction: column; align-items: flex-start; gap: 25px; padding: 25px; border-radius: 20px; margin-bottom: 25px;}
-            .header-icon { width: 50px; height: 50px; font-size: 1.4rem; border-radius: 14px;}
-            .page-title { font-size: 1.8rem; }
+        /* Mobile Layout */
+        @media (max-width: 992px) {
+            main { padding-top: 100px; }
+            .page-header-banner { flex-direction: column; align-items: flex-start; gap: 20px; padding: 25px;}
             .list-stats { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;}
             .stat-num { font-size: 1.5rem; margin-bottom: 0; }
-            
-            .drama-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
-            .list-title { font-size: 0.9rem; }
-            
-            /* Always show remove button on touch screens */
-            .remove-list-btn { opacity: 1; background: rgba(239, 68, 68, 0.9); border-color: rgba(239, 68, 68, 1); top: 8px; right: 8px; width: 32px; height: 32px; font-size: 0.85rem;}
         }
-
-        /* --- BOTTOM NAV BAR (MOBILE) --- */
-        @media (max-width: 992px) {
-            .bottom-nav {
-                display: flex !important; position: fixed !important; bottom: 15px !important; left: 50% !important; transform: translateX(-50%) !important;
-                width: 90% !important; max-width: 400px !important; background: rgba(20, 20, 25, 0.85) !important; backdrop-filter: blur(40px) saturate(180%) !important;
-                -webkit-backdrop-filter: blur(40px) saturate(180%) !important; border: 1px solid var(--glass-border) !important; border-radius: 50px !important;
-                z-index: 999999 !important; padding: 5px 10px !important; box-shadow: 0 25px 50px rgba(0,0,0,0.5) !important;
-            }
-            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 0; color: rgba(255, 255, 255, 0.5); text-decoration: none; transition: all 0.4s ease; }
-            .bottom-nav-item.active { color: #fff; }
-            .nav-icon { font-size: 1.35rem; margin-bottom: 4px; transition: transform 0.4s ease; }
-            .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-4px) scale(1.15); color: var(--primary); }
-            .nav-label { font-size: 0.65rem; font-weight: 500; }
+        @media (max-width: 768px) {
+            /* Exact match to mobile drama cards in indexstyle.css */
+            .my-list-grid { grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 12px; }
+            .page-title { font-size: 1.6rem; }
         }
-        @media (min-width: 993px) { .bottom-nav { display: none !important; } }
     </style>
 </head>
 <body>
 
-    <div class="liquid-orb orb-1"></div>
-    <div class="liquid-orb orb-2"></div>
-
     <header class="main-header">
-        <a href="index.html" class="logo">Drama<span>Kan</span></a>
-        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> <span>Back to Home</span></a>
+        <div class="header-container">
+            <div class="header-left">
+                <a href="index.html" class="logo">Drama<span>Kan</span></a>
+            </div>
+
+        <div class="mobile-search-container">
+            <div class="mobile-glass-search">
+                <i class="fas fa-search"></i>
+                <input id="mobileSearchInput" type="text" placeholder="Search movies, shows, anime...">
+                <a href="filter.html" class="search-filter-link"><i class="fas fa-sliders-h"></i></a>
+            </div>
+            <div id="mobileSearchResults" class="search-results mobile-search-results-dropdown"></div>
+        </div>
     </header>
 
-    <main class="page-container">
-        
+    <aside class="ott-sidebar">
+        <ul class="sidebar-links">
+            <li class="sidebar-item">
+                <a href="profile.html" class="sidebar-link" title="My Space">
+                    <i class="fa-solid fa-user-circle"></i>
+                    <span class="sidebar-text">My Space</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="index.html" class="sidebar-link" title="Home">
+                    <i class="fa-solid fa-house"></i>
+                    <span class="sidebar-text">Home</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="shows.html" class="sidebar-link" title="TV Shows">
+                    <i class="fa-solid fa-tv"></i>
+                    <span class="sidebar-text">TV Shows</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="movies.html" class="sidebar-link" title="Movies">
+                    <i class="fa-solid fa-film"></i>
+                    <span class="sidebar-text">Movies</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="anime.html" class="sidebar-link" title="Anime">
+                    <i class="fa-solid fa-dragon"></i>
+                    <span class="sidebar-text">Anime</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="asian.html" class="sidebar-link" title="Asian">
+                    <i class="fa-solid fa-theater-masks"></i>
+                    <span class="sidebar-text">Asian</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="mylist.html" class="sidebar-link active" title="My List">
+                    <i class="fa-solid fa-bookmark"></i>
+                    <span class="sidebar-text">My List</span>
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-bottom">
+            <a href="https://AnyKan.fun" class="sidebar-link switch-kan" title="Switch to Anykan">
+                <i class="fas fa-exchange-alt"></i>
+                <span class="sidebar-text">Anykan</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="container">
         <div class="page-header-banner">
             <div class="header-content">
                 <div class="header-icon"><i class="fas fa-bookmark"></i></div>
@@ -234,7 +186,7 @@
             </div>
         </div>
 
-        <div class="drama-grid" id="mylist-grid-container">
+        <div class="my-list-grid" id="mylist-grid-container">
             <div class="loading-state" id="loading-spinner">
                 <i class="fas fa-circle-notch fa-spin"></i>
                 <h3 style="color:#fff; margin:0;">Syncing with Cloud...</h3>
@@ -260,6 +212,9 @@
             <span class="nav-label">Profile</span>
         </a>
     </nav>
+    
+    <!-- Smooth Bottom Overlay Fade -->
+    <div class="global-bottom-fade"></div>
 
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
@@ -278,12 +233,11 @@
         let activeProfileIndex = 0;
         let unsubscribeList = null;
 
-        // Render Logic for the Dynamic Grid
+        // Render Logic applying the standard .drama-card structure
         window.renderMyList = function(listArray) {
             const myListGrid = document.getElementById('mylist-grid-container');
             const totalCountEl = document.getElementById('total-count');
             
-            // Update Stat Counter
             totalCountEl.textContent = listArray ? listArray.length : 0;
 
             if (listArray && listArray.length > 0) {
@@ -293,18 +247,20 @@
                     const dateStr = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
                     
                     return `
-                    <a href="${item.link}" class="list-card">
-                        <div class="list-poster-wrap">
-                            <img src="${item.img}" alt="${item.title}" onerror="this.src='default-poster.jpg'">
-                            <button class="remove-list-btn" onclick="event.preventDefault(); event.stopPropagation(); window.removeFromMyList('${identifier}')" title="Remove from My List">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </div>
-                        <div class="list-info">
-                            <div class="list-title">${item.title}</div>
-                            <div class="list-date"><i class="far fa-calendar"></i> Added ${dateStr}</div>
-                        </div>
-                    </a>
+                    <div class="drama-card" style="aspect-ratio: 2/3;">
+                        <a href="${item.link}" style="display:block; height:100%; width:100%;">
+                            <div class="drama-card-img">
+                                <img src="${item.img}" alt="${item.title}" loading="lazy" onerror="this.src='default-poster.jpg'">
+                            </div>
+                            <div class="drama-card-info" style="opacity: 1; padding: 15px 10px 10px; background: linear-gradient(to top, rgba(0,0,0,1) 30%, transparent);">
+                                <h3 class="drama-card-title">${item.title}</h3>
+                                <p class="drama-card-meta" style="font-size: 0.65rem; color: var(--text-muted-color);">Added ${dateStr}</p>
+                            </div>
+                        </a>
+                        <button class="bookmark-btn active delete-btn" onclick="event.preventDefault(); event.stopPropagation(); window.removeFromMyList('${identifier}')" title="Remove from My List">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
                 `}).join('');
             } else {
                 myListGrid.innerHTML = `
@@ -321,7 +277,6 @@
         window.removeFromMyList = async function(id) {
             if (!currentUserDocRef) return;
             
-            // Filter out by checking id or legacy link
             const updatedList = currentMyList.filter(item => String(item.id) !== String(id) && item.link !== id);
             
             try {
@@ -384,7 +339,6 @@
                         renderMyList([]);
                     }
                 }, (error) => {
-                    console.error("List sync error:", error);
                     document.getElementById('mylist-grid-container').innerHTML = `
                         <div class="empty-state">
                             <div class="empty-icon" style="color: #ef4444; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);"><i class="fas fa-exclamation-triangle"></i></div>
@@ -395,6 +349,18 @@
 
             } else {
                 window.location.replace('login.html'); 
+            }
+        });
+        
+        // Search bar mapping function (For UI functionality completeness)
+        document.addEventListener('DOMContentLoaded', () => {
+            const mSearch = document.getElementById('mobileSearchInput');
+            const pcSearch = document.getElementById('searchInput');
+            if(mSearch && pcSearch) {
+                mSearch.addEventListener('input', (e) => {
+                    pcSearch.value = e.target.value;
+                    pcSearch.dispatchEvent(new Event('input')); 
+                });
             }
         });
     </script>
