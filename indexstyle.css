@@ -483,14 +483,17 @@ ul { list-style: none; }
             height: 100%; background: var(--primary-color, #8A2BE2); 
             box-shadow: 0 0 10px var(--primary-color, #8A2BE2); border-radius: 0 2px 2px 0; 
         }
-        .cw-landscape-info { padding: 12px; display: flex; flex-direction: column; gap: 6px; }
-        .cw-landscape-title { 
-            font-size: 0.95rem; font-weight: 600; color: #fff; margin: 0; 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-        }
-        .cw-landscape-meta { font-size: 0.8rem; color: #9CA3AF; display: flex; justify-content: space-between; align-items: center; }
-        .cw-play-badge { color: var(--primary-color); font-weight: 500; display: flex; align-items: center; gap: 5px; }
-
+     .cw-landscape-info { 
+        padding: 10px !important; 
+        gap: 2px !important; 
+    }
+    .cw-landscape-title { 
+        font-size: 0.8rem !important; 
+    }
+    .cw-play-badge { 
+        font-size: 0.65rem !important; 
+        padding: 3px 6px !important; 
+    }
         .schedule-section { margin-bottom: 40px; }
         .day-toggle-container { 
             display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; 
@@ -553,7 +556,7 @@ ul { list-style: none; }
 
     /* 2. Mobile Hero Fixes: 16:9 PC Style Banner */
     /* Pushed down below the search bar */
-    .netflix-hero { padding-top: 100px !important; padding-bottom: 0px !important; } 
+    .netflix-hero { padding-top: 110px !important; padding-bottom: 0px !important; } 
     .hero-slider-container { padding-bottom: 25px !important; } 
     
     .hero-card { 
@@ -753,7 +756,7 @@ ul { list-style: none; }
 ========================================= */
 .h-scroll { 
     display: flex !important; 
-    gap: 20px !important; 
+    gap: 5px !important; 
     overflow-x: auto !important; 
     padding: 0 4% 20px 4% !important; 
     scrollbar-width: none !important; 
@@ -1001,4 +1004,140 @@ ul { list-style: none; }
     /* Adjust body padding & FAB for tighter gap */
     body { padding-bottom: 145px; }
     .drama-fab { bottom: 140px; } 
+}
+/* =====================================================
+   PROFILE SWITCHER MODAL (HOTSTAR STYLE)
+===================================================== */
+#home-profile-switcher-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 12, 16, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 100000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+}
+
+#home-profile-switcher-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.switcher-title {
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 35px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.profiles-list {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 90%;
+}
+
+.profile-select-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.profile-select-card:hover {
+    transform: translateY(-8px);
+}
+
+.switcher-avatar-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    transition: all 0.3s ease;
+    background: #1a1a1d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: #fff;
+}
+
+.profile-select-card:hover .switcher-avatar-img {
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 25px rgba(138, 43, 226, 0.5);
+}
+
+.switcher-name {
+    color: #a0a0a0;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.profile-select-card:hover .switcher-name {
+    color: #fff;
+}
+
+/* Mobile Adjustments for Profile Switcher */
+@media (max-width: 768px) {
+    .switcher-avatar-img { width: 75px; height: 75px; font-size: 2rem; }
+    .switcher-title { font-size: 1.5rem; margin-bottom: 25px; }
+    .profiles-list { gap: 20px; }
+}
+/* --- CONTINUE WATCHING SIZE REDUCTION OVERRIDES --- */
+
+/* 1. PC / Desktop Card Size Reduction */
+.cw-landscape-card {
+    width: 240px !important;
+    min-width: 240px !important;
+    max-width: 240px !important;
+}
+.cw-landscape-info {
+    padding: 10px !important;
+    gap: 5px !important;
+}
+.cw-landscape-title {
+    font-size: 0.85rem !important;
+}
+
+/* 2. Mobile Card Size Reduction */
+@media (max-width: 992px) {
+    .cw-landscape-card { 
+        width: 160px !important; 
+        min-width: 160px !important; 
+        max-width: 160px !important; 
+    }
+    .cw-landscape-info { 
+        padding: 8px !important; 
+        gap: 4px !important; 
+    }
+    .cw-landscape-title { 
+        font-size: 0.75rem !important; 
+    }
+    .cw-play-badge { 
+        font-size: 0.65rem !important; 
+        padding: 3px 6px !important; 
+    }
+    .cw-landscape-meta span {
+        font-size: 0.65rem !important;
+    }
+    .cw-remove-btn { 
+        width: 24px !important; 
+        height: 24px !important; 
+        top: 5px !important; 
+        right: 5px !important; 
+        font-size: 0.7rem !important; 
+    }
 }
