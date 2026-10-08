@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No Internet - Dramakan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #8A2BE2;
+            --primary-glow: rgba(138, 43, 226, 0.5);
+            --bg-rgb: 11, 12, 16;
+            --text-color: #f5f5f5;
+            --text-muted: #a0a0a0;
+            --glass-bg: rgba(26, 26, 29, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-light: rgba(255, 255, 255, 0.15);
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: rgb(var(--bg-rgb));
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 0%, rgba(138, 43, 226, 0.15) 0%, rgb(var(--bg-rgb)) 70%);
+        }
+
+        /* Background Animated Particles for Premium Vibe */
+        .ambient-light {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--primary-color);
+            filter: blur(150px);
+            opacity: 0.2;
+            border-radius: 50%;
+            animation: pulse-light 8s infinite alternate ease-in-out;
+            z-index: 0;
+        }
+
+        @keyframes pulse-light {
+            0% { transform: scale(0.8) translate(0, 0); opacity: 0.1; }
+            100% { transform: scale(1.2) translate(20px, -20px); opacity: 0.25; }
+        }
+
+        .offline-container {
+            padding: 20px;
+            width: 90%;
+            max-width: 440px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border-light);
+            border-radius: 24px;
+            padding: 50px 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* --- SVG MASCOT ANIMATIONS --- */
+        .mascot-container {
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 20px auto;
+            position: relative;
+        }
+
+        .mascot-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        /* The floating body */
+        .mascot-body {
+            animation: float 4s ease-in-out infinite;
+            transform-origin: center;
+        }
+
+        /* Blinking Eyes */
+        .mascot-eyes {
+            animation: blink 4s infinite;
+        }
+
+        /* Dangling Cord swinging */
+        .mascot-cord {
+            animation: swing 4s ease-in-out infinite alternate;
+            transform-origin: 100px 145px;
+        }
+
+        /* Spark/Zzz emitting from antenna */
+        .mascot-spark {
+            animation: flash 2s infinite ease-out;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+        }
+        @keyframes blink {
+            0%, 46%, 49%, 100% { stroke-width: 6; opacity: 1; }
+            47%, 48% { stroke-width: 0; opacity: 0; }
+        }
+        @keyframes swing {
+            0% { transform: rotate(-5deg); }
+            100% { transform: rotate(10deg); }
+        }
+        @keyframes flash {
+            0% { transform: scale(0.5) translate(0, 0); opacity: 1; }
+            100% { transform: scale(1.5) translate(-10px, -20px); opacity: 0; }
+        }
+
+        /* --- TYPOGRAPHY & BUTTONS --- */
+        .title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 35px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #ff4757;
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 12px rgba(255, 71, 87, 0.6);
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+        }
+
+        .retry-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #6a1b9a 100%);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 16px 35px;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 8px 20px var(--primary-glow);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(138, 43, 226, 0.6);
+            background: linear-gradient(135deg, #9d4edd 0%, var(--primary-color) 100%);
+        }
+
+        .retry-btn i {
+            transition: transform 0.4s ease;
+        }
+        .retry-btn:hover i {
+            transform: rotate(180deg);
+        }
+
+        .logo {
+            position: absolute;
+            top: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+            z-index: 20;
+        }
+        .logo span { color: var(--primary-color); }
+    </style>
+</head>
+<body>
+    <!-- Background Glow -->
+    <div class="ambient-light"></div>
+
+    <div class="logo">Drama<span>Kan</span></div>
+    
+    <div class="offline-container">
+        <div class="glass-card">
+            
+            <!-- Animated Inline SVG Character -->
+            <div class="mascot-container">
+                <svg class="mascot-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Sparkles/Zzz -->
+                    <path class="mascot-spark" d="M 120 40 L 125 25 L 140 20 L 125 15 L 120 0 L 115 15 L 100 20 L 115 25 Z" fill="#8A2BE2"/>
+                    
+                    <g class="mascot-body">
+                        <!-- Antennas -->
+                        <path d="M 100 65 L 75 35 M 100 65 L 125 35" stroke="#8A2BE2" stroke-width="6" stroke-linecap="round"/>
+                        <circle cx="75" cy="35" r="5" fill="#f5f5f5"/>
+                        <circle cx="125" cy="35" r="5" fill="#f5f5f5"/>
+
+                        <!-- TV Body/Head -->
+                        <rect x="40" y="65" width="120" height="85" rx="20" fill="rgba(26,26,29,0.9)" stroke="#8A2BE2" stroke-width="6"/>
+                        <!-- TV Screen Area -->
+                        <rect x="52" y="77" width="96" height="61" rx="10" fill="rgba(138,43,226,0.15)"/>
+                        
+                        <!-- Sad/Sleepy Eyes -->
+                        <g class="mascot-eyes">
+                            <line x1="68" y1="105" x2="88" y2="105" stroke="#f5f5f5" stroke-width="6" stroke-linecap="round"/>
+                            <line x1="112" y1="105" x2="132" y2="105" stroke="#f5f5f5" stroke-width="6" stroke-linecap="round"/>
+                        </g>
+                        
+                        <!-- Cord Base on Body -->
+                        <rect x="90" y="150" width="20" height="8" rx="2" fill="#8A2BE2"/>
+                    </g>
+
+                    <!-- Unplugged Dangling Cord -->
+                    <g class="mascot-cord">
+                        <path d="M 100 155 C 100 185, 75 175, 65 195" fill="none" stroke="#6a1b9a" stroke-width="6" stroke-linecap="round"/>
+                        <!-- Plug end -->
+                        <rect x="53" y="195" width="24" height="12" rx="3" fill="#f5f5f5"/>
+                        <line x1="58" y1="207" x2="58" y2="215" stroke="#f5f5f5" stroke-width="3" stroke-linecap="round"/>
+                        <line x1="72" y1="207" x2="72" y2="215" stroke="#f5f5f5" stroke-width="3" stroke-linecap="round"/>
+                    </g>
+                </svg>
+            </div>
+
+            <h1 class="title">Connection Lost</h1>
+            <p class="subtitle">
+                <span class="status-dot"></span>
+                You are currently offline. Check your internet connection to continue streaming.
+            </p>
+            <button class="retry-btn" onclick="window.location.reload()">
+                <i class="fa-solid fa-rotate-right"></i> Retry Connection
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Automatically reload the page the moment the browser detects internet access again
+        window.addEventListener('online', () => {
+            const btn = document.querySelector('.retry-btn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Reconnecting...';
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
