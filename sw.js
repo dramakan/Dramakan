@@ -1,13 +1,11 @@
-// Minimal Service Worker to enable PWA Installation
-self.addEventListener('fetch', (event) => {
-  // This can be empty, but it must exist
-});
+// Adsterra Monetization Scripts
 self.options = {
     "domain": "5gvci.com",
     "zoneId": 11185192
 }
 self.lary = ""
 importScripts('https://5gvci.com/act/files/service-worker.min.js?r=sw')
+
 self.options = {
     "domain": "3nbf4.com",
     "zoneId": 11185210
@@ -15,8 +13,9 @@ self.options = {
 self.lary = ""
 importScripts('https://3nbf4.com/act/files/service-worker.min.js?r=sw')
 
+// Offline Page Logic
 const CACHE_NAME = 'dramakan-offline-v1';
-const OFFLINE_URL = 'offline.html';
+const OFFLINE_URL = '/offline.html'; // Ensure this points to the absolute root
 
 // 1. Install Event: Cache the offline page immediately
 self.addEventListener('install', (event) => {
@@ -41,7 +40,7 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// 3. Fetch Event: Intercept network requests
+// 3. Fetch Event: Intercept network requests (Combined)
 self.addEventListener('fetch', (event) => {
     // Only intercept HTML page navigation requests
     if (event.request.mode === 'navigate') {
