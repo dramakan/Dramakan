@@ -6,7 +6,7 @@ const PAGES_TO_FETCH = 25; // 25 pages = 500 items per category
 
 const staticPages = [
     '/', '/movies.html', '/shows.html', '/anime.html', '/asian.html', 
-    '/trending.html', '/filter.html', '/login.html', '/community.html'
+    '/trending.html', '/filter.html', '/login.html', '/updates.html'
 ];
 
 async function fetchTMDB(endpoint) {

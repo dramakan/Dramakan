@@ -1,428 +1,1113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Updates & Alerts - DramaKan</title>
+    <title>Community - Dramakan</title>
+    <meta name="description" content="See what the Dramakan community is watching and recommending. Read reviews, ratings, and suggestions for the best Asian Dramas, Anime, and Movies.">
     
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
+    <link rel="stylesheet" href="indexstyle.css"> 
+
     <style>
-        /* =========================================
-           1. LIQUID GLASS VARIABLES
-        ========================================= */
-        :root {
-            --primary-color: #8A2BE2;
-            --primary-rich: #6a1b9a;
-            --primary-glow: rgba(138, 43, 226, 0.4);
-            
-            --bg-base: #050507; 
-            --text-color: #FFFFFF;
-            --text-muted: #9CA3AF;
-            
-            --glass-bg: rgba(20, 20, 25, 0.4);
-            --glass-bg-hover: rgba(138, 43, 226, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-border-light: rgba(138, 43, 226, 0.2);
-            --glass-blur: blur(20px);
-            
-            --bottom-nav-bg: rgba(20, 20, 25, 0.45);
-            --bottom-nav-border: rgba(255, 255, 255, 0.08);
-            --bottom-nav-item: rgba(255, 255, 255, 0.5);
-            --bottom-nav-item-active: #fff;
+        /* --- Premium Community Specific CSS (Clean Apple-Style Liquid Glass) --- */
+        body {
+            background-color: rgb(11, 12, 16);
+            background-attachment: fixed;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body { 
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-base); 
-            color: var(--text-color);
-            padding-bottom: 120px;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
+        .community-header {
+            padding: 140px 4% 50px; text-align: center; position: relative; overflow: hidden;
         }
 
-        .liquid-orb {
-            position: fixed; border-radius: 50%; filter: blur(120px);
-            z-index: -1; pointer-events: none;
-            animation: floatOrb 25s infinite ease-in-out alternate;
+        .community-header h1 {
+            font-size: 3.5rem; font-weight: 800; margin-bottom: 15px; color: #fff; 
+            text-shadow: 0 10px 30px rgba(138, 43, 226, 0.4); letter-spacing: -1px;
         }
-        .orb-1 { width: 50vw; height: 50vw; background: rgba(138, 43, 226, 0.15); top: -10%; left: -10%; }
-        .orb-2 { width: 40vw; height: 40vw; background: rgba(138, 43, 226, 0.1); bottom: 10%; right: -10%; animation-delay: -10s; }
+        .community-header p {
+            color: #a0a0a0; font-size: 1.15rem; max-width: 650px; margin: 0 auto; font-weight: 300;
+        }
         
-        @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(5%, 10%) scale(1.1); }
-            100% { transform: translate(-5%, -5%) scale(0.95); }
+        .community-container {
+            display: flex; flex-direction: column; gap: 35px;
+            padding: 0 4% 120px; max-width: 1400px; margin: 0 auto; /* Widened for Grid */
         }
 
-        /* =========================================
-           2. HEADER & PAGE STRUCTURE
-        ========================================= */
-        .app-header {
-            position: sticky; top: 0; left: 0; width: 100%; z-index: 1000; padding: 15px 5%;
-            display: flex; align-items: center; justify-content: space-between;
-            background: rgba(5,5,7,0.85); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--glass-border);
+        /* --- PC Grid System --- */
+        .feed-section { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); 
+            gap: 30px; 
+            align-items: start;
         }
 
-        .header-title { font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 10px; color: #fff;}
-        .header-title i { color: var(--primary-color); }
+        /* --- Apple-Style Liquid Glass Post Cards --- */
+        .post-card {
+            display: flex; flex-direction: column; gap: 15px; 
+            background: rgba(30, 30, 35, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-left: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 30px; padding: 25px; 
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); 
+            backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 1px 2px rgba(255,255,255,0.1);
+            position: relative; cursor: pointer;
+        }
+        .post-card:hover { 
+            border-color: rgba(255, 255, 255, 0.25); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 35px rgba(138,43,226,0.15); 
+            transform: translateY(-5px);
+        }
         
-        .header-logo { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; color: #fff; text-decoration: none; transition: transform 0.3s; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        .header-logo span { color: var(--primary-color); text-shadow: 0 0 10px var(--primary-glow); }
-        .header-logo:hover { transform: scale(1.05); }
-
-        .pc-nav { display: flex; gap: 15px; align-items: center; }
-        .pc-nav a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: all 0.3s; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 50px;}
-        .pc-nav a:hover { color: #fff; background: rgba(255,255,255,0.05); }
-        .pc-nav a.active { color: #fff; background: rgba(138, 43, 226, 0.15); box-shadow: 0 4px 15px var(--primary-glow); border: 1px solid rgba(138, 43, 226, 0.3); }
-        .pc-nav a.active i { color: var(--primary-color); }
-
-        .notif-container { max-width: 850px; margin: 30px auto; padding: 0 5%; }
-
-        @media (min-width: 993px) {
-            .mobile-only { display: none !important; }
+        /* Top Right Fixed Controls & Wheel */
+        .top-right-controls {
+            position: absolute; top: 25px; right: 25px;
+            display: flex; align-items: center; gap: 15px; z-index: 10;
         }
 
-        /* =========================================
-           3. NOTIFICATION CARDS & MODAL
-        ========================================= */
-        .notif-list { display: flex; flex-direction: column; gap: 15px; }
+        /* --- Premium Rating Wheel --- */
+        .rating-wheel {
+            width: 48px; height: 48px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.6), inset 0 0 0 2px rgba(255,255,255,0.05); 
+            position: relative;
+        }
+        .rating-wheel::after {
+            content: ''; position: absolute; inset: 4px;
+            background: #16161a; border-radius: 50%; z-index: 1; 
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
+        }
+        .rating-wheel-inner {
+            position: relative; z-index: 2; color: #fff;
+            display: flex; align-items: baseline; gap: 1px;
+        }
+        .rating-wheel-inner .num { font-size: 1.05rem; font-weight: 800; text-shadow: 0 2px 5px rgba(0,0,0,0.5);}
+        .rating-wheel-inner small { font-size: 0.65rem; color: #aaa; font-weight: 600;}
+
+        /* Post Control Options (Edit/Delete) */
+        .post-controls { display: flex; gap: 8px; align-items: center; }
+        .control-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: #aaa; width: 34px; height: 34px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s;
+        }
+        .control-btn:hover { background: rgba(138, 43, 226, 0.2); color: #fff; border-color: #8A2BE2; }
+        .control-btn.delete:hover { background: rgba(255, 71, 87, 0.2); border-color: #ff4757; color: #ff4757; }
         
-        .notif-card {
-            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border); border-radius: 20px;
-            padding: 25px; display: flex; align-items: flex-start; gap: 20px; position: relative;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            animation: slideIn 0.5s ease;
+        .claim-badge { 
+            font-size: 0.75rem; color: #fff; background: rgba(138, 43, 226, 0.4); 
+            padding: 6px 12px; border-radius: 50px; text-decoration: none; transition: 0.3s; 
+            display: inline-flex; align-items: center; gap: 5px; font-weight: 600; border: 1px solid rgba(138, 43, 226, 0.6);
         }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .claim-badge:hover { background: rgba(138, 43, 226, 0.8); }
+
+        .post-main-content { display: flex; gap: 20px; align-items: stretch; margin-top: 5px; }
+        .post-poster { flex: 0 0 110px; position: relative; }
+        .post-poster img { 
+            width: 100%; border-radius: 14px; 
+            box-shadow: 0 12px 24px rgba(0,0,0,0.6); 
+            border: 1px solid rgba(255,255,255,0.05);
+            object-fit: cover; aspect-ratio: 2/3;
+            transition: transform 0.4s;
+        }
+        .post-card:hover .post-poster img { transform: scale(1.05); }
         
-        .notif-card:hover { 
-            background: var(--glass-bg-hover); border-color: var(--glass-border-light); 
-            transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .notif-icon-wrap {
-            width: 55px; height: 55px; border-radius: 50%;
-            background: rgba(138, 43, 226, 0.15); color: var(--primary-color);
-            display: flex; justify-content: center; align-items: center;
-            font-size: 1.4rem; flex-shrink: 0; border: 1px solid rgba(138, 43, 226, 0.3);
-            box-shadow: inset 0 0 10px rgba(138, 43, 226, 0.2);
-        }
-
-        .notif-content { flex: 1; min-width: 0; padding-right: 0; }
-        .notif-header-info { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 8px; gap: 2px;}
-        .notif-title { font-size: 1.1rem; font-weight: 600; color: #fff; margin: 0; line-height: 1.3;}
-        .notif-time { font-size: 0.8rem; color: #777; white-space: nowrap;}
+        .post-details { flex: 1; display: flex; flex-direction: column; min-width: 0; padding-top: 5px; }
         
-        .notif-msg-snippet { 
-            font-size: 0.95rem; color: var(--text-muted); margin: 0 0 12px 0; line-height: 1.5; 
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; padding-right: 170px;}
+        .post-user-info { display: flex; align-items: center; gap: 12px; }
+        .user-avatar { 
+            width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0; background: rgba(138,43,226,0.15); 
+            border: 1px solid rgba(138, 43, 226, 0.5); display: flex; align-items: center; 
+            justify-content: center; font-weight: 600; color: #fff; font-size: 0.95rem;
         }
-
-        .btn-read-more {
-            background: rgba(138, 43, 226, 0.1); color: var(--primary-color); border: 1px solid rgba(138, 43, 226, 0.3);
-            padding: 8px 16px; border-radius: 50px; cursor: pointer; font-family: 'Poppins'; font-size: 0.85rem; 
-            font-weight: 600; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px;
-        }
-        .btn-read-more:hover { background: var(--primary-color); color: #fff; box-shadow: 0 4px 15px var(--primary-glow); }
-
-        .notif-link { 
-            display: inline-flex; align-items: center; gap: 8px;
-            color: var(--primary-color); text-decoration: none; 
-            font-size: 0.85rem; font-weight: 600; transition: all 0.3s;
-            background: rgba(138, 43, 226, 0.1); padding: 8px 16px; border-radius: 50px;
-            border: 1px solid rgba(138, 43, 226, 0.2); margin-top: 20px;
-        }
-        .notif-link:hover { background: var(--primary-color); color: #fff; box-shadow: 0 4px 15px var(--primary-glow); }
-
-        .empty-state {
-            text-align: center; padding: 60px 20px; background: var(--glass-bg);
-            border: 1px dashed var(--glass-border); border-radius: 20px;
-        }
-        .empty-state i { font-size: 4rem; color: rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .empty-state h3 { font-size: 1.2rem; color: #fff; margin-bottom: 10px; }
-        .empty-state p { color: var(--text-muted); font-size: 0.95rem; }
-
-        /* --- UPDATE MODAL STYLES --- */
-        .update-modal-overlay {
-            position: fixed; inset: 0; background: rgba(5,5,7,0.85); backdrop-filter: blur(5px);
-            z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px;
-        }
-        .update-modal-card {
-            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px;
-            padding: 30px; width: 100%; max-width: 650px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            backdrop-filter: blur(20px); max-height: 85vh; overflow-y: auto;
-        }
-        .update-modal-close {
-            position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 1.5rem;
-            color: var(--text-muted); cursor: pointer; transition: 0.3s;
-        }
-        .update-modal-close:hover { color: #fff; }
+        .user-name { font-weight: 700; color: #fff; font-size: 0.95rem; letter-spacing: 0.3px;}
+        .post-time { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px;}
         
-        .update-modal-card::-webkit-scrollbar { width: 6px; }
-        .update-modal-card::-webkit-scrollbar-track { background: transparent; }
-        .update-modal-card::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 10px; }
+        .post-drama-title { 
+            font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 8px; 
+            text-decoration: none; transition: 0.3s; word-break: break-word; line-height: 1.3;
+        }
+        
+        /* Truncate text for Compact Feed view */
+        .clamp-text {
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+            font-size: 0.9rem; color: #ccc; line-height: 1.6; margin-bottom: 15px; font-weight: 400; white-space: pre-wrap;
+        }
+        .full-text { font-size: 0.95rem; color: #ccc; line-height: 1.7; margin-bottom: 20px; font-weight: 400; white-space: pre-wrap; }
+        
+        .post-actions { display: flex; gap: 12px; margin-top: auto; flex-wrap: wrap; align-items: center;}
+        .action-btn {
+            padding: 8px 16px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.03); color: #eee; cursor: pointer;
+            transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.8rem; font-weight: 600; text-decoration: none;
+            backdrop-filter: blur(10px);
+        }
+        .action-btn:hover { background: rgba(138, 43, 226, 0.2); border-color: #8A2BE2; box-shadow: 0 5px 15px rgba(138,43,226,0.3); color: #fff;}
+        .action-btn.liked { background: rgba(255, 51, 102, 0.15); border-color: #ff3366; color: #ff3366; }
+        .action-btn.liked i { color: #ff3366; animation: heartBurst 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .action-btn.active-list { background: rgba(138, 43, 226, 0.8) !important; color: #fff !important; border-color: #8A2BE2 !important; }
 
-        /* =========================================
-           4. MOBILE NAVIGATION (APP-LIKE)
-        ========================================= */
+        @keyframes heartBurst { 0% { transform: scale(1); } 50% { transform: scale(1.5); } 100% { transform: scale(1); } }
+
+        /* Floating Action Button (FAB) */
+        .floating-action-btn {
+            position: fixed; bottom: 40px; right: 40px; padding: 15px 28px; border-radius: 50px;
+            background: var(--primary-color, #8A2BE2); color: #fff; font-size: 1.1rem; font-weight: 700;
+            border: none; cursor: pointer; box-shadow: 0 10px 30px rgba(138, 43, 226, 0.4), inset 0 2px 5px rgba(255,255,255,0.2);
+            z-index: 9990; display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: all 0.3s ease; animation: pulse-glow-fab 2.5s infinite;
+        }
+        .floating-action-btn:hover { transform: scale(1.05) translateY(-5px); box-shadow: 0 15px 40px rgba(138, 43, 226, 0.6); }
+
+        /* --- Full Detail Popup Modal (Reddit/YT Style) --- */
+        .detail-modal-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 9995; display: flex; justify-content: center; align-items: center; padding: 20px; 
+            opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .detail-modal-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+        
+        .detail-modal-card {
+            background: rgba(30, 30, 35, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 28px; 
+            width: 100%; max-width: 850px; max-height: 90vh; position: relative; display: flex; flex-direction: column;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.1);
+            transform: scale(0.9) translateY(20px); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .detail-modal-overlay.active .detail-modal-card { transform: scale(1) translateY(0); }
+        
+        .detail-modal-content { overflow-y: auto; padding: 40px; }
+        .detail-modal-content::-webkit-scrollbar { width: 8px; }
+        .detail-modal-content::-webkit-scrollbar-thumb { background: rgba(138, 43, 226, 0.5); border-radius: 10px; }
+        .detail-modal-content::-webkit-scrollbar-track { background: transparent; }
+
+        /* --- YouTube-Style Threaded Replies Section --- */
+        .replies-section { margin-top: 25px; position: relative; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.08);}
+        
+        .replies-wrapper {
+            display: flex; flex-direction: column; position: relative;
+            padding-left: 35px; margin-top: 15px;
+        }
+        
+        .reply-item {
+            position: relative; background: rgba(0, 0, 0, 0.3);
+            padding: 18px 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 15px;
+        }
+        
+        /* YouTube Style Curved Branch pointing to comment - NO Master Line */
+        .reply-item::before {
+            content: ''; position: absolute; top: -15px; left: -25px; width: 25px; height: 45px;
+            border-left: 2px solid rgba(138, 43, 226, 0.4);
+            border-bottom: 2px solid rgba(138, 43, 226, 0.4);
+            border-bottom-left-radius: 12px; pointer-events: none;
+        }
+
+        .reply-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 5px;}
+        .reply-user-meta { display: flex; align-items: center; gap: 10px; }
+        .reply-author { font-weight: 700; color: #fff; font-size: 0.9rem; background: rgba(255,255,255,0.08); padding: 4px 12px; border-radius: 50px;}
+        .reply-time { color: #888; font-size: 0.75rem; }
+        
+        .reply-text { font-size: 0.95rem; color: #ccc; line-height: 1.6; white-space: pre-wrap;}
+        .mention-tag { color: #d500f9; font-weight: 600; background: rgba(213, 0, 249, 0.15); padding: 2px 6px; border-radius: 6px; }
+
+        .reply-actions-bar { display: flex; gap: 15px; margin-top: 12px; align-items: center;}
+        .reply-mini-btn { background: none; border: none; color: #888; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; }
+        .reply-mini-btn:hover { color: #fff; }
+        .reply-mini-btn.liked { color: #ff3366; }
+
+        .reply-input-container { 
+            display: none; flex-direction: column; gap: 12px; margin-top: 15px; 
+            padding-left: 35px; position: relative; animation: slideDownFade 0.3s ease; 
+        }
+        /* Thread Line for Input box */
+        .reply-input-container::before {
+            content: ''; position: absolute; top: -15px; left: 10px; width: 25px; height: 45px;
+            border-left: 2px solid rgba(138, 43, 226, 0.4);
+            border-bottom: 2px solid rgba(138, 43, 226, 0.4);
+            border-bottom-left-radius: 12px; pointer-events: none;
+        }
+        .reply-input-container.active { display: flex; }
+        
+        .reply-textarea { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 15px; color: #fff; resize: vertical; min-height: 70px; font-family: inherit; font-size: 0.9rem; outline: none; transition: 0.3s; }
+        .reply-textarea:focus { border-color: #8A2BE2; box-shadow: 0 0 15px rgba(138,43,226,0.2); }
+        
+        .reply-submit-row { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .reply-name-input { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 10px 15px; border-radius: 50px; outline: none; font-size: 0.85rem; flex: 1; max-width: 200px;}
+        .reply-submit-btn { background: var(--primary-color, #8A2BE2); color: white; border: none; padding: 10px 24px; border-radius: 50px; cursor: pointer; font-size: 0.9rem; font-weight: 700; box-shadow: 0 5px 15px rgba(138,43,226,0.3); transition: 0.3s; }
+        .reply-submit-btn:hover { box-shadow: 0 8px 20px rgba(138,43,226,0.5); transform: translateY(-2px); }
+
+        /* General Creation Modal & Auth Modal */
+        .glass-modal-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            z-index: 10000; display: flex; justify-content: center; align-items: center; padding: 20px; 
+            opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .glass-modal-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+        
+        .glass-modal-card {
+            background: rgba(22, 22, 26, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 40px; width: 100%; max-width: 480px; position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.2); 
+            transform: scale(0.9) translateY(20px); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .glass-modal-overlay.active .glass-modal-card { transform: scale(1) translateY(0); }
+        
+        .close-modal-btn {
+            position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; transition: 0.3s; z-index: 1000;
+        }
+        .close-modal-btn:hover { background: #ff3366; border-color: #ff3366; transform: rotate(90deg); }
+
+        .form-group { margin-bottom: 22px; position: relative; }
+        .form-group label { display: block; margin-bottom: 10px; font-size: 0.95rem; color: #ddd; font-weight: 600; }
+        .drama-search-input { width: 100%; padding: 15px 18px; border-radius: 14px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #fff; outline: none; transition: 0.3s; font-family: inherit; font-size: 1rem; }
+        .drama-search-input:focus { border-color: #8A2BE2; box-shadow: 0 0 15px rgba(138,43,226,0.3); }
+        
+        .drama-search-dropdown {
+            position: absolute; top: 100%; left: 0; right: 0; background: rgba(20,20,25,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; max-height: 220px;
+            overflow-y: auto; z-index: 100; display: none; margin-top: 8px; box-shadow: 0 15px 40px rgba(0,0,0,0.7); backdrop-filter: blur(10px);
+        }
+        .dropdown-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; cursor: pointer; transition: 0.3s; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .dropdown-item:hover { background: rgba(138, 43, 226, 0.25); padding-left: 20px;}
+        .dropdown-item img { width: 45px; border-radius: 8px; }
+        
+        .selected-drama-preview { display: none; align-items: center; gap: 18px; padding: 15px; background: rgba(138, 43, 226, 0.15); border: 1px solid var(--primary-color); border-radius: 16px; margin-top: 12px; }
+        .selected-drama-preview img { width: 70px; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+        textarea.drama-search-input { resize: vertical; min-height: 120px; }
+        
+        .submit-post-btn { width: 100%; padding: 16px; background: var(--primary-color, #8A2BE2); color: #fff; border: none; border-radius: 14px; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: 0.3s; margin-top: 10px; box-shadow: 0 8px 25px rgba(138,43,226,0.4); text-decoration: none; text-align: center;}
+        .submit-post-btn:hover { box-shadow: 0 12px 35px rgba(138, 43, 226, 0.6); transform: translateY(-3px); color: white;}
+
+        .cute-empty-state { text-align: center; padding: 80px 20px; background: rgba(255, 255, 255, 0.02); border: 2px dashed rgba(138, 43, 226, 0.4); border-radius: 30px; backdrop-filter: blur(10px); }
+        .cute-empty-state i { font-size: 5.5rem; color: var(--primary-color); margin-bottom: 25px; filter: drop-shadow(0 0 25px rgba(138, 43, 226, 0.6)); animation: float 3s ease-in-out infinite; }
+
+        @keyframes slideDownFade { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Perfected Mobile Side-by-Side View --- */
         @media (max-width: 992px) {
-            .pc-only { display: none !important; }
-            .mobile-only { display: flex !important; }
-
-            .app-header { padding: 15px; }
-            .header-title { font-size: 1.3rem; }
-            .notif-container { margin: 20px auto; }
+            .community-header { padding-top: 100px; padding-bottom: 30px; }
+            .community-header h1 { font-size: 2.2rem; }
+            .community-container { padding: 0 4% 130px; }
             
-            .notif-card { padding: 20px; gap: 15px;}
-            .notif-icon-wrap { width: 45px; height: 45px; font-size: 1.1rem; }
-            .notif-content { padding-right: 0; }
-            .notif-title { font-size: 1.05rem; }
-            .notif-msg-snippet { font-size: 0.9rem; }
-
-            .bottom-nav { display: flex !important; position: fixed !important; bottom: 15px !important; left: 50% !important; transform: translateX(-50%) !important; width: 90% !important; max-width: 400px !important; background: var(--bottom-nav-bg) !important; backdrop-filter: blur(40px) saturate(180%) !important; -webkit-backdrop-filter: blur(40px) saturate(180%) !important; border: 1px solid var(--bottom-nav-border) !important; border-radius: 50px !important; z-index: 9999 !important; padding: 5px 10px !important; box-shadow: 0 25px 50px rgba(0,0,0,0.5) !important;}
-            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 0; color: var(--bottom-nav-item); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); position: relative; text-decoration: none;}
-            .bottom-nav-item.active { color: var(--bottom-nav-item-active); }
-            .nav-icon { font-size: 1.35rem; margin-bottom: 4px; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
-            .bottom-nav-item.active .nav-icon { transform: translateY(-4px) scale(1.15); color: var(--primary-color); filter: drop-shadow(0 0 10px var(--primary-glow));}
-            .nav-label { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.3px; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
-            .bottom-nav-item.active .nav-label { font-weight: 700; text-shadow: 0 0 10px rgba(255,255,255,0.5);}
+            .feed-section { grid-template-columns: 1fr; }
+            
+            .post-card { padding: 18px; border-radius: 20px; }
+            .post-main-content { flex-direction: row !important; flex-wrap: nowrap; gap: 15px; align-items: stretch; }
+            .post-poster { flex: 0 0 100px; width: 100px; } 
+            .post-poster img { width: 100%; height: 150px; object-fit: cover; }
+            
+            .post-details { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+            
+            .post-header { margin-bottom: 8px; flex-direction: column; gap: 8px; align-items: flex-start; padding-right: 0;}
+            .user-avatar { width: 34px; height: 34px; font-size: 0.9rem; border-width: 1.5px;}
+            .user-name { font-size: 0.95rem; }
+            
+            /* Top Right Fixed Positioning for Mobile & PC */
+            .top-right-controls { top: 15px; right: 15px; gap: 8px;}
+            .rating-wheel { width: 42px; height: 42px; }
+            .rating-wheel-inner { width: 34px; height: 34px;}
+            .rating-wheel-inner .num { font-size: 0.9rem; }
+            
+            .post-drama-title { font-size: 1.25rem; margin-bottom: 6px; line-height: 1.2;}
+            .post-text { font-size: 0.85rem; line-height: 1.5; margin-bottom: 12px;}
+            
+            /* Buttons adapt cleanly to mobile */
+            .post-actions { gap: 8px; display: flex; flex-wrap: wrap; }
+            .action-btn { flex: 1 1 calc(50% - 4px); justify-content: center; padding: 8px; font-size: 0.75rem; text-align: center;}
+            
+            .glass-modal-card { padding: 30px 20px; border-radius: 24px;}
+            .floating-action-btn { bottom: 85px; right: 15px; padding: 12px 20px; font-size: 0.95rem; }
+            
+            .detail-modal-content { padding: 25px 15px; }
+            .replies-wrapper { padding-left: 20px; }
+            .reply-item::before, .reply-input-container::before { left: -15px; width: 15px; }
+            .reply-input-container { padding-left: 20px; }
+            .reply-submit-row { flex-direction: column; align-items: stretch; }
+            .reply-name-input { max-width: 100%; }
         }
-        @media (min-width: 993px) { .bottom-nav { display: none !important; } }
     </style>
 </head>
 <body>
 
-    <div class="liquid-orb orb-1"></div>
-    <div class="liquid-orb orb-2"></div>
+    <!-- Header reused from index.html with Dynamic Community Search -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="header-left">
+                <a href="index.html" class="logo">Drama<span>Kan</span></a>
+            </div>
+           <div class="header-right" style="display: flex; align-items: center;">
+                <div class="search-bar pc-search-bar">
+                    <i class="fas fa-search"></i>
+                    <input id="searchInput" type="text" placeholder="Search community posts...">
+                </div>
+                <a href="login.html" class="header-profile-btn" id="topAuthBtn">
+                    <i class="fa-solid fa-user"></i> <span>Login / Sign Up</span>
+                </a>
+            </div>
+        </div>
 
-    <header class="app-header">
-        <div style="display: flex; align-items: center; gap: 40px; width: 100%;">
-            <a href="index.html" class="header-logo pc-only">Drama<span>Kan</span></a>
-            
-            <div class="header-title mobile-only"><i class="fas fa-bell"></i> Updates</div>
-            
-            <nav class="pc-nav pc-only">
-                <a href="index.html"><i class="fas fa-home"></i> Home</a>
-                <a href="community.html" class="active"><i class="fas fa-bell"></i> Updates</a>
-                <a href="mylist.html"><i class="fas fa-bookmark"></i> My List</a>
-                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
-            </nav>
+        <div class="mobile-search-container">
+            <div class="mobile-glass-search">
+                <i class="fas fa-search"></i>
+                <input id="mobileSearchInput" type="text" placeholder="Search community posts...">
+            </div>
         </div>
     </header>
 
-    <main class="notif-container">
-        <div id="page-notifications-list" class="notif-list">
-            <div style="text-align: center; padding: 50px; color: var(--text-muted);">
-                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px;"></i>
-                <p>Fetching latest updates...</p>
-            </div>
-        </div>
+    <div class="community-header">
+        <h1>Community Spotlight</h1>
+        <p>Discover what others are watching and share your absolute favorites with the global Dramakan family.</p>
+    </div>
+
+    <main class="community-container">
+        <!-- Main Feed Container -->
+        <section class="feed-section" id="feedContainer">
+            <div style="text-align:center; padding: 80px; grid-column: 1 / -1;"><i class="fas fa-spinner fa-spin fa-3x" style="color: var(--primary-color);"></i></div>
+        </section>
     </main>
 
-    <!-- UPDATE MODAL POPUP -->
-    <div class="update-modal-overlay" id="updateModal">
-        <div class="update-modal-card">
-            <button class="update-modal-close" onclick="closeUpdateModal()"><i class="fas fa-times"></i></button>
-            <h2 id="modal-update-title" style="color: #fff; margin-top: 0; font-size: 1.4rem; padding-right: 20px;">Title</h2>
-            <div class="notif-time" id="modal-update-time" style="margin-bottom: 20px; font-weight: 500;"><i class="far fa-clock"></i> Time</div>
+    <!-- FAB for Create Post -->
+    <button id="openPostModalBtn" class="floating-action-btn" title="Post a Suggestion">
+        <i class="fas fa-magic"></i> Suggest
+    </button>
+
+    <!-- Create/Edit Suggestion Modal -->
+    <div id="suggestionModal" class="glass-modal-overlay" style="z-index: 10005;">
+        <div class="glass-modal-card">
+            <button id="closeModalBtn" class="close-modal-btn"><i class="fas fa-times"></i></button>
+            <h3 id="modalTitle" style="margin-bottom: 25px; font-weight: 800; text-align: center; color: #fff; font-size: 1.6rem; letter-spacing: -0.5px;">Share a Suggestion ✨</h3>
             
-            <!-- white-space: pre-wrap forces HTML to respect newlines/paragraphs from the database -->
-            <div id="modal-update-body" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; white-space: pre-wrap;">Body</div>
-            
-            <a id="modal-update-link" href="#" class="notif-link" style="display: none;">View Details <i class="fas fa-arrow-right"></i></a>
+            <div class="form-group" id="searchGroup">
+                <label>Search Drama / Movie</label>
+                <input type="text" id="dramaSearch" class="drama-search-input" placeholder="Type to search..." autocomplete="off">
+                <div id="dramaDropdown" class="drama-search-dropdown"></div>
+                
+                <div id="selectedDramaPreview" class="selected-drama-preview">
+                    <img id="previewImg" src="" alt="Poster">
+                    <div>
+                        <div id="previewTitle" style="font-weight: 700; font-size: 1.05rem; color: #fff;"></div>
+                        <button type="button" id="clearSelection" style="background: rgba(255, 71, 87, 0.15); border: 1px solid rgba(255, 71, 87, 0.4); color: #ff4757; border-radius: 8px; padding: 6px 12px; cursor: pointer; font-size: 0.75rem; margin-top: 8px; transition: 0.3s; font-weight: 600;">Change Selection</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Display Name (Optional)</label>
+                <input type="text" id="postAuthorName" class="drama-search-input" placeholder="Your Display Name or Anonymous">
+            </div>
+
+            <div class="form-group">
+                <label>Your Review / What you loved</label>
+                <textarea id="postContent" class="drama-search-input" placeholder="The storyline was absolutely glowing because..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Rating</label>
+                <select id="postRating" class="drama-search-input" style="appearance: auto; cursor: pointer;">
+                    <option value="5">5 / 5 - Masterpiece</option>
+                    <option value="4">4 / 5 - Great</option>
+                    <option value="3">3 / 5 - Good</option>
+                    <option value="2">2 / 5 - Okay</option>
+                    <option value="1">1 / 5 - Poor</option>
+                </select>
+            </div>
+
+            <button id="submitPostBtn" class="submit-post-btn">Drop into Community 🚀</button>
+            <div id="formStatus" style="margin-top: 15px; font-size: 0.95rem; text-align: center; font-weight: 600;"></div>
         </div>
     </div>
 
+    <!-- The Detail Popup Modal (Reddit/YT Style) -->
+    <div id="postDetailModal" class="detail-modal-overlay">
+        <div class="detail-modal-card">
+            <button class="close-modal-btn" onclick="window.closePostDetail()"><i class="fas fa-times"></i></button>
+            <div id="postDetailContent" class="detail-modal-content">
+                <!-- Content injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Required Modal -->
+    <div id="authAlertModal" class="glass-modal-overlay" style="z-index: 10010;">
+        <div class="glass-modal-card" style="max-width: 400px; text-align: center; padding: 40px 30px;">
+            <button class="close-modal-btn" onclick="document.getElementById('authAlertModal').classList.remove('active');"><i class="fas fa-times"></i></button>
+            <div style="font-size: 3.5rem; color: #8A2BE2; margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(138,43,226,0.4));"><i class="fas fa-lock"></i></div>
+            <h3 style="color: #fff; margin-bottom: 15px; font-weight: 800; font-size: 1.5rem;">Login Required</h3>
+            <p id="authAlertText" style="color: #ccc; margin-bottom: 25px; font-size: 0.95rem; line-height: 1.6;">Please login to add this masterpiece to your list and fully join the community.</p>
+            <a href="login.html" class="submit-post-btn" style="display: inline-block; width: auto; padding: 12px 35px; border-radius: 50px;">Login Now</a>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
     <nav class="bottom-nav">
-        <a href="index.html" class="bottom-nav-item">
-            <i class="fa-solid fa-house nav-icon"></i>
-            <span class="nav-label">Home</span>
-        </a>
-        <a href="community.html" class="bottom-nav-item active">
-            <i class="fa-solid fa-bell nav-icon"></i>
-            <span class="nav-label">Updates</span>
-        </a>
-        <a href="mylist.html" class="bottom-nav-item">
-            <i class="fa-solid fa-bookmark nav-icon"></i>
-            <span class="nav-label">My List</span>
-        </a>
-        <a href="profile.html" class="bottom-nav-item" id="bottomAuthBtn">
-            <i class="fa-solid fa-user nav-icon"></i>
-            <span class="nav-label">Profile</span>
-        </a>
+        <a href="index.html" class="bottom-nav-item"><i class="fa-solid fa-house nav-icon"></i></a>
+        <a href="updates.html" class="bottom-nav-item active"><i class="fa-solid fa-bell nav-icon"></i></a>
+        <a href="mylist.html" class="bottom-nav-item"><i class="fa-solid fa-bookmark nav-icon"></i></a>
+        <a href="login.html" class="bottom-nav-item" id="bottomAuthBtn"><i class="fa-solid fa-user nav-icon"></i></a>
     </nav>
 
     <script type="module">
-        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, updateDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-
         const firebaseConfig = {
             apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
             authDomain: "dramakan007.firebaseapp.com",
             projectId: "dramakan007"
         };
+        
+        let firebaseInstance = null;
+        let currentUser = null;
+        let isAdminUser = false;
+        let selectedDramaData = null;
+        const ADMIN_EMAIL = "zabaazcreations@gmail.com";
+        const tmdbKey = "hidden_by_proxy";
+        
+        window.communityPostsData = {}; 
+        window.currentOpenPostId = null;
 
-        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+        let localGuestId = localStorage.getItem('dramakan_guest_id');
+        if(!localGuestId) {
+            localGuestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('dramakan_guest_id', localGuestId);
+        }
+        
+        let editingPostId = null;
 
-        const listEl = document.getElementById('page-notifications-list');
-        let activePageNotifs = [];
+        async function initApp() {
+            const [appModule, authModule, firestoreModule] = await Promise.all([
+                import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"),
+                import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"),
+                import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js")
+            ]);
+            const app = !appModule.getApps().length ? appModule.initializeApp(firebaseConfig) : appModule.getApp();
+            const auth = authModule.getAuth(app);
+            const db = firestoreModule.getFirestore(app);
+            firebaseInstance = { app, auth, db, firestoreModule };
 
-        function timeAgo(timestamp) {
-            if(!timestamp) return "Just now";
-            const date = typeof timestamp === 'number' ? new Date(timestamp) : new Date(timestamp.toMillis ? timestamp.toMillis() : timestamp);
-            const seconds = Math.floor((new Date() - date) / 1000);
-            
-            let interval = seconds / 31536000;
-            if (interval > 1) return Math.floor(interval) + " years ago";
-            interval = seconds / 2592000;
-            if (interval > 1) return Math.floor(interval) + " months ago";
-            interval = seconds / 86400;
-            if (interval > 1) return Math.floor(interval) + " days ago";
-            interval = seconds / 3600;
-            if (interval > 1) return Math.floor(interval) + " hours ago";
-            interval = seconds / 60;
-            if (interval > 1) return Math.floor(interval) + " minutes ago";
-            return "Just now";
+            authModule.onAuthStateChanged(auth, async (user) => {
+                currentUser = user;
+                isAdminUser = user && user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+
+                if(user && user.displayName) {
+                    document.getElementById('postAuthorName').value = user.displayName;
+                }
+                
+                if(user) {
+                    try {
+                        const { collection, query, where, getDocs, updateDoc, doc } = firestoreModule;
+                        const q = query(collection(db, "community_posts"), where("localId", "==", localGuestId), where("userId", "==", "anon"));
+                        const querySnapshot = await getDocs(q);
+                        querySnapshot.forEach(async (document) => {
+                            await updateDoc(doc(db, "community_posts", document.id), { userId: user.uid });
+                        });
+                    } catch(e) {}
+                }
+            });
+
+            loadFeed();
         }
 
-        function renderPageNotifications() {
-            if (activePageNotifs.length === 0) {
-                listEl.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-newspaper"></i>
-                        <h3>No updates yet!</h3>
-                        <p>Check back later for news, features, and announcements.</p>
-                    </div>
-                `;
+        // --- Live Community Search Logic ---
+        function filterFeed(query) {
+            const q = query.toLowerCase();
+            const cards = document.querySelectorAll('#feedContainer .post-card');
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.post-drama-title').innerText.toLowerCase();
+                const text = card.querySelector('.clamp-text').innerText.toLowerCase();
+                const author = card.querySelector('.user-name').innerText.toLowerCase();
+                
+                if (title.includes(q) || text.includes(q) || author.includes(q)) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            let emptyState = document.getElementById('searchEmptyState');
+            if (visibleCount === 0 && cards.length > 0) {
+                if (!emptyState) {
+                    emptyState = document.createElement('div');
+                    emptyState.id = 'searchEmptyState';
+                    emptyState.className = 'cute-empty-state';
+                    emptyState.style.gridColumn = '1 / -1';
+                    emptyState.innerHTML = `
+                        <i class="fas fa-search"></i>
+                        <h2>No matches found... 🌸</h2>
+                        <p>No one has suggested anything about "${query}" yet. Be the first to suggest it!</p>
+                        <button onclick="document.getElementById('openPostModalBtn').click()" class="action-btn" style="display:inline-flex; background:var(--primary-color); border:none; margin-top:15px; padding:12px 30px;"><i class="fas fa-magic"></i> Suggest Now</button>
+                    `;
+                    document.getElementById('feedContainer').appendChild(emptyState);
+                } else {
+                    emptyState.style.display = 'block';
+                    emptyState.querySelector('p').innerText = `No one has suggested anything about "${query}" yet. Be the first to suggest it!`;
+                }
+            } else if (emptyState) {
+                emptyState.style.display = 'none';
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => filterFeed(e.target.value));
+        document.getElementById('mobileSearchInput').addEventListener('input', (e) => filterFeed(e.target.value));
+
+
+        // --- Modals & Suggestions Search ---
+        const suggestionModal = document.getElementById('suggestionModal');
+        const openBtn = document.getElementById('openPostModalBtn');
+        const closeBtn = document.getElementById('closeModalBtn');
+
+        openBtn.addEventListener('click', () => { 
+            editingPostId = null;
+            document.getElementById('modalTitle').innerText = 'Share a Suggestion ✨';
+            document.getElementById('submitPostBtn').innerText = 'Drop into Community 🚀';
+            document.getElementById('searchGroup').style.display = 'block';
+            document.getElementById('postContent').value = '';
+            document.getElementById('clearSelection').click();
+            suggestionModal.classList.add('active'); 
+        });
+
+        const closeModal = () => { suggestionModal.classList.remove('active'); };
+        closeBtn.addEventListener('click', closeModal);
+        suggestionModal.addEventListener('click', (e) => { if (e.target === suggestionModal) closeModal(); });
+
+        const searchInput = document.getElementById('dramaSearch');
+        const dropdown = document.getElementById('dramaDropdown');
+        let searchTimeout;
+
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            if (query.length < 2) { dropdown.style.display = 'none'; return; }
+            
+            searchTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(query)}`);
+                    const data = await res.json();
+                    const results = (data.results || []).filter(i => i.media_type === 'tv' || i.media_type === 'movie').slice(0, 6);
+                    
+                    if(results.length > 0) {
+                        dropdown.innerHTML = results.map(item => `
+                            <div class="dropdown-item" onclick="selectDrama('${item.id}', '${(item.title || item.name).replace(/'/g, "\\'")}', '${item.poster_path}', '${item.media_type}')">
+                                <img src="${item.poster_path ? 'https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w92'+item.poster_path : 'default-poster.jpg'}">
+                                <div><span style="font-weight:600; color:#fff;">${item.title || item.name}</span> <small style="color:#8A2BE2; display:block;">${item.media_type.toUpperCase()}</small></div>
+                            </div>
+                        `).join('');
+                        dropdown.style.display = 'block';
+                    } else { dropdown.style.display = 'none'; }
+                } catch(err) { }
+            }, 400);
+        });
+
+        window.selectDrama = (id, title, posterPath, type) => {
+            selectedDramaData = { id, title, type, poster: posterPath ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${posterPath}` : 'default-poster.jpg' };
+            document.getElementById('dramaSearch').style.display = 'none';
+            dropdown.style.display = 'none';
+            document.getElementById('previewImg').src = selectedDramaData.poster;
+            document.getElementById('previewTitle').innerText = title;
+            document.getElementById('selectedDramaPreview').style.display = 'flex';
+        };
+
+        document.getElementById('clearSelection').addEventListener('click', () => {
+            selectedDramaData = null;
+            document.getElementById('selectedDramaPreview').style.display = 'none';
+            document.getElementById('dramaSearch').style.display = 'block';
+            document.getElementById('dramaSearch').value = '';
+        });
+
+        document.getElementById('submitPostBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('submitPostBtn');
+            const status = document.getElementById('formStatus');
+            const text = document.getElementById('postContent').value.trim();
+            const rating = document.getElementById('postRating').value;
+            let customName = document.getElementById('postAuthorName').value.trim();
+
+            if (!customName) { customName = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : "Anonymous Viewer"; }
+            if (!editingPostId && !selectedDramaData) { status.innerHTML = '<span style="color:#ff3366;">Please select a drama first.</span>'; return; }
+            if (text.length < 10) { status.innerHTML = '<span style="color:#ff3366;">Review must be at least 10 characters.</span>'; return; }
+            
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            try {
+                const { collection, addDoc, doc, updateDoc } = firebaseInstance.firestoreModule;
+                
+                if(editingPostId) {
+                    const postRef = doc(firebaseInstance.db, "community_posts", editingPostId);
+                    await updateDoc(postRef, { review: text, rating: parseInt(rating), userName: customName });
+                    status.innerHTML = '<span style="color:#00ffcc;">✨ Updated successfully! ✨</span>';
+                } else {
+                    await addDoc(collection(firebaseInstance.db, "community_posts"), {
+                        dramaId: selectedDramaData.id,
+                        dramaTitle: selectedDramaData.title,
+                        dramaPoster: selectedDramaData.poster,
+                        dramaType: selectedDramaData.type,
+                        review: text,
+                        rating: parseInt(rating),
+                        userId: currentUser ? currentUser.uid : "anon",
+                        localId: localGuestId, 
+                        userName: customName,
+                        timestamp: Date.now(),
+                        replies: [],
+                        likes: [] 
+                    });
+                    status.innerHTML = '<span style="color:#00ffcc;">✨ Dropped successfully! ✨</span>';
+                }
+                
+                setTimeout(() => { status.innerHTML = ''; closeModal(); }, 1500);
+            } catch (err) {
+                status.innerHTML = `<span style="color:#ff3366;">Error: Check Firebase Rules</span>`;
+            }
+            btn.disabled = false; btn.innerText = editingPostId ? 'Update Suggestion' : 'Drop into Community 🚀';
+        });
+
+        window.editPost = (postId, currentText, currentRating, currentName) => {
+            editingPostId = postId;
+            document.getElementById('modalTitle').innerText = 'Edit Suggestion ✏️';
+            document.getElementById('submitPostBtn').innerText = 'Update Suggestion';
+            document.getElementById('searchGroup').style.display = 'none'; 
+            
+            document.getElementById('postContent').value = decodeURIComponent(currentText);
+            document.getElementById('postRating').value = currentRating;
+            document.getElementById('postAuthorName').value = decodeURIComponent(currentName);
+            
+            window.closePostDetail();
+            suggestionModal.classList.add('active'); 
+        };
+
+        window.deletePost = async (postId) => {
+            if(!confirm("Are you sure you want to delete this suggestion forever?")) return;
+            try {
+                const { doc, deleteDoc } = firebaseInstance.firestoreModule;
+                await deleteDoc(doc(firebaseInstance.db, "community_posts", postId));
+                window.closePostDetail();
+            } catch (e) { alert("Delete failed. Check permissions."); }
+        };
+
+        window.toggleLikePost = async (postId, currentLikesString) => {
+            const currentLikes = currentLikesString ? JSON.parse(decodeURIComponent(currentLikesString)) : [];
+            const userIdentifier = currentUser ? currentUser.uid : localGuestId;
+            const hasLiked = currentLikes.includes(userIdentifier);
+            
+            try {
+                const { doc, updateDoc, arrayUnion, arrayRemove } = firebaseInstance.firestoreModule;
+                const postRef = doc(firebaseInstance.db, "community_posts", postId);
+                
+                if (hasLiked) {
+                    await updateDoc(postRef, { likes: arrayRemove(userIdentifier) });
+                } else {
+                    await updateDoc(postRef, { likes: arrayUnion(userIdentifier) });
+                }
+            } catch(e) { console.error("Like failed", e); }
+        };
+
+        // Protected My List Integration
+        window.toggleMyList = function(btnElement, titleSafe, imgSafe, link, rawId, mediaType) {
+            if (!currentUser) {
+                let typeString = "title";
+                if(mediaType === 'movie') typeString = 'movie';
+                else if(mediaType === 'tv' || mediaType === 'show') typeString = 'show';
+                else if(mediaType === 'anime') typeString = 'anime';
+
+                document.getElementById('authAlertText').innerText = `Please login to add this ${typeString} to your list and fully join the community.`;
+                document.getElementById('authAlertModal').classList.add('active');
                 return;
             }
 
-            listEl.innerHTML = activePageNotifs.map(n => {
-                let iconClass = "fa-bullhorn";
-                if(n.title.toLowerCase().includes("vip") || n.title.includes("🎉") || n.title.includes("🎁")) iconClass = "fa-crown";
-                if(n.title.toLowerCase().includes("warning") || n.title.includes("⚠️")) iconClass = "fa-exclamation-triangle";
-                if(n.title.includes("🚀") || n.title.toLowerCase().includes("patch")) iconClass = "fa-rocket";
+            if(!rawId) return;
+            let list = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
+            let inListIdx = list.findIndex(item => String(item.id) === String(rawId));
+            
+            if(inListIdx > -1) {
+                list.splice(inListIdx, 1);
+                btnElement.classList.remove('active-list');
+                btnElement.innerHTML = `<i class="fas fa-plus"></i> + My List`;
+            } else {
+                list.push({id: rawId, title: decodeURIComponent(titleSafe), img: decodeURIComponent(imgSafe), link: link});
+                btnElement.classList.add('active-list');
+                btnElement.innerHTML = `<i class="fas fa-check"></i> Added`;
+            }
+            localStorage.setItem('dramakan_mylist', JSON.stringify(list));
+        };
 
-                return `
-                    <div class="notif-card" id="page-card-${n.id}">
-                        <div class="notif-icon-wrap"><i class="fas ${iconClass}"></i></div>
-                        <div class="notif-content">
-                            <div class="notif-header-info">
-                                <h4 class="notif-title">${n.title}</h4>
-                                <span class="notif-time"><i class="far fa-clock"></i> ${timeAgo(n.timestamp)}</span>
-                            </div>
-                            <!-- Minimal Snippet -->
-                            <p class="notif-msg-snippet">${n.body}</p>
-                            
-                            <button class="btn-read-more" onclick="window.openUpdateModal('${n.id}')">Read Details <i class="fas fa-expand-arrows-alt"></i></button>
+        // --- Detail Modal Popup Logic ---
+        window.openPostDetail = (postId) => {
+            window.currentOpenPostId = postId;
+            renderPostDetailModal(postId);
+            document.getElementById('postDetailModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closePostDetail = () => {
+            window.currentOpenPostId = null;
+            document.getElementById('postDetailModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        };
+
+        // Nested Reply Focus
+        window.toggleReplyInput = (postId, forceOpen = false) => {
+            const inputContainer = document.getElementById(`reply-input-${postId}`);
+            if(!inputContainer) return;
+            if (forceOpen) { inputContainer.classList.add('active'); } 
+            else { inputContainer.classList.toggle('active'); }
+            
+            if(inputContainer.classList.contains('active')) {
+                const textInput = document.getElementById(`reply-text-${postId}`);
+                textInput.focus();
+                
+                const nameInput = document.getElementById(`reply-name-${postId}`);
+                if(!nameInput.value) {
+                    nameInput.value = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : "";
+                }
+            }
+        };
+
+        window.replyToUser = (postId, username) => {
+            const inputField = document.getElementById(`reply-text-${postId}`);
+            const mentionText = `@${username} `;
+            if (!inputField.value.includes(mentionText)) { inputField.value = mentionText + inputField.value; }
+            window.toggleReplyInput(postId, true);
+        };
+
+        window.editReply = (postId, replyStringified) => {
+            const reply = JSON.parse(decodeURIComponent(replyStringified));
+            window.toggleReplyInput(postId, true);
+            
+            document.getElementById(`reply-text-${postId}`).value = reply.text;
+            document.getElementById(`reply-name-${postId}`).value = reply.userName;
+            
+            const container = document.getElementById(`reply-input-${postId}`);
+            container.dataset.editingReply = replyStringified;
+            container.querySelector('.reply-submit-btn').innerText = 'Update Reply';
+        };
+
+        window.submitReply = async (postId) => {
+            const inputField = document.getElementById(`reply-text-${postId}`);
+            const nameField = document.getElementById(`reply-name-${postId}`);
+            const container = document.getElementById(`reply-input-${postId}`);
+            const text = inputField.value.trim();
+            let customName = nameField.value.trim() || "Anonymous";
+            const btn = container.querySelector('.reply-submit-btn');
+            
+            if (text.length < 2) return;
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            try {
+                const { doc, updateDoc, arrayUnion, arrayRemove } = firebaseInstance.firestoreModule;
+                const postRef = doc(firebaseInstance.db, "community_posts", postId);
+                
+                if (container.dataset.editingReply) {
+                    const oldReply = JSON.parse(decodeURIComponent(container.dataset.editingReply));
+                    const updatedReply = { ...oldReply, text: text, userName: customName };
+                    
+                    await updateDoc(postRef, { replies: arrayRemove(oldReply) });
+                    await updateDoc(postRef, { replies: arrayUnion(updatedReply) });
+                    container.dataset.editingReply = ''; 
+                } else {
+                    const newReply = {
+                        id: 'rep_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        userId: currentUser ? currentUser.uid : "anon",
+                        localId: localGuestId,
+                        userName: customName,
+                        text: text,
+                        likes: [],
+                        timestamp: Date.now()
+                    };
+                    await updateDoc(postRef, { replies: arrayUnion(newReply) });
+                }
+                
+                inputField.value = '';
+                btn.innerText = 'Post Reply';
+            } catch(err) {
+                console.error("Error posting reply:", err);
+                alert("Failed to post reply. Check permissions.");
+                btn.innerText = container.dataset.editingReply ? 'Update Reply' : 'Post Reply';
+            }
+            btn.disabled = false;
+        };
+
+        window.deleteReply = async (postId, replyStringified) => {
+            if(!confirm("Delete this reply?")) return;
+            try {
+                const replyObj = JSON.parse(decodeURIComponent(replyStringified));
+                const { doc, updateDoc, arrayRemove } = firebaseInstance.firestoreModule;
+                await updateDoc(doc(firebaseInstance.db, "community_posts", postId), { replies: arrayRemove(replyObj) });
+            } catch(e) { console.error("Error deleting reply", e); }
+        };
+
+        window.toggleLikeReply = async (postId, replyStringified) => {
+            const reply = JSON.parse(decodeURIComponent(replyStringified));
+            const userIdentifier = currentUser ? currentUser.uid : localGuestId;
+            
+            const updatedReply = { ...reply };
+            if (!updatedReply.likes) updatedReply.likes = [];
+            
+            const hasLiked = updatedReply.likes.includes(userIdentifier);
+            if (hasLiked) {
+                updatedReply.likes = updatedReply.likes.filter(id => id !== userIdentifier);
+            } else {
+                updatedReply.likes.push(userIdentifier);
+            }
+
+            try {
+                const { doc, updateDoc, arrayRemove, arrayUnion } = firebaseInstance.firestoreModule;
+                const postRef = doc(firebaseInstance.db, "community_posts", postId);
+                await updateDoc(postRef, { replies: arrayRemove(reply) });
+                await updateDoc(postRef, { replies: arrayUnion(updatedReply) });
+            } catch(e) { console.error("Like reply failed", e); }
+        };
+
+        // --- Render Logic ---
+        
+        function getRatingWheelHtml(ratingValue) {
+            const safeRating = ratingValue || 5;
+            const wheelPercentage = (safeRating / 5) * 100;
+            let ratingColor = '#2ed573'; // Green for 4, 5
+            if(safeRating === 3) ratingColor = '#f1c40f'; // Yellow
+            if(safeRating < 3) ratingColor = '#ff4757'; // Red
+
+            return `
+                <div class="rating-wheel-wrapper" title="${safeRating}/5 Stars">
+                    <div class="rating-wheel" style="background: conic-gradient(${ratingColor} ${wheelPercentage}%, rgba(255,255,255,0.08) 0);">
+                        <div class="rating-wheel-inner">
+                            <span class="num">${safeRating}<small>/5</small></span>
                         </div>
                     </div>
-                `;
-            }).join('');
+                </div>
+            `;
         }
 
-        // --- MODAL CONTROLLERS ---
-        window.openUpdateModal = (id) => {
-            const notif = activePageNotifs.find(n => n.id === id);
-            if (!notif) return;
+        // Renders the Modal Content
+        function renderPostDetailModal(postId) {
+            const data = window.communityPostsData[postId];
+            if (!data) return;
+
+            const dateObj = new Date(data.timestamp);
+            const safeTitle = encodeURIComponent(data.dramaTitle).replace(/'/g, "%27");
+            const safeImg = encodeURIComponent(data.dramaPoster).replace(/'/g, "%27");
+            const watchLink = `watch.html?id=${data.dramaId}`;
+            const mediaType = data.dramaType || 'show';
             
-            document.getElementById('modal-update-title').innerText = notif.title;
-            document.getElementById('modal-update-time').innerHTML = `<i class="far fa-clock"></i> ${timeAgo(notif.timestamp)}`;
-            document.getElementById('modal-update-body').innerText = notif.body;
+            const isOwner = isAdminUser || (currentUser && currentUser.uid === data.userId) || (data.localId === localGuestId);
+            const showClaimPrompt = !isAdminUser && (data.localId === localGuestId) && !currentUser;
             
-            const linkEl = document.getElementById('modal-update-link');
-            if (notif.link) {
-                linkEl.href = notif.link;
-                linkEl.style.display = 'inline-flex';
-            } else {
-                linkEl.style.display = 'none';
+            let controlsHtml = '';
+            if(isOwner) {
+                const safeText = encodeURIComponent(data.review).replace(/'/g, "%27");
+                const safeName = encodeURIComponent(data.userName).replace(/'/g, "%27");
+                controlsHtml = `
+                    <div class="post-controls">
+                        ${showClaimPrompt ? `<a href="login.html" class="claim-badge" title="Login to save this post to your account"><i class="fas fa-lock"></i> Secure</a>` : ''}
+                        <button class="control-btn" onclick="window.editPost('${postId}', '${safeText}', '${data.rating}', '${safeName}')" title="Edit"><i class="fas fa-pen"></i></button>
+                        <button class="control-btn delete" onclick="window.deletePost('${postId}')" title="Delete"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
             }
+
+            const wheelHtml = getRatingWheelHtml(data.rating);
+
+            // Post Likes Processing
+            const postLikesArr = data.likes || [];
+            const userIdentifier = currentUser ? currentUser.uid : localGuestId;
+            const hasLikedPost = postLikesArr.includes(userIdentifier);
+            const safeLikesArray = encodeURIComponent(JSON.stringify(postLikesArr)).replace(/'/g, "%27");
+
+            const profileMyList = JSON.parse(localStorage.getItem('dramakan_mylist')) || [];
+            const inList = profileMyList.some(listObj => String(listObj.id) === String(data.dramaId));
+            const listBtnClass = inList ? "action-btn active-list" : "action-btn";
+            const listBtnIcon = inList ? "fa-check" : "fa-plus";
+            const listBtnText = inList ? "Added" : "+ My List";
+
+            // Replies Processing
+            let repliesHtml = '';
+            if (data.replies && data.replies.length > 0) {
+                let replyItemsStr = '';
+                const sortedReplies = [...data.replies].sort((a,b) => a.timestamp - b.timestamp);
+
+                sortedReplies.forEach(reply => {
+                    const replyDate = new Date(reply.timestamp).toLocaleDateString();
+                    const isReplyOwner = isAdminUser || (currentUser && currentUser.uid === reply.userId) || (reply.localId === localGuestId);
+                    const showReplyClaimPrompt = !isAdminUser && (reply.localId === localGuestId) && !currentUser;
+                    const safeReplyObj = encodeURIComponent(JSON.stringify(reply)).replace(/'/g, "%27");
+                    
+                    const escapedText = reply.text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                    const formattedText = escapedText.replace(/@([^\s]+)/g, '<span class="mention-tag">@$1</span>');
+
+                    const replyLikesArr = reply.likes || [];
+                    const hasLikedReply = replyLikesArr.includes(userIdentifier);
+                    
+                    let replyControls = isReplyOwner ? `
+                        <button class="reply-mini-btn" onclick="window.editReply('${postId}', '${safeReplyObj}')"><i class="fas fa-pen"></i></button>
+                        <button class="reply-mini-btn" style="color:#ff4757;" onclick="window.deleteReply('${postId}', '${safeReplyObj}')"><i class="fas fa-trash"></i></button>
+                    ` : '';
+                    
+                    let replyClaimHtml = showReplyClaimPrompt ? `<a href="login.html" class="claim-badge" style="font-size:0.6rem; padding: 2px 6px;">Secure</a>` : '';
+
+                    replyItemsStr += `
+                        <div class="reply-item">
+                            <div class="reply-header">
+                                <div class="reply-user-meta">
+                                    <span class="reply-author">${reply.userName}</span>
+                                    <span class="reply-time">• ${replyDate}</span>
+                                    ${replyClaimHtml}
+                                </div>
+                                <div style="display:flex; gap:10px;">${replyControls}</div>
+                            </div>
+                            <div class="reply-text">${formattedText}</div>
+                            <div class="reply-actions-bar">
+                                <button class="reply-mini-btn ${hasLikedReply ? 'liked' : ''}" onclick="window.toggleLikeReply('${postId}', '${safeReplyObj}')">
+                                    <i class="${hasLikedReply ? 'fas' : 'far'} fa-heart"></i> ${replyLikesArr.length > 0 ? replyLikesArr.length : 'Like'}
+                                </button>
+                                <button class="reply-mini-btn" onclick="window.replyToUser('${postId}', '${reply.userName.replace(/'/g, "\\'")}')"><i class="fas fa-reply"></i> Reply</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                repliesHtml = `
+                    <div class="replies-wrapper expanded" style="margin-top:0;">
+                        ${replyItemsStr}
+                    </div>
+                `;
+            }
+
+            document.getElementById('postDetailContent').innerHTML = `
+                <div style="position:relative;">
+                    <div class="top-right-controls">
+                        ${controlsHtml}
+                        ${wheelHtml}
+                    </div>
+                    <div class="post-main-content" style="margin-top:0;">
+                        <div class="post-poster">
+                            <img src="${data.dramaPoster}" alt="${data.dramaTitle}">
+                        </div>
+                        <div class="post-details">
+                            <div class="post-header">
+                                <div class="post-user-info">
+                                    <div class="user-avatar"><i class="fas fa-user"></i></div>
+                                    <div>
+                                        <div class="user-name">${data.userName}</div>
+                                        <div class="post-time">${dateObj.toLocaleDateString()}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="${watchLink}" class="post-drama-title">${data.dramaTitle}</a>
+                            <p class="full-text">${data.review}</p>
+                            <div class="post-actions">
+                                <button class="action-btn like-btn ${hasLikedPost ? 'liked' : ''}" onclick="window.toggleLikePost('${postId}', '${safeLikesArray}')">
+                                    <i class="${hasLikedPost ? 'fas' : 'far'} fa-heart"></i> ${postLikesArr.length > 0 ? postLikesArr.length : 'Like'}
+                                </button>
+                                <button class="action-btn" onclick="window.toggleReplyInput('${postId}', true)"><i class="fas fa-comment"></i> Reply</button>
+                                <a href="${watchLink}" class="action-btn"><i class="fas fa-play" style="color: #8A2BE2;"></i> Watch</a>
+                                <button class="${listBtnClass}" onclick="window.toggleMyList(this, '${safeTitle}', '${safeImg}', '${watchLink}', '${data.dramaId}', '${mediaType}')"><i class="fas ${listBtnIcon}"></i> ${listBtnText}</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="replies-section">
+                        ${repliesHtml}
+                        <div class="reply-input-container active" id="reply-input-${postId}">
+                            <textarea id="reply-text-${postId}" class="reply-textarea" placeholder="Write a reply..."></textarea>
+                            <div class="reply-submit-row">
+                                <input type="text" id="reply-name-${postId}" class="reply-name-input" placeholder="Display Name (Optional)">
+                                <button class="reply-submit-btn" onclick="window.submitReply('${postId}')">Post Reply</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadFeed() {
+            while(!firebaseInstance) await new Promise(r => setTimeout(r, 100));
+            const { collection, query, orderBy, limit, onSnapshot } = firebaseInstance.firestoreModule;
             
-            document.getElementById('updateModal').style.display = 'flex';
-        };
-
-        window.closeUpdateModal = () => {
-            document.getElementById('updateModal').style.display = 'none';
-        };
-        
-        // Close modal on background click
-        window.addEventListener('click', (e) => {
-            const modal = document.getElementById('updateModal');
-            if(e.target === modal) modal.style.display = 'none';
-        });
-
-        // --- ONE-TIME FETCH ENGINE (1 HOUR CACHE) ---
-        async function fetchUpdates() {
-            try {
-                const cached = localStorage.getItem('Dramakan_Community_Cache');
-                const cacheTime = localStorage.getItem('Dramakan_Community_Time');
-                const now = Date.now();
-
-                // Check if cache exists and is younger than 1 hour (3600000 ms)
-                if (cached && cacheTime && (now - parseInt(cacheTime) < 3600000)) {
-                    activePageNotifs = JSON.parse(cached);
-                    renderPageNotifications();
+            const q = query(collection(firebaseInstance.db, "community_posts"), orderBy("timestamp", "desc"), limit(30));
+            
+            onSnapshot(q, (snapshot) => {
+                const container = document.getElementById('feedContainer');
+                
+                if(snapshot.empty) {
+                    container.innerHTML = `
+                        <div class="cute-empty-state" style="grid-column: 1 / -1;">
+                            <i class="fas fa-ghost"></i>
+                            <h2>Aww, it's so quiet here... 🌸</h2>
+                            <p>No one has suggested anything yet. Be the brave first soul to ignite the feed!</p>
+                        </div>
+                    `;
                     return;
                 }
 
-                // If cache is missing or expired, fetch freshly from Firestore
-                const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"), limit(30));
-                const snapshot = await getDocs(q);
+                // Cache all fetched posts
+                window.communityPostsData = {};
+                let html = '';
                 
-                activePageNotifs = [];
-                snapshot.forEach(docSnap => {
-                    const data = docSnap.data();
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    window.communityPostsData[doc.id] = data;
                     
-                    // STRICT FILTER: Only show global Community Updates, never direct targeted alerts.
-                    if (data.target === 'all' || data.target === 'viewers') {
-                        const ts = data.createdAt ? (typeof data.createdAt === 'number' ? data.createdAt : (data.createdAt.toMillis ? data.createdAt.toMillis() : Date.now())) : Date.now();
-                        
-                        activePageNotifs.push({
-                            id: docSnap.id,
-                            title: data.title || "Update",
-                            body: data.message || data.body || "",
-                            link: data.link || "",
-                            timestamp: ts
-                        });
+                    const postId = doc.id;
+                    const dateObj = new Date(data.timestamp);
+                    const wheelHtml = getRatingWheelHtml(data.rating);
+                    
+                    const postLikesArr = data.likes || [];
+                    const userIdentifier = currentUser ? currentUser.uid : localGuestId;
+                    const hasLikedPost = postLikesArr.includes(userIdentifier);
+                    const safeLikesArray = encodeURIComponent(JSON.stringify(postLikesArr)).replace(/'/g, "%27");
+
+                    const replyCount = data.replies ? data.replies.length : 0;
+                    
+                    const isOwner = isAdminUser || (currentUser && currentUser.uid === data.userId) || (data.localId === localGuestId);
+                    let controlsHtml = '';
+                    if(isOwner) {
+                        controlsHtml = `<div class="post-controls"><div class="control-btn" style="pointer-events: none; border:none; background:transparent;"><i class="fas fa-ellipsis-v"></i></div></div>`;
                     }
+
+                    html += `
+                        <div class="post-card" onclick="window.openPostDetail('${postId}')">
+                            <div class="top-right-controls">
+                                ${controlsHtml}
+                                ${wheelHtml}
+                            </div>
+                            <div class="post-main-content">
+                                <div class="post-poster">
+                                    <img src="${data.dramaPoster}" alt="${data.dramaTitle}" loading="lazy">
+                                </div>
+                                <div class="post-details">
+                                    <div class="post-header">
+                                        <div class="post-user-info">
+                                            <div class="user-avatar"><i class="fas fa-user"></i></div>
+                                            <div>
+                                                <div class="user-name">${data.userName}</div>
+                                                <div class="post-time">${dateObj.toLocaleDateString()}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="post-drama-title">${data.dramaTitle}</div>
+                                    <p class="clamp-text">${data.review}</p>
+                                    <div class="post-actions">
+                                        <button class="action-btn like-btn ${hasLikedPost ? 'liked' : ''}" onclick="event.stopPropagation(); window.toggleLikePost('${postId}', '${safeLikesArray}')">
+                                            <i class="${hasLikedPost ? 'fas' : 'far'} fa-heart"></i> ${postLikesArr.length > 0 ? postLikesArr.length : 'Like'}
+                                        </button>
+                                        <div class="action-btn"><i class="fas fa-comment"></i> ${replyCount}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 });
+                
+                container.innerHTML = html;
 
-                // Update Browser Cache
-                localStorage.setItem('Dramakan_Community_Cache', JSON.stringify(activePageNotifs));
-                localStorage.setItem('Dramakan_Community_Time', now.toString());
-
-                renderPageNotifications();
-
-            } catch (error) {
-                console.error("Fetch error:", error);
-                listEl.innerHTML = `<div class="empty-state"><h3>Unable to load updates. Check connection.</h3></div>`;
-            }
+                if(window.currentOpenPostId && window.communityPostsData[window.currentOpenPostId]) {
+                    renderPostDetailModal(window.currentOpenPostId);
+                } else if (window.currentOpenPostId) {
+                    window.closePostDetail(); 
+                }
+            });
         }
 
-        // Fire fetch instantly regardless of auth state to prevent loading stalls
-        fetchUpdates();
-
-        // --- MARK AS READ LOGIC ---
-        // Runs passively in the background so the dropdown bell drops its red dot
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                try {
-                    updateDoc(doc(db, "users", user.uid), { lastReadTime: Date.now() });
-                } catch(e) {}
-            } else {
-                localStorage.setItem('Anykan_Last_Read', Date.now());
-            }
-        });
-
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
