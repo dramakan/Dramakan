@@ -59,12 +59,12 @@ async function buildSitemap() {
     // 2. Inject Movies (Note: XML requires '&' to be escaped as '&amp;')
     movies.forEach(movie => {
         if (!movie.id) return;
-        xml += `  <url>\n    <loc>${BASE_URL}/details.html?type=movie&amp;id=${movie.id}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+        xml += `  <url>\n    <loc>${BASE_URL}/watch.html?type=movie&amp;id=${movie.id}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
     });
 
     // 3. Inject TV Shows / Anime / Asian Dramas
     uniqueTv.forEach(show => {
-        xml += `  <url>\n    <loc>${BASE_URL}/details.html?type=tv&amp;id=${show.id}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+        xml += `  <url>\n    <loc>${BASE_URL}/watch.html?type=tv&amp;id=${show.id}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
     });
 
     xml += `</urlset>`;

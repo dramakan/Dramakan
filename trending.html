@@ -312,13 +312,13 @@
                 
                 // TMDB's trending/all endpoint explicitly passes media_type (movie or tv)
                 const typeAssigned = drama.media_type || defaultMediaType;
-                const safeLink = encodeURIComponent(`details.html?type=${typeAssigned}&id=${drama.id}`);
+                const safeLink = encodeURIComponent(`watch.html?type=${typeAssigned}&id=${drama.id}`);
                 
                 htmlContent += `
                 <div class="drama-card" data-id="${drama.id || ''}" data-type="${typeAssigned}" 
                      onmouseenter="triggerHoverTrailer(this, '${drama.id || ''}', '${typeAssigned}')"
                      onmouseleave="cancelHoverTrailer()">
-                    <a href="details.html?type=${typeAssigned}&id=${drama.id}" style="display:block; height:100%; width:100%;">
+                    <a href="watch.html?type=${typeAssigned}&id=${drama.id}" style="display:block; height:100%; width:100%;">
                         <div class="drama-card-img">
                             <img src="${drama.img}" alt="${drama.title}" loading="lazy" decoding="async">
                         </div>
@@ -403,8 +403,8 @@
                                         <span>${releaseYear}</span>
                                     </div>
                                     <div class="hero-actions">
-                                        <a href="details.html?type=${mediaTypeAssigned}&id=${d.id}" class="btn-n btn-play"><i class="fas fa-play"></i> Play</a>
-                                        <button class="${listBtnClass}" id="hero-list-btn-${d.id}" onclick="event.preventDefault(); window.toggleMyList(this, '${encodeURIComponent(titleText)}', '${encodeURIComponent(mobileImg)}', 'details.html?type=${mediaTypeAssigned}&id=${d.id}', '${d.id}')">
+                                        <a href="watch.html?type=${mediaTypeAssigned}&id=${d.id}" class="btn-n btn-play"><i class="fas fa-play"></i> Play</a>
+                                        <button class="${listBtnClass}" id="hero-list-btn-${d.id}" onclick="event.preventDefault(); window.toggleMyList(this, '${encodeURIComponent(titleText)}', '${encodeURIComponent(mobileImg)}', 'watch.html?type=${mediaTypeAssigned}&id=${d.id}', '${d.id}')">
                                             <i class="fas ${listBtnIcon}"></i> <span>${listBtnText}</span>
                                         </button>
                                     </div>
@@ -423,7 +423,7 @@
                             id: String(i.id),
                             title: i.name || i.title || i.original_name,
                             img: i.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${i.poster_path}` : 'default-poster.jpg',
-                            link: `details.html?type=${mType}&id=${i.id}`,
+                            link: `watch.html?type=${mType}&id=${i.id}`,
                             type: typeLabel,
                             media_type: mType
                         };
@@ -505,7 +505,7 @@
                                     const title = item.name || item.title;
                                     const poster = item.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w92${item.poster_path}` : 'default-poster.jpg';
                                     return `
-                                    <a href="details.html?type=${item.media_type}&id=${item.id}" class="search-result-item">
+                                    <a href="watch.html?type=${item.media_type}&id=${item.id}" class="search-result-item">
                                         <img src="${poster}" width="45" height="60" loading="lazy" decoding="async">
                                         <div><div class="search-result-title">${title}</div><small style="color:var(--primary-color);">${item.media_type.toUpperCase()}</small></div>
                                     </a>`;
@@ -600,9 +600,9 @@
                     </div>
                     <div class="netflix-hover-info">
                         <div class="netflix-hover-actions">
-                            <a href="details.html?type=${type}&id=${id}" class="netflix-hover-btn play"><i class="fas fa-play"></i></a>
-                            <button class="netflix-hover-btn" onclick="window.toggleMyList(this, '${encodeURIComponent(title)}', '${encodeURIComponent(img)}', 'details.html?type=${type}&id=${id}', '${id}')" title="Add to List"><i class="fas fa-plus"></i></button>
-                            <a href="details.html?type=${type}&id=${id}" class="netflix-hover-btn" style="margin-left:auto;"><i class="fas fa-chevron-down"></i></a>
+                            <a href="watch.html?type=${type}&id=${id}" class="netflix-hover-btn play"><i class="fas fa-play"></i></a>
+                            <button class="netflix-hover-btn" onclick="window.toggleMyList(this, '${encodeURIComponent(title)}', '${encodeURIComponent(img)}', 'watch.html?type=${type}&id=${id}', '${id}')" title="Add to List"><i class="fas fa-plus"></i></button>
+                            <a href="watch.html?type=${type}&id=${id}" class="netflix-hover-btn" style="margin-left:auto;"><i class="fas fa-chevron-down"></i></a>
                         </div>
                         <div class="netflix-hover-title">${title}</div>
                         <div class="netflix-hover-meta" id="hoverMeta">

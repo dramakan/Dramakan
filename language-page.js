@@ -156,8 +156,8 @@ export function initLanguagePage(config) {
                             <span>Rating: ${topDrama.vote_average.toFixed(1)}</span><span class="meta-dot">•</span>
                             <span>${releaseYear}</span>
                         `;
-                    document.getElementById('hero-play-link').setAttribute('href', `details.html?id=${topDrama.id}`);
-                    document.getElementById('hero-mylist-btn').setAttribute('onclick', `event.preventDefault(); window.toggleMyList(this, '${encodeURIComponent(titleText)}', '${encodeURIComponent(mobileImg)}', 'details.html?id=${topDrama.id}')`);
+                    document.getElementById('hero-play-link').setAttribute('href', `watch.html?id=${topDrama.id}`);
+                    document.getElementById('hero-mylist-btn').setAttribute('onclick', `event.preventDefault(); window.toggleMyList(this, '${encodeURIComponent(titleText)}', '${encodeURIComponent(mobileImg)}', 'watch.html?id=${topDrama.id}')`);
                 }
             }
             if (res2.ok) {
@@ -168,7 +168,7 @@ export function initLanguagePage(config) {
             const mappedItems = allResults.map(i => ({
                 title: i.name || i.title,
                 img: i.poster_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w500${i.poster_path}` : 'default-poster.jpg',
-                link: `details.html?id=${i.id}`,
+                link: `watch.html?id=${i.id}`,
                 type: typeLabel
             }));
 

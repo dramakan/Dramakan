@@ -101,75 +101,114 @@
 
         /* --- GLASSMORPHISM PANELS --- */
         .glass-panel {
-            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border); border-radius: 16px; padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 100%; box-sizing: border-box;
+            background: linear-gradient(180deg, rgba(24, 24, 34, 0.55) 0%, rgba(16, 16, 22, 0.45) 100%);
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 25px;
+            box-shadow: 0 14px 35px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+            width: 100%; box-sizing: border-box;
         }
 
         /* --- VIDEO PLAYER & PAYWALL --- */
         .video-player-container {
-            position: relative; background: #000; border-radius: 16px; overflow: hidden;
-            aspect-ratio: 16/9; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid var(--glass-border);
+            position: relative; background: #07070a; border-radius: 18px; overflow: hidden;
+            aspect-ratio: 16/9; width: 100%;
+            box-shadow: 0 24px 50px rgba(0,0,0,0.75), 0 0 40px rgba(157, 78, 221, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .video-player-container iframe { width: 100%; height: 100%; border: none; position: absolute; top:0; left:0; z-index: 1;}
 
         .paywall-overlay {
             position: absolute; inset: 0; z-index: 1000;
-            background: radial-gradient(circle at center, rgba(15, 10, 25, 0.95) 0%, rgba(5, 5, 7, 0.98) 100%);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background-color: #07070c;
+            background-size: cover; background-position: center;
             display: flex; align-items: center; justify-content: center;
-            opacity: 1; transition: opacity 0.4s ease; padding: 15px; box-sizing: border-box;
+            opacity: 1; transition: opacity 0.35s ease; padding: 18px; box-sizing: border-box;
+            overflow: hidden;
+        }
+        .paywall-overlay::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(circle at center, rgba(10, 10, 18, 0.45) 0%, rgba(5, 5, 7, 0.92) 100%);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            z-index: 0;
         }
         
         .paywall-card {
-            background: rgba(20, 20, 28, 0.6); border: 1px solid rgba(157, 78, 221, 0.35);
-            border-radius: 16px; padding: 30px; max-width: 420px; width: 100%; text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px var(--primary-glow);
-            animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-sizing: border-box;
-        }
-        
-        .paywall-badge-icon {
-            width: 54px; height: 54px; border-radius: 50%; background: rgba(138, 43, 226, 0.15); 
-            border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 15px auto; color: var(--primary); font-size: 1.4rem; box-shadow: 0 0 15px var(--primary-glow);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; gap: 16px; position: relative; z-index: 2; width: 100%; height: 100%;
         }
 
-        .paywall-card h4 { color: #fff; font-size: 1.25rem; margin: 0 0 8px 0; font-weight: 700; }
-        .paywall-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin: 0 0 20px 0; }
-
-        .paywall-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-        
-        .paywall-unlock-btn {
-            background: linear-gradient(135deg, var(--primary), var(--primary-rich)); color: #fff; 
-            border: 1px solid rgba(255, 255, 255, 0.15); padding: 10px 20px; border-radius: 8px; 
-            font-weight: 600; font-size: 0.9rem; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px;
+        /* Top-left HD Server indicator & Top-right VIP badge */
+        .paywall-server-pill {
+            position: absolute; top: 4px; left: 4px;
+            background: rgba(14, 14, 20, 0.75); border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #e2e8f0; padding: 6px 13px; border-radius: 50px;
+            font-weight: 700; font-size: 0.72rem; letter-spacing: 0.5px;
+            display: inline-flex; align-items: center; gap: 7px;
+            backdrop-filter: blur(12px);
         }
-        .paywall-unlock-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(138, 43, 226, 0.5); }
+        .paywall-server-pill .live-dot {
+            width: 7px; height: 7px; border-radius: 50%; background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
 
         .paywall-premium-btn {
-            background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.4); color: var(--star-gold); 
-            padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; transition: 0.3s; 
-            display: inline-flex; align-items: center; gap: 8px;
+            position: absolute; top: 4px; right: 4px;
+            background: rgba(14, 14, 20, 0.78); border: 1px solid rgba(251, 191, 36, 0.4);
+            color: #fff; padding: 6px 14px; border-radius: 50px;
+            font-weight: 700; font-size: 0.74rem; letter-spacing: 0.4px;
+            display: inline-flex; align-items: center; gap: 6px;
+            backdrop-filter: blur(12px); transition: 0.25s;
         }
-        .paywall-premium-btn:hover { background: rgba(251, 191, 36, 0.2); transform: translateY(-2px); }
+        .paywall-premium-btn i { color: var(--star-gold); font-size: 0.8rem; }
+        .paywall-premium-btn:hover { background: rgba(251, 191, 36, 0.2); border-color: var(--star-gold); transform: translateY(-1px); }
 
-        #ad-countdown-container { display: none; margin-top: 15px; font-size: 0.85rem; color: #fff; }
+        /* Giant Native Play Button */
+        .paywall-badge-icon {
+            width: 86px; height: 86px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-rich));
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 2rem; padding-left: 6px;
+            box-shadow: 0 0 0 0 rgba(157, 78, 221, 0.6), 0 18px 40px rgba(0, 0, 0, 0.8);
+            cursor: pointer; transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+            animation: playPulseRing 2s infinite;
+        }
+        .paywall-badge-icon:hover { transform: scale(1.1); }
+        @keyframes playPulseRing {
+            0% { box-shadow: 0 0 0 0 rgba(157, 78, 221, 0.65), 0 15px 35px rgba(0,0,0,0.8); }
+            70% { box-shadow: 0 0 0 22px rgba(157, 78, 221, 0), 0 15px 35px rgba(0,0,0,0.8); }
+            100% { box-shadow: 0 0 0 0 rgba(157, 78, 221, 0), 0 15px 35px rgba(0,0,0,0.8); }
+        }
+
+        /* 2-word universal pill */
+        .paywall-unlock-btn {
+            background: rgba(15, 15, 22, 0.78); color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.18); padding: 8px 20px; border-radius: 50px;
+            font-weight: 700; font-size: 0.8rem; letter-spacing: 0.7px; text-transform: uppercase;
+            backdrop-filter: blur(12px); transition: 0.25s; display: inline-flex; align-items: center; gap: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        .paywall-unlock-btn:hover { background: #fff; color: #000; border-color: #fff; transform: translateY(-2px); }
+        .ad-mini-tag {
+            background: rgba(251, 191, 36, 0.2); border: 1px solid rgba(251, 191, 36, 0.55);
+            color: var(--star-gold); font-size: 0.62rem; font-weight: 800; padding: 1px 6px; border-radius: 4px;
+        }
+
+        /* Visual Countdown State */
+        #ad-countdown-container {
+            display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+        }
         .timer-circle { 
-            display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; 
-            border-radius: 50%; border: 2px solid var(--primary); font-weight: 700; color: var(--primary); 
-            margin-bottom: 8px; font-size: 1rem;
+            display: inline-flex; align-items: center; justify-content: center; width: 70px; height: 70px; 
+            border-radius: 50%; border: 3px solid var(--primary); font-weight: 800; color: #fff; 
+            background: rgba(20, 15, 30, 0.85); font-size: 1.5rem;
+            box-shadow: 0 0 30px var(--primary-glow);
         }
-
-        /* Mobile Paywall Fix */
-        @media (max-width: 768px) {
-            .paywall-card { padding: 15px; border-radius: 12px; max-width: 95%; }
-            .paywall-badge-icon { display: none; }
-            .paywall-card h4 { font-size: 1rem; margin-bottom: 4px; }
-            .paywall-card p { display: none; } 
-            .paywall-buttons { flex-direction: row; gap: 8px; flex-wrap: nowrap; }
-            .paywall-unlock-btn, .paywall-premium-btn { padding: 8px 10px; font-size: 0.75rem; flex: 1; justify-content: center; white-space: nowrap; border-radius: 6px; }
-            .timer-circle { width: 32px; height: 32px; font-size: 0.85rem; margin-bottom: 4px; }
-            #ad-countdown-container p { font-size: 0.75rem; margin: 0; }
+        .countdown-visual-hint {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.45);
+            color: #34d399; padding: 6px 16px; border-radius: 50px;
+            font-size: 0.78rem; font-weight: 700; letter-spacing: 0.5px; backdrop-filter: blur(10px);
         }
 
         /* --- PRECISE PC HIGHLIGHTED BAR --- */
@@ -212,17 +251,112 @@
         .adcash-watch-wrapper { width: 728px; max-width: 728px; height: 90px; display: flex; justify-content: center; align-items: center; transform-origin: top center; }
         .adcash-watch-wrapper iframe { border: none; max-width: 100%; }
 
-        /* --- CUSTOM SEASON SELECTOR --- */
-        .season-selector {
-            background: #14151A; color: #fff; border: 1px solid var(--glass-border);
-            padding: 12px 15px; border-radius: 8px; width: 100%; font-family: inherit; font-size: 0.95rem; font-weight: 600;
-            outline: none; cursor: pointer; appearance: none; -webkit-appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238A2BE2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-            background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto; margin-bottom: 15px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        /* --- CUSTOM SEASON SELECTION TRAY --- */
+        .custom-season-dropdown {
+            position: relative; width: 100%; margin-bottom: 15px; user-select: none; z-index: 30;
         }
-        .season-selector:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.3); }
-        .season-selector option { background: #14151A; color: #fff; padding: 10px;}
+        .season-tray-trigger {
+            width: 100%; background: rgba(255, 255, 255, 0.04); color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1); padding: 12px 16px; border-radius: 12px;
+            font-size: 0.92rem; font-weight: 700; display: flex; align-items: center; justify-content: space-between;
+            cursor: pointer; transition: all 0.25s ease;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+        .season-tray-trigger:hover, .custom-season-dropdown.open .season-tray-trigger {
+            background: rgba(157, 78, 221, 0.12); border-color: rgba(157, 78, 221, 0.45);
+            box-shadow: 0 0 20px rgba(157, 78, 221, 0.2);
+        }
+        .season-tray-trigger .trigger-left { display: flex; align-items: center; gap: 10px; }
+        .season-tray-trigger .trigger-left i { color: var(--primary); font-size: 0.9rem; }
+        .season-tray-trigger .chevron-icon {
+            color: var(--primary); font-size: 0.8rem; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .custom-season-dropdown.open .season-tray-trigger .chevron-icon { transform: rotate(180deg); }
+
+        .season-tray-menu {
+            position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+            background: rgba(18, 18, 26, 0.96); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(157, 78, 221, 0.35); border-radius: 14px; padding: 6px;
+            max-height: 240px; overflow-y: auto; display: none; flex-direction: column; gap: 4px;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(157, 78, 221, 0.15);
+            scrollbar-width: thin; scrollbar-color: var(--primary) transparent;
+            animation: trayFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .custom-season-dropdown.open .season-tray-menu { display: flex; }
+        @keyframes trayFadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .season-tray-option {
+            padding: 10px 14px; border-radius: 9px; font-size: 0.88rem; font-weight: 600;
+            color: var(--text-muted); display: flex; align-items: center; justify-content: space-between;
+            cursor: pointer; transition: 0.2s;
+        }
+        .season-tray-option:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+        .season-tray-option.active {
+            background: linear-gradient(90deg, rgba(157, 78, 221, 0.25), rgba(157, 78, 221, 0.08));
+            color: #fff; border: 1px solid rgba(157, 78, 221, 0.35);
+        }
+        .season-tray-option .ep-count-badge {
+            font-size: 0.72rem; color: var(--text-muted); background: rgba(255,255,255,0.06);
+            padding: 2px 8px; border-radius: 50px; font-weight: 600;
+        }
+        .season-tray-option.active .ep-count-badge { color: #e9d5ff; background: rgba(157, 78, 221, 0.3); }
+
+        /* --- MISMATCH & REPORT BUTTONS --- */
+        .btn-mismatch-pill {
+            height: 38px; padding: 0 14px; border-radius: 8px;
+            background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+            font-size: 0.8rem; font-weight: 700; transition: 0.25s; cursor: pointer; flex-shrink: 0; white-space: nowrap;
+        }
+        .btn-mismatch-pill i { color: var(--danger); font-size: 0.85rem; }
+        .btn-mismatch-pill:hover {
+            background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.55); color: #fff;
+            transform: translateY(-1px);
+        }
+
+        /* --- UPGRADED REPORT & MISMATCH MODAL --- */
+        .report-modal-card {
+            background: linear-gradient(180deg, #181822 0%, #101016 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px;
+            padding: 26px; width: 92%; max-width: 440px; position: relative;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.85), 0 0 35px rgba(157, 78, 221, 0.15);
+            text-align: left;
+        }
+        .report-modal-tabs {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+            background: rgba(0, 0, 0, 0.4); padding: 5px; border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 18px;
+        }
+        .report-tab-btn {
+            padding: 9px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 700;
+            color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 6px;
+            transition: 0.25s; cursor: pointer;
+        }
+        .report-tab-btn.active {
+            background: var(--primary); color: #fff; box-shadow: 0 4px 14px var(--primary-glow);
+        }
+        .issue-chips-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;
+        }
+        .issue-chip-btn {
+            padding: 10px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08); color: #cbd5e1;
+            font-size: 0.78rem; font-weight: 600; text-align: left;
+            display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s;
+        }
+        .issue-chip-btn i { color: var(--text-muted); font-size: 0.85rem; }
+        .issue-chip-btn:hover { background: rgba(255, 255, 255, 0.07); color: #fff; }
+        .issue-chip-btn.selected {
+            background: rgba(157, 78, 221, 0.18); border-color: var(--primary); color: #fff;
+        }
+        .issue-chip-btn.selected i { color: var(--primary); }
+        .current-id-badge {
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.07);
+            padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+        .current-id-badge code { color: #e9d5ff; font-weight: 700; font-family: monospace; }
 
         /* --- EPISODES TIMELINE --- */
         .sidebar-title { font-size: 1.05rem; font-weight: 700; color: #fff; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px;}
@@ -337,14 +471,12 @@
             .mobile-row-2 .icon-btn-square { flex: 1; }
             #btn-download-popup { flex: 1 1 100%; margin: 4px 0; justify-content: center; }
 
-            .paywall-card { padding: 12px 15px; border-radius: 12px; max-width: 90%; background: rgba(15, 10, 20, 0.85); backdrop-filter: blur(10px); border-color: rgba(157, 78, 221, 0.5);}
-            .paywall-badge-icon { display: none; }
-            .paywall-card h4 { font-size: 0.95rem; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);}
-            .paywall-card p { display: none; } 
-            .paywall-buttons { flex-direction: row; gap: 6px; flex-wrap: nowrap; }
-            .paywall-unlock-btn, .paywall-premium-btn { padding: 8px 10px; font-size: 0.75rem; flex: 1; justify-content: center; white-space: nowrap; border-radius: 6px; }
-            .timer-circle { width: 30px; height: 30px; font-size: 0.8rem; margin-bottom: 0; border-width: 2px;}
-            #ad-countdown-container p { font-size: 0.75rem; margin: 4px 0 0 0; }
+            .paywall-overlay { padding: 10px; }
+            .paywall-badge-icon { width: 64px; height: 64px; font-size: 1.5rem; padding-left: 4px; }
+            .paywall-unlock-btn { padding: 6px 14px; font-size: 0.74rem; }
+            .paywall-premium-btn { top: 2px; right: 2px; padding: 5px 11px; font-size: 0.68rem; }
+            .timer-circle { width: 54px; height: 54px; font-size: 1.25rem; }
+            .countdown-visual-hint { font-size: 0.7rem; padding: 4px 12px; }
 
             .adcash-watch-wrapper { transform: scale(calc(100vw / 800)); transform-origin: top center; height: 45px;}
             .watch-ad-container { padding: 5px; height: auto; border-radius: 8px; width: 100%;}
@@ -355,11 +487,15 @@
                 display: flex !important; position: fixed !important; bottom: 15px !important; left: 50% !important; transform: translateX(-50%) !important;
                 width: 90% !important; max-width: 400px !important; background: var(--bottom-nav-bg) !important; backdrop-filter: blur(40px) saturate(180%) !important; -webkit-backdrop-filter: blur(40px) saturate(180%) !important; border: 1px solid var(--bottom-nav-border) !important; border-radius: 50px !important; z-index: 9999 !important; padding: 5px 10px !important; box-shadow: 0 25px 50px rgba(0,0,0,0.2) !important;
             }
-            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 0; color: var(--bottom-nav-item); text-decoration: none; transition: all 0.4s ease; }
+            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0; color: var(--bottom-nav-item); text-decoration: none; transition: all 0.4s ease; }
             .bottom-nav-item.active { color: var(--bottom-nav-item-active); }
-            .bottom-nav-item .nav-icon { font-size: 1.35rem; margin-bottom: 4px; transition: transform 0.4s ease; }
-            .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-4px) scale(1.15); color: var(--primary); }
-            .bottom-nav-item .nav-label { font-size: 0.65rem; font-weight: 500; }
+            .bottom-nav-item .nav-icon { font-size: 1.35rem; margin-bottom: 0; transition: transform 0.4s ease; }
+            .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-2px) scale(1.15); color: var(--primary); }
+            .global-bottom-fade {
+                position: fixed; bottom: 0; left: 0; width: 100%; height: 90px;
+                background: linear-gradient(to top, rgba(5, 5, 7, 0.95) 10%, rgba(5, 5, 7, 0.6) 50%, transparent 100%);
+                pointer-events: none; z-index: 9990;
+            }
         }
     </style>
     <style>
@@ -422,25 +558,30 @@
                         <p style="color: #fff; font-size: 0.95rem; font-weight: 600;">Verifying Content...</p>
                     </div>
 
-                    <!-- Paywall starts hidden -->
+                    <!-- Pre-Roll Player Prompt starts hidden -->
                     <div id="video-paywall" class="paywall-overlay" style="display: none;">
                         <div class="paywall-card">
-                            <div class="paywall-badge-icon"><i class="fas fa-lock"></i></div>
-                            <h4 id="paywall-title">Unlock to Watch Free</h4>
-                            <p>Support DramaKan by watching a quick sponsor message, or unlock high-speed VIP streaming.</p>
+                            <div class="paywall-server-pill">
+                                <span class="live-dot"></span>
+                                <span>HD STREAM</span>
+                            </div>
+                            <a href="subscription.html" class="paywall-premium-btn" title="No Ads VIP">
+                                <i class="fas fa-crown"></i> <span>NO ADS</span>
+                            </a>
 
-                            <div class="paywall-buttons" id="paywall-action-btns">
+                            <div id="paywall-action-btns" style="display: flex; flex-direction: column; align-items: center; gap: 14px;">
+                                <div class="paywall-badge-icon" id="btn-watch-sponsor-icon" title="Play"><i class="fas fa-play"></i></div>
                                 <button id="btn-watch-sponsor" class="paywall-unlock-btn">
-                                    <i class="fas fa-play"></i> <span>Watch Ad to Unlock</span>
+                                    <span>TAP TO PLAY</span>
+                                    <span class="ad-mini-tag">1 AD</span>
                                 </button>
-                                <a href="subscription.html" class="paywall-premium-btn">
-                                    <i class="fas fa-crown"></i> <span>VIP Ad-Free (₹29)</span>
-                                </a>
                             </div>
 
                             <div id="ad-countdown-container">
                                 <div class="timer-circle" id="ad-timer">10</div>
-                                <p>Unlocking stream...</p>
+                                <div class="countdown-visual-hint">
+                                    <i class="fas fa-play-circle"></i> <span>STARTING VIDEO...</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -476,7 +617,10 @@
                             <div class="mobile-row-2">
                                 <button class="icon-btn-square" id="add-to-list-btn" title="My List"><i class="fas fa-plus"></i></button>
                                 <button class="icon-btn-square" id="btn-share" title="Share"><i class="fas fa-share-alt"></i></button>
-                                <button class="icon-btn-square" id="btn-report" title="Report Issue"><i class="fas fa-exclamation-triangle"></i></button>
+                                <button class="btn-mismatch-pill" id="btn-mismatch" title="Wrong Show or Episode? Fix Stream ID">
+                                    <i class="fas fa-wand-magic-sparkles"></i> <span>Wrong Show?</span>
+                                </button>
+                                <button class="icon-btn-square" id="btn-report" title="Report Issue"><i class="fas fa-flag"></i></button>
                             </div>
                         </div>
                     </div>
@@ -520,7 +664,15 @@
                 
                 <div class="glass-panel fade-in-section" id="mobile-episodes" style="padding: 20px 15px;">
                     <h3 class="sidebar-title"><i class="fas fa-list-ul" style="color:var(--primary);"></i> Episodes</h3>
-                    <select id="season-selector" class="season-selector" style="display: none;"></select>
+                    <!-- Custom Glass Season Tray -->
+                    <div id="custom-season-dropdown" class="custom-season-dropdown" style="display: none;">
+                        <button type="button" class="season-tray-trigger" id="season-tray-trigger">
+                            <span class="trigger-left"><i class="fas fa-layer-group"></i> <span id="season-tray-label">Season 1</span></span>
+                            <i class="fas fa-chevron-down chevron-icon"></i>
+                        </button>
+                        <div class="season-tray-menu" id="season-tray-menu"></div>
+                    </div>
+                    <select id="season-selector" style="display: none;"></select>
                     <div class="episodes-timeline" id="episodes-list-container">
                         <div class="skeleton-text"></div>
                         <div class="skeleton-text"></div>
@@ -570,24 +722,73 @@
         </div>
     </div>
 
-    <!-- REPORT MODAL -->
+    <!-- UPGRADED REPORT & CONTENT MISMATCH MODAL -->
     <div id="reportModal" class="drama-modal-overlay" style="display: none;">
-        <div class="dk-modal-card" style="text-align: left;">
+        <div class="report-modal-card">
             <button class="dk-modal-close" id="closeReportModal">&times;</button>
-            <div style="margin-bottom: 20px;">
-                <h4 style="font-size: 1.2rem; color: #fff; margin-bottom: 5px; font-weight:700;">Report Issue</h4>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Let us know if there's a playback problem.</p>
+            <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 1.2rem; color: #fff; margin-bottom: 4px; font-weight:800; letter-spacing:-0.3px;">Stream Assistant & Report</h4>
+                <p style="font-size: 0.82rem; color: var(--text-muted);">Fix a mismatched show immediately or flag a broken stream.</p>
             </div>
-            <form id="reportForm">
-                <select id="reportIssue" class="drama-input" required style="margin-bottom:15px; appearance:none; background-image:url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat:no-repeat; background-position:right 15px top 50%; background-size:12px auto;">
-                    <option value="" disabled selected>Select an issue...</option>
-                    <option value="Video not playing">Video not playing</option>
-                    <option value="Wrong episode/drama">Wrong episode/drama</option>
-                    <option value="Subtitles missing or out of sync">Subtitles missing or out of sync</option>
-                    <option value="Audio missing">Audio missing</option>
-                </select>
-                <textarea id="reportDetails" class="drama-input" rows="3" placeholder="Additional details..." style="resize: none; margin-bottom:15px;"></textarea>
-                <button type="submit" id="reportSubmitBtn" class="btn-action-primary" style="width:100%; justify-content:center;">Send Report</button>
+
+            <!-- Dual Mode Switcher -->
+            <div class="report-modal-tabs">
+                <button type="button" class="report-tab-btn active" id="tab-btn-mismatch">
+                    <i class="fas fa-wand-magic-sparkles"></i> Fix Wrong Show
+                </button>
+                <button type="button" class="report-tab-btn" id="tab-btn-report">
+                    <i class="fas fa-flag"></i> Report Issue
+                </button>
+            </div>
+
+            <div class="current-id-badge">
+                <span>Active Stream ID: <code id="modal-active-stream-id">Loading...</code></span>
+                <span id="modal-ep-badge" style="color:#fff; font-weight:600;">S1 • E1</span>
+            </div>
+
+            <!-- TAB 1: INSTANT MISMATCH ID OVERRIDE -->
+            <div id="panel-mismatch">
+                <p style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 12px;">
+                    Playing the wrong show or season? Paste the correct <strong>IMDb ID</strong> (e.g. <code>tt1234567</code>) or <strong>TMDB ID</strong> (e.g. <code>93427</code>) below to switch the video player immediately:
+                </p>
+                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                    <input type="text" id="customStreamIdInput" class="drama-input" placeholder="Paste IMDb ID (tt...) or TMDB ID" style="flex: 1; font-size: 0.88rem;">
+                    <button type="button" id="btn-apply-custom-id" class="btn-action-primary" style="padding: 0 18px;">
+                        <i class="fas fa-bolt"></i> Load
+                    </button>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                    <button type="button" id="btn-reset-custom-id" style="font-size: 0.76rem; color: var(--text-muted); text-decoration: underline; display: none;">
+                        Reset to default ID
+                    </button>
+                    <button type="button" id="btn-report-mismatch-cloud" style="margin-left: auto; font-size: 0.78rem; color: #c084fc; font-weight: 600;">
+                        <i class="fas fa-paper-plane"></i> Also send ID to Admin
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 2: STANDARD ISSUE REPORT -->
+            <form id="reportForm" style="display: none;">
+                <input type="hidden" id="reportIssue" value="Wrong episode/drama" required>
+                <div class="issue-chips-grid" id="issue-chips-container">
+                    <button type="button" class="issue-chip-btn selected" data-issue="Wrong episode/drama">
+                        <i class="fas fa-random"></i> Wrong Show/Ep
+                    </button>
+                    <button type="button" class="issue-chip-btn" data-issue="Video not playing">
+                        <i class="fas fa-video-slash"></i> Not Playing
+                    </button>
+                    <button type="button" class="issue-chip-btn" data-issue="Subtitles missing or out of sync">
+                        <i class="fas fa-closed-captioning"></i> Subtitle Issue
+                    </button>
+                    <button type="button" class="issue-chip-btn" data-issue="Audio missing">
+                        <i class="fas fa-volume-mute"></i> Audio Problem
+                    </button>
+                </div>
+                <input type="text" id="reportCorrectId" class="drama-input" placeholder="Optional: Correct IMDb / TMDB ID if known" style="margin-bottom: 10px; font-size: 0.85rem;">
+                <textarea id="reportDetails" class="drama-input" rows="2" placeholder="Any extra details for our team..." style="resize: none; margin-bottom:14px; font-size: 0.85rem;"></textarea>
+                <button type="submit" id="reportSubmitBtn" class="btn-action-primary" style="width:100%; justify-content:center; padding: 12px;">
+                    <i class="fas fa-paper-plane"></i> Submit Report
+                </button>
             </form>
             <div id="reportStatusMessage" style="margin-top: 15px; font-size: 0.85rem; display: none;"></div>
         </div>
@@ -618,21 +819,20 @@
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item">
             <i class="fa-solid fa-house nav-icon"></i>
-            <span class="nav-label">Home</span>
         </a>
        <a href="updates.html" class="bottom-nav-item">
             <i class="fa-solid fa-bell nav-icon"></i>
-            <span class="nav-label">Updates</span>
         </a>
         <a href="mylist.html" class="bottom-nav-item">
             <i class="fa-solid fa-bookmark nav-icon"></i>
-            <span class="nav-label">My List</span>
         </a>
         <a href="login.html" class="bottom-nav-item" id="bottomAuthBtn">
             <i class="fa-solid fa-user nav-icon"></i>
-            <span class="nav-label" style="opacity: 0;">Profile</span>
         </a>
     </nav>
+    
+    <!-- Smooth Bottom Overlay Fade -->
+    <div class="global-bottom-fade"></div>
 
     <script type="module">
         import { getSubscriptionStatus, applySubscriptionPrivileges } from "./subscription.js";
@@ -915,11 +1115,28 @@
                 }
 
                 activeTmdbId = activeData.tmdbId || dramaId;
-                activeImdbId = activeData.imdbId || activeData.imdb_id || activeData.imdb;
+                // Only accept valid IMDb IDs (starting with 'tt') so vote_average in activeData.imdb isn't mistaken for an IMDb ID
+                const rawImdbCandidate = activeData.imdbId || activeData.imdb_id || (String(activeData.imdb || '').startsWith('tt') ? activeData.imdb : '');
+                activeImdbId = rawImdbCandidate && String(rawImdbCandidate).startsWith('tt') ? String(rawImdbCandidate).trim() : null;
+
+                const isMovieMedia = activeData.type?.toLowerCase().includes('movie') ? 'movie' : 'tv';
+
+                // If Firestore doc didn't store the IMDb ID yet, fetch external_ids from TMDB so we can open with IMDb ID first
+                if (!activeImdbId && activeTmdbId && !String(activeTmdbId).startsWith('tt')) {
+                    try {
+                        const extRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/${isMovieMedia}/${activeTmdbId}/external_ids`);
+                        if (extRes.ok) {
+                            const extData = await extRes.json();
+                            if (extData && extData.imdb_id) {
+                                activeImdbId = extData.imdb_id;
+                                activeData.imdbId = extData.imdb_id;
+                            }
+                        }
+                    } catch (e) {}
+                }
 
                 try {
-                    const isMovie = activeData.type?.toLowerCase().includes('movie') ? 'movie' : 'tv';
-                    const simRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/${isMovie}/${activeTmdbId}/similar?page=1`);
+                    const simRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/3/${isMovieMedia}/${activeTmdbId}/similar?page=1`);
                     if (simRes.ok) {
                         const simData = await simRes.json();
                         activeData.similar = simData.results || [];
@@ -932,6 +1149,11 @@
                 document.getElementById('ui-title').textContent = activeData.title;
                 document.getElementById('ui-synopsis').textContent = activeData.synopsis;
                 document.getElementById('ui-year').textContent = activeData.year;
+                const totalEpsCount = activeData.totalEps || (activeData.seasons ? activeData.seasons.reduce((a, b) => a + b, 0) : 1);
+                const uiEpsEl = document.getElementById('ui-eps');
+                if (uiEpsEl) {
+                    uiEpsEl.textContent = isMovieMedia === 'movie' ? 'Movie' : `${totalEpsCount} Episodes`;
+                }
                 
                 if(activeData.actors && activeData.actors.length > 0) {
                     document.getElementById('ui-cast-inline-names').textContent = activeData.actors.join(', ');
@@ -940,13 +1162,19 @@
                 }
 
                 const scoreEl = document.getElementById('ui-tmdb-score');
-                if (activeData.vote_average || activeData.imdb) {
+                if (activeData.vote_average || (activeData.imdb && !String(activeData.imdb).startsWith('tt'))) {
                     const rating = activeData.vote_average || activeData.imdb;
                     scoreEl.textContent = `${Math.round(rating * 10)}% Match`;
                 } else { scoreEl.textContent = "New"; }
 
                 if (activeData.backdrop_path) {
-                    document.getElementById('ambilight-bg').src = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${activeData.backdrop_path}`;
+                    const backdropUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${activeData.backdrop_path}`;
+                    document.getElementById('ambilight-bg').src = backdropUrl;
+                    const paywallEl = document.getElementById('video-paywall');
+                    if (paywallEl) paywallEl.style.backgroundImage = `url('${backdropUrl}')`;
+                } else if (activeData.img) {
+                    const paywallEl = document.getElementById('video-paywall');
+                    if (paywallEl) paywallEl.style.backgroundImage = `url('${activeData.img}')`;
                 }
 
                 // Render Recs
@@ -1016,16 +1244,64 @@
                 window.currentEpisode = initEp;
 
                 const seasonSelector = document.getElementById('season-selector');
-                if (seasonsArr.length > 1) {
-                    seasonSelector.style.display = 'block';
-                    seasonSelector.innerHTML = seasonsArr.map((_, idx) => `<option value="${idx + 1}">Season ${idx + 1}</option>`).join('');
-                    seasonSelector.value = initSeason; 
+                const customSeasonDropdown = document.getElementById('custom-season-dropdown');
+                const seasonTrayTrigger = document.getElementById('season-tray-trigger');
+                const seasonTrayLabel = document.getElementById('season-tray-label');
+                const seasonTrayMenu = document.getElementById('season-tray-menu');
+
+                function syncCustomSeasonTray(selectedSeason) {
+                    if (!customSeasonDropdown) return;
+                    seasonTrayLabel.textContent = `Season ${selectedSeason}`;
+                    seasonTrayMenu.querySelectorAll('.season-tray-option').forEach(opt => {
+                        opt.classList.toggle('active', parseInt(opt.dataset.value) === parseInt(selectedSeason));
+                    });
                 }
 
-                seasonSelector.addEventListener('change', (e) => { window.renderEpisodeGrid(e.target.value); });
+                if (seasonsArr.length > 1) {
+                    seasonSelector.innerHTML = seasonsArr.map((_, idx) => `<option value="${idx + 1}">Season ${idx + 1}</option>`).join('');
+                    seasonSelector.value = initSeason;
+
+                    if (customSeasonDropdown) {
+                        customSeasonDropdown.style.display = 'block';
+                        seasonTrayMenu.innerHTML = seasonsArr.map((epCount, idx) => `
+                            <div class="season-tray-option ${idx + 1 === initSeason ? 'active' : ''}" data-value="${idx + 1}">
+                                <span>Season ${idx + 1}</span>
+                                <span class="ep-count-badge">${epCount} Eps</span>
+                            </div>
+                        `).join('');
+                        syncCustomSeasonTray(initSeason);
+
+                        seasonTrayTrigger.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            customSeasonDropdown.classList.toggle('open');
+                        });
+
+                        seasonTrayMenu.querySelectorAll('.season-tray-option').forEach(opt => {
+                            opt.addEventListener('click', () => {
+                                const val = parseInt(opt.dataset.value);
+                                seasonSelector.value = val;
+                                syncCustomSeasonTray(val);
+                                customSeasonDropdown.classList.remove('open');
+                                window.renderEpisodeGrid(val);
+                            });
+                        });
+
+                        document.addEventListener('click', (e) => {
+                            if (!customSeasonDropdown.contains(e.target)) {
+                                customSeasonDropdown.classList.remove('open');
+                            }
+                        });
+                    }
+                }
+
+                seasonSelector.addEventListener('change', (e) => {
+                    syncCustomSeasonTray(e.target.value);
+                    window.renderEpisodeGrid(e.target.value);
+                });
 
                 window.renderEpisodeGrid = async function(seasonNum) {
                     window.currentSeason = parseInt(seasonNum);
+                    syncCustomSeasonTray(window.currentSeason);
                     const grid = document.getElementById('episodes-list-container');
                     grid.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
 
@@ -1050,7 +1326,13 @@
                     let buttonsHtml = '';
                     for (let i = 1; i <= epsInThisSeason; i++) {
                         const epInfo = episodesData ? episodesData[i-1] : null;
-                        const epTitle = epInfo && epInfo.name ? (isMovieType ? epInfo.name : `Episode ${i} - ${epInfo.name}`) : (isMovieType ? 'Full Movie' : `Episode ${i}`);
+                        // Avoid redundant "Episode 2 - Episode 2" when TMDB's episode name is already "Episode X"
+                        let epTitle = isMovieType ? 'Full Movie' : `Episode ${i}`;
+                        if (epInfo && epInfo.name) {
+                            const cleanName = epInfo.name.trim();
+                            const isGenericEpName = new RegExp(`^Episode\s*${i}$`, 'i').test(cleanName);
+                            epTitle = isMovieType ? cleanName : (isGenericEpName ? `Episode ${i}` : `Episode ${i} • ${cleanName}`);
+                        }
                         const runtime = epInfo && epInfo.runtime ? `${epInfo.runtime}m` : (isMovieType ? '120m' : '45m');
 
                         buttonsHtml += `
@@ -1089,6 +1371,16 @@
                     });
                 }
 
+                // Helper: Determine prioritized stream IDs (1. Custom User Override -> 2. IMDb ID -> 3. TMDB ID)
+                window.getStreamIdCandidates = function() {
+                    const customOverride = localStorage.getItem(`dramakan_custom_id_${dramaId}`);
+                    const candidates = [];
+                    if (customOverride && customOverride.trim()) candidates.push(customOverride.trim());
+                    if (activeImdbId && !candidates.includes(activeImdbId)) candidates.push(activeImdbId);
+                    if (activeTmdbId && !candidates.includes(String(activeTmdbId))) candidates.push(String(activeTmdbId));
+                    return candidates;
+                };
+
                 // Dispatcher
                 window.loadEpisode = async function(season, ep, fromCloudSync = false) {
                     const targetSeason = parseInt(season);
@@ -1096,6 +1388,7 @@
                     
                     if (seasonSelector && seasonsArr.length > 1 && parseInt(seasonSelector.value) !== targetSeason) {
                         seasonSelector.value = targetSeason;
+                        syncCustomSeasonTray(targetSeason);
                         await window.renderEpisodeGrid(targetSeason);
                     }
 
@@ -1114,12 +1407,25 @@
                     if (!isUnlocked) {
                         videoPlayer.src = "";
                     } else {
-                        try {
-                            const response = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/stream-gateway/${currentServer}/${activeTmdbId}/${seasonParam}/${epParam}`);
-                            if (!response.ok) throw new Error("Stream rejected");
-                            const data = await response.json();
-                            videoPlayer.src = data.target;
-                        } catch(err) {
+                        const idCandidates = window.getStreamIdCandidates();
+                        let streamLoaded = false;
+
+                        for (const candidateId of idCandidates) {
+                            try {
+                                const response = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/stream-gateway/${currentServer}/${candidateId}/${seasonParam}/${epParam}`);
+                                if (response.ok) {
+                                    const data = await response.json();
+                                    if (data && data.target) {
+                                        videoPlayer.src = data.target;
+                                        window.currentStreamSourceId = candidateId;
+                                        streamLoaded = true;
+                                        break;
+                                    }
+                                }
+                            } catch (e) {}
+                        }
+
+                        if (!streamLoaded) {
                             videoPlayer.src = "about:blank";
                             showExplicitError({ title: "Stream Failed", message: "Unable to authorize stream server.", code: "ERR_STREAM", icon: "fas fa-shield-halved" });
                         }
@@ -1216,31 +1522,34 @@
                 // Paywall Buttons Logic
                 const paywallOverlay = document.getElementById('video-paywall');
                 const watchAdBtn = document.getElementById('btn-watch-sponsor');
+                const watchAdIcon = document.getElementById('btn-watch-sponsor-icon');
                 const actionBtns = document.getElementById('paywall-action-btns');
                 const countdownContainer = document.getElementById('ad-countdown-container');
                 const timerText = document.getElementById('ad-timer');
 
-                if (watchAdBtn) {
-                    watchAdBtn.addEventListener('click', () => {
-                        actionBtns.style.display = 'none';
-                        countdownContainer.style.display = 'block';
-                        window.open('https://mammothsubway.com/jv6x19fs?key=fca57385ae8621e726940d6510f8aaab', '_blank');
+                const triggerSponsorUnlock = () => {
+                    if (actionBtns.style.display === 'none') return;
+                    actionBtns.style.display = 'none';
+                    countdownContainer.style.display = 'flex';
+                    window.open('https://mammothsubway.com/jv6x19fs?key=fca57385ae8621e726940d6510f8aaab', '_blank');
 
-                        let secondsLeft = 10;
+                    let secondsLeft = 10;
+                    timerText.textContent = secondsLeft;
+                    const timerInterval = setInterval(() => {
+                        secondsLeft--;
                         timerText.textContent = secondsLeft;
-                        const timerInterval = setInterval(() => {
-                            secondsLeft--;
-                            timerText.textContent = secondsLeft;
-                            if (secondsLeft <= 0) {
-                                clearInterval(timerInterval);
-                                paywallOverlay.style.display = 'none';
-                                sessionStorage.setItem(`unlocked_${dramaId}`, 'true');
-                                
-                                window.loadEpisode(window.currentSeason, window.currentEpisode);
-                            }
-                        }, 1000);
-                    });
-                }
+                        if (secondsLeft <= 0) {
+                            clearInterval(timerInterval);
+                            paywallOverlay.style.display = 'none';
+                            sessionStorage.setItem(`unlocked_${dramaId}`, 'true');
+                            
+                            window.loadEpisode(window.currentSeason, window.currentEpisode);
+                        }
+                    }, 1000);
+                };
+
+                if (watchAdBtn) watchAdBtn.addEventListener('click', triggerSponsorUnlock);
+                if (watchAdIcon) watchAdIcon.addEventListener('click', triggerSponsorUnlock);
 
                 // Share
                 document.getElementById('btn-share').addEventListener('click', async () => {
@@ -1309,29 +1618,112 @@
             }
         })();
 
-        // Report Fix
+        // Upgraded Mismatch Override & Report Modal Logic
         const reportModal = document.getElementById('reportModal');
-        document.getElementById('btn-report')?.addEventListener('click', () => {
-            if (!currentUser) return alert("Log in to report issues.");
+        const tabBtnMismatch = document.getElementById('tab-btn-mismatch');
+        const tabBtnReport = document.getElementById('tab-btn-report');
+        const panelMismatch = document.getElementById('panel-mismatch');
+        const reportForm = document.getElementById('reportForm');
+        const customIdInput = document.getElementById('customStreamIdInput');
+        const btnApplyCustomId = document.getElementById('btn-apply-custom-id');
+        const btnResetCustomId = document.getElementById('btn-reset-custom-id');
+        const btnReportMismatchCloud = document.getElementById('btn-report-mismatch-cloud');
+        const modalActiveStreamId = document.getElementById('modal-active-stream-id');
+        const modalEpBadge = document.getElementById('modal-ep-badge');
+
+        function switchReportModalTab(mode) {
+            if (mode === 'mismatch') {
+                tabBtnMismatch.classList.add('active');
+                tabBtnReport.classList.remove('active');
+                panelMismatch.style.display = 'block';
+                reportForm.style.display = 'none';
+            } else {
+                tabBtnReport.classList.add('active');
+                tabBtnMismatch.classList.remove('active');
+                panelMismatch.style.display = 'none';
+                reportForm.style.display = 'block';
+            }
+        }
+
+        function openStreamAssistantModal(defaultTab = 'mismatch') {
+            const savedOverride = localStorage.getItem(`dramakan_custom_id_${dramaId}`) || '';
+            const currentId = savedOverride || activeImdbId || activeTmdbId || dramaId;
+            if (modalActiveStreamId) modalActiveStreamId.textContent = `${currentId}${savedOverride ? ' (Custom)' : (activeImdbId ? ' (IMDb)' : ' (TMDB)')}`;
+            if (modalEpBadge) {
+                const isMovie = activeData?.type?.toLowerCase().includes('movie');
+                modalEpBadge.textContent = isMovie ? 'Movie' : `S${window.currentSeason || 1} • E${window.currentEpisode || 1}`;
+            }
+            if (customIdInput) customIdInput.value = savedOverride;
+            if (btnResetCustomId) btnResetCustomId.style.display = savedOverride ? 'inline-block' : 'none';
+            switchReportModalTab(defaultTab);
             reportModal.style.display = 'flex';
-        });
+        }
+
+        document.getElementById('btn-mismatch')?.addEventListener('click', () => openStreamAssistantModal('mismatch'));
+        document.getElementById('btn-report')?.addEventListener('click', () => openStreamAssistantModal('report'));
+        tabBtnMismatch?.addEventListener('click', () => switchReportModalTab('mismatch'));
+        tabBtnReport?.addEventListener('click', () => switchReportModalTab('report'));
+
         document.getElementById('closeReportModal')?.addEventListener('click', () => reportModal.style.display = 'none');
         reportModal.addEventListener('click', (e) => { if (e.target === reportModal) reportModal.style.display = 'none'; });
+
+        // Issue Chips Selection
+        document.querySelectorAll('#issue-chips-container .issue-chip-btn').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('#issue-chips-container .issue-chip-btn').forEach(c => c.classList.remove('selected'));
+                chip.classList.add('selected');
+                document.getElementById('reportIssue').value = chip.dataset.issue;
+            });
+        });
+
+        // Instant Custom TMDB / IMDb ID Hot-Swap
+        btnApplyCustomId?.addEventListener('click', async () => {
+            const rawVal = (customIdInput.value || '').trim();
+            if (!rawVal) return window.showInlineToast("Please enter a valid IMDb or TMDB ID");
+            localStorage.setItem(`dramakan_custom_id_${dramaId}`, rawVal);
+            reportModal.style.display = 'none';
+            window.showInlineToast(`Switched stream to ID: ${rawVal}`);
+            await window.loadEpisode(window.currentSeason || 1, window.currentEpisode || 1);
+        });
+
+        btnResetCustomId?.addEventListener('click', async () => {
+            localStorage.removeItem(`dramakan_custom_id_${dramaId}`);
+            customIdInput.value = '';
+            btnResetCustomId.style.display = 'none';
+            reportModal.style.display = 'none';
+            window.showInlineToast("Restored default stream ID");
+            await window.loadEpisode(window.currentSeason || 1, window.currentEpisode || 1);
+        });
+
+        btnReportMismatchCloud?.addEventListener('click', () => {
+            const enteredId = (customIdInput.value || '').trim();
+            if (enteredId) {
+                const corrInput = document.getElementById('reportCorrectId');
+                if (corrInput) corrInput.value = enteredId;
+            }
+            switchReportModalTab('report');
+        });
         
         document.getElementById('reportForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (!currentUser) return alert("Please log in to submit a report.");
             const btn = document.getElementById('reportSubmitBtn');
-            btn.innerHTML = 'Sending...'; btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...'; btn.disabled = true;
             try {
+                const suggestedId = (document.getElementById('reportCorrectId')?.value || '').trim();
+                const extraDetails = (document.getElementById('reportDetails')?.value || '').trim();
                 await addDoc(collection(db, "reports"), {
-                    userId: currentUser.uid, dramaId: dramaId, dramaName: activeData.title,
+                    userId: currentUser.uid, dramaId: dramaId, dramaName: activeData?.title || "Unknown",
+                    activeImdbId: activeImdbId || "", activeTmdbId: activeTmdbId || "",
+                    suggestedId: suggestedId,
                     season: window.currentSeason, episode: window.currentEpisode,
-                    issue: document.getElementById('reportIssue').value, details: document.getElementById('reportDetails').value,
+                    issue: document.getElementById('reportIssue').value,
+                    details: suggestedId ? `[Suggested ID: ${suggestedId}] ${extraDetails}` : extraDetails,
                     server: 'nxsha', timestamp: serverTimestamp(), status: "Pending"
                 });
                 window.showInlineToast("Report sent! We'll fix it ASAP.");
-                setTimeout(() => { reportModal.style.display = 'none'; document.getElementById('reportForm').reset();}, 1500);
-            } catch (err) {} finally { btn.innerHTML = "Send Report"; btn.disabled = false; }
+                setTimeout(() => { reportModal.style.display = 'none'; document.getElementById('reportForm').reset();}, 1200);
+            } catch (err) {} finally { btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Report'; btn.disabled = false; }
         });
 
         const adCheckInterval = setInterval(() => {

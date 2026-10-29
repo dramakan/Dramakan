@@ -562,7 +562,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     id: String(item.tmdb_id),
                     title: item.name || item.title || "Unknown Title",
                     img: item.poster || 'https://via.placeholder.com/500x750?text=No+Image',
-                    link: item.embed_tmdb || `details.html?id=${item.tmdb_id}`, 
+                    link: item.embed_tmdb || `watch.html?id=${item.tmdb_id}`, 
                     type: "Trending"
                 }));
                 populateGrid('trending-grid', apiTrendingItems);
