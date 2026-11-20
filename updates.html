@@ -2,427 +2,661 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Updates & Alerts - DramaKan</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Updates &amp; Alerts — Dramakan</title>
+    <meta name="description" content="Latest announcements, new features, patch notes, and VIP updates from Dramakan.">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
+
+    <script src="feedback-popup.js" defer></script>
+    <script type="module" src="global-login-popup.js" defer></script>
+
     <style>
-        /* =========================================
-           1. LIQUID GLASS VARIABLES
-        ========================================= */
         :root {
-            --primary-color: #8A2BE2;
-            --primary-rich: #6a1b9a;
-            --primary-glow: rgba(138, 43, 226, 0.4);
-            
-            --bg-base: #050507; 
-            --text-color: #FFFFFF;
-            --text-muted: #9CA3AF;
-            
-            --glass-bg: rgba(20, 20, 25, 0.4);
-            --glass-bg-hover: rgba(138, 43, 226, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-border-light: rgba(138, 43, 226, 0.2);
-            --glass-blur: blur(20px);
-            
-            --bottom-nav-bg: rgba(20, 20, 25, 0.45);
-            --bottom-nav-border: rgba(255, 255, 255, 0.08);
-            --bottom-nav-item: rgba(255, 255, 255, 0.5);
-            --bottom-nav-item-active: #fff;
+            --bg: #000000;
+            --surface: #121216;
+            --surface-2: #1c1c22;
+            --accent: #a855f7;
+            --accent-bright: #c084fc;
+            --text: #f5f5f7;
+            --muted: #8e8e93;
+            --gold: #fbbf24;
+            --warn: #f97316;
+            --cyan: #38bdf8;
+            --glass: rgba(28, 28, 34, 0.64);
+            --glass-border: rgba(255, 255, 255, 0.14);
+            --glass-shine: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+            --pad: clamp(16px, 3.6vw, 48px);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body { 
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-base); 
-            color: var(--text-color);
-            padding-bottom: 120px;
-            overflow-x: hidden;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif;
+            overflow-x: clip;
+            min-height: 100dvh;
             -webkit-font-smoothing: antialiased;
         }
+        a { color: inherit; text-decoration: none; }
+        button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+        img { display: block; }
 
-        .liquid-orb {
-            position: fixed; border-radius: 50%; filter: blur(120px);
-            z-index: -1; pointer-events: none;
-            animation: floatOrb 25s infinite ease-in-out alternate;
-        }
-        .orb-1 { width: 50vw; height: 50vw; background: rgba(138, 43, 226, 0.15); top: -10%; left: -10%; }
-        .orb-2 { width: 40vw; height: 40vw; background: rgba(138, 43, 226, 0.1); bottom: 10%; right: -10%; animation-delay: -10s; }
-        
-        @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(5%, 10%) scale(1.1); }
-            100% { transform: translate(-5%, -5%) scale(0.95); }
-        }
-
-        /* =========================================
-           2. HEADER & PAGE STRUCTURE
-        ========================================= */
-        .app-header {
-            position: sticky; top: 0; left: 0; width: 100%; z-index: 1000; padding: 15px 5%;
-            display: flex; align-items: center; justify-content: space-between;
-            background: rgba(5,5,7,0.85); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--glass-border);
+        .ambient-tint {
+            position: fixed;
+            inset: 0 0 auto 0;
+            height: 44vh;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 65% 80% at 18% 0%, rgba(168, 85, 247, 0.16), transparent 70%),
+                radial-gradient(ellipse 55% 70% at 84% 0%, rgba(56, 189, 248, 0.08), transparent 70%);
         }
 
-        .header-title { font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 10px; color: #fff;}
-        .header-title i { color: var(--primary-color); }
-        
-        .header-logo { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; color: #fff; text-decoration: none; transition: transform 0.3s; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        .header-logo span { color: var(--primary-color); text-shadow: 0 0 10px var(--primary-glow); }
-        .header-logo:hover { transform: scale(1.05); }
+        /* --- APPLE TV TOP BAR --- */
+        .tv-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 12px var(--pad);
+            background: rgba(10, 10, 14, 0.74);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .brand { font-size: 1.36rem; font-weight: 800; letter-spacing: -0.04em; white-space: nowrap; }
+        .brand span { color: var(--accent-bright); }
 
-        .pc-nav { display: flex; gap: 15px; align-items: center; }
-        .pc-nav a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: all 0.3s; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 50px;}
-        .pc-nav a:hover { color: #fff; background: rgba(255,255,255,0.05); }
-        .pc-nav a.active { color: #fff; background: rgba(138, 43, 226, 0.15); box-shadow: 0 4px 15px var(--primary-glow); border: 1px solid rgba(138, 43, 226, 0.3); }
-        .pc-nav a.active i { color: var(--primary-color); }
+        .tv-nav-pill {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 4px;
+            border-radius: 999px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shine);
+        }
+        .tv-nav-pill a {
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.83rem;
+            font-weight: 600;
+            color: rgba(245, 245, 247, 0.72);
+            transition: background 0.2s ease, color 0.2s ease;
+            white-space: nowrap;
+        }
+        .tv-nav-pill a:hover { color: #fff; background: rgba(255, 255, 255, 0.09); }
+        .tv-nav-pill a.active { background: #fff; color: #000; }
 
-        .notif-container { max-width: 850px; margin: 30px auto; padding: 0 5%; }
+        .header-right { display: flex; align-items: center; gap: 10px; }
+        .auth-pill {
+            height: 36px;
+            padding: 0 15px;
+            border-radius: 999px;
+            background: #fff;
+            color: #000;
+            font-size: 0.82rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            white-space: nowrap;
+        }
+        .auth-pill.avatar-only { padding: 0; background: none; }
 
-        @media (min-width: 993px) {
-            .mobile-only { display: none !important; }
+        .mobile-refresh-pill {
+            display: none;
+            height: 34px;
+            padding: 0 13px;
+            border-radius: 999px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shine);
+            font-size: 0.78rem;
+            font-weight: 600;
+            align-items: center;
+            gap: 6px;
         }
 
-        /* =========================================
-           3. NOTIFICATION CARDS & MODAL
-        ========================================= */
-        .notif-list { display: flex; flex-direction: column; gap: 15px; }
-        
+        /* --- PAGE SHELL & CONTROLS --- */
+        .page-shell { max-width: 920px; margin: 0 auto; padding: 30px var(--pad) 54px; }
+
+        .updates-hero {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+        .page-title { font-size: clamp(1.75rem, 3.6vw, 2.55rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; }
+        .page-sub { margin-top: 6px; font-size: 0.88rem; color: var(--muted); font-weight: 500; }
+
+        .controls-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .segmented {
+            display: inline-flex;
+            padding: 3px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            overflow-x: auto;
+            scrollbar-width: none;
+            max-width: 100%;
+        }
+        .segmented::-webkit-scrollbar { display: none; }
+        .seg-btn {
+            padding: 7px 14px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(245, 245, 247, 0.72);
+            transition: background 0.18s ease, color 0.18s ease;
+            white-space: nowrap;
+        }
+        .seg-btn.active { background: #fff; color: #000; }
+
+        .pill-btn {
+            height: 36px;
+            padding: 0 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: background 0.18s ease;
+            white-space: nowrap;
+        }
+        .pill-btn:hover { background: rgba(255, 255, 255, 0.16); }
+
+        /* --- UPDATE FEED CARDS --- */
+        .notif-list { display: flex; flex-direction: column; gap: 12px; }
+
         .notif-card {
-            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border); border-radius: 20px;
-            padding: 25px; display: flex; align-items: flex-start; gap: 20px; position: relative;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            animation: slideIn 0.5s ease;
+            width: 100%;
+            text-align: left;
+            padding: 18px 20px;
+            border-radius: 18px;
+            background: var(--surface);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: transform 0.24s var(--ease), background 0.2s ease, border-color 0.2s ease;
         }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .notif-card:hover { 
-            background: var(--glass-bg-hover); border-color: var(--glass-border-light); 
-            transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .notif-icon-wrap {
-            width: 55px; height: 55px; border-radius: 50%;
-            background: rgba(138, 43, 226, 0.15); color: var(--primary-color);
-            display: flex; justify-content: center; align-items: center;
-            font-size: 1.4rem; flex-shrink: 0; border: 1px solid rgba(138, 43, 226, 0.3);
-            box-shadow: inset 0 0 10px rgba(138, 43, 226, 0.2);
+        .notif-card:hover {
+            transform: translateY(-2px);
+            background: var(--surface-2);
+            border-color: rgba(255, 255, 255, 0.18);
         }
 
-        .notif-content { flex: 1; min-width: 0; padding-right: 0; }
-        .notif-header-info { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 8px; gap: 2px;}
-        .notif-title { font-size: 1.1rem; font-weight: 600; color: #fff; margin: 0; line-height: 1.3;}
-        .notif-time { font-size: 0.8rem; color: #777; white-space: nowrap;}
-        
-        .notif-msg-snippet { 
-            font-size: 0.95rem; color: var(--text-muted); margin: 0 0 12px 0; line-height: 1.5; 
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        .notif-orb {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            background: rgba(168, 85, 247, 0.16);
+            color: var(--accent-bright);
+            border: 1px solid rgba(192, 132, 252, 0.28);
         }
+        .notif-orb.vip { background: rgba(251, 191, 36, 0.14); color: var(--gold); border-color: rgba(251, 191, 36, 0.32); }
+        .notif-orb.warn { background: rgba(249, 115, 22, 0.14); color: var(--warn); border-color: rgba(249, 115, 22, 0.32); }
+        .notif-orb.patch { background: rgba(56, 189, 248, 0.14); color: var(--cyan); border-color: rgba(56, 189, 248, 0.32); }
 
-        .btn-read-more {
-            background: rgba(138, 43, 226, 0.1); color: var(--primary-color); border: 1px solid rgba(138, 43, 226, 0.3);
-            padding: 8px 16px; border-radius: 50px; cursor: pointer; font-family: 'Poppins'; font-size: 0.85rem; 
-            font-weight: 600; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px;
+        .notif-body-col { flex: 1; min-width: 0; }
+        .notif-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 5px; }
+        .notif-title { font-size: 1rem; font-weight: 700; color: #fff; line-height: 1.3; letter-spacing: -0.01em; }
+        .notif-time { font-size: 0.74rem; font-weight: 600; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+        .notif-snippet {
+            font-size: 0.88rem;
+            color: rgba(245, 245, 247, 0.72);
+            line-height: 1.55;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
-        .btn-read-more:hover { background: var(--primary-color); color: #fff; box-shadow: 0 4px 15px var(--primary-glow); }
+        .notif-foot {
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--accent-bright);
+        }
+        .notif-card:hover .notif-foot i { transform: translateX(3px); }
+        .notif-foot i { font-size: 0.68rem; transition: transform 0.2s var(--ease); }
 
-        .notif-link { 
-            display: inline-flex; align-items: center; gap: 8px;
-            color: var(--primary-color); text-decoration: none; 
-            font-size: 0.85rem; font-weight: 600; transition: all 0.3s;
-            background: rgba(138, 43, 226, 0.1); padding: 8px 16px; border-radius: 50px;
-            border: 1px solid rgba(138, 43, 226, 0.2); margin-top: 20px;
+        /* Skeletons & Empty State */
+        .skel-card {
+            height: 112px;
+            border-radius: 18px;
+            background: linear-gradient(90deg, #121216 25%, #1c1c24 50%, #121216 75%);
+            background-size: 200% 100%;
+            animation: sk 1.4s ease infinite;
         }
-        .notif-link:hover { background: var(--primary-color); color: #fff; box-shadow: 0 4px 15px var(--primary-glow); }
+        @keyframes sk { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-        .empty-state {
-            text-align: center; padding: 60px 20px; background: var(--glass-bg);
-            border: 1px dashed var(--glass-border); border-radius: 20px;
+        .empty-card {
+            padding: 56px 20px;
+            border-radius: 22px;
+            background: var(--surface);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
-        .empty-state i { font-size: 4rem; color: rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .empty-state h3 { font-size: 1.2rem; color: #fff; margin-bottom: 10px; }
-        .empty-state p { color: var(--text-muted); font-size: 0.95rem; }
+        .empty-card i { font-size: 2.2rem; color: rgba(255, 255, 255, 0.2); margin-bottom: 4px; }
+        .empty-card h3 { font-size: 1.1rem; font-weight: 700; }
+        .empty-card p { font-size: 0.86rem; color: var(--muted); }
 
-        /* --- UPDATE MODAL STYLES --- */
-        .update-modal-overlay {
-            position: fixed; inset: 0; background: rgba(5,5,7,0.85); backdrop-filter: blur(5px);
-            z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px;
+        /* --- FROSTED DETAIL MODAL --- */
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 2500;
+            background: rgba(0, 0, 0, 0.78);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
         }
-        .update-modal-card {
-            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px;
-            padding: 30px; width: 100%; max-width: 650px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            backdrop-filter: blur(20px); max-height: 85vh; overflow-y: auto;
+        .modal-bg.open { display: flex; }
+        .modal-card {
+            position: relative;
+            width: min(600px, 100%);
+            max-height: 85dvh;
+            overflow-y: auto;
+            padding: 26px;
+            border-radius: 24px;
+            background: #14141a;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.85), var(--glass-shine);
         }
-        .update-modal-close {
-            position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 1.5rem;
-            color: var(--text-muted); cursor: pointer; transition: 0.3s;
+        .modal-x {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--muted);
+            font-size: 1.2rem;
+            display: grid;
+            place-items: center;
         }
-        .update-modal-close:hover { color: #fff; }
-        
-        .update-modal-card::-webkit-scrollbar { width: 6px; }
-        .update-modal-card::-webkit-scrollbar-track { background: transparent; }
-        .update-modal-card::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 10px; }
+        .modal-x:hover { color: #fff; background: rgba(255, 255, 255, 0.16); }
+        .modal-title { font-size: 1.32rem; font-weight: 800; letter-spacing: -0.02em; padding-right: 40px; line-height: 1.25; }
+        .modal-meta { margin: 8px 0 18px; font-size: 0.78rem; font-weight: 600; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+        .modal-body-text { font-size: 0.94rem; color: rgba(245, 245, 247, 0.86); line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .modal-cta {
+            margin-top: 22px;
+            height: 42px;
+            padding: 0 22px;
+            border-radius: 999px;
+            background: #fff;
+            color: #000;
+            font-size: 0.86rem;
+            font-weight: 700;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
+        }
+        .modal-cta:hover { opacity: 0.9; }
 
-        /* =========================================
-           4. MOBILE NAVIGATION (APP-LIKE)
-        ========================================= */
-        @media (max-width: 992px) {
-            .pc-only { display: none !important; }
-            .mobile-only { display: flex !important; }
-
-            .app-header { padding: 15px; }
-            .header-title { font-size: 1.3rem; }
-            .notif-container { margin: 20px auto; }
-            
-            .notif-card { padding: 20px; gap: 15px;}
-            .notif-icon-wrap { width: 45px; height: 45px; font-size: 1.1rem; }
-            .notif-content { padding-right: 0; }
-            .notif-title { font-size: 1.05rem; }
-            .notif-msg-snippet { font-size: 0.9rem; }
-
-            .bottom-nav { display: flex !important; position: fixed !important; bottom: 15px !important; left: 50% !important; transform: translateX(-50%) !important; width: 90% !important; max-width: 400px !important; background: var(--bottom-nav-bg) !important; backdrop-filter: blur(40px) saturate(180%) !important; -webkit-backdrop-filter: blur(40px) saturate(180%) !important; border: 1px solid var(--bottom-nav-border) !important; border-radius: 50px !important; z-index: 9999 !important; padding: 5px 10px !important; box-shadow: 0 25px 50px rgba(0,0,0,0.5) !important;}
-            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 0; color: var(--bottom-nav-item); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); position: relative; text-decoration: none;}
-            .bottom-nav-item.active { color: var(--bottom-nav-item-active); }
-            .nav-icon { font-size: 1.35rem; margin-bottom: 4px; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
-            .bottom-nav-item.active .nav-icon { transform: translateY(-4px) scale(1.15); color: var(--primary-color); filter: drop-shadow(0 0 10px var(--primary-glow));}
-            .nav-label { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.3px; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
-            .bottom-nav-item.active .nav-label { font-weight: 700; text-shadow: 0 0 10px rgba(255,255,255,0.5);}
+        .toast {
+            position: fixed;
+            top: 74px;
+            right: var(--pad);
+            z-index: 3000;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: rgba(28, 28, 34, 0.94);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--glass-border);
+            font-size: 0.82rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
         }
-        @media (min-width: 993px) { .bottom-nav { display: none !important; } }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        .bottom-nav, .global-bottom-fade { display: none; }
+
+        @media (max-width: 960px) {
+            body { padding-bottom: 92px; }
+            .tv-nav-pill, .auth-pill, #refreshDesktopBtn { display: none !important; }
+            .mobile-refresh-pill { display: inline-flex; }
+            .tv-header { padding: 11px 16px; }
+            .page-shell { padding: 18px 16px 32px; }
+            .notif-card { padding: 15px; gap: 13px; }
+            .notif-orb { width: 40px; height: 40px; border-radius: 12px; font-size: 0.96rem; }
+            .notif-top { flex-direction: column; gap: 2px; }
+
+            .bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 14px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: min(92%, 420px);
+                height: 58px;
+                padding: 0 8px;
+                border-radius: 999px;
+                background: rgba(24, 24, 30, 0.78);
+                backdrop-filter: blur(26px) saturate(190%);
+                -webkit-backdrop-filter: blur(26px) saturate(190%);
+                border: 1px solid rgba(255, 255, 255, 0.16);
+                box-shadow: var(--glass-shine), 0 18px 40px rgba(0, 0, 0, 0.68);
+                z-index: 999;
+            }
+            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: rgba(255, 255, 255, 0.56); font-size: 1.08rem; }
+            .bottom-nav-item span { font-size: 0.62rem; font-weight: 600; }
+            .bottom-nav-item.active { color: #fff; }
+            .bottom-nav-item.active i { color: var(--accent-bright); }
+            .global-bottom-fade { display: block; position: fixed; inset-inline: 0; bottom: 0; height: 84px; background: linear-gradient(0deg, rgba(0, 0, 0, 0.94), transparent); pointer-events: none; z-index: 990; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="liquid-orb orb-1"></div>
-    <div class="liquid-orb orb-2"></div>
+    <div class="ambient-tint" aria-hidden="true"></div>
 
-    <header class="app-header">
-        <div style="display: flex; align-items: center; gap: 40px; width: 100%;">
-            <a href="index.html" class="header-logo pc-only">Drama<span>Kan</span></a>
-            
-            <div class="header-title mobile-only"><i class="fas fa-bell"></i> Updates</div>
-            
-            <nav class="pc-nav pc-only">
-                <a href="index.html"><i class="fas fa-home"></i> Home</a>
-                <a href="updates.html" class="active"><i class="fas fa-bell"></i> Updates</a>
-                <a href="mylist.html"><i class="fas fa-bookmark"></i> My List</a>
-                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
-            </nav>
+    <header class="tv-header">
+        <a href="index.html" class="brand">Drama<span>Kan</span></a>
+
+        <nav class="tv-nav-pill" aria-label="Main Navigation">
+            <a href="index.html">Home</a>
+            <a href="category.html?c=binge-worthy-series">TV Shows</a>
+            <a href="category.html?c=blockbuster-movies">Movies</a>
+            <a href="category.html?c=hit-anime">Anime</a>
+            <a href="category.html?c=best-of-asian-dramas">Asian</a>
+            <a href="mylist.html">My List</a>
+            <a href="updates.html" class="active">Updates</a>
+        </nav>
+
+        <div class="header-right">
+            <a href="login.html" class="auth-pill" id="topAuthBtn"><i class="fa-solid fa-user"></i> Sign In</a>
+            <button type="button" class="mobile-refresh-pill" id="refreshMobileBtn" aria-label="Refresh updates"><i class="fas fa-rotate-right"></i> Refresh</button>
         </div>
     </header>
 
-    <main class="notif-container">
-        <div id="page-notifications-list" class="notif-list">
-            <div style="text-align: center; padding: 50px; color: var(--text-muted);">
-                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px;"></i>
-                <p>Fetching latest updates...</p>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <main class="page-shell">
+        <section class="updates-hero" aria-label="Updates Overview">
+            <div>
+                <h1 class="page-title">Updates &amp; Alerts</h1>
+                <p class="page-sub" id="updatesMeta">Latest announcements, patches, and VIP drops.</p>
             </div>
+        </section>
+
+        <div class="controls-bar">
+            <div class="segmented" id="filterTabs" role="tablist" aria-label="Filter Updates">
+                <button type="button" class="seg-btn active" data-kind="all">All</button>
+                <button type="button" class="seg-btn" data-kind="patch">Patches</button>
+                <button type="button" class="seg-btn" data-kind="vip">VIP &amp; Offers</button>
+                <button type="button" class="seg-btn" data-kind="warn">Alerts</button>
+            </div>
+            <button type="button" class="pill-btn" id="refreshDesktopBtn"><i class="fas fa-rotate-right"></i> Refresh</button>
         </div>
+
+        <section id="page-notifications-list" class="notif-list" aria-label="Announcements Feed">
+            <div class="skel-card"></div>
+            <div class="skel-card"></div>
+            <div class="skel-card"></div>
+        </section>
     </main>
 
-    <!-- UPDATE MODAL POPUP -->
-    <div class="update-modal-overlay" id="updateModal">
-        <div class="update-modal-card">
-            <button class="update-modal-close" onclick="closeUpdateModal()"><i class="fas fa-times"></i></button>
-            <h2 id="modal-update-title" style="color: #fff; margin-top: 0; font-size: 1.4rem; padding-right: 20px;">Title</h2>
-            <div class="notif-time" id="modal-update-time" style="margin-bottom: 20px; font-weight: 500;"><i class="far fa-clock"></i> Time</div>
-            
-            <!-- white-space: pre-wrap forces HTML to respect newlines/paragraphs from the database -->
-            <div id="modal-update-body" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; white-space: pre-wrap;">Body</div>
-            
-            <a id="modal-update-link" href="#" class="notif-link" style="display: none;">View Details <i class="fas fa-arrow-right"></i></a>
+    <!-- DETAIL SHEET MODAL -->
+    <div class="modal-bg" id="updateModal" role="dialog" aria-modal="true" aria-labelledby="modal-update-title">
+        <div class="modal-card">
+            <button type="button" class="modal-x" id="closeUpdateBtn" aria-label="Close">&times;</button>
+            <h2 id="modal-update-title" class="modal-title">Title</h2>
+            <div id="modal-update-time" class="modal-meta"><i class="far fa-clock"></i> <span>Just now</span></div>
+            <div id="modal-update-body" class="modal-body-text"></div>
+            <a id="modal-update-link" href="#" class="modal-cta">View Details <i class="fas fa-arrow-right"></i></a>
         </div>
     </div>
 
-    <nav class="bottom-nav">
-        <a href="index.html" class="bottom-nav-item">
-            <i class="fa-solid fa-house nav-icon"></i>
-            <span class="nav-label">Home</span>
-        </a>
-        <a href="updates.html" class="bottom-nav-item active">
-            <i class="fa-solid fa-bell nav-icon"></i>
-            <span class="nav-label">Updates</span>
-        </a>
-        <a href="mylist.html" class="bottom-nav-item">
-            <i class="fa-solid fa-bookmark nav-icon"></i>
-            <span class="nav-label">My List</span>
-        </a>
-        <a href="profile.html" class="bottom-nav-item" id="bottomAuthBtn">
-            <i class="fa-solid fa-user nav-icon"></i>
-            <span class="nav-label">Profile</span>
-        </a>
+    <!-- SINGLE CONSISTENT MOBILE BOTTOM BAR -->
+    <nav class="bottom-nav" aria-label="Mobile Navigation">
+        <a href="index.html" class="bottom-nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="category.html" class="bottom-nav-item"><i class="fa-solid fa-compass"></i><span>Browse</span></a>
+        <a href="updates.html" class="bottom-nav-item active"><i class="fa-solid fa-bell"></i><span>Updates</span></a>
+        <a href="mylist.html" class="bottom-nav-item"><i class="fa-solid fa-bookmark"></i><span>My List</span></a>
+        <a href="login.html" class="bottom-nav-item" id="bottomAuthBtn"><i class="fa-solid fa-user"></i><span>Profile</span></a>
     </nav>
+    <div class="global-bottom-fade" aria-hidden="true"></div>
 
     <script type="module">
+        "use strict";
+
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, updateDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-        const firebaseConfig = {
+        const app = getApps().length ? getApp() : initializeApp({
             apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
             authDomain: "dramakan007.firebaseapp.com",
             projectId: "dramakan007"
-        };
-
-        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        });
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        const listEl = document.getElementById('page-notifications-list');
-        let activePageNotifs = [];
+        const $ = (id) => document.getElementById(id);
+        const listEl = $("page-notifications-list");
+        const CACHE_TTL = 3600000;
+        let updates = [], activeFilter = "all", toastT = null;
 
-        function timeAgo(timestamp) {
-            if(!timestamp) return "Just now";
-            const date = typeof timestamp === 'number' ? new Date(timestamp) : new Date(timestamp.toMillis ? timestamp.toMillis() : timestamp);
-            const seconds = Math.floor((new Date() - date) / 1000);
-            
-            let interval = seconds / 31536000;
-            if (interval > 1) return Math.floor(interval) + " years ago";
-            interval = seconds / 2592000;
-            if (interval > 1) return Math.floor(interval) + " months ago";
-            interval = seconds / 86400;
-            if (interval > 1) return Math.floor(interval) + " days ago";
-            interval = seconds / 3600;
-            if (interval > 1) return Math.floor(interval) + " hours ago";
-            interval = seconds / 60;
-            if (interval > 1) return Math.floor(interval) + " minutes ago";
+        const toast = (m) => { const el = $("toast"); el.textContent = m; el.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("show"), 2000); };
+
+        function classifyUpdate(title = "") {
+            const t = title.toLowerCase();
+            if (t.includes("vip") || title.includes("🎉") || title.includes("🎁")) return { kind: "vip", icon: "fa-crown", cls: "vip" };
+            if (t.includes("warning") || t.includes("alert") || title.includes("⚠️")) return { kind: "warn", icon: "fa-triangle-exclamation", cls: "warn" };
+            if (t.includes("patch") || t.includes("update") || title.includes("🚀")) return { kind: "patch", icon: "fa-rocket", cls: "patch" };
+            return { kind: "general", icon: "fa-bullhorn", cls: "" };
+        }
+
+        function timeAgo(ts) {
+            if (!ts) return "Just now";
+            const d = typeof ts === "number" ? new Date(ts) : new Date(ts.toMillis ? ts.toMillis() : ts);
+            const sec = Math.max(0, Math.floor((Date.now() - d.getTime()) / 1000));
+            const units = [[31536000, "y"], [2592000, "mo"], [86400, "d"], [3600, "h"], [60, "m"]];
+            for (const [s, u] of units) if (sec >= s) return `${Math.floor(sec / s)}${u} ago`;
             return "Just now";
         }
 
-        function renderPageNotifications() {
-            if (activePageNotifs.length === 0) {
+        function renderFeed() {
+            const items = activeFilter === "all" ? updates : updates.filter((u) => classifyUpdate(u.title).kind === activeFilter);
+            $("updatesMeta").textContent = `${updates.length} community ${updates.length === 1 ? "announcement" : "announcements"}`;
+
+            if (!items.length) {
                 listEl.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-newspaper"></i>
-                        <h3>No updates yet!</h3>
-                        <p>Check back later for news, features, and announcements.</p>
-                    </div>
-                `;
+                    <div class="empty-card">
+                        <i class="fas fa-bell-slash"></i>
+                        <h3>${activeFilter === "all" ? "No updates yet" : "Nothing in this category"}</h3>
+                        <p>Check back soon for new features, drops, and announcements.</p>
+                    </div>`;
                 return;
             }
 
-            listEl.innerHTML = activePageNotifs.map(n => {
-                let iconClass = "fa-bullhorn";
-                if(n.title.toLowerCase().includes("vip") || n.title.includes("🎉") || n.title.includes("🎁")) iconClass = "fa-crown";
-                if(n.title.toLowerCase().includes("warning") || n.title.includes("⚠️")) iconClass = "fa-exclamation-triangle";
-                if(n.title.includes("🚀") || n.title.toLowerCase().includes("patch")) iconClass = "fa-rocket";
-
-                return `
-                    <div class="notif-card" id="page-card-${n.id}">
-                        <div class="notif-icon-wrap"><i class="fas ${iconClass}"></i></div>
-                        <div class="notif-content">
-                            <div class="notif-header-info">
-                                <h4 class="notif-title">${n.title}</h4>
-                                <span class="notif-time"><i class="far fa-clock"></i> ${timeAgo(n.timestamp)}</span>
-                            </div>
-                            <!-- Minimal Snippet -->
-                            <p class="notif-msg-snippet">${n.body}</p>
-                            
-                            <button class="btn-read-more" onclick="window.openUpdateModal('${n.id}')">Read Details <i class="fas fa-expand-arrows-alt"></i></button>
+            const frag = document.createDocumentFragment();
+            items.forEach((n) => {
+                const meta = classifyUpdate(n.title);
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "notif-card";
+                btn.dataset.openId = n.id;
+                btn.innerHTML = `
+                    <div class="notif-orb ${meta.cls}"><i class="fas ${meta.icon}"></i></div>
+                    <div class="notif-body-col">
+                        <div class="notif-top">
+                            <h3 class="notif-title"></h3>
+                            <span class="notif-time"></span>
                         </div>
-                    </div>
-                `;
-            }).join('');
+                        <p class="notif-snippet"></p>
+                        <span class="notif-foot">Read details <i class="fas fa-chevron-right"></i></span>
+                    </div>`;
+                btn.querySelector(".notif-title").textContent = n.title;
+                btn.querySelector(".notif-time").textContent = timeAgo(n.timestamp);
+                btn.querySelector(".notif-snippet").textContent = n.body;
+                frag.appendChild(btn);
+            });
+            listEl.innerHTML = "";
+            listEl.appendChild(frag);
         }
 
-        // --- MODAL CONTROLLERS ---
-        window.openUpdateModal = (id) => {
-            const notif = activePageNotifs.find(n => n.id === id);
-            if (!notif) return;
-            
-            document.getElementById('modal-update-title').innerText = notif.title;
-            document.getElementById('modal-update-time').innerHTML = `<i class="far fa-clock"></i> ${timeAgo(notif.timestamp)}`;
-            document.getElementById('modal-update-body').innerText = notif.body;
-            
-            const linkEl = document.getElementById('modal-update-link');
-            if (notif.link) {
-                linkEl.href = notif.link;
-                linkEl.style.display = 'inline-flex';
+        function openDetail(id) {
+            const n = updates.find((x) => x.id === id);
+            if (!n) return;
+            $("modal-update-title").textContent = n.title;
+            $("modal-update-time").querySelector("span").textContent = timeAgo(n.timestamp);
+            $("modal-update-body").textContent = n.body;
+
+            const linkEl = $("modal-update-link");
+            const safeLink = n.link && (/^(https?:\/\/|\/|[a-z0-9._-]+\.html)/i).test(n.link.trim()) ? n.link.trim() : "";
+            if (safeLink) { linkEl.href = safeLink; linkEl.style.display = "inline-flex"; }
+            else linkEl.style.display = "none";
+
+            $("updateModal").classList.add("open");
+        }
+
+        async function fetchUpdates(force = false) {
+            const now = Date.now();
+            if (!force) {
+                try {
+                    const cached = localStorage.getItem("Dramakan_Community_Cache");
+                    const cachedAt = parseInt(localStorage.getItem("Dramakan_Community_Time") || "0", 10);
+                    if (cached && now - cachedAt < CACHE_TTL) {
+                        updates = JSON.parse(cached);
+                        renderFeed();
+                        return;
+                    }
+                } catch {}
             } else {
-                linkEl.style.display = 'none';
+                listEl.innerHTML = '<div class="skel-card"></div><div class="skel-card"></div><div class="skel-card"></div>';
             }
-            
-            document.getElementById('updateModal').style.display = 'flex';
-        };
 
-        window.closeUpdateModal = () => {
-            document.getElementById('updateModal').style.display = 'none';
-        };
-        
-        // Close modal on background click
-        window.addEventListener('click', (e) => {
-            const modal = document.getElementById('updateModal');
-            if(e.target === modal) modal.style.display = 'none';
-        });
-
-        // --- ONE-TIME FETCH ENGINE (1 HOUR CACHE) ---
-        async function fetchUpdates() {
             try {
-                const cached = localStorage.getItem('Dramakan_Community_Cache');
-                const cacheTime = localStorage.getItem('Dramakan_Community_Time');
-                const now = Date.now();
-
-                // Check if cache exists and is younger than 1 hour (3600000 ms)
-                if (cached && cacheTime && (now - parseInt(cacheTime) < 3600000)) {
-                    activePageNotifs = JSON.parse(cached);
-                    renderPageNotifications();
-                    return;
-                }
-
-                // If cache is missing or expired, fetch freshly from Firestore
-                const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"), limit(30));
-                const snapshot = await getDocs(q);
-                
-                activePageNotifs = [];
-                snapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    
-                    // STRICT FILTER: Only show global Community Updates, never direct targeted alerts.
-                    if (data.target === 'all' || data.target === 'viewers') {
-                        const ts = data.createdAt ? (typeof data.createdAt === 'number' ? data.createdAt : (data.createdAt.toMillis ? data.createdAt.toMillis() : Date.now())) : Date.now();
-                        
-                        activePageNotifs.push({
-                            id: docSnap.id,
-                            title: data.title || "Update",
-                            body: data.message || data.body || "",
-                            link: data.link || "",
-                            timestamp: ts
-                        });
+                const snap = await getDocs(query(collection(db, "notifications"), orderBy("createdAt", "desc"), limit(30)));
+                updates = [];
+                snap.forEach((docSnap) => {
+                    const d = docSnap.data();
+                    if (d.target === "all" || d.target === "viewers") {
+                        const ts = d.createdAt ? (typeof d.createdAt === "number" ? d.createdAt : (d.createdAt.toMillis ? d.createdAt.toMillis() : now)) : now;
+                        updates.push({ id: docSnap.id, title: d.title || "Update", body: d.message || d.body || "", link: d.link || "", timestamp: ts });
                     }
                 });
-
-                // Update Browser Cache
-                localStorage.setItem('Dramakan_Community_Cache', JSON.stringify(activePageNotifs));
-                localStorage.setItem('Dramakan_Community_Time', now.toString());
-
-                renderPageNotifications();
-
-            } catch (error) {
-                console.error("Fetch error:", error);
-                listEl.innerHTML = `<div class="empty-state"><h3>Unable to load updates. Check connection.</h3></div>`;
+                localStorage.setItem("Dramakan_Community_Cache", JSON.stringify(updates));
+                localStorage.setItem("Dramakan_Community_Time", String(now));
+                renderFeed();
+                if (force) toast("Updates refreshed");
+            } catch {
+                listEl.innerHTML = '<div class="empty-card"><i class="fas fa-wifi"></i><h3>Unable to load updates</h3><p>Check your connection and tap Refresh.</p></div>';
             }
         }
 
-        // Fire fetch instantly regardless of auth state to prevent loading stalls
-        fetchUpdates();
-
-        // --- MARK AS READ LOGIC ---
-        // Runs passively in the background so the dropdown bell drops its red dot
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                try {
-                    updateDoc(doc(db, "users", user.uid), { lastReadTime: Date.now() });
-                } catch(e) {}
-            } else {
-                localStorage.setItem('Anykan_Last_Read', Date.now());
-            }
+        // Events
+        listEl.addEventListener("click", (e) => {
+            const card = e.target.closest("[data-open-id]");
+            if (card) openDetail(card.dataset.openId);
         });
 
+        $("filterTabs").addEventListener("click", (e) => {
+            const b = e.target.closest(".seg-btn");
+            if (!b || b.dataset.kind === activeFilter) return;
+            document.querySelectorAll("#filterTabs .seg-btn").forEach((x) => x.classList.toggle("active", x === b));
+            activeFilter = b.dataset.kind;
+            renderFeed();
+        });
+
+        $("refreshDesktopBtn").addEventListener("click", () => fetchUpdates(true));
+        $("refreshMobileBtn").addEventListener("click", () => fetchUpdates(true));
+
+        const closeModal = () => $("updateModal").classList.remove("open");
+        $("closeUpdateBtn").addEventListener("click", closeModal);
+        $("updateModal").addEventListener("click", (e) => { if (e.target.id === "updateModal") closeModal(); });
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+        // Instant fetch + passive mark-as-read + avatar sync
+        fetchUpdates(false);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                localStorage.setItem("Anykan_Last_Read", String(Date.now()));
+                return;
+            }
+            const ref = doc(db, "users", user.uid);
+            updateDoc(ref, { lastReadTime: Date.now() }).catch(() => {});
+
+            try {
+                const snap = await getDoc(ref);
+                if (!snap.exists()) return;
+                const d = snap.data();
+                const fallback = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(user.displayName || user.email || "U")}`;
+                const prof = d.profiles?.length
+                    ? (d.profiles.find((p) => p.id === localStorage.getItem("dramakan_active_profile_id")) || d.profiles[0])
+                    : { avatar: d.avatarUrl || user.photoURL || fallback };
+                const av = prof.avatar || fallback;
+                const emoji = av.length <= 10 && !av.includes("http") && !av.includes("data:image");
+
+                const topBtn = $("topAuthBtn"), botBtn = $("bottomAuthBtn");
+                if (topBtn) {
+                    topBtn.href = "profile.html";
+                    topBtn.classList.add("avatar-only");
+                    topBtn.innerHTML = emoji
+                        ? `<div style="width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--accent-bright);display:grid;place-items:center;">${av}</div>`
+                        : `<img src="${av}" alt="Profile" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1.5px solid var(--accent-bright);">`;
+                }
+                if (botBtn) {
+                    botBtn.href = "profile.html";
+                    botBtn.innerHTML = emoji
+                        ? `<div style="width:22px;height:22px;border-radius:50%;border:1px solid var(--accent-bright);display:grid;place-items:center;font-size:0.8rem;">${av}</div><span>Profile</span>`
+                        : `<img src="${av}" alt="Profile" style="width:22px;height:22px;border-radius:50%;object-fit:cover;border:1px solid var(--accent-bright);"><span>Profile</span>`;
+                }
+            } catch {}
+        });
     </script>
 </body>
 </html>

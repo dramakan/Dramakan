@@ -2,586 +2,740 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentication - DramaKan</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Sign In — Dramakan</title>
+    <meta name="description" content="Sign in or create your Dramakan account to sync your watchlist, history, and VIP perks.">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
     <style>
-        /* DYNAMIC LIQUID COLOR ENGINE */
         :root {
-            --bg-deep: #030303;
-            --text-main: #ffffff;
-            --text-muted: rgba(255, 255, 255, 0.45);
-            
-            /* Phase 1: Sign In (Original Deep Purple Core) */
-            --orb1-color: #8A2BE2; 
-            --orb2-color: #0d061f; 
-            
-            --glass-bg: rgba(13, 13, 13, 0.5);
-            --glass-border: rgba(255, 255, 255, 0.06);
-            --glass-highlight: rgba(138, 43, 226, 0.2);
+            --bg: #000000;
+            --surface: #121216;
+            --accent: #a855f7;
+            --accent-bright: #c084fc;
+            --text: #f5f5f7;
+            --muted: #8e8e93;
+            --ok: #34d399;
+            --err: #f87171;
+            --glass: linear-gradient(160deg, rgba(255, 255, 255, 0.08) 0%, rgba(18, 18, 24, 0.78) 100%);
+            --glass-border: rgba(255, 255, 255, 0.14);
+            --glass-shine: inset 0 1px 0 rgba(255, 255, 255, 0.24);
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+            --tint-a: rgba(168, 85, 247, 0.24);
+            --tint-b: rgba(109, 40, 217, 0.14);
         }
 
-        /* Phase 2: Register (Electric Orchid Velvet) */
         body.register-mode {
-            --orb1-color: #7209b7;
-            --orb2-color: #3f0713;
+            --tint-a: rgba(192, 132, 252, 0.24);
+            --tint-b: rgba(236, 72, 153, 0.14);
         }
-
-        /* Phase 3: Forgot Password (Cyber Ultraviolet Void) */
         body.forgot-mode {
-            --orb1-color: #3a0ca3;
-            --orb2-color: #4cc9f0;
+            --tint-a: rgba(56, 189, 248, 0.22);
+            --tint-b: rgba(124, 58, 237, 0.16);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        
-        body { 
-            background-color: var(--bg-deep); 
-            color: var(--text-main);
-            min-height: 100vh;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif;
+            min-height: 100dvh;
+            overflow-x: clip;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { color: inherit; text-decoration: none; }
+        button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 76px 16px 32px;
+            position: relative;
+        }
+
+        /* Lightweight GPU Ambient Glow */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 65% 55% at 22% 10%, var(--tint-a), transparent 70%),
+                radial-gradient(ellipse 60% 55% at 80% 88%, var(--tint-b), transparent 70%);
+            transition: background 0.6s ease;
+        }
+
+        /* Top Minimal Bar */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            inset-inline: 0;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px clamp(16px, 4vw, 44px);
+        }
+        .back-pill {
+            height: 36px;
+            padding: 0 15px;
+            border-radius: 999px;
+            background: rgba(28, 28, 34, 0.65);
+            backdrop-filter: blur(18px) saturate(160%);
+            -webkit-backdrop-filter: blur(18px) saturate(160%);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shine);
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: rgba(245, 245, 247, 0.85);
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .back-pill:hover { background: rgba(255, 255, 255, 0.16); color: #fff; }
+
+        /* --- APPLE LIQUID GLASS AUTH CARD --- */
+        .auth-card {
+            position: relative;
+            width: min(420px, 100%);
+            border-radius: 28px;
+            background: var(--glass);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 32px 72px rgba(0, 0, 0, 0.78), var(--glass-shine);
+            overflow: hidden;
+            --mx: 50%;
+            --my: 50%;
+        }
+        .auth-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle 220px at var(--mx) var(--my), rgba(255, 255, 255, 0.055), transparent 78%);
+        }
+
+        .card-head {
+            position: relative;
+            z-index: 2;
+            padding: 34px 30px 14px;
+            text-align: center;
+        }
+        .brand {
+            font-size: 1.85rem;
+            font-weight: 800;
+            letter-spacing: -0.045em;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+        .brand span { color: var(--accent-bright); }
+        .card-sub { font-size: 0.84rem; color: var(--muted); margin-bottom: 22px; }
+
+        /* Apple Segmented Control */
+        .seg-wrap { position: relative; height: 42px; }
+        .seg-control {
+            position: relative;
+            display: flex;
+            padding: 3px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+        body.forgot-mode .seg-control { opacity: 0; transform: translateY(-6px); pointer-events: none; }
+
+        .seg-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: calc(50% - 3px);
+            height: calc(100% - 6px);
+            border-radius: 999px;
+            background: #fff;
+            transition: transform 0.4s var(--ease);
+            z-index: 1;
+        }
+        .seg-btn {
+            position: relative;
+            z-index: 2;
+            flex: 1;
+            height: 34px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: rgba(245, 245, 247, 0.7);
+            transition: color 0.25s ease;
+        }
+        .seg-btn.active { color: #000; }
+
+        .forgot-bar {
+            position: absolute;
+            inset: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow-x: hidden;
-            position: relative;
-            transition: --orb1-color 1.2s cubic-bezier(0.25, 1, 0.5, 1), --orb2-color 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-            padding: 24px 16px;
+            opacity: 0;
+            transform: translateY(6px);
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s ease;
         }
+        body.forgot-mode .forgot-bar { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .forgot-back {
+            position: absolute;
+            left: 0;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            display: grid;
+            place-items: center;
+            font-size: 0.82rem;
+        }
+        .forgot-back:hover { background: rgba(255, 255, 255, 0.18); }
+        .forgot-bar strong { font-size: 0.94rem; font-weight: 700; }
 
-        /* --- IMMERSIVE LIQUID AMBIENT ATMOSPHERE --- */
-        .ambient-bg {
-            position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
-        }
-        .orb {
-            position: absolute; border-radius: 50%; filter: blur(140px); opacity: 0.45;
-            transition: background-color 1.2s ease-in-out, transform 1s ease;
-        }
-        .orb-1 {
-            top: -15%; left: -10%; width: 55vw; height: 55vw;
-            background-color: var(--orb1-color);
-            animation: float1 20s infinite alternate ease-in-out;
-        }
-        .orb-2 {
-            bottom: -15%; right: -10%; width: 65vw; height: 65vw;
-            background-color: var(--orb2-color);
-            animation: float2 25s infinite alternate ease-in-out;
-        }
-
-        @keyframes float1 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(8vw, 6vh) scale(1.15); } }
-        @keyframes float2 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-8vw, -6vh) scale(1.08); } }
-
-        .btn-back { 
-            position: absolute; top: 30px; left: 30px; 
-            color: var(--text-muted); font-size: 0.8rem; text-decoration: none;
-            transition: 0.3s; z-index: 20; display: flex; align-items: center; gap: 8px;
-            text-transform: uppercase; letter-spacing: 2px; font-weight: 500;
-        }
-        .btn-back:hover { color: var(--text-main); }
-
-        /* --- THE ULTRALIGHT GLASS TERMINAL --- */
-        .glass-card {
-            position: relative; z-index: 2; width: 100%; max-width: 440px; 
-            background: var(--glass-bg);
-            backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px);
-            border: 1px solid var(--glass-border);
-            border-radius: 36px;
-            display: flex; flex-direction: column; overflow: hidden;
-            transition: border-color 0.5s ease;
-            /* Adaptive Spotlight Anchors */
-            --mouse-x: 50%;
-            --mouse-y: 50%;
-        }
-
-        /* Continuous Ambient Optical Tracking Overlay */
-        .glass-card::after {
-            content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 10;
-            background: radial-gradient(circle 250px at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.04), transparent 80%);
-        }
-
-        /* CONTAINER HEADERS */
-        .card-header {
-            padding: 45px 40px 15px 40px; text-align: center; position: relative; z-index: 15;
-        }
-        .logo { font-size: 2.2rem; font-weight: 300; letter-spacing: -1px; margin-bottom: 25px; display: block; text-decoration: none; color: white;}
-        .logo span { font-weight: 700; color: #fff; text-shadow: 0 0 30px var(--orb1-color); transition: 1.2s ease; }
-
-        /* MULTI-PHASE CONTROLLER HEADER ARCHITECTURE */
-        .toggle-box {
-            display: flex; background: rgba(0,0,0,0.5); border-radius: 20px; padding: 5px;
-            position: relative; width: 100%; border: 1px solid var(--glass-border);
-            transition: opacity 0.4s cubic-bezier(0.77, 0, 0.175, 1), transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
-        }
-        body.forgot-mode .toggle-box {
-            opacity: 0; transform: translateY(-10px); pointer-events: none;
-        }
-        .toggle-btn {
-            flex: 1; padding: 13px 0; border: none; background: transparent; color: var(--text-muted);
-            font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
-            cursor: pointer; position: relative; z-index: 2; transition: 0.4s;
-        }
-        .toggle-btn.active { color: var(--text-main); }
-        .toggle-highlighter {
-            position: absolute; top: 5px; left: 5px; width: calc(50% - 5px); height: calc(100% - 10px);
-            background: rgba(255,255,255,0.08); border-radius: 16px;
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
-            transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
-            z-index: 1; border: 1px solid rgba(255,255,255,0.08);
-        }
-
-        /* RECOVERY VIEW BACK-CONTROL PANEL */
-        .forgot-header-back {
-            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-            opacity: 0; transform: translateY(10px); pointer-events: none; transition: 0.4s ease; padding: 0 40px; margin-top: 55px;
-        }
-        body.forgot-mode .forgot-header-back {
-            opacity: 1; transform: translateY(0); pointer-events: auto;
-        }
-        .forgot-title-text {
-            font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--text-main);
-        }
-        .btn-abort-forgot {
-            position: absolute; left: 40px; background: transparent; border: none; color: var(--text-muted); font-size: 0.9rem; cursor: pointer; transition: 0.3s;
-        }
-        .btn-abort-forgot:hover { color: var(--text-main); }
-
-        /* --- THE TRIPLE SLIDING SYSTEM PLATFORM --- */
-        .form-track-container {
-            position: relative; width: 100%; overflow: hidden; z-index: 15;
-        }
+        /* --- SLIDING FORM TRACK --- */
+        .track-clip { position: relative; z-index: 2; overflow: hidden; width: 100%; }
         .form-track {
-            display: flex; width: 300%; align-items: stretch; /* Absolute uniform responsive sizing */
-            transition: transform 0.75s cubic-bezier(0.77, 0, 0.175, 1);
+            display: flex;
+            width: 300%;
+            transition: transform 0.52s var(--ease);
+            will-change: transform;
         }
-        .form-slide {
-            width: 33.33333%; padding: 20px 40px 45px 40px; 
-            display: flex; flex-direction: column; justify-content: center;
-        }
-        form { display: flex; flex-direction: column; width: 100%; }
+        .form-slide { width: 33.3333%; padding: 16px 30px 32px; }
+        form { display: flex; flex-direction: column; gap: 14px; }
 
-        /* REFINED LIQUID GLASS INPUT PIPES */
-        .input-group { position: relative; margin-bottom: 24px; }
+        .field { position: relative; }
+        .field label {
+            display: block;
+            font-size: 0.74rem;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+        .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .label-row label { margin: 0; }
+        .forgot-link { font-size: 0.74rem; font-weight: 600; color: var(--accent-bright); }
+        .forgot-link:hover { text-decoration: underline; }
+
+        .inp-wrap { position: relative; display: flex; align-items: center; }
         .auth-input {
-            width: 100%; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 24px 20px 10px 20px; color: var(--text-main);
-            font-size: 1rem; outline: none; transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            width: 100%;
+            height: 46px;
+            padding: 0 14px;
+            border-radius: 13px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            color: #fff;
+            font: inherit;
+            font-size: 0.92rem;
+            outline: none;
+            transition: border-color 0.2s ease, background 0.2s ease;
         }
-        .auth-input:focus { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.25); }
-        
-        .auth-label {
-            position: absolute; left: 20px; top: 18px; color: var(--text-muted); font-size: 1rem;
-            pointer-events: none; transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-        .auth-input:focus ~ .auth-label, .auth-input:not(:placeholder-shown) ~ .auth-label {
-            top: 7px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.6);
-        }
+        .auth-input.has-eye { padding-right: 42px; }
+        .auth-input::placeholder { color: rgba(255, 255, 255, 0.3); }
+        .auth-input:focus { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.34); }
 
-        /* DYNAMIC SHIFT FORGOT SWITCH LINK */
-        .forgot-trigger-link {
-            position: absolute; right: 20px; top: 20px; color: var(--text-muted);
-            font-size: 0.75rem; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; z-index: 12;
+        .eye-btn {
+            position: absolute;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            color: var(--muted);
+            display: grid;
+            place-items: center;
+            font-size: 0.84rem;
         }
-        .forgot-trigger-link:hover { color: var(--text-main); }
+        .eye-btn:hover { color: #fff; }
 
-        /* BRUTALIST STRUCTURAL PILL INTERACTIVE BUTTONS */
-        .btn-auth {
-            width: 100%; padding: 19px; border-radius: 16px; border: none; font-size: 0.88rem; font-weight: 600; 
-            text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            display: flex; justify-content: center; align-items: center; gap: 10px; position: relative;
+        /* Pill Buttons */
+        .btn-primary, .btn-glass {
+            width: 100%;
+            height: 46px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            transition: transform 0.2s var(--ease), background 0.2s ease, opacity 0.2s ease;
         }
-        .btn-main { background: rgba(255,255,255,0.92); color: #000; margin-top: 5px; }
-        .btn-main:hover { background: #ffffff; transform: translateY(-1px); }
-        
-        .btn-google {
-            background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid var(--glass-border);
-            backdrop-filter: blur(10px);
+        .btn-primary { background: #fff; color: #000; margin-top: 4px; }
+        .btn-primary:hover { transform: scale(1.015); opacity: 0.94; }
+        .btn-primary:disabled, .btn-glass:disabled { opacity: 0.6; pointer-events: none; }
+
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid var(--glass-border);
+            color: #fff;
         }
-        .btn-google:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.2); }
-        .btn-google img { width: 18px; }
+        .btn-glass:hover { background: rgba(255, 255, 255, 0.14); }
+        .btn-glass img { width: 17px; height: 17px; }
 
-        .divider { display: flex; align-items: center; margin: 24px 0; color: var(--text-muted); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 2px; }
-        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--glass-border); }
-        .divider::before { margin-right: 15px; } .divider::after { margin-left: 15px; }
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin: 4px 0;
+        }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(255, 255, 255, 0.1); }
 
-        .msg-box { font-size: 0.85rem; padding: 15px; margin-top: 15px; display: none; border-radius: 14px; text-align: center; font-weight: 500; backdrop-filter: blur(10px); border: 1px solid; }
-        .error { color: #ff4d4d; border-color: rgba(255, 77, 77, 0.2); background: rgba(255, 77, 77, 0.04); }
-        .success { color: #00e676; border-color: rgba(0, 230, 118, 0.2); background: rgba(0, 230, 118, 0.04); }
+        .msg-box {
+            display: none;
+            padding: 11px 14px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-align: center;
+            border: 1px solid;
+        }
+        .msg-box.error { color: var(--err); background: rgba(248, 113, 113, 0.1); border-color: rgba(248, 113, 113, 0.3); }
+        .msg-box.success { color: var(--ok); background: rgba(52, 211, 153, 0.1); border-color: rgba(52, 211, 153, 0.3); }
 
-        /* STRUCTURAL GLASS SECURITY TERMINAL (OTP) */
+        /* Active Session Card */
+        .session-box { padding: 14px 30px 34px; text-align: center; display: flex; flex-direction: column; gap: 12px; }
+        .session-box h2 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em; }
+        .session-box p { font-size: 0.86rem; color: var(--muted); margin-bottom: 8px; }
+        .session-box strong { color: #fff; }
+
+        /* --- OTP VERIFICATION MODAL --- */
         .otp-overlay {
-            display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            z-index: 1000; justify-content: center; align-items: center; padding: 16px;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
         }
         .otp-card {
-            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 32px;
-            padding: 55px 40px; width: 100%; max-width: 410px; text-align: center; position: relative;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.9);
+            width: min(390px, 100%);
+            padding: 32px 26px;
+            border-radius: 26px;
+            background: #14141a;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 32px 72px rgba(0, 0, 0, 0.85), var(--glass-shine);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
         }
-        .otp-card h3 { font-weight: 300; font-size: 1.8rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .otp-card p { color: var(--text-muted); margin-bottom: 35px; font-size: 0.9rem; line-height: 1.5;}
+        .otp-card h3 { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; }
+        .otp-card p { font-size: 0.84rem; color: var(--muted); line-height: 1.45; }
         .otp-input {
-            width: 100%; letter-spacing: 16px; text-align: center; font-size: 2.2rem; padding: 14px; font-weight: 300;
-            background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 16px; color: #fff; outline: none; margin-bottom: 25px; transition: 0.3s;
+            width: 100%;
+            height: 58px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            text-align: center;
+            font-size: 1.85rem;
+            font-weight: 700;
+            letter-spacing: 0.42em;
+            padding-left: 0.42em;
+            font-variant-numeric: tabular-nums;
+            outline: none;
         }
-        .otp-input:focus { border-color: rgba(255,255,255,0.3); }
+        .otp-input:focus { border-color: var(--accent-bright); }
 
-        /* ADAPTIVE COHESIVE SCALE ARCHITECTURE (PC & Mobile Symmetry) */
-        @media (max-width: 600px) {
-            body { padding: 12px; }
-            .btn-back { top: 25px; left: 25px; }
-            .glass-card { border-radius: 28px; }
-            .form-slide { padding: 10px 24px 40px 24px; }
-            .card-header { padding: 40px 24px 15px 24px; }
-            .forgot-header-back { padding: 0 24px; }
-            .btn-abort-forgot { left: 24px; }
-            .orb-1 { width: 95vw; height: 95vw; }
-            .orb-2 { width: 105vw; height: 105vw; }
+        @media (max-width: 520px) {
+            .auth-card { border-radius: 24px; }
+            .card-head { padding: 28px 22px 12px; }
+            .form-slide, .session-box { padding: 14px 22px 28px; }
+            .auth-input { font-size: 16px; }
         }
     </style>
 </head>
 <body>
-    
-    <div class="ambient-bg">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-    </div>
 
-    <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Home</a>
+    <div class="ambient-bg" aria-hidden="true"></div>
 
-    <div class="glass-card" id="interactive-card">
-        
-        <div class="card-header">
-            <a href="index.html" class="logo">Drama<span>Kan</span></a>
-            
-            <div class="toggle-box" id="navigation-toggles">
-                <div class="toggle-highlighter" id="highlighter"></div>
-                <button class="toggle-btn active" id="btn-login" onclick="switchMode('login')">Sign In</button>
-                <button class="toggle-btn" id="btn-register" onclick="switchMode('register')">Register</button>
-            </div>
+    <header class="top-bar">
+        <a href="index.html" class="back-pill"><i class="fas fa-chevron-left"></i> Home</a>
+    </header>
 
-            <div class="forgot-header-back">
-                <button class="btn-abort-forgot" onclick="switchMode('login')"><i class="fas fa-arrow-left"></i></button>
-                <div class="forgot-title-text">Reset Password</div>
+    <main class="auth-card" id="interactive-card">
+        <div class="card-head">
+            <a href="index.html" class="brand">Drama<span>Kan</span></a>
+            <p class="card-sub" id="cardSub">Sign in to sync your library &amp; history</p>
+
+            <div class="seg-wrap" id="navigation-toggles">
+                <div class="seg-control" role="tablist" aria-label="Authentication Mode">
+                    <div class="seg-thumb" id="highlighter"></div>
+                    <button type="button" class="seg-btn active" id="btn-login" data-mode="login">Sign In</button>
+                    <button type="button" class="seg-btn" id="btn-register" data-mode="register">Create Account</button>
+                </div>
+
+                <div class="forgot-bar">
+                    <button type="button" class="forgot-back" data-mode="login" aria-label="Back to Sign In"><i class="fas fa-chevron-left"></i></button>
+                    <strong>Reset Password</strong>
+                </div>
             </div>
         </div>
 
-        <div class="form-track-container">
+        <div class="track-clip" id="track-clip">
             <div class="form-track" id="form-track">
-                
-                <div class="form-slide">
+                <!-- 1. SIGN IN -->
+                <section class="form-slide" aria-label="Sign In">
                     <form id="login-form">
-                        <div class="input-group">
-                            <input type="email" id="login-email" class="auth-input" placeholder=" " required>
-                            <label class="auth-label">Email Address</label>
+                        <div class="field">
+                            <label for="login-email">Email</label>
+                            <input type="email" id="login-email" class="auth-input" placeholder="you@example.com" autocomplete="email" required>
                         </div>
-                        <div class="input-group">
-                            <input type="password" id="login-password" class="auth-input" placeholder=" " required>
-                            <label class="auth-label">Password</label>
-                            <a href="#" class="forgot-trigger-link" onclick="switchMode('forgot')">Forgot?</a>
+                        <div class="field">
+                            <div class="label-row">
+                                <label for="login-password">Password</label>
+                                <button type="button" class="forgot-link" data-mode="forgot">Forgot?</button>
+                            </div>
+                            <div class="inp-wrap">
+                                <input type="password" id="login-password" class="auth-input has-eye" placeholder="Enter your password" autocomplete="current-password" required>
+                                <button type="button" class="eye-btn" data-eye="login-password" aria-label="Show password"><i class="far fa-eye"></i></button>
+                            </div>
                         </div>
-                        <button type="submit" class="btn-auth btn-main" id="login-submit-btn">Access Gateway</button>
-                        
+                        <button type="submit" class="btn-primary" id="login-submit-btn">Sign In</button>
                         <div class="divider">or</div>
-                        
-                        <button type="button" class="btn-auth btn-google google-trigger">
-                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"> 
-                            Connect with Google
+                        <button type="button" class="btn-glass google-trigger">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt=""> Continue with Google
                         </button>
-                        <div class="msg-box" id="login-msg"></div>
+                        <div class="msg-box" id="login-msg" role="alert"></div>
                     </form>
-                </div>
+                </section>
 
-                <div class="form-slide">
+                <!-- 2. CREATE ACCOUNT -->
+                <section class="form-slide" aria-label="Create Account">
                     <form id="register-form">
-                        <div class="input-group">
-                            <input type="text" id="reg-username" class="auth-input" placeholder=" " required maxlength="20">
-                            <label class="auth-label">Username</label>
+                        <div class="field">
+                            <label for="reg-username">Username</label>
+                            <input type="text" id="reg-username" class="auth-input" placeholder="Choose a display name" autocomplete="username" maxlength="20" required>
                         </div>
-                        <div class="input-group">
-                            <input type="email" id="reg-email" class="auth-input" placeholder=" " required>
-                            <label class="auth-label">Email Address</label>
+                        <div class="field">
+                            <label for="reg-email">Email</label>
+                            <input type="email" id="reg-email" class="auth-input" placeholder="you@example.com" autocomplete="email" required>
                         </div>
-                        <div class="input-group">
-                            <input type="password" id="reg-password" class="auth-input" placeholder=" " required minlength="6">
-                            <label class="auth-label">Password</label>
+                        <div class="field">
+                            <label for="reg-password">Password</label>
+                            <div class="inp-wrap">
+                                <input type="password" id="reg-password" class="auth-input has-eye" placeholder="At least 6 characters" autocomplete="new-password" minlength="6" required>
+                                <button type="button" class="eye-btn" data-eye="reg-password" aria-label="Show password"><i class="far fa-eye"></i></button>
+                            </div>
                         </div>
-                        <button type="submit" class="btn-auth btn-main" id="reg-submit-btn">Create Account</button>
-                        
+                        <button type="submit" class="btn-primary" id="reg-submit-btn">Create Account</button>
                         <div class="divider">or</div>
-                        
-                        <button type="button" class="btn-auth btn-google google-trigger">
-                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"> 
-                            Connect with Google
+                        <button type="button" class="btn-glass google-trigger">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt=""> Continue with Google
                         </button>
-                        <div class="msg-box" id="reg-msg"></div>
+                        <div class="msg-box" id="reg-msg" role="alert"></div>
                     </form>
-                </div>
+                </section>
 
-                <div class="form-slide">
+                <!-- 3. RESET PASSWORD -->
+                <section class="form-slide" aria-label="Reset Password">
                     <form id="forgot-form">
-                        <div class="input-group" style="margin-bottom: 35px;">
-                            <input type="email" id="forgot-email" class="auth-input" placeholder=" " required>
-                            <label class="auth-label">Registered Email</label>
+                        <div class="field">
+                            <label for="forgot-email">Registered Email</label>
+                            <input type="email" id="forgot-email" class="auth-input" placeholder="you@example.com" autocomplete="email" required>
                         </div>
-                        <button type="submit" class="btn-auth btn-main" id="forgot-submit-btn">Dispatch Reset Link</button>
-                        <div class="msg-box" id="forgot-msg"></div>
+                        <button type="submit" class="btn-primary" id="forgot-submit-btn">Send Reset Link</button>
+                        <div class="msg-box" id="forgot-msg" role="status"></div>
                     </form>
-                </div>
-
+                </section>
             </div>
         </div>
-    </div>
+    </main>
 
-    <div class="otp-overlay" id="otp-modal">
+    <!-- 6-DIGIT EMAIL OTP MODAL (NEW GOOGLE ACCOUNTS) -->
+    <div class="otp-overlay" id="otp-modal" role="dialog" aria-modal="true" aria-label="Email Verification">
         <div class="otp-card">
-            <h3>Verification</h3>
-            <p>Code dispatched to <strong id="otp-target-email" style="color:#fff;">email</strong>.</p>
-            <input type="text" id="otp-input" class="otp-input" placeholder="------" maxlength="6" autocomplete="off">
-            <button class="btn-auth btn-main" id="verify-otp-btn">Confirm Identity</button>
-            <button class="btn-auth" id="cancel-otp-btn" style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--glass-border); margin-top: 15px;">Abort</button>
-            <div id="otp-msg-box" style="font-size: 0.85rem; margin-top: 15px; display: none; padding: 10px; border-radius: 8px; border: 1px solid #ff4d4d; color: #ff4d4d; background: rgba(255,77,77,0.1);"></div>
+            <h3>Verify Email</h3>
+            <p>Enter the 6-digit code sent to <strong id="otp-target-email" style="color:#fff;">your email</strong>.</p>
+            <input type="text" id="otp-input" class="otp-input" inputmode="numeric" placeholder="000000" maxlength="6" autocomplete="one-time-code">
+            <button type="button" class="btn-primary" id="verify-otp-btn">Verify &amp; Continue</button>
+            <button type="button" class="btn-glass" id="cancel-otp-btn">Cancel</button>
+            <div class="msg-box error" id="otp-msg-box" role="alert"></div>
         </div>
     </div>
-
-    <script>
-        const card = document.getElementById('interactive-card');
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            card.style.setProperty('--mouse-x', `${x}px`);
-            card.style.setProperty('--mouse-y', `${y}px`);
-        });
-
-        function switchMode(mode) {
-            const track = document.getElementById('form-track');
-            const highlighter = document.getElementById('highlighter');
-            const btnLogin = document.getElementById('btn-login');
-            const btnReg = document.getElementById('btn-register');
-            
-            document.querySelectorAll('.msg-box').forEach(box => box.style.display = 'none');
-            document.body.classList.remove('register-mode', 'forgot-mode');
-
-            if (mode === 'register') {
-                track.style.transform = 'translateX(-33.33333%)';
-                highlighter.style.transform = 'translateX(100%)';
-                btnLogin.classList.remove('active');
-                btnReg.classList.add('active');
-                document.body.classList.add('register-mode');
-            } else if (mode === 'forgot') {
-                track.style.transform = 'translateX(-66.66666%)';
-                document.body.classList.add('forgot-mode');
-            } else {
-                track.style.transform = 'translateX(0)';
-                highlighter.style.transform = 'translateX(0)';
-                btnReg.classList.remove('active');
-                btnLogin.classList.add('active');
-            }
-        }
-    </script>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        "use strict";
+
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", authDomain: "dramakan007.firebaseapp.com", projectId: "dramakan007", storageBucket: "dramakan007.firebasestorage.app", messagingSenderId: "1069933586213", appId: "1:1069933586213:web:b28ab37436679a4906dccc" };
-        const app = initializeApp(firebaseConfig); 
-        const auth = getAuth(app); 
-        const db = getFirestore(app); 
+        const firebaseConfig = {
+            apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
+            authDomain: "dramakan007.firebaseapp.com",
+            projectId: "dramakan007",
+            storageBucket: "dramakan007.firebasestorage.app",
+            messagingSenderId: "1069933586213",
+            appId: "1:1069933586213:web:b28ab37436679a4906dccc"
+        };
+
+        const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
-        
-        let isActivelyAuthenticating = false;
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl9a-pUQBTzhT4_8rBXubs-u_IOE9Qkp-opjzarIiwufT2ooGaq2ohPS2ctg1FTIm9/exec";
 
-        function showMessage(msg, type, boxId = 'login-msg') { 
-            const box = document.getElementById(boxId);
-            box.textContent = msg; 
-            box.className = `msg-box ${type}`; 
-            box.style.display = 'block'; 
-        }
-        
-        function showOtpMessage(msg) {
-            const box = document.getElementById('otp-msg-box');
-            box.textContent = msg; box.style.display = 'block';
+        const $ = (id) => document.getElementById(id);
+        let isAuthenticating = false, pendingGoogleUser = null, generatedOtp = null, pendingUsername = null;
+
+        // Subtle Card Pointer Glow
+        const card = $("interactive-card");
+        card.addEventListener("pointermove", (e) => {
+            const r = card.getBoundingClientRect();
+            card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+            card.style.setProperty("--my", `${e.clientY - r.top}px`);
+        }, { passive: true });
+
+        // Mode Switcher (Sign In / Register / Reset)
+        const SUBS = {
+            login: "Sign in to sync your library & history",
+            register: "Create your free Dramakan account",
+            forgot: "We'll send a recovery link to your inbox"
+        };
+        function switchMode(mode) {
+            document.querySelectorAll(".msg-box").forEach((b) => { b.style.display = "none"; });
+            document.body.classList.remove("register-mode", "forgot-mode");
+            $("cardSub").textContent = SUBS[mode] || SUBS.login;
+
+            const track = $("form-track"), thumb = $("highlighter");
+            if (mode === "register") {
+                track.style.transform = "translate3d(-33.3333%,0,0)";
+                thumb.style.transform = "translateX(100%)";
+                $("btn-login").classList.remove("active");
+                $("btn-register").classList.add("active");
+                document.body.classList.add("register-mode");
+            } else if (mode === "forgot") {
+                track.style.transform = "translate3d(-66.6666%,0,0)";
+                document.body.classList.add("forgot-mode");
+            } else {
+                track.style.transform = "translate3d(0,0,0)";
+                thumb.style.transform = "translateX(0)";
+                $("btn-register").classList.remove("active");
+                $("btn-login").classList.add("active");
+            }
         }
 
-        async function sendWelcomeBackEmail(userEmail) {
-            const html = `<!DOCTYPE html><html><body style="background-color: #050505; margin: 0; padding: 0; font-family: sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="padding: 40px 10px;"><tr><td align="center"><table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; overflow: hidden;"><tr><td align="center" style="padding: 60px 20px;"><h1 style="color: #FFFFFF; font-weight: 300;">Drama<span style="color: #8A2BE2; font-weight: 700;">Kan<\/span><\/h1><h2 style="color: #FFFFFF; font-weight: 400; margin-top: 30px; text-transform: uppercase;">Welcome back.<\/h2><p style="color: rgba(255,255,255,0.5);">Your watchlist is synchronized.<\/p><a href="https://dramakan.site" style="display: inline-block; background-color: #ffffff; color: #050505; text-decoration: none; padding: 14px 35px; margin-top:30px; border-radius: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;">Enter System<\/a><\/td><\/tr><\/table><\/td><\/tr><\/table><\/body><\/html>`;
-            try { await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ emails: [userEmail], subject: "Welcome back to DramaKan", html: html }) }); } catch (e) {}
+        document.addEventListener("click", (e) => {
+            const mBtn = e.target.closest("[data-mode]");
+            if (mBtn) { switchMode(mBtn.dataset.mode); return; }
+
+            const eye = e.target.closest("[data-eye]");
+            if (eye) {
+                const inp = $(eye.dataset.eye);
+                if (!inp) return;
+                const show = inp.type === "password";
+                inp.type = show ? "text" : "password";
+                eye.innerHTML = show ? '<i class="far fa-eye-slash"></i>' : '<i class="far fa-eye"></i>';
+            }
+        });
+
+        function showMsg(id, text, type = "error") {
+            const el = $(id);
+            el.textContent = text;
+            el.className = `msg-box ${type}`;
+            el.style.display = "block";
         }
 
-        async function sendWelcomeEmail(userEmail) {
-            const html = `<!DOCTYPE html><html><body style="background-color: #050505; margin: 0; padding: 0; font-family: sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="padding: 40px 10px;"><tr><td align="center"><table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; overflow: hidden;"><tr><td align="center" style="padding: 60px 20px;"><h1 style="color: #FFFFFF; font-weight: 300;">Drama<span style="color: #8A2BE2; font-weight: 700;">Kan<\/span><\/h1><h2 style="color: #FFFFFF; font-weight: 400; margin-top: 30px; text-transform: uppercase;">Access Granted.<\/h2><p style="color: rgba(255,255,255,0.5);">Your premium gateway is open.<\/p><a href="https://dramakan.site" style="display: inline-block; background-color: #ffffff; color: #050505; text-decoration: none; padding: 14px 35px; margin-top:30px; border-radius: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;">Start Streaming<\/a><\/td><\/tr><\/table><\/td><\/tr><\/table><\/body><\/html>`;
-            try { await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ emails: [userEmail], subject: "Welcome to DramaKan", html: html }) }); } catch (e) {}
+        // Live Server–safe HTML Email Builder (avoids raw body/html closing tags in inline script)
+        function buildEmailHtml(heading, copy, ctaOrCode, isCode = false) {
+            const inner = isCode
+                ? `<div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:18px 26px;margin:24px auto;width:max-content;"><span style="font-size:32px;font-weight:700;color:#fff;letter-spacing:14px;margin-right:-14px;">${ctaOrCode}</span></div>`
+                : `<a href="https://dramakan.site" style="display:inline-block;background:#fff;color:#000;text-decoration:none;padding:13px 32px;margin-top:24px;border-radius:999px;font-weight:700;">${ctaOrCode}</a>`;
+            return (
+                "<!DOCTYPE html><ht" + "ml><bo" + 'dy style="background:#000;margin:0;padding:36px 12px;font-family:-apple-system,sans-serif;">' +
+                `<table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center"><table width="100%" style="max-width:560px;background:#121216;border:1px solid rgba(255,255,255,0.12);border-radius:24px;text-align:center;"><tr><td style="padding:48px 24px;">` +
+                `<h1 style="color:#fff;margin:0;font-weight:800;">Drama<span style="color:#c084fc;">Kan</span></h1>` +
+                `<h2 style="color:#fff;font-weight:600;margin:22px 0 8px;">${heading}</h2>` +
+                `<p style="color:#8e8e93;margin:0;">${copy}</p>${inner}` +
+                `</td></tr></table></td></tr></table></bo` + "dy></ht" + "ml>"
+            );
         }
 
-        async function sendOtpEmailCode(userEmail, otpCode) {
-            const html = `<!DOCTYPE html><html><body style="background-color: #050505; margin: 0; padding: 0; font-family: sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="padding: 40px 10px;"><tr><td align="center"><table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; overflow: hidden; text-align:center;"><tr><td style="padding: 60px 20px;"><h1 style="color: #FFFFFF; font-weight: 300;">Drama<span style="color: #8A2BE2; font-weight: 700;">Kan<\/span> Security<\/h1><p style="color: rgba(255,255,255,0.5); margin-top:20px; text-transform: uppercase; letter-spacing: 1px;">Transmission Code:<\/p><div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; margin: 30px auto; width: max-content;"><span style="font-size: 36px; font-weight: 300; color: #FFFFFF; letter-spacing: 16px; margin-right: -16px;">${otpCode}<\/span><\/div><\/td><\/tr><\/table><\/td><\/tr><\/table><\/body><\/html>`;
-            try { await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ emails: [userEmail], subject: "DramaKan Security Code", html: html }) }); } catch (e) {}
-        }
+        const sendMail = (to, subject, html) =>
+            fetch(GOOGLE_SCRIPT_URL, { method: "POST", body: JSON.stringify({ emails: [to], subject, html }) }).catch(() => {});
 
+        // Active Session Detection
         onAuthStateChanged(auth, (user) => {
-            if (user && !isActivelyAuthenticating) {
-                document.getElementById('form-track').innerHTML = `
-                    <div style="width: 100%; padding: 40px; text-align: center; display: flex; flex-direction: column; justify-content: center;">
-                        <h2 style="font-weight: 300; margin-bottom: 10px; font-size: 2rem; letter-spacing:-1px;">Active Session</h2>
-                        <p style="color: var(--text-muted); margin-bottom: 40px;">Authenticated as <br><strong style="color: #fff;">${user.email}</strong></p>
-                        <a href="profile.html" class="btn-auth btn-main" style="text-decoration:none; margin-bottom: 15px;">Enter Gateway</a>
-                        <button id="force-logout" class="btn-auth" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-main);">Terminate Session</button>
-                    </div>`;
-                document.getElementById('navigation-toggles').style.opacity = '0';
-                document.getElementById('navigation-toggles').style.pointerEvents = 'none';
-                document.getElementById('force-logout').addEventListener('click', () => { signOut(auth).then(() => window.location.reload()); });
-            }
+            if (!user || isAuthenticating) return;
+            $("navigation-toggles").style.display = "none";
+            $("cardSub").style.display = "none";
+
+            const box = document.createElement("div");
+            box.className = "session-box";
+            box.innerHTML = `<h2>Signed In</h2><p>Continue as <strong id="activeEmail"></strong></p><a href="profile.html" class="btn-primary">Go to Profile</a><button type="button" id="force-logout" class="btn-glass">Sign Out</button>`;
+            box.querySelector("#activeEmail").textContent = user.email || "Member";
+            box.querySelector("#force-logout").addEventListener("click", () => signOut(auth).then(() => location.reload()));
+
+            $("track-clip").innerHTML = "";
+            $("track-clip").appendChild(box);
         });
 
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault(); isActivelyAuthenticating = true; 
-            const submitBtn = document.getElementById('login-submit-btn');
-            submitBtn.innerHTML = 'Authenticating...'; document.getElementById('login-msg').style.display = 'none';
-
-            try {
-                const cred = await signInWithEmailAndPassword(auth, document.getElementById('login-email').value.trim(), document.getElementById('login-password').value);
-                await sendWelcomeBackEmail(cred.user.email);
-                window.location.replace('profile.html');
-            } catch (error) { 
-                let exactErrorMsg = "Authentication failed. Please try again.";
-                
-                // Map Firebase error codes to specific, user-friendly messages
-                switch (error.code) {
-                    case 'auth/invalid-credential':
-                    case 'auth/user-not-found':
-                    case 'auth/wrong-password':
-                        exactErrorMsg = "Incorrect email or password.";
-                        break;
-                    case 'auth/invalid-email':
-                        exactErrorMsg = "The email address is improperly formatted.";
-                        break;
-                    case 'auth/too-many-requests':
-                        exactErrorMsg = "Too many failed attempts. Please reset your password or try again later.";
-                        break;
-                    case 'auth/user-disabled':
-                        exactErrorMsg = "This account has been disabled by an administrator.";
-                        break;
-                    case 'auth/network-request-failed':
-                        exactErrorMsg = "Network error. Please check your internet connection.";
-                        break;
-                    default:
-                        // Fallback to the raw message if it's an unknown error
-                        exactErrorMsg = error.message.replace('Firebase: ', ''); 
-                }
-
-                showMessage(exactErrorMsg, "error", "login-msg"); 
-                submitBtn.innerHTML = 'Access Gateway'; 
-                isActivelyAuthenticating = false; 
-            }
-        });
-
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault(); isActivelyAuthenticating = true; 
-            const submitBtn = document.getElementById('reg-submit-btn');
-            submitBtn.innerHTML = 'Processing...'; document.getElementById('reg-msg').style.display = 'none';
-
-            const username = document.getElementById('reg-username').value.trim(); 
-            const email = document.getElementById('reg-email').value.trim(); 
-            const password = document.getElementById('reg-password').value;
-
-            try {
-                const q = query(collection(db, "users"), where("username", "==", username));
-                const querySnapshot = await getDocs(q);
-                if (!querySnapshot.empty) { 
-                    showMessage("Username unavailable.", "error", "reg-msg"); 
-                    submitBtn.innerHTML = 'Create Account'; isActivelyAuthenticating = false; return; 
-                }
-
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                await setDoc(doc(db, "users", userCredential.user.uid), { username: username, email: email, role: "viewer", createdAt: new Date() });
-                
-                await sendWelcomeEmail(email); window.location.replace('profile.html');
-            } catch (error) { 
-                showMessage(error.message.replace('Firebase: ', ''), "error", "reg-msg"); 
-                submitBtn.innerHTML = 'Create Account'; isActivelyAuthenticating = false; 
-            }
-        });
-
-        // PLATFORM MODULE COHESIVE SYSTEM FOR DISPATCHING RECOVERY LINKS
-        document.getElementById('forgot-form').addEventListener('submit', async (e) => {
+        // 1. Email Sign In
+        $("login-form").addEventListener("submit", async (e) => {
             e.preventDefault();
-            const email = document.getElementById('forgot-email').value.trim();
-            const submitBtn = document.getElementById('forgot-submit-btn');
-            submitBtn.innerHTML = 'Dispatching Link...';
-            document.getElementById('forgot-msg').style.display = 'none';
+            isAuthenticating = true;
+            const btn = $("login-submit-btn");
+            btn.disabled = true; btn.textContent = "Signing in...";
+            $("login-msg").style.display = "none";
 
             try {
-                await sendPasswordResetEmail(auth, email);
-                showMessage("Reset tracking vector dispatched successfully.", "success", "forgot-msg");
-                submitBtn.innerHTML = 'Dispatch Reset Link';
-            } catch (error) {
-                showMessage("Failed to trace recovery vector for this email.", "error", "forgot-msg");
-                submitBtn.innerHTML = 'Dispatch Reset Link';
+                const cred = await signInWithEmailAndPassword(auth, $("login-email").value.trim(), $("login-password").value);
+                await sendMail(cred.user.email, "Welcome back to DramaKan", buildEmailHtml("Welcome back.", "Your watchlist and history are synced.", "Start Watching"));
+                location.replace("profile.html");
+            } catch (err) {
+                const map = {
+                    "auth/invalid-credential": "Incorrect email or password.",
+                    "auth/user-not-found": "Incorrect email or password.",
+                    "auth/wrong-password": "Incorrect email or password.",
+                    "auth/invalid-email": "Please enter a valid email address.",
+                    "auth/too-many-requests": "Too many attempts. Reset your password or wait a moment.",
+                    "auth/user-disabled": "This account has been disabled.",
+                    "auth/network-request-failed": "Network error. Check your internet connection."
+                };
+                showMsg("login-msg", map[err.code] || err.message.replace("Firebase: ", ""), "error");
+                btn.disabled = false; btn.textContent = "Sign In";
+                isAuthenticating = false;
             }
         });
 
-        let pendingGoogleUser = null, generatedOtp = null, pendingGoogleUsername = null;
+        // 2. Email Registration
+        $("register-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            isAuthenticating = true;
+            const btn = $("reg-submit-btn");
+            btn.disabled = true; btn.textContent = "Creating account...";
+            $("reg-msg").style.display = "none";
 
-        document.querySelectorAll('.google-trigger').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                isActivelyAuthenticating = true; 
-                document.querySelectorAll('.msg-box').forEach(b => b.style.display = 'none');
-                
-                const originalBtnHtml = btn.innerHTML;
-                btn.innerHTML = 'Connecting...';
-                
+            const username = $("reg-username").value.trim();
+            const email = $("reg-email").value.trim();
+            const password = $("reg-password").value;
+
+            try {
+                const taken = await getDocs(query(collection(db, "users"), where("username", "==", username)));
+                if (!taken.empty) {
+                    showMsg("reg-msg", "That username is already taken.", "error");
+                    btn.disabled = false; btn.textContent = "Create Account";
+                    isAuthenticating = false;
+                    return;
+                }
+                const cred = await createUserWithEmailAndPassword(auth, email, password);
+                await setDoc(doc(db, "users", cred.user.uid), { username, email, role: "viewer", createdAt: new Date() });
+                await sendMail(email, "Welcome to DramaKan", buildEmailHtml("Welcome aboard.", "Your DramaKan account is ready.", "Start Streaming"));
+                location.replace("profile.html");
+            } catch (err) {
+                showMsg("reg-msg", err.message.replace("Firebase: ", ""), "error");
+                btn.disabled = false; btn.textContent = "Create Account";
+                isAuthenticating = false;
+            }
+        });
+
+        // 3. Password Reset
+        $("forgot-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = $("forgot-submit-btn");
+            btn.disabled = true; btn.textContent = "Sending...";
+            $("forgot-msg").style.display = "none";
+            try {
+                await sendPasswordResetEmail(auth, $("forgot-email").value.trim());
+                showMsg("forgot-msg", "Password reset link sent. Check your inbox.", "success");
+            } catch {
+                showMsg("forgot-msg", "Couldn't send reset link for that email.", "error");
+            } finally {
+                btn.disabled = false; btn.textContent = "Send Reset Link";
+            }
+        });
+
+        // 4. Google OAuth + New-Account 6-Digit Email OTP
+        document.querySelectorAll(".google-trigger").forEach((btn) => {
+            btn.addEventListener("click", async () => {
+                isAuthenticating = true;
+                document.querySelectorAll(".msg-box").forEach((b) => { b.style.display = "none"; });
+                const orig = btn.innerHTML;
+                btn.disabled = true; btn.textContent = "Connecting...";
+
                 try {
-                    const result = await signInWithPopup(auth, googleProvider);
-                    const docRef = doc(db, "users", result.user.uid);
-                    const docSnap = await getDoc(docRef);
-                    
-                    if (!docSnap.exists()) {
-                        pendingGoogleUser = result.user;
-                        let baseName = result.user.displayName ? result.user.displayName.replace(/\s+/g, '') : "DramaFan";
-                        pendingGoogleUsername = baseName; let counter = 1;
-                        while (true) {
-                            const q = query(collection(db, "users"), where("username", "==", pendingGoogleUsername));
-                            if ((await getDocs(q)).empty) break; 
-                            pendingGoogleUsername = baseName + counter; counter++;
-                        }
+                    const res = await signInWithPopup(auth, googleProvider);
+                    const snap = await getDoc(doc(db, "users", res.user.uid));
 
-                        generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-                        await sendOtpEmailCode(pendingGoogleUser.email, generatedOtp);
-                        
-                        document.getElementById('otp-target-email').textContent = pendingGoogleUser.email;
-                        document.getElementById('otp-modal').style.display = 'flex';
-                        btn.innerHTML = originalBtnHtml;
+                    if (!snap.exists()) {
+                        pendingGoogleUser = res.user;
+                        const base = (res.user.displayName || "DramaFan").replace(/\s+/g, "").slice(0, 16) || "DramaFan";
+                        pendingUsername = base;
+                        let n = 1;
+                        while (!(await getDocs(query(collection(db, "users"), where("username", "==", pendingUsername)))).empty) {
+                            pendingUsername = `${base}${n++}`;
+                        }
+                        generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
+                        await sendMail(pendingGoogleUser.email, "DramaKan Security Code", buildEmailHtml("Verification Code", "Enter this code to finish setting up your account.", generatedOtp, true));
+                        $("otp-target-email").textContent = pendingGoogleUser.email;
+                        $("otp-modal").style.display = "flex";
+                        $("otp-input").focus();
+                        btn.disabled = false; btn.innerHTML = orig;
                     } else {
-                        await sendWelcomeBackEmail(result.user.email); window.location.replace('profile.html');
+                        await sendMail(res.user.email, "Welcome back to DramaKan", buildEmailHtml("Welcome back.", "Your watchlist and history are synced.", "Start Watching"));
+                        location.replace("profile.html");
                     }
-                } catch (error) { 
-                    const targetBox = btn.closest('form').id === 'login-form' ? 'login-msg' : 'reg-msg';
-                    showMessage("Authentication failed.", "error", targetBox); 
-                    btn.innerHTML = originalBtnHtml; isActivelyAuthenticating = false; 
+                } catch {
+                    const boxId = btn.closest("form").id === "login-form" ? "login-msg" : "reg-msg";
+                    showMsg(boxId, "Google sign-in was cancelled or failed.", "error");
+                    btn.disabled = false; btn.innerHTML = orig;
+                    isAuthenticating = false;
                 }
             });
         });
 
-        document.getElementById('verify-otp-btn').addEventListener('click', async () => {
-            const enteredOtp = document.getElementById('otp-input').value.trim();
-            const verifyBtn = document.getElementById('verify-otp-btn');
-            
-            if (enteredOtp !== generatedOtp) { showOtpMessage("Invalid sequence."); return; }
-
-            verifyBtn.innerHTML = 'Finalizing...';
+        $("verify-otp-btn").addEventListener("click", async () => {
+            const entered = $("otp-input").value.trim();
+            if (entered !== generatedOtp) return showMsg("otp-msg-box", "Invalid verification code.", "error");
+            const btn = $("verify-otp-btn");
+            btn.disabled = true; btn.textContent = "Verifying...";
             try {
-                await setDoc(doc(db, "users", pendingGoogleUser.uid), { username: pendingGoogleUsername, email: pendingGoogleUser.email, role: "viewer", createdAt: new Date() });
-                await sendWelcomeEmail(pendingGoogleUser.email); window.location.replace('profile.html');
-            } catch (err) { showOtpMessage("Error saving account."); verifyBtn.innerHTML = 'Confirm Identity'; }
+                await setDoc(doc(db, "users", pendingGoogleUser.uid), { username: pendingUsername, email: pendingGoogleUser.email, role: "viewer", createdAt: new Date() });
+                await sendMail(pendingGoogleUser.email, "Welcome to DramaKan", buildEmailHtml("Welcome aboard.", "Your DramaKan account is ready.", "Start Streaming"));
+                location.replace("profile.html");
+            } catch {
+                showMsg("otp-msg-box", "Error saving account. Try again.", "error");
+                btn.disabled = false; btn.textContent = "Verify & Continue";
+            }
         });
 
-        document.getElementById('cancel-otp-btn').addEventListener('click', async () => {
-            await pendingGoogleUser.delete(); await signOut(auth);
-            document.getElementById('otp-modal').style.display = 'none'; document.getElementById('otp-input').value = '';
-            document.getElementById('otp-msg-box').style.display = 'none'; isActivelyAuthenticating = false;
+        $("otp-input").addEventListener("keydown", (e) => { if (e.key === "Enter") $("verify-otp-btn").click(); });
+
+        $("cancel-otp-btn").addEventListener("click", async () => {
+            try { await pendingGoogleUser?.delete(); } catch {}
+            try { await signOut(auth); } catch {}
+            $("otp-modal").style.display = "none";
+            $("otp-input").value = "";
+            $("otp-msg-box").style.display = "none";
+            isAuthenticating = false;
         });
     </script>
 </body>

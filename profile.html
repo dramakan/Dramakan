@@ -2,1473 +2,1124 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - Dramakan</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>My Profile — Dramakan</title>
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
-    <script src="bottom-bar.js" defer></script>
+
     <script src="feedback-popup.js" defer></script>
     <script src="admin_easter_egg.js" defer></script>
     <script type="module" src="anykan-notifier.js"></script>
-    
+
     <style>
-        /* =========================================
-           1. MODERN PREMIUM VARIABLES
-        ========================================= */
         :root {
-            --primary: #9D4EDD;
-            --primary-light: #b06bf3;
-            --primary-rich: #7b2cbf;
-            --primary-glow: rgba(157, 78, 221, 0.4);
-            
-            --bg-void: #050507; 
-            --bg-surface: rgba(20, 20, 25, 0.5);
-            --bg-elevated: rgba(30, 30, 38, 0.75);
-            
-            --text-main: #F8FAFC;
-            --text-muted: #94A3B8;
-            
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-highlight: rgba(255, 255, 255, 0.15);
-            --glass-blur: blur(30px);
-            
-            --vip-gold: #FBBF24;
-            --vip-glow: rgba(251, 191, 36, 0.3);
-            
-            --danger: #EF4444;
-            --success: #10B981;
+            --bg: #000000;
+            --surface: #121216;
+            --surface-2: #1c1c22;
+            --accent: #a855f7;
+            --accent-bright: #c084fc;
+            --text: #f5f5f7;
+            --muted: #8e8e93;
+            --gold: #fbbf24;
+            --ok: #34d399;
+            --err: #ef4444;
+            --glass: rgba(28, 28, 34, 0.64);
+            --glass-border: rgba(255, 255, 255, 0.14);
+            --glass-shine: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+            --pad: clamp(16px, 3.6vw, 48px);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-void); 
-            color: var(--text-main);
-            overflow-x: hidden;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif;
+            overflow-x: clip;
+            min-height: 100dvh;
             -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
+        }
+        a { color: inherit; text-decoration: none; }
+        button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+        img { display: block; }
+
+        .ambient-tint {
+            position: fixed;
+            inset: 0 0 auto 0;
+            height: 46vh;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 65% 80% at 18% 0%, rgba(168, 85, 247, 0.16), transparent 70%),
+                radial-gradient(ellipse 55% 70% at 85% 0%, rgba(251, 191, 36, 0.08), transparent 70%);
         }
 
-        /* Ambient Background Mesh */
-        .ambient-glow {
-            position: fixed; top: -10%; left: -10%; width: 50vw; height: 50vw;
-            background: radial-gradient(circle, rgba(157, 78, 221, 0.1) 0%, transparent 70%);
-            border-radius: 50%; pointer-events: none; z-index: -1; filter: blur(60px);
+        /* --- APPLE TV TOP BAR --- */
+        .tv-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 12px var(--pad);
+            background: rgba(10, 10, 14, 0.74);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .ambient-glow.right {
-            top: 40%; left: auto; right: -20%; background: radial-gradient(circle, rgba(251, 191, 36, 0.05) 0%, transparent 70%);
+        .brand { font-size: 1.36rem; font-weight: 800; letter-spacing: -0.04em; white-space: nowrap; }
+        .brand span { color: var(--accent-bright); }
+
+        .tv-nav-pill {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 4px;
+            border-radius: 999px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shine);
         }
-
-        a { text-decoration: none; color: inherit; outline: none; }
-        button { border: none; background: transparent; font-family: inherit; cursor: pointer; outline: none; }
-
-        /* =========================================
-           2. LAYOUT STRUCTURE
-        ========================================= */
-        .main-content {
-            max-width: 1400px; margin: 0 auto; padding: 40px 5% 120px 5%; min-height: 100vh;
-            display: flex; flex-direction: column; position: relative; z-index: 1;
+        .tv-nav-pill a {
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.83rem;
+            font-weight: 600;
+            color: rgba(245, 245, 247, 0.72);
+            transition: background 0.2s ease, color 0.2s ease;
+            white-space: nowrap;
         }
+        .tv-nav-pill a:hover { color: #fff; background: rgba(255, 255, 255, 0.09); }
 
-        /* =========================================
-           3. TOP HEADER & NOTIFICATIONS
-        ========================================= */
-        .top-header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 40px; position: sticky; top: 0; padding: 15px 0; z-index: 100;
-            background: linear-gradient(180deg, var(--bg-void) 40%, transparent);
+        .header-actions { display: flex; align-items: center; gap: 10px; position: relative; }
+        .icon-orb {
+            position: relative;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shine);
+            display: grid;
+            place-items: center;
+            font-size: 0.94rem;
+            color: #fff;
+            transition: background 0.2s ease, transform 0.2s ease;
         }
-        
-        .site-logo { font-size: 1.6rem; font-weight: 800; letter-spacing: -1px; color: #fff; transition: opacity 0.3s; display: flex; align-items: center; gap: 5px;}
-        .site-logo span { color: var(--primary); }
-        .site-logo:hover { opacity: 0.8; }
-
-        /* FIX: Added position relative so the dropdown aligns perfectly */
-        .header-actions { display: flex; gap: 15px; align-items: center; position: relative; }
-
-        .header-icon-btn {
-            width: 44px; height: 44px; border-radius: 14px; background: var(--bg-surface); 
-            border: 1px solid var(--glass-border); color: var(--text-main); font-size: 1.1rem;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; 
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); backdrop-filter: var(--glass-blur); position: relative;
-        }
-        .header-icon-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--glass-highlight); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.3);}
-        
+        .icon-orb:hover { background: rgba(255, 255, 255, 0.16); transform: scale(1.05); }
         .notif-badge-dot {
-            position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 4px; background: var(--danger); 
-            border-radius: 50px; border: 3px solid var(--bg-void); box-sizing: content-box;
-            color: #fff; font-size: 0.65rem; display: flex; align-items: center; justify-content: center; font-weight: 800;
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            min-width: 17px;
+            height: 17px;
+            padding: 0 4px;
+            border-radius: 999px;
+            background: var(--err);
+            border: 2px solid #000;
+            color: #fff;
+            font-size: 0.62rem;
+            font-weight: 800;
+            display: none;
+            align-items: center;
+            justify-content: center;
         }
 
-        .btn-switch { 
-            background: var(--bg-surface); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); 
-            color: #fff; padding: 10px 20px; border-radius: 14px; font-weight: 600; font-size: 0.9rem; 
-            display: flex; align-items: center; gap: 8px; transition: all 0.3s; 
-        }
-        .btn-switch:hover { background: rgba(255,255,255,0.1); border-color: var(--glass-highlight); transform: translateY(-2px); }
-
-        /* FIX: Better readability, opacity, and positioning for Dropdown */
+        /* Notifications Dropdown (compatible with anykan-notifier.js) */
         .notif-dropdown {
-            position: absolute; top: 60px; right: 0; width: 380px; max-height: 450px; 
-            background: rgba(15, 15, 20, 0.95); backdrop-filter: blur(40px) saturate(150%); -webkit-backdrop-filter: blur(40px) saturate(150%);
-            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px; display: none; flex-direction: column;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1); z-index: 1500; overflow: hidden;
-            transform-origin: top right; animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: absolute;
+            top: 48px;
+            right: 0;
+            width: min(360px, calc(100vw - 24px));
+            max-height: 430px;
+            border-radius: 18px;
+            background: rgba(18, 18, 24, 0.96);
+            backdrop-filter: blur(26px) saturate(180%);
+            -webkit-backdrop-filter: blur(26px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 24px 54px rgba(0, 0, 0, 0.8), var(--glass-shine);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1500;
         }
-        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .notif-dropdown.active { display: flex; }
-        
-        .notif-dropdown-header { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03);}
-        .notif-dropdown-header h3 { font-size: 1.05rem; font-weight: 700; margin: 0; color: #fff;}
-        .notif-dropdown-header button { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; transition: 0.2s; background: transparent; border: none; cursor: pointer;}
-        .notif-dropdown-header button:hover { color: var(--danger); }
-        
-        .notif-dropdown-list { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;}
-        .notif-dropdown-list::-webkit-scrollbar { width: 6px; }
-        .notif-dropdown-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-
-        .global-notif-item { display: flex; gap: 15px; padding: 15px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid transparent; transition: 0.3s; position: relative; }
-        .global-notif-item:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.1); transform: translateX(4px);}
-        .global-notif-icon { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), transparent); color: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; border: 1px solid rgba(157, 78, 221, 0.3);}
+        .notif-dropdown-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notif-dropdown-header h3 { font-size: 0.95rem; font-weight: 700; }
+        .notif-dropdown-header button { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+        .notif-dropdown-header button:hover { color: var(--err); }
+        .notif-dropdown-list { padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .global-notif-item { display: flex; gap: 12px; padding: 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); position: relative; }
+        .global-notif-icon { width: 34px; height: 34px; border-radius: 50%; background: rgba(168, 85, 247, 0.18); color: var(--accent-bright); display: grid; place-items: center; flex-shrink: 0; }
         .global-notif-content { flex: 1; min-width: 0; }
-        .global-notif-title { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 5px; letter-spacing: -0.3px;}
-        .global-notif-body { font-size: 0.85rem; color: #d1d5db; line-height: 1.5; }
-        .global-notif-time { font-size: 0.75rem; color: #64748B; margin-top: 8px; font-weight: 600;}
-        .global-notif-delete { position: absolute; top: 15px; right: 15px; background: rgba(239, 68, 68, 0.15); width: 30px; height: 30px; border-radius: 50%; color: var(--danger); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; opacity: 0; transition: 0.3s; transform: scale(0.8); border: none;}
-        .global-notif-item:hover .global-notif-delete { opacity: 1; transform: scale(1); }
-        .global-notif-delete:hover { background: var(--danger); color: #fff; }
-        /* =========================================
-           4. DASHBOARD HERO SECTION
-        ========================================= */
-        .hero-card {
-            background: linear-gradient(145deg, rgba(30, 30, 40, 0.4), rgba(15, 15, 20, 0.8));
-            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight);
-            border-radius: 32px; padding: 40px 50px; 
-            display: flex; align-items: center; justify-content: space-between; gap: 40px;
-            position: relative; overflow: hidden; margin-bottom: 50px; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        .global-notif-title { font-size: 0.86rem; font-weight: 700; margin-bottom: 3px; }
+        .global-notif-body { font-size: 0.8rem; color: rgba(245, 245, 247, 0.78); line-height: 1.45; }
+        .global-notif-time { font-size: 0.7rem; color: var(--muted); margin-top: 5px; }
+        .global-notif-delete { position: absolute; top: 10px; right: 10px; width: 26px; height: 26px; border-radius: 50%; background: rgba(239, 68, 68, 0.16); color: var(--err); display: grid; place-items: center; font-size: 0.74rem; }
+
+        /* --- APPLE TV ACCOUNT HERO --- */
+        .page-shell { max-width: 1440px; margin: 0 auto; padding: 28px var(--pad) 48px; }
+        .profile-hero {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 28px;
+            padding: 28px clamp(20px, 3.2vw, 36px);
+            border-radius: 24px;
+            background: linear-gradient(155deg, rgba(255, 255, 255, 0.07) 0%, rgba(18, 18, 24, 0.76) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            box-shadow: var(--glass-shine), 0 24px 54px rgba(0, 0, 0, 0.52);
+            margin-bottom: 32px;
         }
-
-        .hero-bg-mesh { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.15), transparent 50%), radial-gradient(circle at 20% 80%, rgba(251, 191, 36, 0.05), transparent 50%); z-index: 0; pointer-events: none;}
-
-        .hero-profile-wrap { display: flex; align-items: center; gap: 30px; z-index: 1; flex: 1; min-width: 300px;}
-        
-        .hero-avatar-container { position: relative; flex-shrink: 0; }
-        .hero-avatar-ring { position: absolute; inset: -4px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-rich)); z-index: 0; animation: spin 4s linear infinite; opacity: 0.8;}
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .hero-avatar { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; position: relative; z-index: 1; border: 4px solid var(--bg-void); background: #121216; }
-        
-        .hero-edit-btn {
-            position: absolute; bottom: 0; right: -5px; width: 36px; height: 36px; background: var(--bg-surface); 
-            backdrop-filter: blur(10px); border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; border: 1px solid var(--glass-border); font-size: 0.85rem; color: #fff;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: all 0.3s; z-index: 5;
+        .hero-left { display: flex; align-items: center; gap: 24px; flex: 1; min-width: 260px; }
+        .avatar-wrap { position: relative; flex-shrink: 0; }
+        .hero-avatar {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--surface-2);
+            border: 2.5px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
         }
-        .hero-edit-btn:hover { background: var(--primary); border-color: var(--primary-light); transform: scale(1.1); }
-
-        .hero-user-info { display: flex; flex-direction: column; }
-        .hero-greeting { font-size: 1.05rem; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; letter-spacing: 0.5px;}
-        .hero-name { font-size: 2.8rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 18px; letter-spacing: -1px;}
-        .hero-actions { display: flex; gap: 15px; flex-wrap: wrap; align-items: center;}
-        
-        .btn-vip { background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(212, 175, 55, 0.05)); border: 1px solid rgba(251, 191, 36, 0.4); color: var(--vip-gold); padding: 10px 20px; border-radius: 14px; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 20px rgba(251, 191, 36, 0.1); transition: 0.3s;}
-        .btn-vip:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(251, 191, 36, 0.2), inset 0 0 15px rgba(251, 191, 36, 0.1);}
-        
-        .hero-stats-wrap { display: flex; gap: 40px; z-index: 1; padding-left: 40px; border-left: 1px solid var(--glass-border); align-items: center; flex-shrink: 0;}
-        .stat-item { display: flex; flex-direction: column; gap: 8px; }
-        .stat-value { display: flex; align-items: baseline; gap: 8px; font-size: 1.8rem; font-weight: 800; color: #fff; line-height: 1;}
-        .stat-value i { font-size: 1.2rem; }
-        .stat-item:nth-child(1) i { color: var(--primary); }
-        .stat-item:nth-child(2) i { color: var(--vip-gold); }
-        .stat-item:nth-child(3) i { color: var(--success); }
-        .stat-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;}
-
-        /* =========================================
-           5. SECTION TITLES & SCROLLERS
-        ========================================= */
-        .section { margin-bottom: 50px; width: 100%; position: relative; z-index: 1;}
-        .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; width: 100%;}
-        .section-title { font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 12px; line-height: 1; letter-spacing: -0.5px;}
-        .section-title::before { content: ''; width: 6px; height: 24px; background: var(--primary); border-radius: 10px; box-shadow: 0 0 10px var(--primary-glow);}
-        
-        .see-all { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; transition: color 0.3s; display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px;}
-        .see-all:hover { color: #fff; background: rgba(255,255,255,0.05); }
-
-        .h-scroll { 
-            display: flex; gap: 24px; overflow-x: auto; padding-bottom: 30px; 
-            scrollbar-width: none; width: 100%; min-width: 0; scroll-behavior: smooth;
-            scroll-snap-type: x mandatory;
+        .avatar-edit {
+            position: absolute;
+            right: -2px;
+            bottom: -2px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #fff;
+            color: #000;
+            font-size: 0.76rem;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s ease;
         }
-        .h-scroll::-webkit-scrollbar { display: none; }
+        .avatar-edit:hover { transform: scale(1.08); }
 
-        /* =========================================
-           6. CARD DESIGNS
-        ========================================= */
-        .cw-landscape-card {
-            display: flex; flex-direction: column; width: 360px; min-width: 360px;
-            background: var(--bg-surface); border: 1px solid var(--glass-border); border-radius: 20px; 
-            overflow: hidden; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            text-decoration: none; flex-shrink: 0; position: relative; scroll-snap-align: start;
+        .hero-meta { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+        .hero-greeting { font-size: 0.84rem; color: var(--muted); font-weight: 600; }
+        .hero-name { font-size: clamp(1.6rem, 3vw, 2.35rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
+        .hero-pills { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 4px; }
+
+        .pill-btn {
+            height: 36px;
+            padding: 0 16px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(255, 255, 255, 0.09);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            transition: background 0.18s ease, transform 0.18s ease;
+            white-space: nowrap;
         }
-        .cw-landscape-card:hover { 
-            transform: translateY(-8px); 
-            border-color: rgba(157, 78, 221, 0.5); 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 20px rgba(157, 78, 221, 0.15); 
+        .pill-btn:hover { background: rgba(255, 255, 255, 0.18); transform: translateY(-1px); }
+        .pill-btn.vip-gold { background: linear-gradient(135deg, #fde047, #f59e0b); color: #000; border-color: transparent; }
+        .pill-btn.vip-plus { background: rgba(52, 211, 153, 0.16); color: var(--ok); border-color: rgba(52, 211, 153, 0.42); }
+        .expiry-note { font-size: 0.74rem; font-weight: 700; color: var(--ok); display: none; }
+
+        .hero-stats {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            padding-left: 28px;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .cw-landscape-img-wrap { position: relative; width: 100%; aspect-ratio: 16/9; background: #111; overflow: hidden; }
-        .cw-landscape-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-        .cw-landscape-card:hover .cw-landscape-img { transform: scale(1.08); }
-        .cw-landscape-img-wrap::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 60%); pointer-events: none;}
+        .stat { display: flex; flex-direction: column; gap: 3px; }
+        .stat strong { font-size: 1.55rem; font-weight: 800; letter-spacing: -0.02em; }
+        .stat span { font-size: 0.72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
 
-        .cw-remove-btn {
-            position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; 
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; 
-            color: #fff; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; opacity: 0; transition: 0.3s; z-index: 10; transform: scale(0.8);
+        /* --- BORDERLESS APPLE TV SHELVES --- */
+        .shelf { margin-bottom: 32px; }
+        .shelf-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 12px; }
+        .shelf-title { font-size: clamp(1.1rem, 1.7vw, 1.32rem); font-weight: 700; letter-spacing: -0.02em; }
+        .see-all-pill {
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.76rem;
+            font-weight: 600;
+            color: rgba(245, 245, 247, 0.85);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
-        .cw-landscape-card:hover .cw-remove-btn { opacity: 1; transform: scale(1); }
-        .cw-remove-btn:hover { background: var(--danger); border-color: var(--danger); }
+        .see-all-pill:hover { background: rgba(255, 255, 255, 0.16); color: #fff; }
 
-        .cw-progress-container { width: 100%; height: 4px; background: rgba(255,255,255,0.1); position: relative; z-index: 2; overflow: hidden;}
-        .cw-progress-bar { height: 100%; background: var(--primary); box-shadow: 0 0 10px var(--primary-glow); border-radius: 0 2px 2px 0; position: relative;}
-        .cw-progress-bar::after { content: ''; position: absolute; right: 0; top: -2px; width: 8px; height: 8px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px #fff;}
-        
-        .cw-landscape-info { padding: 18px; display: flex; flex-direction: column; gap: 8px; }
-        .cw-landscape-title { font-size: 1.05rem; font-weight: 700; color: #fff; margin: 0; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; letter-spacing: -0.3px;}
-        .cw-landscape-meta { font-size: 0.85rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; font-weight: 500;}
-        .cw-play-badge { color: #fff; background: rgba(157, 78, 221, 0.2); padding: 4px 10px; border-radius: 8px; display: flex; align-items: center; gap: 6px; border: 1px solid rgba(157, 78, 221, 0.3); font-size: 0.75rem;}
+        .rail { display: flex; gap: 14px; overflow-x: auto; padding: 4px 0 10px; scrollbar-width: none; scroll-behavior: smooth; }
+        .rail::-webkit-scrollbar { display: none; }
 
-        /* Vertical Poster Cards */
-        .list-card { min-width: 180px; max-width: 180px; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; position: relative; scroll-snap-align: start;}
-        .list-poster-wrap { width: 100%; aspect-ratio: 2/3; border-radius: 16px; overflow: hidden; position: relative; border: 1px solid var(--glass-border); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);}
-        .list-card:hover .list-poster-wrap { border-color: rgba(255,255,255,0.3); transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.6);}
-        .list-poster-wrap img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s;}
-        .list-card:hover .list-poster-wrap img { transform: scale(1.05); filter: brightness(1.1);}
-        .list-poster-wrap::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 40%); opacity: 0; transition: 0.4s;}
-        .list-card:hover .list-poster-wrap::after { opacity: 1; }
+        /* 16:9 Up Next Cards */
+        .cw-card { flex: 0 0 264px; width: 264px; position: relative; cursor: pointer; }
+        .cw-thumb { position: relative; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: var(--surface); transition: transform 0.25s var(--ease); }
+        .cw-card:hover .cw-thumb { transform: scale(1.03); }
+        .cw-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .cw-bar { position: absolute; left: 10px; right: 10px; bottom: 10px; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.28); overflow: hidden; }
+        .cw-bar i { display: block; height: 100%; background: #fff; border-radius: 4px; }
 
-        .remove-list-btn {
-            position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: 0.3s; z-index: 10; transform: scale(0.8);
+        /* 2:3 Poster Cards */
+        .poster-card { flex: 0 0 164px; width: 164px; position: relative; }
+        .poster-wrap { position: relative; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; background: var(--surface); transition: transform 0.25s var(--ease); }
+        .poster-card:hover .poster-wrap { transform: scale(1.035); }
+        .poster-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+        .card-del {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 0.72rem;
+            display: grid;
+            place-items: center;
+            opacity: 0;
+            transition: opacity 0.18s ease, background 0.18s ease;
+            z-index: 4;
         }
-        .list-card:hover .remove-list-btn { opacity: 1; transform: scale(1); }
-        .remove-list-btn:hover { background: var(--danger); border-color: var(--danger); }
+        .cw-card:hover .card-del, .poster-card:hover .card-del { opacity: 1; }
+        .card-del:hover { background: var(--err); border-color: var(--err); }
 
-        .list-info { display: flex; flex-direction: column; padding: 0 4px; }
-        .list-title { font-size: 0.95rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; letter-spacing: -0.3px;}
-        .list-meta { font-size: 0.8rem; color: var(--text-muted); font-weight: 500;}
+        .c-title { margin-top: 8px; font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .c-sub { margin-top: 2px; font-size: 0.74rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Requested Content Pills */
+        /* Requested Cards */
         .req-card {
-            min-width: 300px; max-width: 300px; background: var(--bg-surface); border: 1px solid var(--glass-border); border-radius: 20px; padding: 18px; 
-            display: flex; gap: 15px; align-items: center; flex-shrink: 0; transition: all 0.3s; scroll-snap-align: start;
+            flex: 0 0 276px;
+            padding: 15px;
+            border-radius: 16px;
+            background: var(--surface);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 13px;
         }
-        .req-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.03); box-shadow: 0 10px 25px rgba(0,0,0,0.4);}
-        .req-icon { width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), transparent); border: 1px solid rgba(157, 78, 221, 0.3); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
-        .req-info { display: flex; flex-direction: column; flex: 1; min-width: 0;}
-        .req-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .req-title { font-size: 0.95rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px;}
-        .req-badge { font-size: 0.65rem; padding: 4px 8px; border-radius: 6px; font-weight: 800; background: rgba(16, 185, 129, 0.15); color: var(--success); letter-spacing: 0.5px;}
-        .req-badge.pending { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-        .req-date { font-size: 0.8rem; color: var(--text-muted); font-weight: 500;}
+        .req-ico { width: 40px; height: 40px; border-radius: 12px; background: rgba(168, 85, 247, 0.16); color: var(--accent-bright); display: grid; place-items: center; flex-shrink: 0; }
+        .req-badge { font-size: 0.64rem; font-weight: 800; padding: 3px 8px; border-radius: 999px; background: rgba(52, 211, 153, 0.16); color: var(--ok); flex-shrink: 0; }
+        .req-badge.pending { background: rgba(251, 191, 36, 0.16); color: var(--gold); }
 
-        .empty-state { padding: 30px; font-size: 1rem; color: var(--text-muted); font-weight: 500; background: rgba(255,255,255,0.02); border-radius: 16px; width: 100%; text-align: center; border: 1px dashed rgba(255,255,255,0.1); }
+        .empty-msg { width: 100%; padding: 24px; border-radius: 14px; background: var(--surface); border: 1px dashed rgba(255, 255, 255, 0.1); color: var(--muted); font-size: 0.86rem; text-align: center; }
 
-        /* =========================================
-           7. MODALS & POPUPS (FLOATING GLASS PANES)
-        ========================================= */
-        .full-modal {
-            position: fixed; inset: 0; background: rgba(0, 0, 5, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: all 0.4s ease;
+        /* --- MODALS --- */
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 2500;
+            background: rgba(0, 0, 0, 0.78);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
         }
-        .full-modal.active { opacity: 1; pointer-events: auto; }
-        
-        .modal-content-wrap { 
-            background: linear-gradient(145deg, rgba(30, 30, 40, 0.8), rgba(15, 15, 20, 0.95));
-            border: 1px solid var(--glass-highlight); box-shadow: 0 40px 100px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
-            border-radius: 32px; width: 100%; max-width: 650px; max-height: 85vh; display: flex; flex-direction: column;
-            transform: scale(0.95) translateY(20px); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); position: relative;
+        .modal-bg.active { display: flex; }
+        .modal-card {
+            width: min(540px, 100%);
+            max-height: 86dvh;
+            border-radius: 24px;
+            background: #14141a;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.85), var(--glass-shine);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
-        .full-modal.active .modal-content-wrap { transform: scale(1) translateY(0); }
-        
-        .modal-header { padding: 30px 40px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); flex-shrink: 0;}
-        .modal-title { font-size: 1.6rem; font-weight: 800; margin: 0; color: #fff; letter-spacing: -0.5px;}
-        
-        .close-modal-btn { 
-            background: var(--bg-surface); border: 1px solid var(--glass-border); color: #fff; width: 44px; height: 44px; 
-            border-radius: 50%; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; 
-            transition: 0.3s; cursor: pointer;
-        }
-        .close-modal-btn:hover { background: var(--danger); border-color: var(--danger); transform: rotate(90deg); }
-        
-        .settings-card { padding: 30px 40px; overflow-y: auto; flex: 1; scrollbar-width: none; }
-        .settings-card::-webkit-scrollbar { display: none; }
-        
-        .modal-list-item { 
-            display: grid; grid-template-columns: auto 1fr auto; gap: 20px; align-items: center; 
-            padding: 15px; background: rgba(255,255,255,0.02); border: 1px solid transparent; 
-            border-bottom: 1px solid var(--glass-border); transition: 0.3s; margin-bottom: 5px; border-radius: 16px;
-        }
-        .modal-list-item:hover { background: rgba(255,255,255,0.05); border-color: var(--glass-border); transform: translateX(5px);}
-        .modal-img-landscape { width: 140px; aspect-ratio: 16/9; border-radius: 10px; object-fit: cover; background: #111; box-shadow: 0 5px 15px rgba(0,0,0,0.3);}
-        .modal-img-portrait { width: 75px; aspect-ratio: 2/3; border-radius: 10px; object-fit: cover; background: #111; box-shadow: 0 5px 15px rgba(0,0,0,0.3);}
-        
-        .modal-list-info { min-width: 0; display: flex; flex-direction: column; justify-content: center; }
-        .modal-list-title { font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; letter-spacing: -0.3px;}
-        .modal-list-meta { font-size: 0.85rem; color: var(--text-muted); font-weight: 500;}
-        
-        .modal-list-actions { display: flex; gap: 12px; align-items: center; }
-        .modal-action-btn { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: 0.3s; color: #fff; border: 1px solid transparent;}
-        .btn-play-action { background: linear-gradient(135deg, var(--primary), var(--primary-rich)); box-shadow: 0 5px 15px rgba(157, 78, 221, 0.3); }
-        .btn-play-action:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(157, 78, 221, 0.5); border-color: rgba(255,255,255,0.3);}
-        .btn-del-action { background: rgba(239, 68, 68, 0.1); color: var(--danger); border-color: rgba(239, 68, 68, 0.2); }
-        .btn-del-action:hover { background: var(--danger); color: #fff; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);}
-        
-        /* Form Inputs */
-        .form-group { width: 100%; margin-bottom: 24px; }
-        .form-group label { display: block; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; }
-        .form-input { width: 100%; padding: 16px 20px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; color: #fff; font-family: inherit; font-size: 1rem; transition: 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);}
-        .form-input:focus { outline: none; border-color: var(--primary-light); background: rgba(0,0,0,0.6); box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 0 0 3px rgba(157, 78, 221, 0.2);}
-        
-        .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--primary), var(--primary-rich)); color: #fff; border-radius: 14px; font-weight: 700; font-size: 1.05rem; margin-bottom: 15px; display: flex; justify-content: center; gap: 10px; align-items: center; transition: 0.3s; cursor: pointer; border: none; box-shadow: 0 10px 20px rgba(157, 78, 221, 0.3);}
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(157, 78, 221, 0.5); filter: brightness(1.1);}
-        .btn-danger { width: 100%; padding: 16px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 14px; font-weight: 700; font-size: 1.05rem; display: flex; justify-content: center; gap: 10px; align-items: center; transition: 0.3s; cursor: pointer;}
-        .btn-danger:hover { background: var(--danger); color: #fff; border-color: var(--danger); transform: translateY(-2px); box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);}
-        
-        /* Custom Settings Tabs (iOS Segmented Style) */
-        .settings-tabs {
-            display: flex; background: rgba(0,0,0,0.4); padding: 6px; border-radius: 16px; border: 1px solid var(--glass-border); margin-bottom: 30px; position: relative;
-        }
-        .tab-btn {
-            flex: 1; padding: 14px; border-radius: 12px; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 0.95rem; border: none; background: transparent; z-index: 1;
-        }
-        .tab-btn.active { color: #fff; background: var(--bg-elevated); box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05);}
-        .tab-content { display: none; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .tab-content.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+        .modal-head h2 { font-size: 1.15rem; font-weight: 800; }
+        .modal-x { width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); font-size: 1.15rem; display: grid; place-items: center; color: var(--muted); }
+        .modal-x:hover { color: #fff; background: rgba(255, 255, 255, 0.16); }
+        .modal-body { padding: 20px 22px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
 
-        .profiles-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
-        .profile-item { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; transition: 0.3s; }
-        .profile-item:hover { transform: translateY(-5px); }
-        .profile-item img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid transparent; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.4);}
-        .profile-item.active img { border-color: var(--primary); transform: scale(1.1); box-shadow: 0 15px 30px var(--primary-glow);}
-        .profile-item span { font-size: 1rem; color: var(--text-muted); transition: 0.3s; font-weight: 500;}
-        .profile-item.active span { color: #fff; font-weight: 700; }
+        .m-row { display: flex; align-items: center; gap: 14px; padding: 10px; border-radius: 14px; background: rgba(255, 255, 255, 0.03); }
+        .m-row:hover { background: rgba(255, 255, 255, 0.07); }
+        .m-row img.land { width: 108px; aspect-ratio: 16 / 9; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+        .m-row img.port { width: 52px; aspect-ratio: 2 / 3; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+        .m-row-info { flex: 1; min-width: 0; }
+        .m-row-acts { display: flex; gap: 8px; flex-shrink: 0; }
+        .m-act { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 0.82rem; }
+        .m-act.play { background: #fff; color: #000; }
+        .m-act.del { background: rgba(239, 68, 68, 0.16); color: var(--err); }
 
-        .avatar-selection-row { display: flex; gap: 15px; overflow-x: auto; padding: 15px 5px; scrollbar-width: none; width: 100%; justify-content: center;}
-        .avatar-selection-row::-webkit-scrollbar { display: none; }
-        .selectable-avatar-option { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 3px solid transparent; transition: 0.3s; flex-shrink: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.3);}
-        .selectable-avatar-option:hover { transform: scale(1.1); }
-        .selectable-avatar-option.selected-choice { border-color: var(--primary); transform: scale(1.15); box-shadow: 0 10px 25px var(--primary-glow);}
+        /* Profiles & Settings Form Controls */
+        .profiles-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px; padding: 8px 0; }
+        .prof-tile { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: transform 0.2s ease; }
+        .prof-tile:hover { transform: translateY(-4px); }
+        .prof-tile img { width: 78px; height: 78px; border-radius: 50%; object-fit: cover; border: 3px solid transparent; background: var(--surface-2); }
+        .prof-tile.active img { border-color: var(--accent-bright); }
+        .prof-tile span { font-size: 0.86rem; font-weight: 600; color: var(--muted); }
+        .prof-tile.active span { color: #fff; }
 
-        input[type="file"].form-input { padding: 12px; cursor: pointer; color: var(--text-muted); background: rgba(0,0,0,0.3); }
-        input[type="file"].form-input::-webkit-file-upload-button { visibility: hidden; display: none; }
-        input[type="file"].form-input::before {
-            content: 'Browse Gallery'; display: inline-block; background: var(--bg-elevated); color: #fff;
-            padding: 8px 16px; border-radius: 8px; margin-right: 15px; font-size: 0.9rem; font-weight: 600; border: 1px solid var(--glass-border); transition: 0.2s;
+        .seg-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(255, 255, 255, 0.06); }
+        .seg-btn { padding: 8px; border-radius: 999px; font-size: 0.82rem; font-weight: 700; color: var(--muted); }
+        .seg-btn.active { background: #fff; color: #000; }
+        .tab-pane { display: none; flex-direction: column; gap: 14px; }
+        .tab-pane.active { display: flex; }
+
+        .avatar-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .av-opt { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2.5px solid transparent; cursor: pointer; transition: transform 0.18s ease, border-color 0.18s ease; }
+        .av-opt:hover { transform: scale(1.08); }
+        .av-opt.selected { border-color: var(--accent-bright); transform: scale(1.1); }
+
+        .field label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+        .inp {
+            width: 100%;
+            height: 44px;
+            padding: 0 14px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
+            font: inherit;
+            font-size: 0.9rem;
+            outline: none;
         }
-        input[type="file"].form-input:hover::before { background: rgba(255,255,255,0.1); }
+        .inp:focus { border-color: rgba(255, 255, 255, 0.34); }
+        input[type="file"].inp { padding: 9px 12px; color: var(--muted); font-size: 0.82rem; }
 
-        /* =========================================
-           8. RESPONSIVE DESIGN (MOBILE OVERRIDES)
-        ========================================= */
-        @media (max-width: 992px) {
-            .main-content { padding: 20px 5% 120px 5%; width: 100%;}
-            .ambient-glow { width: 100vw; height: 100vw; top: -20%; left: -20%; }
-            
-            /* Floating Floating Pill Bottom Nav */
+        .btn-solid { width: 100%; height: 44px; border-radius: 999px; background: #fff; color: #000; font-size: 0.9rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-solid.gold { background: linear-gradient(135deg, #fde047, #f59e0b); }
+        .btn-danger { width: 100%; height: 44px; border-radius: 999px; background: rgba(239, 68, 68, 0.14); border: 1px solid rgba(239, 68, 68, 0.35); color: #fca5a5; font-size: 0.9rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-danger:hover { background: var(--err); color: #fff; border-color: var(--err); }
+
+        .toast {
+            position: fixed;
+            top: 74px;
+            right: var(--pad);
+            z-index: 3500;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: rgba(28, 28, 34, 0.94);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--glass-border);
+            font-size: 0.82rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        .bottom-nav, .global-bottom-fade { display: none; }
+
+        @media (max-width: 960px) {
+            body { padding-bottom: 92px; }
+            .tv-nav-pill { display: none; }
+            .tv-header { padding: 11px 16px; }
+            .page-shell { padding: 18px 16px 32px; }
+            .profile-hero { flex-direction: column; align-items: center; text-align: center; gap: 20px; padding: 24px 18px; }
+            .hero-left { flex-direction: column; gap: 14px; }
+            .hero-pills { justify-content: center; }
+            .hero-stats { width: 100%; justify-content: space-around; border-left: none; padding-left: 0; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+            .cw-card { flex: 0 0 212px; width: 212px; }
+            .poster-card { flex: 0 0 124px; width: 124px; }
+            .card-del { opacity: 1; }
+            .inp { font-size: 16px; }
+
             .bottom-nav {
-                display: flex !important; position: fixed !important; bottom: 25px !important; left: 50% !important; 
-                transform: translateX(-50%) !important; width: 90% !important; max-width: 400px !important; 
-                background: rgba(15, 15, 20, 0.85) !important; backdrop-filter: blur(40px) saturate(200%) !important;
-                -webkit-backdrop-filter: blur(40px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; 
-                border-radius: 100px !important; z-index: 999999 !important; padding: 8px 15px !important; box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1) !important;
+                display: flex;
+                position: fixed;
+                bottom: 14px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: min(92%, 420px);
+                height: 58px;
+                padding: 0 8px;
+                border-radius: 999px;
+                background: rgba(24, 24, 30, 0.78);
+                backdrop-filter: blur(26px) saturate(190%);
+                -webkit-backdrop-filter: blur(26px) saturate(190%);
+                border: 1px solid rgba(255, 255, 255, 0.16);
+                box-shadow: var(--glass-shine), 0 18px 40px rgba(0, 0, 0, 0.68);
+                z-index: 999;
             }
-            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 0; color: #64748B; text-decoration: none; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); border-radius: 50px;}
-            .bottom-nav-item.active { color: #fff; background: rgba(255,255,255,0.05); }
-            .bottom-nav-item .nav-icon { font-size: 1.4rem; margin-bottom: 4px; transition: transform 0.4s ease; }
-            .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-4px) scale(1.1); color: var(--primary-light); }
-            .bottom-nav-item .nav-label { font-size: 0.65rem; font-weight: 600; }
-
-            /* Mobile Hero */
-            .hero-card { flex-direction: column; align-items: center; text-align: center; gap: 25px; padding: 35px 20px; border-radius: 28px;}
-            .hero-profile-wrap { flex-direction: column; align-items: center; gap: 15px; width: 100%; min-width: unset;}
-            .hero-avatar { width: 95px; height: 95px; }
-            .hero-actions { justify-content: center; width: 100%; }
-            .hero-stats-wrap { justify-content: center; gap: 30px; width: 100%; border-top: 1px solid var(--glass-border); padding-top: 25px; border-left: none; padding-left: 0; flex-direction: row; flex-wrap: wrap;}
-            .stat-value { font-size: 1.6rem; }
-            
-            .section { margin-bottom: 40px; }
-            .h-scroll { padding-bottom: 25px; gap: 16px; margin-right: -5%; padding-right: 5%;}
-            .cw-landscape-card { width: 280px !important; min-width: 280px !important; max-width: 280px !important; }
-            .list-card { min-width: 140px; max-width: 140px; }
-            
-            .cw-remove-btn, .remove-list-btn { opacity: 1; background: rgba(0,0,0,0.6); transform: scale(1);}
-            .notif-dropdown { width: calc(100vw - 30px); right: -15px; position: absolute; top: 60px; left: auto;}
-
-            #home-nav-btn { display: none !important; }
+            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: rgba(255, 255, 255, 0.56); font-size: 1.08rem; }
+            .bottom-nav-item span { font-size: 0.62rem; font-weight: 600; }
+            .bottom-nav-item.active { color: #fff; }
+            .bottom-nav-item.active i { color: var(--accent-bright); }
+            .global-bottom-fade { display: block; position: fixed; inset-inline: 0; bottom: 0; height: 84px; background: linear-gradient(0deg, rgba(0, 0, 0, 0.94), transparent); pointer-events: none; z-index: 990; }
         }
-        
-        @media (max-width: 576px) {
-            .full-modal { padding: 20px 10px; }
-            .modal-content-wrap { max-height: 90vh; border-radius: 24px;}
-            .modal-header { padding: 20px 20px 15px; }
-            .settings-card { padding: 20px; }
-            
-            .modal-list-item { grid-template-columns: 110px 1fr auto; gap: 12px; padding: 12px; }
-            .modal-img-landscape { width: 110px; }
-            .modal-img-portrait { width: 60px; }
-            .modal-list-actions { flex-direction: column; gap: 8px; } 
-            .modal-action-btn { width: 34px; height: 34px; font-size: 0.85rem; }
-            .modal-list-title { font-size: 0.9rem; }
-            .modal-title { font-size: 1.3rem; }
-            
-            .form-input { padding: 14px 16px; }
-            .btn-primary, .btn-danger { padding: 14px; font-size: 0.95rem; }
-        }
-
-        @media (min-width: 993px) { .bottom-nav { display: none !important; } }
     </style>
 </head>
 <body>
 
-    <div class="ambient-glow"></div>
-    <div class="ambient-glow right"></div>
+    <div class="ambient-tint" aria-hidden="true"></div>
 
-    <div class="app-layout">
-        <main class="main-content">
-            
-            <div class="top-header">
-                <a href="index.html" class="site-logo">Drama<span>Kan</span></a>
-                
-                <div class="header-actions">
-                    <a href="index.html" class="btn-switch" id="home-nav-btn"><i class="fas fa-home"></i> Home</a>
+    <header class="tv-header">
+        <a href="index.html" class="brand">Drama<span>Kan</span></a>
 
-                    <div class="header-icon-btn" id="settingsBtn" title="Settings">
-                        <i class="fas fa-cog"></i>
-                    </div>
-                    <div class="header-icon-btn" id="globalNotifBtn" title="Notifications">
-                        <i class="fas fa-bell"></i>
-                        <div class="notif-badge-dot" id="globalNotifBadge" style="display:none;">3</div>
-                    </div>
+        <nav class="tv-nav-pill" aria-label="Main Navigation">
+            <a href="index.html">Home</a>
+            <a href="category.html?c=binge-worthy-series">TV Shows</a>
+            <a href="category.html?c=blockbuster-movies">Movies</a>
+            <a href="category.html?c=hit-anime">Anime</a>
+            <a href="category.html?c=best-of-asian-dramas">Asian</a>
+            <a href="mylist.html">My List</a>
+        </nav>
 
-                    <div id="globalNotifDropdown" class="notif-dropdown">
-                        <div class="notif-dropdown-header">
-                            <h3>Notifications</h3>
-                            <button id="clearNotifsBtn"><i class="fas fa-trash-alt"></i> Clear All</button>
-                        </div>
-                        <div id="globalNotifList" class="notif-dropdown-list">
-                            <!-- Injected dynamically via anykan-notifier.js -->
-                        </div>
+        <div class="header-actions">
+            <button type="button" class="icon-orb" id="settingsBtn" title="Settings" aria-label="Account Settings">
+                <i class="fas fa-gear"></i>
+            </button>
+            <button type="button" class="icon-orb" id="globalNotifBtn" title="Notifications" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="notif-badge-dot" id="globalNotifBadge">0</span>
+            </button>
+
+            <div id="globalNotifDropdown" class="notif-dropdown" role="region" aria-label="Notifications">
+                <div class="notif-dropdown-header">
+                    <h3>Notifications</h3>
+                    <button type="button" id="clearNotifsBtn"><i class="fas fa-trash-alt"></i> Clear All</button>
+                </div>
+                <div id="globalNotifList" class="notif-dropdown-list"></div>
+            </div>
+        </div>
+    </header>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <main class="page-shell">
+        <!-- ACCOUNT HERO -->
+        <section class="profile-hero" aria-label="Profile Summary">
+            <div class="hero-left">
+                <div class="avatar-wrap">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" class="hero-avatar" id="headerAvatar" alt="Profile avatar">
+                    <button type="button" class="avatar-edit" id="heroEditBtn" aria-label="Edit Profile"><i class="fas fa-pen"></i></button>
+                </div>
+
+                <div class="hero-meta">
+                    <span class="hero-greeting">Welcome back</span>
+                    <h1 class="hero-name" id="headerName">Loading...</h1>
+                    <div class="hero-pills">
+                        <a href="subscription.html" class="pill-btn" id="heroVipBtn"><i class="fas fa-user"></i> Basic Plan</a>
+                        <button type="button" class="pill-btn" id="switchProfileBtn"><i class="fas fa-users"></i> Switch Profile</button>
                     </div>
+                    <span id="vipExpiryText" class="expiry-note"></span>
                 </div>
             </div>
 
-            <div class="hero-card">
-                <div class="hero-bg-mesh"></div>
-                <i class="fas fa-crown hero-bg-crown"></i>
-                
-                <div class="hero-profile-wrap">
-                    <div class="hero-avatar-container">
-                        <div class="hero-avatar-ring"></div>
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" class="hero-avatar" id="headerAvatar" alt="Avatar">
-                        <div class="hero-edit-btn" onclick="document.getElementById('settingsBtn').click()"><i class="fas fa-pencil-alt"></i></div>
-                    </div>
-                    
-                    <div class="hero-user-info">
-                        <span class="hero-greeting">Welcome back,</span>
-                        <h1 class="hero-name" id="headerName">Loading...</h1>
-                        <div class="hero-actions">
-                            <div style="display:flex; flex-direction:column; gap:6px; align-items: flex-start;">
-                                <button class="btn-vip" id="heroVipBtn" onclick="window.location.href='subscription.html'">
-                                    <i class="fas fa-user"></i> Basic Plan
-                                </button>
-                                <span id="vipExpiryText" style="font-size: 0.75rem; color: var(--success); display: none; font-weight: 700; padding-left: 4px; letter-spacing: 0.5px;"></span>
-                            </div>
-                            <button class="btn-switch" onclick="openModal('profilesModal')" style="height: fit-content;">
-                                <i class="fas fa-users"></i> Switch Profile
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <div class="hero-stats">
+                <div class="stat"><strong id="stat-watching">0</strong><span>Watching</span></div>
+                <div class="stat"><strong id="stat-completed">0</strong><span>My List</span></div>
+                <div class="stat"><strong id="stat-hours">0</strong><span>Hours</span></div>
+            </div>
+        </section>
 
-                <div class="hero-stats-wrap">
-                    <div class="stat-item">
-                        <div class="stat-value"><i class="fas fa-play"></i> <span id="stat-watching">0</span></div>
-                        <div class="stat-label">Watching</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value"><i class="fas fa-bookmark"></i> <span id="stat-completed">0</span></div>
-                        <div class="stat-label">In List</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value"><i class="far fa-clock"></i> <span id="stat-hours">0</span></div>
-                        <div class="stat-label">Hours</div>
-                    </div>
+        <!-- UP NEXT / CONTINUE WATCHING -->
+        <section class="shelf" id="continue-watching-section" aria-label="Continue Watching">
+            <div class="shelf-head">
+                <h2 class="shelf-title">Up Next</h2>
+                <button type="button" class="see-all-pill" data-open-collection="history">See All <i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="rail" id="history-container"><div class="empty-msg">Your watch history is empty.</div></div>
+        </section>
+
+        <!-- MY LIST -->
+        <section class="shelf" aria-label="My List">
+            <div class="shelf-head">
+                <h2 class="shelf-title">My List</h2>
+                <button type="button" class="see-all-pill" data-open-collection="mylist">See All <i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="rail" id="mylist-container"><div class="empty-msg">Your list is empty.</div></div>
+        </section>
+
+        <!-- FAVORITES -->
+        <section class="shelf" aria-label="Favorites">
+            <div class="shelf-head">
+                <h2 class="shelf-title">Favorites</h2>
+                <button type="button" class="see-all-pill" data-open-collection="favorites">See All <i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="rail" id="favorites-container"><div class="empty-msg">No favorites added yet.</div></div>
+        </section>
+
+        <!-- REQUESTED CONTENT -->
+        <section class="shelf" aria-label="Requested Content">
+            <div class="shelf-head">
+                <h2 class="shelf-title">Requested Content</h2>
+                <button type="button" class="see-all-pill" data-open-collection="requests">See All <i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="rail" id="requests-container"><div class="empty-msg">You haven't requested any titles yet.</div></div>
+        </section>
+    </main>
+
+    <!-- UNIFIED COLLECTION MODAL (HISTORY / MY LIST / FAVORITES / REQUESTS) -->
+    <div class="modal-bg" id="collectionModal" role="dialog" aria-modal="true" aria-labelledby="collectionModalTitle">
+        <div class="modal-card">
+            <div class="modal-head">
+                <h2 id="collectionModalTitle">Collection</h2>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <button type="button" id="clear-history-btn" style="display:none;font-size:0.78rem;font-weight:700;color:var(--err);">Clear All</button>
+                    <button type="button" class="modal-x" data-close="collectionModal" aria-label="Close">&times;</button>
                 </div>
             </div>
-
-            <div class="section" id="continue-watching-section">
-                <div class="section-header">
-                    <h2 class="section-title" style="--primary: #9D4EDD;">Continue Watching</h2>
-                    <button onclick="openHistoryModal()" class="see-all">See All <i class="fas fa-chevron-right"></i></button>
-                </div>
-                <div class="h-scroll" id="history-container">
-                    <div class="empty-state">Your watch history is empty.</div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-header">
-                    <h2 class="section-title" style="--primary: #3b82f6;">My List</h2>
-                    <button onclick="openMylistModal()" class="see-all">See All <i class="fas fa-chevron-right"></i></button>
-                </div>
-                <div class="h-scroll" id="mylist-container">
-                    <div class="empty-state">Your list is empty.</div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <div class="section-header">
-                    <h2 class="section-title" style="--primary: #ec4899;">Favorites</h2>
-                    <button onclick="openFavoritesModal()" class="see-all">See All <i class="fas fa-chevron-right"></i></button>
-                </div>
-                <div class="h-scroll" id="favorites-container">
-                    <div class="empty-state">Your favorites list is empty.</div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-header">
-                    <h2 class="section-title" style="--primary: #FBBF24;">Requested Content</h2>
-                    <button onclick="openRequestsModal()" class="see-all">See All <i class="fas fa-chevron-right"></i></button>
-                </div>
-                <div class="h-scroll" id="requests-container">
-                    <div class="empty-state">You haven't requested any content yet.</div>
-                </div>
-            </div>
-
-        </main>
-    </div>
-
-    <!-- Match index.html Bottom Bar Precisely -->
-    <nav class="bottom-nav">
-        <a href="index.html" class="bottom-nav-item">
-            <i class="fa-solid fa-house nav-icon"></i>
-            <span class="nav-label">Home</span>
-        </a>
-       <a href="updates.html" class="bottom-nav-item">
-            <i class="fa-solid fa-bell nav-icon"></i>
-            <span class="nav-label">Updates</span>
-        </a>
-        <a href="mylist.html" class="bottom-nav-item">
-            <i class="fa-solid fa-bookmark nav-icon"></i>
-            <span class="nav-label">My List</span>
-        </a>
-        <a href="#" class="bottom-nav-item active">
-            <i class="fa-solid fa-user nav-icon"></i>
-            <span class="nav-label">Profile</span>
-        </a>
-    </nav>
-
-    <!-- Modals -->
-    <div class="full-modal" id="historyModal">
-        <div class="modal-content-wrap">
-            <div class="modal-header">
-                <h2 class="modal-title" style="color: #9D4EDD;">Watch History</h2>
-                <button class="close-modal-btn" onclick="closeModal('historyModal')"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="settings-card">
-                <div style="display:flex; justify-content: flex-end; margin-bottom: 20px;">
-                    <button id="clear-history-btn" onclick="clearHistory()" style="background:rgba(239, 68, 68, 0.1); border:1px solid rgba(239, 68, 68, 0.2); padding: 8px 16px; border-radius: 8px; color:var(--danger); font-size:0.85rem; font-weight:700; cursor:pointer; transition: 0.3s;"><i class="fas fa-trash-alt"></i> Clear All</button>
-                </div>
-                <div id="historyModalList" style="display: flex; flex-direction: column; width: 100%;"></div>
-            </div>
+            <div class="modal-body" id="collectionModalBody"></div>
         </div>
     </div>
 
-    <div class="full-modal" id="mylistModal">
-        <div class="modal-content-wrap">
-            <div class="modal-header">
-                <h2 class="modal-title" style="color: #3b82f6;">My List</h2>
-                <button class="close-modal-btn" onclick="closeModal('mylistModal')"><i class="fas fa-times"></i></button>
+    <!-- PROFILES SWITCHER & VIP CREATOR MODAL -->
+    <div class="modal-bg" id="profilesModal" role="dialog" aria-modal="true" aria-label="Switch Profile">
+        <div class="modal-card">
+            <div class="modal-head">
+                <h2>Who's Watching?</h2>
+                <button type="button" class="modal-x" data-close="profilesModal" aria-label="Close">&times;</button>
             </div>
-            <div class="settings-card">
-                <div id="mylistModalList" style="display: flex; flex-direction: column; width: 100%;"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="full-modal" id="favoritesModal">
-        <div class="modal-content-wrap">
-            <div class="modal-header">
-                <h2 class="modal-title" style="color: #ec4899;">Favorites</h2>
-                <button class="close-modal-btn" onclick="closeModal('favoritesModal')"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="settings-card">
-                <div id="favoritesModalList" style="display: flex; flex-direction: column; width: 100%;"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="full-modal" id="requestsModal">
-        <div class="modal-content-wrap">
-            <div class="modal-header">
-                <h2 class="modal-title" style="color: #FBBF24;">Requested Content</h2>
-                <button class="close-modal-btn" onclick="closeModal('requestsModal')"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="settings-card">
-                <div id="requestsModalList" style="display: flex; flex-direction: column; width: 100%;"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="full-modal" id="profilesModal">
-        <div class="modal-content-wrap">
-            <div class="modal-header">
-                <h2 class="modal-title">Who's Watching?</h2>
-                <button class="close-modal-btn" onclick="closeModal('profilesModal')"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="settings-card">
+            <div class="modal-body">
                 <div class="profiles-grid" id="profilesGrid"></div>
-                
-                <div id="vip-profile-creation-zone" style="margin-top: 40px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 30px; display: none;">
-                    <h3 style="font-size: 1.1rem; margin-bottom: 20px; font-weight: 700; color: var(--vip-gold); text-align: center;"><i class="fas fa-plus-circle"></i> Add Crown VIP Sub-Profile</h3>
-                    <div class="form-group">
-                        <input type="text" id="new-profile-name" class="form-input" placeholder="Enter profile name...">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label style="text-align: center;">Select Preset Avatar</label>
-                        <div class="avatar-selection-row" id="new-profile-avatar-row">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" class="selectable-avatar-option selected-choice" onclick="selectCreationAvatar(this)">
-                            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Karash" class="selectable-avatar-option" onclick="selectCreationAvatar(this)">
-                            <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Dramakan" class="selectable-avatar-option" onclick="selectCreationAvatar(this)">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ashish" class="selectable-avatar-option" onclick="selectCreationAvatar(this)">
-                            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Cloud" class="selectable-avatar-option" onclick="selectCreationAvatar(this)">
-                        </div>
-                    </div>
 
-                    <div class="form-group" style="margin-bottom: 25px;">
-                        <label style="text-align: center;">Or Upload Custom Image</label>
-                        <input type="file" id="create-custom-avatar-file" class="form-input" accept="image/*">
+                <div id="vip-profile-creation-zone" style="display:none;margin-top:12px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.08);">
+                    <h3 style="font-size:0.95rem;color:var(--gold);margin-bottom:12px;text-align:center;"><i class="fas fa-crown"></i> Add VIP Sub-Profile</h3>
+                    <div class="field" style="margin-bottom:12px;">
+                        <input type="text" id="new-profile-name" class="inp" placeholder="Profile name">
                     </div>
-
-                    <button class="btn-primary" id="btn-add-new-profile"><i class="fas fa-user-plus"></i> Create Profile</button>
+                    <div class="avatar-row" id="new-profile-avatar-row" style="margin-bottom:12px;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" class="av-opt selected" alt="Avatar 1">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Karash" class="av-opt" alt="Avatar 2">
+                        <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Dramakan" class="av-opt" alt="Avatar 3">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ashish" class="av-opt" alt="Avatar 4">
+                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Cloud" class="av-opt" alt="Avatar 5">
+                    </div>
+                    <div class="field" style="margin-bottom:14px;">
+                        <label for="create-custom-avatar-file">Or upload custom image</label>
+                        <input type="file" id="create-custom-avatar-file" class="inp" accept="image/*">
+                    </div>
+                    <button type="button" class="btn-solid" id="btn-add-new-profile"><i class="fas fa-user-plus"></i> Create Profile</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Improved Settings Modal (Tabs for Profile & Security) -->
-    <div class="full-modal" id="settingsModal">
-        <div class="modal-content-wrap">
-            <div class="modal-header">
-                <h2 class="modal-title">Account Settings</h2>
-                <button class="close-modal-btn" onclick="closeModal('settingsModal')"><i class="fas fa-times"></i></button>
+    <!-- ACCOUNT SETTINGS MODAL -->
+    <div class="modal-bg" id="settingsModal" role="dialog" aria-modal="true" aria-label="Account Settings">
+        <div class="modal-card">
+            <div class="modal-head">
+                <h2>Account Settings</h2>
+                <button type="button" class="modal-x" data-close="settingsModal" aria-label="Close">&times;</button>
             </div>
-            <div class="settings-card">
-                
-                <div class="settings-tabs">
-                    <button class="tab-btn active" onclick="window.switchTab('profile-tab', this)"><i class="fas fa-user-edit"></i> Profile</button>
-                    <button class="tab-btn" onclick="window.switchTab('security-tab', this)"><i class="fas fa-shield-alt"></i> Security</button>
+            <div class="modal-body">
+                <div class="seg-tabs" id="settingsTabs">
+                    <button type="button" class="seg-btn active" data-tab="profile-tab">Profile</button>
+                    <button type="button" class="seg-btn" data-tab="security-tab">Security</button>
                 </div>
 
-                <!-- 1. Profile Tab Content -->
-                <div id="profile-tab" class="tab-content active">
-                    <div style="display:flex; justify-content:center; margin-bottom: 25px;">
-                        <div style="position: relative;">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" id="edit-avatar-preview" style="width:120px; height:120px; border-radius:50%; object-fit:cover; border:4px solid var(--bg-void); box-shadow: 0 0 0 2px var(--primary), 0 10px 25px var(--primary-glow);">
-                        </div>
+                <div id="profile-tab" class="tab-pane active">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" id="edit-avatar-preview" alt="Preview" style="width:92px;height:92px;border-radius:50%;object-fit:cover;margin:4px auto;border:2px solid var(--accent-bright);">
+                    <div class="avatar-row" id="edit-profile-avatar-row">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" class="av-opt" alt="Avatar 1">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Karash" class="av-opt" alt="Avatar 2">
+                        <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Dramakan" class="av-opt" alt="Avatar 3">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ashish" class="av-opt" alt="Avatar 4">
+                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Cloud" class="av-opt" alt="Avatar 5">
                     </div>
-
-                    <div class="form-group">
-                        <label style="text-align: center;">Choose Preset Avatar</label>
-                        <div class="avatar-selection-row" id="edit-profile-avatar-row">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
-                            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Karash" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
-                            <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Dramakan" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ashish" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
-                            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Cloud" class="selectable-avatar-option" onclick="selectEditAvatar(this)">
-                        </div>
+                    <div class="field">
+                        <label for="edit-custom-avatar-file">Or upload custom image</label>
+                        <input type="file" id="edit-custom-avatar-file" class="inp" accept="image/*">
                     </div>
-
-                    <div class="form-group" style="margin-top: 15px;">
-                        <label style="text-align: center;">Or Upload Custom Image</label>
-                        <input type="file" id="edit-custom-avatar-file" class="form-input" accept="image/*">
+                    <div class="field">
+                        <label for="edit-username">Profile Name</label>
+                        <input type="text" id="edit-username" class="inp" placeholder="Display name">
                     </div>
-
-                    <div class="form-group">
-                        <label>Profile Name</label>
-                        <input type="text" id="edit-username" class="form-input">
-                    </div>
-
-                    <button class="btn-primary" id="btn-save-profile" style="margin-top: 10px;"><i class="fas fa-save"></i> Save Profile</button>
+                    <button type="button" class="btn-solid" id="btn-save-profile"><i class="fas fa-check"></i> Save Changes</button>
                 </div>
 
-                <!-- 2. Security Tab Content -->
-                <div id="security-tab" class="tab-content">
-                    <div class="form-group" style="padding-top: 10px;">
-                        <label>Update Secure Account Password</label>
-                        <input type="password" id="edit-password" class="form-input" placeholder="Enter new password (min 6 chars)">
-                        <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 10px; display: block; line-height: 1.4;">You may be asked to re-login if your session is old to perform this action securely.</small>
+                <div id="security-tab" class="tab-pane">
+                    <div class="field">
+                        <label for="edit-password">New Account Password</label>
+                        <input type="password" id="edit-password" class="inp" placeholder="Minimum 6 characters">
                     </div>
-
-                    <button class="btn-primary" id="btn-update-password" style="background: linear-gradient(135deg, #FBBF24, #D4AF37); color: #000; box-shadow: 0 10px 20px rgba(251, 191, 36, 0.3); margin-top: 10px;"><i class="fas fa-key"></i> Update Password</button>
-                    
-                    <div style="margin-top: 35px; border-top: 1px solid var(--glass-border); padding-top: 25px;">
-                        <button class="btn-danger" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Sign Out Completely</button>
+                    <button type="button" class="btn-solid gold" id="btn-update-password"><i class="fas fa-key"></i> Update Password</button>
+                    <div style="margin-top:12px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);">
+                        <button type="button" class="btn-danger" id="logout-btn"><i class="fas fa-arrow-right-from-bracket"></i> Sign Out</button>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <!-- JS ENGINE REMAINS UNTOUCHED BELOW THIS POINT -->
+    <!-- SINGLE CONSISTENT MOBILE BOTTOM BAR -->
+    <nav class="bottom-nav" aria-label="Mobile Navigation">
+        <a href="index.html" class="bottom-nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="category.html" class="bottom-nav-item"><i class="fa-solid fa-compass"></i><span>Browse</span></a>
+        <a href="updates.html" class="bottom-nav-item"><i class="fa-solid fa-bell"></i><span>Updates</span></a>
+        <a href="mylist.html" class="bottom-nav-item"><i class="fa-solid fa-bookmark"></i><span>My List</span></a>
+        <a href="profile.html" class="bottom-nav-item active" id="bottomAuthBtn"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+    </nav>
+    <div class="global-bottom-fade" aria-hidden="true"></div>
+
     <script type="module">
+        "use strict";
+
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, updateProfile, updatePassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, updateDoc, collection, query, where, getDocs, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        const firebaseConfig = {
+        const app = getApps().length ? getApp() : initializeApp({
             apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
             authDomain: "dramakan007.firebaseapp.com",
             projectId: "dramakan007"
-        };
-        
-        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-        const auth = getAuth(app); 
+        });
+        const auth = getAuth(app);
         const db = getFirestore(app);
-        const tmdbKey = "hidden_by_proxy";
+        const PROXY = "https://dramakan-tmdb-proxy.zabaazcreations.workers.dev";
+        const FALLBACK_AVATAR = "https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png";
 
-        let currentUserDocRef = null; 
-        let userProfiles = [];
-        let activeProfileIndex = 0; 
-        let unsubscribeUser = null;
-        let unsubscribeHistory = null; 
+        let userDocRef = null, profiles = [], activeIdx = 0, unsubUser = null, unsubHist = null, unsubReq = null;
+        let state = { history: [], mylist: [], favorites: [], requests: [] };
+        let openCollection = null, editAvatar = FALLBACK_AVATAR, createAvatar = FALLBACK_AVATAR, toastT = null;
 
-        // Active Choices Memory
-        let temporarySelectedEditAvatar = "";
-        let temporarySelectedCreationAvatar = "https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png";
+        const $ = (id) => document.getElementById(id);
+        const toast = (m) => { const el = $("toast"); el.textContent = m; el.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("show"), 2300); };
+        const openModal = (id) => $(id)?.classList.add("active");
+        const closeModal = (id) => { $(id)?.classList.remove("active"); if (id === "collectionModal") openCollection = null; };
+        window.openModal = openModal;
+        window.closeModal = closeModal;
 
-        // Tabs Logic for Settings Modal
-        window.switchTab = function(tabId, btnElement = null) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            
-            if (btnElement) {
-                btnElement.classList.add('active');
-            } else if (window.event && window.event.currentTarget) {
-                window.event.currentTarget.classList.add('active');
-            }
-        };
-
-        // Base Modals
-        window.openModal = (id) => document.getElementById(id).classList.add('active');
-        window.closeModal = (id) => document.getElementById(id).classList.remove('active');
-        
-        // Manual Toggle Trigger for settings icon button
-        document.getElementById('settingsBtn').addEventListener('click', () => {
-            openModal('settingsModal');
-        });
-
-        // Custom Avatar Interactive Choice Updates
-        window.selectEditAvatar = (imgElement) => {
-            document.querySelectorAll('#edit-profile-avatar-row .selectable-avatar-option').forEach(el => el.classList.remove('selected-choice'));
-            imgElement.classList.add('selected-choice');
-            temporarySelectedEditAvatar = imgElement.src;
-            document.getElementById('edit-avatar-preview').src = imgElement.src;
-            document.getElementById('edit-custom-avatar-file').value = ""; // Clear file input if preset chosen
-        };
-
-        window.selectCreationAvatar = (imgElement) => {
-            document.querySelectorAll('#new-profile-avatar-row .selectable-avatar-option').forEach(el => el.classList.remove('selected-choice'));
-            imgElement.classList.add('selected-choice');
-            temporarySelectedCreationAvatar = imgElement.src;
-            document.getElementById('create-custom-avatar-file').value = ""; // Clear file input if preset chosen
-        };
-
-        // File Upload Processing (Compress to Base64 to bypass Firestore 1MB limits safely)
-        function processImageUpload(file, previewImgElementId, isEdit) {
+        // Compress custom uploaded avatar to 240x240 JPEG Base64 (safe for Firestore)
+        function compressAvatar(file, onDone) {
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(event) {
+            const r = new FileReader();
+            r.onload = (ev) => {
                 const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 250;
-                    const MAX_HEIGHT = 250;
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
-                        }
-                    } else {
-                        if (height > MAX_HEIGHT) {
-                            width *= MAX_HEIGHT / height;
-                            height = MAX_HEIGHT;
-                        }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    // Compress to JPEG Base64
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-
-                    if (isEdit) {
-                        document.getElementById(previewImgElementId).src = dataUrl;
-                        temporarySelectedEditAvatar = dataUrl;
-                        document.querySelectorAll('#edit-profile-avatar-row .selectable-avatar-option').forEach(el => el.classList.remove('selected-choice'));
-                    } else {
-                        temporarySelectedCreationAvatar = dataUrl;
-                        document.querySelectorAll('#new-profile-avatar-row .selectable-avatar-option').forEach(el => el.classList.remove('selected-choice'));
-                    }
-                }
-                img.src = event.target.result;
-            }
-            reader.readAsDataURL(file);
-        }
-
-        // Attach File Input Listeners
-        document.getElementById('edit-custom-avatar-file').addEventListener('change', function(e) {
-            if(e.target.files && e.target.files[0]) {
-                processImageUpload(e.target.files[0], 'edit-avatar-preview', true);
-            }
-        });
-
-        document.getElementById('create-custom-avatar-file').addEventListener('change', function(e) {
-            if(e.target.files && e.target.files[0]) {
-                processImageUpload(e.target.files[0], null, false);
-            }
-        });
-
-        // --- POPUP LOGIC (Strictly Local Storage Powered) ---
-        window.openHistoryModal = () => {
-            openModal('historyModal');
-            let dataToRender = null;
-            try {
-                const localData = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-                dataToRender = Object.values(localData).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-            } catch(e) {}
-            if (window.renderHistoryModalList) window.renderHistoryModalList(dataToRender);
-        };
-
-        window.openMylistModal = () => {
-            openModal('mylistModal');
-            let dataToRender = JSON.parse(localStorage.getItem('dramakan_mylist_cache')) || [];
-            if (window.renderMylistModalList) window.renderMylistModalList(dataToRender);
-        };
-
-        window.openFavoritesModal = () => {
-            openModal('favoritesModal');
-            let dataToRender = JSON.parse(localStorage.getItem('dramakan_favorites_cache')) || [];
-            if (window.renderFavoritesModalList) window.renderFavoritesModalList(dataToRender);
-        };
-
-        window.openRequestsModal = () => {
-            openModal('requestsModal');
-            let dataToRender = JSON.parse(localStorage.getItem('dramakan_requests_cache')) || [];
-            if (window.renderRequestsModalList) window.renderRequestsModalList(dataToRender);
-        };
-        
-        // --- RENDER LOGIC ---
-
-        function renderProfiles() {
-            const grid = document.getElementById('profilesGrid');
-            let html = '';
-            userProfiles.forEach((prof, idx) => {
-                const isActive = idx === activeProfileIndex ? 'active' : '';
-                html += `
-                    <div class="profile-item ${isActive}" onclick="switchProfile(${idx})">
-                        <img src="${prof.avatar}" alt="${prof.name}">
-                        <span>${prof.name}</span>
-                    </div>
-                `;
-            });
-            grid.innerHTML = html;
-
-            const activeProf = userProfiles[activeProfileIndex];
-            document.getElementById('headerAvatar').src = activeProf.avatar;
-            document.getElementById('headerName').textContent = activeProf.name || 'User';
-            document.getElementById('edit-username').value = activeProf.name || '';
-            document.getElementById('edit-avatar-preview').src = activeProf.avatar;
-            temporarySelectedEditAvatar = activeProf.avatar;
-
-            // Highlight choice item in settings
-            let presetFound = false;
-            document.querySelectorAll('#edit-profile-avatar-row .selectable-avatar-option').forEach(el => {
-                if (el.src === activeProf.avatar) {
-                    el.classList.add('selected-choice');
-                    presetFound = true;
-                } else {
-                    el.classList.remove('selected-choice');
-                }
-            });
-            
-            document.getElementById('edit-custom-avatar-file').value = ""; // Always reset the file input visually
-        }
-
-        window.switchProfile = (idx) => {
-            activeProfileIndex = idx;
-            localStorage.setItem('dramakan_active_profile_id', userProfiles[idx].id);
-            renderProfiles();
-            
-            const currentList = userProfiles[idx].myList || [];
-            const currentFavs = userProfiles[idx].favorites || [];
-            renderPosterList(currentList, 'mylist-container', 'mylist');
-            renderPosterList(currentFavs, 'favorites-container', 'favorites');
-            
-            document.getElementById('stat-completed').textContent = currentList.length;
-            
-            closeModal('profilesModal');
-        };
-
-        // DYNAMIC TMDB ASYNC CONTINUE WATCHING RENDERER 
-       async function renderContinueWatching(cloudHistoryArr = null) {
-            try {
-                let historyArr = cloudHistoryArr;
-                if (!historyArr) {
-                    const historyObj = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-                    historyArr = Object.values(historyObj)
-                        .filter(item => item && item.link && item.title && !item.link.toLowerCase().includes('index.html'))
-                        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                }
-                
-                const cwSection = document.getElementById('continue-watching-section');
-                const cwGrid = document.getElementById('history-container');
-                
-                if (cwGrid) {
-                    if (historyArr.length > 0) {
-                        const limitedData = historyArr.slice(0, 4);
-
-                        const updatedItems = await Promise.all(limitedData.map(async (item) => {
-                            let imgUrl = item.backdrop_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${item.backdrop_path}` : (item.backdrop || item.bgImg);
-                            
-                            // FORCING CACHE REPAIR: Bypass corrupted cache and recalculate truth.
-                            let isMovie = undefined; 
-                            
-                            try {
-                                if (item.id) {
-                                    const [tvRes, movieRes] = await Promise.all([
-                                        fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/tv/${item.id}?api_key=${tmdbKey}`),
-                                        fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/movie/${item.id}?api_key=${tmdbKey}`)
-                                    ]);
-                                    
-                                    const tvData = tvRes.ok ? await tvRes.json() : null;
-                                    const movieData = movieRes.ok ? await movieRes.json() : null;
-                                    
-                                    const titleLower = (item.title || "").toLowerCase();
-                                    let tvMatch = false;
-                                    let movieMatch = false;
-                                    
-                                    if (tvData && tvData.name) {
-                                        const tvTitle = tvData.name.toLowerCase();
-                                        const tvOrig = (tvData.original_name || "").toLowerCase();
-                                        if (titleLower.includes(tvTitle) || tvTitle.includes(titleLower) || titleLower.includes(tvOrig)) tvMatch = true;
-                                    }
-                                    
-                                    if (movieData && movieData.title) {
-                                        const mTitle = movieData.title.toLowerCase();
-                                        const mOrig = (movieData.original_title || "").toLowerCase();
-                                        if (titleLower.includes(mTitle) || mTitle.includes(titleLower) || titleLower.includes(mOrig)) movieMatch = true;
-                                    }
-                                    
-                                    if (movieMatch && !tvMatch) {
-                                        isMovie = true;
-                                        if (!item.backdrop_path && movieData.backdrop_path) imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${movieData.backdrop_path}`;
-                                    } else if (tvMatch && !movieMatch) {
-                                        isMovie = false;
-                                        if (!item.backdrop_path && tvData.backdrop_path) imgUrl = `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${tvData.backdrop_path}`;
-                                    } else {
-                                        const searchRes = await fetch(`https://dramakan-tmdb-proxy.zabaazcreations.workers.dev//3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(item.title)}`);
-                                        if (searchRes.ok) {
-                                            const searchData = await searchRes.json();
-                                            if (searchData.results && searchData.results.length > 0) {
-                                                isMovie = searchData.results[0].media_type === 'movie';
-                                            }
-                                        }
-                                    }
-                                }
-                                
-                                // Overwrite corrupted profile cache
-                                let localHistory = JSON.parse(localStorage.getItem('dramakan_history')) || {};
-                                if (localHistory[item.id]) {
-                                    localHistory[item.id].isMovie = isMovie;
-                                    if (imgUrl) {
-                                        item.backdrop_path = imgUrl.replace('https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780', '');
-                                        localHistory[item.id].backdrop_path = item.backdrop_path;
-                                    }
-                                    localStorage.setItem('dramakan_history', JSON.stringify(localHistory));
-                                }
-                            } catch(err) { console.warn("Cache repair fetch failed", err); }
-                            
-                            item.finalImgUrl = imgUrl || item.img;
-                            item.computedIsMovie = (isMovie === true); 
-                            return item;
-                        }));
-
-                        cwGrid.innerHTML = updatedItems.map(item => {
-                            const progress = item.progress || Math.floor(Math.random() * 50 + 20);
-                            const badgeText = item.computedIsMovie ? 'Movie' : `S${item.season || 1} • E${item.episode || 1}`;
-
-                            // THE ULTIMATE CLICK FIX: JS Routing instead of Anchor Tags
-                            return `
-                            <div class="cw-landscape-card" style="cursor: pointer;" onclick="if(!event.target.closest('.cw-remove-btn')) { window.location.href='${item.link}'; }">
-                                <div class="cw-landscape-img-wrap">
-                                    <img src="${item.finalImgUrl}" alt="${item.title}" class="cw-landscape-img" loading="lazy" decoding="async" onerror="this.src='${item.img}'">
-                                    <button class="cw-remove-btn" onclick="window.removeCard('history', '${item.id}')" title="Remove">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </div>
-                                <div class="cw-progress-container">
-                                    <div class="cw-progress-bar" style="width: ${progress}%;"></div>
-                                </div>
-                                <div class="cw-landscape-info">
-                                    <h3 class="cw-landscape-title">${item.title}</h3>
-                                    <div class="cw-landscape-meta">
-                                        <span class="cw-play-badge"><i class="fas fa-play"></i> ${badgeText}</span>
-                                        <span>${item.timeLeft ? item.timeLeft + 'm left' : ''}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            `;
-                        }).join('');
-                        
-                        document.getElementById('stat-watching').textContent = historyArr.length;
-                        document.getElementById('stat-hours').textContent = (historyArr.length * 3) + 12; 
-                    } else { 
-                        cwGrid.innerHTML = `<div class="empty-state">Your watch history is empty.</div>`;
-                    }
-                }
-            } catch(e) { console.error("CW Engine exception", e); }
-        }
-
-        function renderPosterList(arrayData, containerId, listType) {
-            const container = document.getElementById(containerId);
-            if (!arrayData || arrayData.length === 0) {
-                container.innerHTML = `<div class="empty-state">Your list is empty.</div>`;
-                return;
-            }
-            container.innerHTML = arrayData.map(item => {
-                const d = new Date(item.timestamp || Date.now());
-                const dateStr = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-                
-                return `
-                <a href="${item.link}" class="list-card">
-                   <div class="list-poster-wrap">
-                      <img src="${item.img}" alt="${item.title}">
-                      <button class="remove-list-btn" onclick="event.preventDefault(); event.stopPropagation(); window.removeCard('${listType}', '${item.id || item.link}')" title="Remove">
-                          <i class="fas fa-trash-alt"></i>
-                      </button>
-                   </div>
-                   <div class="list-info">
-                      <div class="list-title">${item.title}</div>
-                      <div class="list-meta">S1 • E1</div>
-                      <div class="list-date"><i class="far fa-calendar"></i> Added on ${dateStr}</div>
-                   </div>
-                </a>
-            `}).join('');
-        }
-
-        function renderRequests(arrayData) {
-            const container = document.getElementById('requests-container');
-            if (!arrayData || arrayData.length === 0) {
-                container.innerHTML = `<div class="empty-state">You haven't requested any content yet.</div>`;
-                return;
-            }
-
-            container.innerHTML = arrayData.map(item => {
-                const isReady = item.status === "Uploaded";
-                const badgeClass = isReady ? 'req-badge' : 'req-badge pending';
-                const d = new Date(item.createdAt || Date.now());
-                const dateStr = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-
-                return `
-                <div class="req-card">
-                    <div class="req-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                    <div class="req-info">
-                        <div class="req-header-row">
-                            <div class="req-title">${item.dramaName || item.animeName}</div>
-                            <span class="${badgeClass}">${isReady ? 'UPLOADED' : 'PENDING'}</span>
-                        </div>
-                        <div class="req-date">Requested on ${dateStr}</div>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        // --- POPUP LIST RENDERERS ---
-        window.renderHistoryModalList = function(arrayData) {
-            const listContainer = document.getElementById('historyModalList');
-            if(!listContainer) return;
-            if(!arrayData) {
-                listContainer.innerHTML = `<div style="text-align:center; padding:20px; color:#aaa;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>`;
-                return;
-            }
-            if(arrayData.length === 0) {
-                listContainer.innerHTML = '<div class="empty-state">Your watch history is empty.</div>';
-                return;
-            }
-            listContainer.innerHTML = arrayData.map(item => {
-                const imgUrl = item.backdrop_path ? `https://dramakan-tmdb-proxy.zabaazcreations.workers.dev/image/t/p/w780${item.backdrop_path}` : (item.backdrop || item.bgImg || item.img);
-                return `
-                <div class="modal-list-item">
-                    <img src="${imgUrl}" class="modal-img-landscape" alt="${item.title}" onerror="this.src='${item.img}'">
-                    <div class="modal-list-info">
-                        <div class="modal-list-title">${item.title}</div>
-                        <div class="modal-list-meta">S${item.season || 1} • E${item.episode || 1}</div>
-                    </div>
-                    <div class="modal-list-actions">
-                        <button class="modal-action-btn btn-del-action" onclick="window.removeCard('history', '${item.id}')"><i class="fas fa-trash"></i></button>
-                        <a href="${item.link}" class="modal-action-btn btn-play-action"><i class="fas fa-play"></i></a>
-                    </div>
-                </div>
-                `;
-            }).join('');
-        };
-
-        window.renderMylistModalList = function(arrayData) {
-            const listContainer = document.getElementById('mylistModalList');
-            if(!listContainer) return;
-            if(!arrayData || arrayData.length === 0) {
-                listContainer.innerHTML = '<div class="empty-state">Your list is empty.</div>';
-                return;
-            }
-            listContainer.innerHTML = arrayData.map(item => `
-                <div class="modal-list-item">
-                    <img src="${item.img}" class="modal-img-portrait" alt="${item.title}">
-                    <div class="modal-list-info">
-                        <div class="modal-list-title">${item.title}</div>
-                        <div class="modal-list-meta">Added to List</div>
-                    </div>
-                    <div class="modal-list-actions">
-                        <button class="modal-action-btn btn-del-action" onclick="window.removeCard('mylist', '${item.id || item.link}')"><i class="fas fa-trash"></i></button>
-                        <a href="${item.link}" class="modal-action-btn btn-play-action"><i class="fas fa-play"></i></a>
-                    </div>
-                </div>
-            `).join('');
-        };
-
-        window.renderFavoritesModalList = function(arrayData) {
-            const listContainer = document.getElementById('favoritesModalList');
-            if(!listContainer) return;
-            if(!arrayData || arrayData.length === 0) {
-                listContainer.innerHTML = '<div class="empty-state">Your favorites list is empty.</div>';
-                return;
-            }
-            listContainer.innerHTML = arrayData.map(item => `
-                <div class="modal-list-item">
-                    <img src="${item.img}" class="modal-img-portrait" alt="${item.title}">
-                    <div class="modal-list-info">
-                        <div class="modal-list-title">${item.title}</div>
-                        <div class="modal-list-meta">Favorited</div>
-                    </div>
-                    <div class="modal-list-actions">
-                        <button class="modal-action-btn btn-del-action" onclick="window.removeCard('favorites', '${item.id || item.link}')"><i class="fas fa-trash"></i></button>
-                        <a href="${item.link}" class="modal-action-btn btn-play-action"><i class="fas fa-play"></i></a>
-                    </div>
-                </div>
-            `).join('');
-        };
-
-        window.renderRequestsModalList = function(arrayData) {
-            const listContainer = document.getElementById('requestsModalList');
-            if(!listContainer) return;
-            if(!arrayData || arrayData.length === 0) {
-                listContainer.innerHTML = '<div class="empty-state">No requests found.</div>';
-                return;
-            }
-            listContainer.innerHTML = arrayData.map(item => {
-                const isReady = item.status === "Uploaded";
-                const d = new Date(item.createdAt || Date.now());
-                return `
-                <div class="modal-list-item">
-                    <div class="req-icon" style="flex-shrink: 0;"><i class="fas fa-cloud-upload-alt"></i></div>
-                    <div class="modal-list-info">
-                        <div class="modal-list-title">${item.dramaName || item.animeName}</div>
-                        <div class="modal-list-meta">Requested on ${d.toLocaleDateString()}</div>
-                    </div>
-                    <div class="modal-list-actions">
-                        <span class="${isReady ? 'req-badge' : 'req-badge pending'}">${isReady ? 'UPLOADED' : 'PENDING'}</span>
-                    </div>
-                </div>
-                `;
-            }).join('');
-        };
-
-        // --- REAL-TIME SYNC LOGIC ---
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUserDocRef = doc(db, "users", user.uid);
-
-                // 1. Profile Snapshots (My List & Favorites)
-                if(unsubscribeUser) unsubscribeUser();
-                unsubscribeUser = onSnapshot(currentUserDocRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        
-                        // --- VIP TIERING & EXPIRY COUNTDOWN ---
-                        const now = Date.now();
-                        const isPremium = data.isPremium && data.premiumExpiry > now;
-                        const btnVip = document.getElementById('heroVipBtn');
-                        const expiryText = document.getElementById('vipExpiryText');
-                        const vipBox = document.getElementById('vip-profile-creation-zone');
-                        
-                        if (isPremium) {
-                            const daysLeft = Math.ceil((data.premiumExpiry - now) / (1000 * 60 * 60 * 24));
-                            expiryText.style.display = 'block';
-                            
-                            if (daysLeft <= 7) {
-                                expiryText.innerText = `⚠️ Expires in ${daysLeft} Days`;
-                                expiryText.style.color = 'var(--danger)'; // Red warning
-                            } else {
-                                expiryText.innerText = `Active: ${daysLeft} Days Left`;
-                                expiryText.style.color = 'var(--success)'; // Green safe
-                            }
-
-                            if (data.premiumPlan && (data.premiumPlan.includes('Premium') || data.premiumPlan.includes('Crown'))) {
-                                btnVip.innerHTML = '<i class="fas fa-crown"></i> Premium VIP';
-                                btnVip.style.color = '#fff';
-                                btnVip.style.background = 'linear-gradient(135deg, #FBBF24, #D4AF37)';
-                                btnVip.style.border = 'none';
-                                btnVip.style.boxShadow = '0 10px 20px rgba(251, 191, 36, 0.2)';
-                                if(vipBox) vipBox.style.display = 'block';
-                            } else {
-                                btnVip.innerHTML = '<i class="fas fa-gem"></i> Plus VIP';
-                                btnVip.style.color = 'var(--success)';
-                                btnVip.style.background = 'rgba(16, 185, 129, 0.1)';
-                                btnVip.style.border = '1px solid rgba(16, 185, 129, 0.3)';
-                                btnVip.style.boxShadow = 'none';
-                                if(vipBox) vipBox.style.display = 'none';
-                            }
-                        } else {
-                            btnVip.innerHTML = '<i class="fas fa-user"></i> Basic Plan';
-                            btnVip.style.color = 'var(--text-muted)';
-                            btnVip.style.background = 'rgba(255,255,255,0.05)';
-                            btnVip.style.border = '1px solid var(--glass-border)';
-                            btnVip.style.boxShadow = 'none';
-                            expiryText.style.display = 'none';
-                            if(vipBox) vipBox.style.display = 'none';
-                        }
-
-                        // --- MULTI-PROFILE SYNC ---
-                        if(data.profiles && data.profiles.length > 0) {
-                            userProfiles = data.profiles;
-                        } else {
-                            userProfiles = [{
-                                id: 'prof_default',
-                                name: user.displayName || data.username || "User", 
-                                avatar: data.avatarUrl || "https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png",
-                                myList: data.myList || [],
-                                favorites: data.favorites || []
-                            }];
-                        }
-
-                        const savedActiveId = localStorage.getItem('dramakan_active_profile_id');
-                        if (savedActiveId) {
-                            const foundIdx = userProfiles.findIndex(p => p.id === savedActiveId);
-                            if (foundIdx > -1) activeProfileIndex = foundIdx;
-                        }
-
-                        renderProfiles();
-                        
-                        const activeList = userProfiles[activeProfileIndex].myList || [];
-                        const activeFavs = userProfiles[activeProfileIndex].favorites || [];
-                        
-                        localStorage.setItem('dramakan_mylist_cache', JSON.stringify(activeList));
-                        localStorage.setItem('dramakan_favorites_cache', JSON.stringify(activeFavs));
-
-                        renderPosterList(activeList, 'mylist-container', 'mylist');
-                        renderPosterList(activeFavs, 'favorites-container', 'favorites');
-                        document.getElementById('stat-completed').textContent = activeList.length;
-
-                        if(document.getElementById('mylistModal').classList.contains('active')) window.renderMylistModalList(activeList);
-                        if(document.getElementById('favoritesModal').classList.contains('active')) window.renderFavoritesModalList(activeFavs);
-                    }
-                });
-                
-                // 2. Watch History Snapshots
-                if(unsubscribeHistory) unsubscribeHistory();
-                unsubscribeHistory = onSnapshot(collection(db, "users", user.uid, "history"), (snapshot) => {
-                    let cloudHistory = {};
-                    snapshot.forEach(doc => {
-                        const histData = doc.data();
-                        if(histData && histData.dramaId) cloudHistory[String(histData.dramaId)] = histData;
-                    });
-                    
-                    localStorage.setItem('dramakan_history', JSON.stringify(cloudHistory));
-                    
-                    const historyArr = Object.values(cloudHistory)
-                        .filter(item => item && item.title)
-                        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                    
-                    renderContinueWatching(historyArr);
-                    if(document.getElementById('historyModal').classList.contains('active')) {
-                        window.renderHistoryModalList(historyArr);
-                    }
-                });
-
-                // 3. Request Snapshots
-                onSnapshot(query(collection(db, "requests"), where("userId", "==", user.uid)), (reqSnap) => {
-                    const sortedReqs = [];
-                    reqSnap.forEach(r => sortedReqs.push(r.data()));
-                    sortedReqs.sort((a,b) => b.createdAt - a.createdAt);
-                    
-                    localStorage.setItem('dramakan_requests_cache', JSON.stringify(sortedReqs));
-                    renderRequests(sortedReqs);
-                    if(document.getElementById('requestsModal').classList.contains('active')) {
-                        window.renderRequestsModalList(sortedReqs);
-                    }
-                });
-
-            } else { 
-                window.location.replace('login.html'); 
-            }
-        });
-
-        // --- DOCUMENT LEVEL CARD DELETIONS ---
-        window.removeCard = async (type, identifier) => {
-            if (!auth.currentUser) return;
-            if (type === 'history') {
-                deleteDoc(doc(db, "users", auth.currentUser.uid, "history", String(identifier)));
-            } else if (type === 'mylist' || type === 'favorites') {
-                const targetArray = type === 'mylist' ? 'myList' : 'favorites';
-                const currentList = userProfiles[activeProfileIndex][targetArray] || [];
-                const updatedList = currentList.filter(i => String(i.id) !== String(identifier) && i.link !== identifier);
-                userProfiles[activeProfileIndex][targetArray] = updatedList;
-                
-                if (currentUserDocRef) updateDoc(currentUserDocRef, { profiles: userProfiles });
-            }
-        };
-
-        window.clearHistory = async () => {
-            if(!auth.currentUser) return;
-            if(!confirm("Clear entire watch history?")) return;
-            const uid = auth.currentUser.uid;
-            const snap = await getDocs(collection(db, "users", uid, "history"));
-            snap.forEach(d => deleteDoc(doc(db, "users", uid, "history", d.id)));
-        };
-
-        // --- PROFILE TABS: PROFILE SAVE ---
-        document.getElementById('btn-save-profile').addEventListener('click', async () => {
-            const btn = document.getElementById('btn-save-profile');
-            const newName = document.getElementById('edit-username').value.trim();
-            
-            if(!newName) return;
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-
-            try {
-                // Save user meta fields updates 
-                userProfiles[activeProfileIndex].name = newName;
-                userProfiles[activeProfileIndex].avatar = temporarySelectedEditAvatar;
-                
-                if(currentUserDocRef) {
-                    await updateDoc(currentUserDocRef, { 
-                        profiles: userProfiles,
-                        // Update core fallback parameters for backward configurations compatibility
-                        username: userProfiles[0].name,
-                        avatarUrl: userProfiles[0].avatar
-                    });
-                }
-
-                // If updating user authentication profiles fields parameters
-                if(activeProfileIndex === 0) {
-                    await updateProfile(auth.currentUser, {
-                        displayName: newName,
-                        photoURL: temporarySelectedEditAvatar
-                    });
-                }
-
-                closeModal('settingsModal');
-            } catch(e) {
-                console.error(e);
-                alert("Error configuring account updates: " + e.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-save"></i> Save Profile';
-            }
-        });
-
-        // --- PROFILE TABS: SECURITY SAVE (PASSWORD) ---
-        document.getElementById('btn-update-password').addEventListener('click', async () => {
-            const newPassword = document.getElementById('edit-password').value.trim();
-            if(!newPassword || newPassword.length < 6) {
-                alert("Password must be at least 6 characters long.");
-                return;
-            }
-
-            const btn = document.getElementById('btn-update-password');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
-
-            try {
-                await updatePassword(auth.currentUser, newPassword);
-                alert("Password updated securely!");
-                document.getElementById('edit-password').value = "";
-                closeModal('settingsModal');
-            } catch(e) {
-                console.error(e);
-                // Graceful error prompt for Firebase re-authentication needs
-                if(e.code === 'auth/requires-recent-login') {
-                    alert("For your security, please sign out and sign back in to change your password.");
-                } else {
-                    alert("Error updating password: " + e.message);
-                }
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-key"></i> Update Password';
-            }
-        });
-
-        // --- CROWN VIP SUB-PROFILE CREATION CONTROL ENGINE ---
-        document.getElementById('btn-add-new-profile').addEventListener('click', async () => {
-            const profileNameInput = document.getElementById('new-profile-name');
-            const name = profileNameInput.value.trim();
-            if(!name) { alert("Please provide a sub-profile identity string."); return; }
-
-            const btn = document.getElementById('btn-add-new-profile');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
-
-            const newProfileObj = {
-                id: 'prof_' + Date.now(),
-                name: name,
-                avatar: temporarySelectedCreationAvatar,
-                myList: [],
-                favorites: []
+                img.onload = () => {
+                    const max = 240, scale = Math.min(max / img.width, max / img.height, 1);
+                    const c = document.createElement("canvas");
+                    c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+                    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+                    onDone(c.toDataURL("image/jpeg", 0.8));
+                };
+                img.src = ev.target.result;
             };
+            r.readAsDataURL(file);
+        }
 
-            try {
-                userProfiles.push(newProfileObj);
-                if (currentUserDocRef) {
-                    await updateDoc(currentUserDocRef, { profiles: userProfiles });
-                    profileNameInput.value = "";
-                    document.getElementById('create-custom-avatar-file').value = "";
-                    renderProfiles(); // Re-sync UI immediately
-                    alert("Crown VIP Sub-profile appended seamlessly!");
-                }
-            } catch(e) {
-                alert("Profile save execution error: " + e.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Profile';
+        // Render Active Profile UI & Switcher Grid
+        function syncActiveProfileUI() {
+            const prof = profiles[activeIdx] || { name: "User", avatar: FALLBACK_AVATAR, myList: [], favorites: [] };
+            const av = prof.avatar || FALLBACK_AVATAR;
+            $("headerAvatar").src = av;
+            $("headerName").textContent = prof.name || "User";
+            $("edit-username").value = prof.name || "";
+            $("edit-avatar-preview").src = av;
+            editAvatar = av;
+
+            $("edit-profile-avatar-row").querySelectorAll(".av-opt").forEach((img) => img.classList.toggle("selected", img.src === av));
+            $("edit-custom-avatar-file").value = "";
+
+            const grid = $("profilesGrid");
+            const frag = document.createDocumentFragment();
+            profiles.forEach((p, idx) => {
+                const tile = document.createElement("button");
+                tile.type = "button";
+                tile.className = idx === activeIdx ? "prof-tile active" : "prof-tile";
+                tile.dataset.switchIdx = String(idx);
+                tile.innerHTML = `<img src="${p.avatar || FALLBACK_AVATAR}" alt=""><span></span>`;
+                tile.querySelector("span").textContent = p.name || "User";
+                frag.appendChild(tile);
+            });
+            grid.innerHTML = "";
+            grid.appendChild(frag);
+
+            // Sync lists to localStorage so index/category/watch match active profile
+            state.mylist = prof.myList || [];
+            state.favorites = prof.favorites || [];
+            localStorage.setItem("dramakan_mylist", JSON.stringify(state.mylist));
+            localStorage.setItem("dramakan_mylist_cache", JSON.stringify(state.mylist));
+            localStorage.setItem("dramakan_favorites_cache", JSON.stringify(state.favorites));
+
+            $("stat-completed").textContent = String(state.mylist.length);
+            renderPosterRail("mylist-container", state.mylist, "mylist");
+            renderPosterRail("favorites-container", state.favorites, "favorites");
+            if (openCollection === "mylist" || openCollection === "favorites") renderCollectionModal(openCollection);
+        }
+
+        // Continue Watching (repairs missing TMDB backdrops/flags only when needed)
+        async function renderHistoryRail(arr) {
+            state.history = arr;
+            $("stat-watching").textContent = String(arr.length);
+            $("stat-hours").textContent = String(arr.length ? arr.length * 3 : 0);
+
+            const rail = $("history-container");
+            if (!arr.length) {
+                rail.innerHTML = '<div class="empty-msg">Your watch history is empty.</div>';
+                if (openCollection === "history") renderCollectionModal("history");
+                return;
             }
+
+            const topItems = await Promise.all(arr.slice(0, 8).map(async (item) => {
+                if (!item.backdrop_path && item.id) {
+                    try {
+                        const r = await fetch(`${PROXY}/3/search/multi?query=${encodeURIComponent(item.title)}`);
+                        if (r.ok) {
+                            const hit = (await r.json()).results?.[0];
+                            if (hit) {
+                                item.isMovie = hit.media_type === "movie";
+                                if (hit.backdrop_path) item.backdrop_path = hit.backdrop_path;
+                            }
+                        }
+                    } catch {}
+                }
+                return item;
+            }));
+
+            const frag = document.createDocumentFragment();
+            topItems.forEach((it) => {
+                const thumb = it.backdrop_path ? `${PROXY}/image/t/p/w500${it.backdrop_path}` : (it.backdrop || it.img || "default-poster.jpg");
+                const pct = Math.min(Math.max(it.progress || 42, 10), 96);
+                const card = document.createElement("div");
+                card.className = "cw-card";
+                card.dataset.href = it.link || `watch.html?id=${it.id}`;
+                card.innerHTML = `
+                    <div class="cw-thumb">
+                        <img src="${thumb}" alt="" loading="lazy">
+                        <button type="button" class="card-del" data-del-type="history" data-del-id="${it.id || ""}" aria-label="Remove"><i class="fas fa-xmark"></i></button>
+                        <div class="cw-bar"><i style="width:${pct}%"></i></div>
+                    </div>
+                    <div class="c-title"></div>
+                    <div class="c-sub"></div>`;
+                card.querySelector("img").addEventListener("error", (e) => { e.target.src = it.img || "default-poster.jpg"; }, { once: true });
+                card.querySelector(".c-title").textContent = it.title || "Untitled";
+                card.querySelector(".c-sub").textContent = it.isMovie ? "Continue Movie" : `S${it.season || 1} · E${it.episode || 1}`;
+                frag.appendChild(card);
+            });
+            rail.innerHTML = "";
+            rail.appendChild(frag);
+            if (openCollection === "history") renderCollectionModal("history");
+        }
+
+        function renderPosterRail(containerId, items, type) {
+            const rail = $(containerId);
+            if (!items.length) {
+                rail.innerHTML = `<div class="empty-msg">${type === "favorites" ? "No favorites added yet." : "Your list is empty."}</div>`;
+                return;
+            }
+            const frag = document.createDocumentFragment();
+            items.slice(0, 14).forEach((it) => {
+                const card = document.createElement("div");
+                card.className = "poster-card";
+                const d = new Date(it.timestamp || Date.now()).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+                card.innerHTML = `
+                    <a href="${it.link || `watch.html?id=${it.id}`}">
+                        <div class="poster-wrap"><img src="${it.img || "default-poster.jpg"}" alt="" loading="lazy"></div>
+                        <div class="c-title"></div>
+                        <div class="c-sub">Added ${d}</div>
+                    </a>
+                    <button type="button" class="card-del" data-del-type="${type}" data-del-id="${it.id || it.link}" aria-label="Remove"><i class="fas fa-xmark"></i></button>`;
+                card.querySelector(".c-title").textContent = it.title || "Untitled";
+                card.querySelector("img").addEventListener("error", (e) => { e.target.src = "default-poster.jpg"; }, { once: true });
+                frag.appendChild(card);
+            });
+            rail.innerHTML = "";
+            rail.appendChild(frag);
+        }
+
+        function renderRequestsRail(items) {
+            state.requests = items;
+            const rail = $("requests-container");
+            if (!items.length) {
+                rail.innerHTML = '<div class="empty-msg">You haven\'t requested any titles yet.</div>';
+                return;
+            }
+            const frag = document.createDocumentFragment();
+            items.slice(0, 12).forEach((it) => {
+                const ready = it.status === "Uploaded";
+                const card = document.createElement("div");
+                card.className = "req-card";
+                card.innerHTML = `
+                    <div class="req-ico"><i class="fas fa-cloud-arrow-up"></i></div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                            <div class="c-title" style="margin:0;"></div>
+                            <span class="req-badge ${ready ? "" : "pending"}">${ready ? "UPLOADED" : "PENDING"}</span>
+                        </div>
+                        <div class="c-sub">Requested ${new Date(it.createdAt || Date.now()).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</div>
+                    </div>`;
+                card.querySelector(".c-title").textContent = it.dramaName || it.animeName || "Requested Title";
+                frag.appendChild(card);
+            });
+            rail.innerHTML = "";
+            rail.appendChild(frag);
+            if (openCollection === "requests") renderCollectionModal("requests");
+        }
+
+        // Reusable Collection Modal
+        const COLLECTION_META = {
+            history: { title: "Watch History", empty: "Your watch history is empty." },
+            mylist: { title: "My List", empty: "Your list is empty." },
+            favorites: { title: "Favorites", empty: "No favorites added yet." },
+            requests: { title: "Requested Content", empty: "No requests found." }
+        };
+
+        function renderCollectionModal(kind) {
+            openCollection = kind;
+            const meta = COLLECTION_META[kind];
+            const items = state[kind] || [];
+            $("collectionModalTitle").textContent = meta.title;
+            $("clear-history-btn").style.display = kind === "history" && items.length ? "inline" : "none";
+
+            const body = $("collectionModalBody");
+            if (!items.length) { body.innerHTML = `<div class="empty-msg">${meta.empty}</div>`; return; }
+
+            const frag = document.createDocumentFragment();
+            items.forEach((it) => {
+                const row = document.createElement("div");
+                row.className = "m-row";
+                if (kind === "requests") {
+                    const ready = it.status === "Uploaded";
+                    row.innerHTML = `
+                        <div class="req-ico"><i class="fas fa-cloud-arrow-up"></i></div>
+                        <div class="m-row-info"><div class="c-title" style="margin:0;"></div><div class="c-sub">${new Date(it.createdAt || Date.now()).toLocaleDateString()}</div></div>
+                        <span class="req-badge ${ready ? "" : "pending"}">${ready ? "UPLOADED" : "PENDING"}</span>`;
+                    row.querySelector(".c-title").textContent = it.dramaName || it.animeName || "Title";
+                } else {
+                    const isH = kind === "history";
+                    const src = isH ? (it.backdrop_path ? `${PROXY}/image/t/p/w500${it.backdrop_path}` : (it.img || "default-poster.jpg")) : (it.img || "default-poster.jpg");
+                    row.innerHTML = `
+                        <img class="${isH ? "land" : "port"}" src="${src}" alt="" loading="lazy">
+                        <div class="m-row-info"><div class="c-title" style="margin:0;"></div><div class="c-sub"></div></div>
+                        <div class="m-row-acts">
+                            <button type="button" class="m-act del" data-del-type="${kind}" data-del-id="${it.id || it.link}" aria-label="Remove"><i class="fas fa-trash"></i></button>
+                            <a href="${it.link || `watch.html?id=${it.id}`}" class="m-act play" aria-label="Play"><i class="fas fa-play"></i></a>
+                        </div>`;
+                    row.querySelector(".c-title").textContent = it.title || "Untitled";
+                    row.querySelector(".c-sub").textContent = isH ? (it.isMovie ? "Movie" : `S${it.season || 1} · E${it.episode || 1}`) : (kind === "favorites" ? "Favorited" : "In My List");
+                }
+                frag.appendChild(row);
+            });
+            body.innerHTML = "";
+            body.appendChild(frag);
+        }
+
+        // Global Removal Handler
+        async function removeCard(type, id) {
+            if (!auth.currentUser || !id) return;
+            if (type === "history") {
+                await deleteDoc(doc(db, "users", auth.currentUser.uid, "history", String(id)));
+                toast("Removed from history");
+            } else if (type === "mylist" || type === "favorites") {
+                const key = type === "mylist" ? "myList" : "favorites";
+                profiles[activeIdx][key] = (profiles[activeIdx][key] || []).filter((i) => String(i.id) !== String(id) && i.link !== id);
+                if (userDocRef) await updateDoc(userDocRef, { profiles });
+                toast(type === "mylist" ? "Removed from My List" : "Removed from Favorites");
+            }
+        }
+        window.removeCard = removeCard;
+
+        // Real-Time Auth & Firestore Sync
+        onAuthStateChanged(auth, (user) => {
+            if (!user) return window.location.replace("login.html");
+            userDocRef = doc(db, "users", user.uid);
+
+            unsubUser?.();
+            unsubUser = onSnapshot(userDocRef, (snap) => {
+                if (!snap.exists()) return;
+                const d = snap.data(), now = Date.now(), isPrem = d.isPremium && d.premiumExpiry > now;
+                const vipBtn = $("heroVipBtn"), expEl = $("vipExpiryText"), vipZone = $("vip-profile-creation-zone");
+
+                vipBtn.className = "pill-btn";
+                if (isPrem) {
+                    const days = Math.ceil((d.premiumExpiry - now) / 86400000);
+                    expEl.style.display = "block";
+                    expEl.style.color = days <= 7 ? "var(--err)" : "var(--ok)";
+                    expEl.textContent = days <= 7 ? `Expires in ${days} days` : `Active · ${days} days left`;
+
+                    if (/Premium|Crown/.test(d.premiumPlan || "")) {
+                        vipBtn.classList.add("vip-gold");
+                        vipBtn.innerHTML = '<i class="fas fa-crown"></i> Premium VIP';
+                        vipZone.style.display = "block";
+                    } else {
+                        vipBtn.classList.add("vip-plus");
+                        vipBtn.innerHTML = '<i class="fas fa-gem"></i> Plus VIP';
+                        vipZone.style.display = "none";
+                    }
+                } else {
+                    vipBtn.innerHTML = '<i class="fas fa-crown" style="color:var(--gold);"></i> Upgrade to VIP';
+                    expEl.style.display = "none";
+                    vipZone.style.display = "none";
+                }
+
+                profiles = d.profiles?.length ? d.profiles : [{
+                    id: "prof_default",
+                    name: user.displayName || d.username || "User",
+                    avatar: d.avatarUrl || FALLBACK_AVATAR,
+                    myList: d.myList || [],
+                    favorites: d.favorites || []
+                }];
+
+                const savedId = localStorage.getItem("dramakan_active_profile_id");
+                const idx = profiles.findIndex((p) => p.id === savedId);
+                activeIdx = idx > -1 ? idx : 0;
+                syncActiveProfileUI();
+            });
+
+            unsubHist?.();
+            unsubHist = onSnapshot(collection(db, "users", user.uid, "history"), (snap) => {
+                const map = {};
+                snap.forEach((docItem) => { const h = docItem.data(); if (h?.dramaId) map[String(h.dramaId)] = { ...h, id: String(h.dramaId) }; });
+                localStorage.setItem("dramakan_history", JSON.stringify(map));
+                renderHistoryRail(Object.values(map).filter((x) => x.title).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)));
+            });
+
+            unsubReq?.();
+            unsubReq = onSnapshot(query(collection(db, "requests"), where("userId", "==", user.uid)), (snap) => {
+                const arr = [];
+                snap.forEach((r) => arr.push(r.data()));
+                arr.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                localStorage.setItem("dramakan_requests_cache", JSON.stringify(arr));
+                renderRequestsRail(arr);
+            });
         });
 
-        document.getElementById('logout-btn').addEventListener('click', () => signOut(auth).then(()=>window.location.replace('login.html')));
+        // Delegated UI Events
+        $("settingsBtn").addEventListener("click", () => openModal("settingsModal"));
+        $("heroEditBtn").addEventListener("click", () => openModal("settingsModal"));
+        $("switchProfileBtn").addEventListener("click", () => openModal("profilesModal"));
 
+        document.addEventListener("click", (e) => {
+            const openCol = e.target.closest("[data-open-collection]");
+            if (openCol) { renderCollectionModal(openCol.dataset.openCollection); openModal("collectionModal"); return; }
+
+            const del = e.target.closest("[data-del-type]");
+            if (del) { e.preventDefault(); e.stopPropagation(); removeCard(del.dataset.delType, del.dataset.delId); return; }
+
+            const cw = e.target.closest(".cw-card");
+            if (cw?.dataset.href) { window.location.href = cw.dataset.href; return; }
+
+            const sw = e.target.closest("[data-switch-idx]");
+            if (sw) {
+                activeIdx = +sw.dataset.switchIdx;
+                localStorage.setItem("dramakan_active_profile_id", profiles[activeIdx].id);
+                syncActiveProfileUI();
+                closeModal("profilesModal");
+                toast(`Switched to ${profiles[activeIdx].name}`);
+                return;
+            }
+
+            const cl = e.target.closest("[data-close]");
+            if (cl) { closeModal(cl.dataset.close); return; }
+            if (e.target.classList.contains("modal-bg")) closeModal(e.target.id);
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key !== "Escape") return;
+            document.querySelectorAll(".modal-bg.active").forEach((m) => closeModal(m.id));
+            $("globalNotifDropdown")?.classList.remove("active");
+        });
+
+        // Settings Tabs
+        $("settingsTabs").addEventListener("click", (e) => {
+            const btn = e.target.closest(".seg-btn");
+            if (!btn) return;
+            document.querySelectorAll("#settingsTabs .seg-btn").forEach((b) => b.classList.toggle("active", b === btn));
+            document.querySelectorAll("#settingsModal .tab-pane").forEach((p) => p.classList.toggle("active", p.id === btn.dataset.tab));
+        });
+
+        // Avatar Pickers & Uploads
+        $("edit-profile-avatar-row").addEventListener("click", (e) => {
+            const img = e.target.closest(".av-opt");
+            if (!img) return;
+            $("edit-profile-avatar-row").querySelectorAll(".av-opt").forEach((o) => o.classList.toggle("selected", o === img));
+            editAvatar = img.src; $("edit-avatar-preview").src = img.src; $("edit-custom-avatar-file").value = "";
+        });
+        $("new-profile-avatar-row").addEventListener("click", (e) => {
+            const img = e.target.closest(".av-opt");
+            if (!img) return;
+            $("new-profile-avatar-row").querySelectorAll(".av-opt").forEach((o) => o.classList.toggle("selected", o === img));
+            createAvatar = img.src; $("create-custom-avatar-file").value = "";
+        });
+        $("edit-custom-avatar-file").addEventListener("change", (e) => compressAvatar(e.target.files?.[0], (url) => {
+            editAvatar = url; $("edit-avatar-preview").src = url;
+            $("edit-profile-avatar-row").querySelectorAll(".av-opt").forEach((o) => o.classList.remove("selected"));
+        }));
+        $("create-custom-avatar-file").addEventListener("change", (e) => compressAvatar(e.target.files?.[0], (url) => {
+            createAvatar = url;
+            $("new-profile-avatar-row").querySelectorAll(".av-opt").forEach((o) => o.classList.remove("selected"));
+        }));
+
+        // Clear All History
+        $("clear-history-btn").addEventListener("click", async () => {
+            if (!auth.currentUser || !confirm("Clear your entire watch history?")) return;
+            const snap = await getDocs(collection(db, "users", auth.currentUser.uid, "history"));
+            await Promise.all(snap.docs.map((d) => deleteDoc(doc(db, "users", auth.currentUser.uid, "history", d.id))));
+            toast("Watch history cleared");
+        });
+
+        // Save Profile
+        $("btn-save-profile").addEventListener("click", async (e) => {
+            const name = $("edit-username").value.trim();
+            if (!name) return toast("Enter a profile name");
+            const btn = e.currentTarget; btn.disabled = true; btn.textContent = "Saving...";
+            try {
+                profiles[activeIdx].name = name;
+                profiles[activeIdx].avatar = editAvatar;
+                if (userDocRef) await updateDoc(userDocRef, { profiles, username: profiles[0].name, avatarUrl: profiles[0].avatar });
+                if (activeIdx === 0) await updateProfile(auth.currentUser, { displayName: name, photoURL: editAvatar });
+                closeModal("settingsModal");
+                toast("Profile updated");
+            } catch (err) { toast(err.message || "Update failed"); }
+            finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> Save Changes'; }
+        });
+
+        // Update Password
+        $("btn-update-password").addEventListener("click", async (e) => {
+            const pw = $("edit-password").value.trim();
+            if (pw.length < 6) return toast("Password must be at least 6 characters");
+            const btn = e.currentTarget; btn.disabled = true; btn.textContent = "Updating...";
+            try {
+                await updatePassword(auth.currentUser, pw);
+                $("edit-password").value = "";
+                closeModal("settingsModal");
+                toast("Password updated securely");
+            } catch (err) {
+                toast(err.code === "auth/requires-recent-login" ? "Please sign out and sign in again to change password" : (err.message || "Failed to update password"));
+            } finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-key"></i> Update Password'; }
+        });
+
+        // Create VIP Sub-Profile
+        $("btn-add-new-profile").addEventListener("click", async (e) => {
+            const name = $("new-profile-name").value.trim();
+            if (!name) return toast("Enter a name for the new profile");
+            const btn = e.currentTarget; btn.disabled = true; btn.textContent = "Creating...";
+            try {
+                profiles.push({ id: `prof_${Date.now()}`, name, avatar: createAvatar, myList: [], favorites: [] });
+                if (userDocRef) await updateDoc(userDocRef, { profiles });
+                $("new-profile-name").value = ""; $("create-custom-avatar-file").value = "";
+                toast(`Profile "${name}" created`);
+            } catch (err) { toast(err.message || "Could not create profile"); }
+            finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Profile'; }
+        });
+
+        // Sign Out
+        $("logout-btn").addEventListener("click", () => signOut(auth).then(() => window.location.replace("login.html")));
     </script>
 </body>
 </html>

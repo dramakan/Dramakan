@@ -2,366 +2,616 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My List - DramaKan</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>My List — Dramakan</title>
+    <meta name="description" content="Manage your saved movies, TV shows, anime, and Asian dramas on Dramakan.">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
-    <!-- Using Global Index Styles -->
-    <link rel="stylesheet" href="indexstyle.css">
-    
-    <script src="bottom-bar.js" defer></script>
-    <script src="admin_easter_egg.js" defer></script>
+
+    <script src="feedback-popup.js" defer></script>
     <script type="module" src="global-login-popup.js" defer></script>
 
     <style>
-        /* =========================================
-           MY LIST SPECIFIC OVERRIDES
-        ========================================= */
-        main { padding-top: 110px; min-height: 80vh; }
-        
-        .page-header-banner {
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 30px 40px;
+        :root {
+            --bg: #000000;
+            --surface: #121216;
+            --surface-2: #1c1c22;
+            --accent: #a855f7;
+            --accent-bright: #c084fc;
+            --text: #f5f5f7;
+            --muted: #8e8e93;
+            --err: #ef4444;
+            --glass: rgba(28, 28, 34, 0.64);
+            --glass-border: rgba(255, 255, 255, 0.14);
+            --glass-shine: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+            --pad: clamp(16px, 3.6vw, 48px);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif;
+            overflow-x: clip;
+            min-height: 100dvh;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { color: inherit; text-decoration: none; }
+        button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+        img { display: block; }
+
+        .ambient-tint {
+            position: fixed;
+            inset: 0 0 auto 0;
+            height: 44vh;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 65% 80% at 20% 0%, rgba(168, 85, 247, 0.16), transparent 70%),
+                radial-gradient(ellipse 55% 70% at 84% 0%, rgba(56, 189, 248, 0.08), transparent 70%);
+        }
+
+        /* --- APPLE TV TOP BAR --- */
+        .tv-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 35px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            animation: slideUp 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            gap: 16px;
+            padding: 12px var(--pad);
+            background: rgba(10, 10, 14, 0.74);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
-        @keyframes slideUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+        .brand { font-size: 1.36rem; font-weight: 800; letter-spacing: -0.04em; white-space: nowrap; }
+        .brand span { color: var(--accent-bright); }
 
-        .header-content { display: flex; align-items: center; gap: 20px; }
-        .header-icon {
-            width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary-color), #6a1b9a);
-            border-radius: 16px; display: flex; align-items: center; justify-content: center;
-            font-size: 1.6rem; color: #fff; box-shadow: 0 10px 25px var(--primary-glow);
+        .tv-nav-pill {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 4px;
+            border-radius: 999px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shine);
         }
-        .page-title { font-size: 2rem; font-weight: 800; color: #fff; margin: 0 0 5px 0; }
-        .page-subtitle { color: var(--text-muted-color); font-size: 0.95rem; margin: 0; }
-        
-        .list-stats {
-            background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 12px 25px;
-            border-radius: 16px; text-align: center;
+        .tv-nav-pill a {
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.83rem;
+            font-weight: 600;
+            color: rgba(245, 245, 247, 0.72);
+            transition: background 0.2s ease, color 0.2s ease;
+            white-space: nowrap;
         }
-        .stat-num { display: block; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); line-height: 1; margin-bottom: 4px;}
-        .stat-label { font-size: 0.75rem; color: var(--text-muted-color); font-weight: 500; text-transform: uppercase; letter-spacing: 1px;}
+        .tv-nav-pill a:hover { color: #fff; background: rgba(255, 255, 255, 0.09); }
+        .tv-nav-pill a.active { background: #fff; color: #000; }
 
-        /* Grid Alignment (Matching DramaKan Standard) */
-        .my-list-grid {
+        .header-right { display: flex; align-items: center; gap: 10px; }
+        .auth-pill {
+            height: 36px;
+            padding: 0 15px;
+            border-radius: 999px;
+            background: #fff;
+            color: #000;
+            font-size: 0.82rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            white-space: nowrap;
+        }
+        .auth-pill.avatar-only { padding: 0; background: none; }
+
+        .mobile-browse-pill {
+            display: none;
+            height: 34px;
+            padding: 0 13px;
+            border-radius: 999px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shine);
+            font-size: 0.78rem;
+            font-weight: 600;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* --- PAGE SHELL & HEADER --- */
+        .page-shell { max-width: 1440px; margin: 0 auto; padding: 28px var(--pad) 54px; }
+
+        .list-hero {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+        .list-title { font-size: clamp(1.75rem, 3.6vw, 2.65rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; }
+        .list-sub { margin-top: 6px; font-size: 0.88rem; color: var(--muted); font-weight: 500; }
+
+        .controls-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .controls-left, .controls-right { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+
+        .segmented {
+            display: inline-flex;
+            padding: 3px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+        }
+        .seg-btn {
+            padding: 7px 16px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: rgba(245, 245, 247, 0.72);
+            transition: background 0.18s ease, color 0.18s ease;
+        }
+        .seg-btn.active { background: #fff; color: #000; }
+
+        .filter-capsule { position: relative; display: flex; align-items: center; }
+        .filter-capsule i { position: absolute; left: 13px; font-size: 0.78rem; color: var(--muted); pointer-events: none; }
+        .filter-capsule input {
+            width: 230px;
+            height: 38px;
+            padding: 0 14px 0 34px;
+            border-radius: 999px;
+            background: var(--surface);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
+            font: inherit;
+            font-size: 0.84rem;
+            outline: none;
+            transition: border-color 0.2s ease, width 0.25s var(--ease);
+        }
+        .filter-capsule input:focus { border-color: rgba(255, 255, 255, 0.34); width: 270px; }
+
+        .pill-btn {
+            height: 38px;
+            padding: 0 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+            white-space: nowrap;
+        }
+        .pill-btn:hover { background: rgba(255, 255, 255, 0.16); }
+        .pill-btn.danger { color: #fca5a5; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.1); }
+        .pill-btn.danger:hover { background: var(--err); border-color: var(--err); color: #fff; }
+
+        /* --- RESPONSIVE POSTER GRID (MATCHES CATEGORY.HTML) --- */
+        .poster-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-            gap: 20px;
-            padding-bottom: 50px;
+            grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+            gap: 22px 14px;
         }
-        
-        /* Red Delete Button Override */
-        .bookmark-btn.delete-btn {
-            background: rgba(239, 68, 68, 0.8) !important; 
-            border-color: #ef4444 !important; 
+        .card { position: relative; min-width: 0; }
+        .card-poster-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--surface);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+            transition: transform 0.28s var(--ease), box-shadow 0.28s var(--ease);
         }
-        .bookmark-btn.delete-btn:hover {
-            background: #ef4444 !important;
-            transform: scale(1.15);
-            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.5);
+        .card:hover .card-poster-wrap {
+            transform: scale(1.035);
+            box-shadow: 0 16px 34px rgba(0, 0, 0, 0.72), 0 0 0 1.5px rgba(255, 255, 255, 0.28);
+        }
+        .card-poster-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+        .card-del {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            color: #fff;
+            font-size: 0.74rem;
+            display: grid;
+            place-items: center;
+            opacity: 0;
+            transition: opacity 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+            z-index: 4;
+        }
+        .card:hover .card-del { opacity: 1; }
+        .card-del:hover { background: var(--err); border-color: var(--err); }
+
+        .card-title { margin-top: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-sub { margin-top: 2px; font-size: 0.74rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Empty State */
+        .empty-card {
+            grid-column: 1 / -1;
+            padding: 58px 20px;
+            border-radius: 22px;
+            background: var(--surface);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .empty-card i { font-size: 2.2rem; color: rgba(255, 255, 255, 0.22); margin-bottom: 4px; }
+        .empty-card h3 { font-size: 1.15rem; font-weight: 700; }
+        .empty-card p { font-size: 0.86rem; color: var(--muted); max-width: 360px; margin-bottom: 8px; }
+        .btn-apple-primary {
+            height: 40px;
+            padding: 0 22px;
+            border-radius: 999px;
+            background: #fff;
+            color: #000;
+            font-size: 0.86rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* States */
-        .empty-state, .loading-state { 
-            grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 80px 20px; background: var(--glass-bg); border: 1px dashed var(--glass-border-light); 
-            border-radius: 20px; backdrop-filter: var(--glass-blur); text-align: center;
+        .toast {
+            position: fixed;
+            top: 74px;
+            right: var(--pad);
+            z-index: 3000;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: rgba(28, 28, 34, 0.94);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--glass-border);
+            font-size: 0.82rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
         }
-        .empty-icon { width: 90px; height: 90px; background: rgba(138, 43, 226, 0.1); color: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 20px; border: 1px solid rgba(138, 43, 226, 0.3); }
-        .empty-state h3 { font-size: 1.4rem; font-weight: 700; color: #fff; margin: 0 0 10px 0; }
-        .empty-state p { color: var(--text-muted-color); font-size: 0.95rem; margin: 0 0 25px 0; max-width: 400px; line-height: 1.6;}
-        .btn-browse { background: var(--primary-color); color: #fff; padding: 12px 30px; border-radius: 50px; font-weight: 600; transition: 0.3s; box-shadow: 0 10px 25px var(--primary-glow); display: inline-flex; align-items: center; gap: 8px;}
-        .btn-browse:hover { transform: translateY(-3px); background: #9d4edd; }
-        
-        .loading-state i { font-size: 3rem; color: var(--primary-color); margin-bottom: 15px; }
+        .toast.show { opacity: 1; transform: translateY(0); }
 
-        /* Mobile Layout */
-        @media (max-width: 992px) {
-            main { padding-top: 100px; }
-            .page-header-banner { flex-direction: column; align-items: flex-start; gap: 20px; padding: 25px;}
-            .list-stats { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;}
-            .stat-num { font-size: 1.5rem; margin-bottom: 0; }
+        .bottom-nav, .global-bottom-fade { display: none; }
+
+        @media (max-width: 960px) {
+            body { padding-bottom: 92px; }
+            .tv-nav-pill, .auth-pill { display: none !important; }
+            .mobile-browse-pill { display: inline-flex; }
+            .tv-header { padding: 11px 16px; }
+            .page-shell { padding: 18px 16px 32px; }
+            .filter-capsule { flex: 1; min-width: 180px; }
+            .filter-capsule input, .filter-capsule input:focus { width: 100%; font-size: 16px; }
+            .poster-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 10px; }
+            .card-del { opacity: 1; width: 26px; height: 26px; font-size: 0.68rem; }
+
+            .bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 14px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: min(92%, 420px);
+                height: 58px;
+                padding: 0 8px;
+                border-radius: 999px;
+                background: rgba(24, 24, 30, 0.78);
+                backdrop-filter: blur(26px) saturate(190%);
+                -webkit-backdrop-filter: blur(26px) saturate(190%);
+                border: 1px solid rgba(255, 255, 255, 0.16);
+                box-shadow: var(--glass-shine), 0 18px 40px rgba(0, 0, 0, 0.68);
+                z-index: 999;
+            }
+            .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: rgba(255, 255, 255, 0.56); font-size: 1.08rem; }
+            .bottom-nav-item span { font-size: 0.62rem; font-weight: 600; }
+            .bottom-nav-item.active { color: #fff; }
+            .bottom-nav-item.active i { color: var(--accent-bright); }
+            .global-bottom-fade { display: block; position: fixed; inset-inline: 0; bottom: 0; height: 84px; background: linear-gradient(0deg, rgba(0, 0, 0, 0.94), transparent); pointer-events: none; z-index: 990; }
         }
-        @media (max-width: 768px) {
-            /* Exact match to mobile drama cards in indexstyle.css */
-            .my-list-grid { grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 12px; }
-            .page-title { font-size: 1.6rem; }
+
+        @media (max-width: 420px) {
+            .poster-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 10px; }
         }
     </style>
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="header-container">
-            <div class="header-left">
-                <a href="index.html" class="logo">Drama<span>Kan</span></a>
-            </div>
+    <div class="ambient-tint" aria-hidden="true"></div>
 
-        <div class="mobile-search-container">
-            <div class="mobile-glass-search">
-                <i class="fas fa-search"></i>
-                <input id="mobileSearchInput" type="text" placeholder="Search movies, shows, anime...">
-                <a href="filter.html" class="search-filter-link"><i class="fas fa-sliders-h"></i></a>
-            </div>
-            <div id="mobileSearchResults" class="search-results mobile-search-results-dropdown"></div>
+    <header class="tv-header">
+        <a href="index.html" class="brand">Drama<span>Kan</span></a>
+
+        <nav class="tv-nav-pill" aria-label="Main Navigation">
+            <a href="index.html">Home</a>
+            <a href="category.html?c=binge-worthy-series">TV Shows</a>
+            <a href="category.html?c=blockbuster-movies">Movies</a>
+            <a href="category.html?c=hit-anime">Anime</a>
+            <a href="category.html?c=best-of-asian-dramas">Asian</a>
+            <a href="mylist.html" class="active">My List</a>
+        </nav>
+
+        <div class="header-right">
+            <a href="login.html" class="auth-pill" id="topAuthBtn"><i class="fa-solid fa-user"></i> Sign In</a>
+            <a href="category.html" class="mobile-browse-pill"><i class="fas fa-compass"></i> Browse</a>
         </div>
     </header>
 
-    <aside class="ott-sidebar">
-        <ul class="sidebar-links">
-            <li class="sidebar-item">
-                <a href="profile.html" class="sidebar-link" title="My Space">
-                    <i class="fa-solid fa-user-circle"></i>
-                    <span class="sidebar-text">My Space</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="index.html" class="sidebar-link" title="Home">
-                    <i class="fa-solid fa-house"></i>
-                    <span class="sidebar-text">Home</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="shows.html" class="sidebar-link" title="TV Shows">
-                    <i class="fa-solid fa-tv"></i>
-                    <span class="sidebar-text">TV Shows</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="movies.html" class="sidebar-link" title="Movies">
-                    <i class="fa-solid fa-film"></i>
-                    <span class="sidebar-text">Movies</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="anime.html" class="sidebar-link" title="Anime">
-                    <i class="fa-solid fa-dragon"></i>
-                    <span class="sidebar-text">Anime</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="asian.html" class="sidebar-link" title="Asian">
-                    <i class="fa-solid fa-theater-masks"></i>
-                    <span class="sidebar-text">Asian</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="mylist.html" class="sidebar-link active" title="My List">
-                    <i class="fa-solid fa-bookmark"></i>
-                    <span class="sidebar-text">My List</span>
-                </a>
-            </li>
-        </ul>
-        <div class="sidebar-bottom">
-            <a href="https://AnyKan.fun" class="sidebar-link switch-kan" title="Switch to Anykan">
-                <i class="fas fa-exchange-alt"></i>
-                <span class="sidebar-text">Anykan</span>
-            </a>
-        </div>
-    </aside>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-    <main class="container">
-        <div class="page-header-banner">
-            <div class="header-content">
-                <div class="header-icon"><i class="fas fa-bookmark"></i></div>
-                <div>
-                    <h1 class="page-title">My List</h1>
-                    <p class="page-subtitle">Your personal collection of saved dramas.</p>
+    <main class="page-shell">
+        <section class="list-hero" aria-label="List Overview">
+            <div>
+                <h1 class="list-title" id="listHeading">My List</h1>
+                <p class="list-sub" id="listCount">0 saved titles</p>
+            </div>
+        </section>
+
+        <div class="controls-bar">
+            <div class="controls-left">
+                <div class="segmented" id="tabBar" role="tablist" aria-label="Switch Saved Collection">
+                    <button type="button" class="seg-btn active" data-tab="mylist">My List</button>
+                    <button type="button" class="seg-btn" data-tab="favorites">Favorites</button>
+                </div>
+
+                <div class="filter-capsule">
+                    <i class="fas fa-search"></i>
+                    <input id="filterInput" type="search" placeholder="Filter saved titles..." autocomplete="off" aria-label="Filter saved titles">
                 </div>
             </div>
-            <div class="list-stats">
-                <span class="stat-num" id="total-count">0</span>
-                <span class="stat-label">Saved Items</span>
+
+            <div class="controls-right">
+                <button type="button" class="pill-btn" id="sortBtn"><i class="fas fa-arrow-down-wide-short"></i> <span>Recent</span></button>
+                <button type="button" class="pill-btn danger" id="clearAllBtn" style="display:none;"><i class="fas fa-trash"></i> Clear</button>
             </div>
         </div>
 
-        <div class="my-list-grid" id="mylist-grid-container">
-            <div class="loading-state" id="loading-spinner">
-                <i class="fas fa-circle-notch fa-spin"></i>
-                <h3 style="color:#fff; margin:0;">Syncing with Cloud...</h3>
-            </div>
-        </div>
+        <section class="poster-grid" id="posterGrid" aria-label="Saved Titles"></section>
     </main>
 
-    <nav class="bottom-nav">
-        <a href="index.html" class="bottom-nav-item">
-            <i class="fa-solid fa-house nav-icon"></i>
-            <span class="nav-label">Home</span>
-        </a>
-       <a href="updates.html" class="bottom-nav-item">
-            <i class="fa-solid fa-bell nav-icon"></i>
-            <span class="nav-label">Updates</span>
-        </a>
-        <a href="mylist.html" class="bottom-nav-item active">
-            <i class="fa-solid fa-bookmark nav-icon"></i>
-            <span class="nav-label">My List</span>
-        </a>
-        <a href="profile.html" class="bottom-nav-item" id="bottomAuthBtn">
-            <i class="fa-solid fa-user nav-icon"></i>
-            <span class="nav-label">Profile</span>
-        </a>
+    <!-- SINGLE CONSISTENT MOBILE BOTTOM BAR -->
+    <nav class="bottom-nav" aria-label="Mobile Navigation">
+        <a href="index.html" class="bottom-nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="category.html" class="bottom-nav-item"><i class="fa-solid fa-compass"></i><span>Browse</span></a>
+        <a href="updates.html" class="bottom-nav-item"><i class="fa-solid fa-bell"></i><span>Updates</span></a>
+        <a href="mylist.html" class="bottom-nav-item active"><i class="fa-solid fa-bookmark"></i><span>My List</span></a>
+        <a href="login.html" class="bottom-nav-item" id="bottomAuthBtn"><i class="fa-solid fa-user"></i><span>Profile</span></a>
     </nav>
-    
-    <!-- Smooth Bottom Overlay Fade -->
-    <div class="global-bottom-fade"></div>
+    <div class="global-bottom-fade" aria-hidden="true"></div>
 
     <script type="module">
+        "use strict";
+
+        import { getSubscriptionStatus, applySubscriptionPrivileges } from "./subscription.js";
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA", authDomain: "dramakan007.firebaseapp.com", projectId: "dramakan007" };
-        
-        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp(); 
-        const auth = getAuth(app); 
+        const app = getApps().length ? getApp() : initializeApp({
+            apiKey: "AIzaSyB7i67_T7fs87BHIY2Pxs6KRAknhXrowIA",
+            authDomain: "dramakan007.firebaseapp.com",
+            projectId: "dramakan007"
+        });
+        const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let currentUserDocRef = null;
-        let currentMyList = [];
-        let userProfiles = [];
-        let activeProfileIndex = 0;
-        let unsubscribeList = null;
+        const $ = (id) => document.getElementById(id);
+        let currentUser = null, userDocRef = null, userProfiles = [], hasProfiles = false, activeIdx = 0;
+        let lists = { mylist: [], favorites: [] };
+        let activeTab = "mylist", sortMode = "recent", queryText = "", toastT = null;
 
-        // Render Logic applying the standard .drama-card structure
-        window.renderMyList = function(listArray) {
-            const myListGrid = document.getElementById('mylist-grid-container');
-            const totalCountEl = document.getElementById('total-count');
-            
-            totalCountEl.textContent = listArray ? listArray.length : 0;
+        const toast = (m) => { const el = $("toast"); el.textContent = m; el.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("show"), 2200); };
 
-            if (listArray && listArray.length > 0) {
-                myListGrid.innerHTML = listArray.slice().reverse().map(item => {
-                    const identifier = item.id || item.link; 
-                    const d = new Date(item.timestamp || Date.now());
-                    const dateStr = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-                    
-                    return `
-                    <div class="drama-card" style="aspect-ratio: 2/3;">
-                        <a href="${item.link}" style="display:block; height:100%; width:100%;">
-                            <div class="drama-card-img">
-                                <img src="${item.img}" alt="${item.title}" loading="lazy" onerror="this.src='default-poster.jpg'">
-                            </div>
-                            <div class="drama-card-info" style="opacity: 1; padding: 15px 10px 10px; background: linear-gradient(to top, rgba(0,0,0,1) 30%, transparent);">
-                                <h3 class="drama-card-title">${item.title}</h3>
-                                <p class="drama-card-meta" style="font-size: 0.65rem; color: var(--text-muted-color);">Added ${dateStr}</p>
-                            </div>
-                        </a>
-                        <button class="bookmark-btn active delete-btn" onclick="event.preventDefault(); event.stopPropagation(); window.removeFromMyList('${identifier}')" title="Remove from My List">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-                `}).join('');
-            } else {
-                myListGrid.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon"><i class="fas fa-bookmark"></i></div>
-                        <h3>Your list is looking empty</h3>
-                        <p>Discover amazing Korean, Chinese, and Japanese dramas and tap the + button to save them for later.</p>
-                        <a href="index.html" class="btn-browse"><i class="fas fa-compass"></i> Explore Dramas</a>
-                    </div>`;
-            }
-        };
-
-        // Cloud-Sync Remove Function
-        window.removeFromMyList = async function(id) {
-            if (!currentUserDocRef) return;
-            
-            const updatedList = currentMyList.filter(item => String(item.id) !== String(id) && item.link !== id);
-            
+        function loadLocalLists() {
             try {
-                if (userProfiles && userProfiles.length > 0) {
-                    userProfiles[activeProfileIndex].myList = updatedList;
-                    await updateDoc(currentUserDocRef, { profiles: userProfiles });
+                lists.mylist = JSON.parse(localStorage.getItem("dramakan_mylist") || localStorage.getItem("dramakan_mylist_cache") || "[]");
+                lists.favorites = JSON.parse(localStorage.getItem("dramakan_favorites_cache") || "[]");
+            } catch {
+                lists = { mylist: [], favorites: [] };
+            }
+        }
+
+        function saveLocalLists() {
+            localStorage.setItem("dramakan_mylist", JSON.stringify(lists.mylist));
+            localStorage.setItem("dramakan_mylist_cache", JSON.stringify(lists.mylist));
+            localStorage.setItem("dramakan_favorites_cache", JSON.stringify(lists.favorites));
+            const wl = {};
+            lists.mylist.forEach((i) => { if (i?.id) wl[String(i.id)] = i; });
+            localStorage.setItem("dramakan_watchlist", JSON.stringify(wl));
+        }
+
+        function renderGrid() {
+            const raw = lists[activeTab] || [];
+            const q = queryText.trim().toLowerCase();
+            let items = q ? raw.filter((i) => (i.title || "").toLowerCase().includes(q)) : [...raw];
+
+            if (sortMode === "az") items.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+            else items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            const label = activeTab === "favorites" ? "Favorites" : "My List";
+            $("listHeading").textContent = label;
+            $("listCount").textContent = `${raw.length} ${raw.length === 1 ? "saved title" : "saved titles"}`;
+            $("clearAllBtn").style.display = raw.length ? "inline-flex" : "none";
+
+            const grid = $("posterGrid");
+            if (!items.length) {
+                grid.innerHTML = `
+                    <div class="empty-card">
+                        <i class="fas ${q ? "fa-magnifying-glass" : "fa-bookmark"}"></i>
+                        <h3>${q ? "No matching titles" : `${label} is empty`}</h3>
+                        <p>${q ? "Try a different keyword or clear the filter." : "Tap the + icon on any movie, series, or anime to save it here."}</p>
+                        ${q ? "" : '<a href="category.html?c=trending" class="btn-apple-primary"><i class="fas fa-compass"></i> Explore Trending</a>'}
+                    </div>`;
+                return;
+            }
+
+            const frag = document.createDocumentFragment();
+            items.forEach((it) => {
+                const id = String(it.id || it.tmdbId || it.link || "");
+                const title = it.title || "Untitled";
+                const link = it.link || `watch.html?id=${encodeURIComponent(id)}`;
+                const added = new Date(it.timestamp || Date.now()).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+
+                const card = document.createElement("div");
+                card.className = "card";
+                card.innerHTML = `
+                    <a href="${link}">
+                        <div class="card-poster-wrap"><img src="${it.img || "default-poster.jpg"}" alt="" loading="lazy" decoding="async"></div>
+                        <div class="card-title"></div>
+                        <div class="card-sub">Added ${added}</div>
+                    </a>
+                    <button type="button" class="card-del" data-del-id="${id}" title="Remove" aria-label="Remove"><i class="fas fa-xmark"></i></button>`;
+                card.querySelector("img").alt = title;
+                card.querySelector("img").addEventListener("error", (e) => { e.target.src = "default-poster.jpg"; }, { once: true });
+                card.querySelector(".card-title").textContent = title;
+                frag.appendChild(card);
+            });
+
+            grid.innerHTML = "";
+            grid.appendChild(frag);
+        }
+
+        async function persistCurrentTab() {
+            saveLocalLists();
+            renderGrid();
+            if (!currentUser || !userDocRef) return;
+            const field = activeTab === "favorites" ? "favorites" : "myList";
+            try {
+                if (hasProfiles && userProfiles[activeIdx]) {
+                    userProfiles[activeIdx][field] = lists[activeTab];
+                    await updateDoc(userDocRef, { profiles: userProfiles });
                 } else {
-                    await updateDoc(currentUserDocRef, { myList: updatedList });
+                    await updateDoc(userDocRef, { [field]: lists[activeTab] });
                 }
-            } catch (error) { 
-                console.error("Error removing item:", error); 
-                alert("Failed to remove item. Please check your connection."); 
-            }
-        };
+            } catch {}
+        }
 
-        // Real-time Cloud Sync Engine
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUserDocRef = doc(db, "users", user.uid);
-                
-                if(unsubscribeList) unsubscribeList();
-                
-                unsubscribeList = onSnapshot(currentUserDocRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        
-                        if (data.profiles && data.profiles.length > 0) {
-                            userProfiles = data.profiles;
-                            const savedProfileId = localStorage.getItem('dramakan_active_profile_id');
-                            
-                            activeProfileIndex = userProfiles.findIndex(p => p.id === savedProfileId);
-                            if (activeProfileIndex === -1) activeProfileIndex = 0;
-                            
-                            currentMyList = userProfiles[activeProfileIndex].myList || [];
-                        } else {
-                            currentMyList = data.myList || [];
-                        }
-
-                        // ID Sanitizer logic
-                        currentMyList = currentMyList.map(item => {
-                            if(!item.id && item.link) {
-                                const urlParams = new URLSearchParams(item.link.split('?')[1]);
-                                item.id = String(urlParams.get('id'));
-                            } else if (item.id) {
-                                item.id = String(item.id);
-                            }
-                            return item;
-                        });
-
-                        // Passive backup to local storage for instant loads
-                        if (activeProfileIndex === 0) {
-                            localStorage.setItem('dramakan_mylist', JSON.stringify(currentMyList));
-                            let watchlistObj = {};
-                            currentMyList.forEach(item => { if(item.id) watchlistObj[item.id] = item; });
-                            localStorage.setItem('dramakan_watchlist', JSON.stringify(watchlistObj));
-                        }
-
-                        renderMyList(currentMyList);
-                    } else {
-                        renderMyList([]);
-                    }
-                }, (error) => {
-                    document.getElementById('mylist-grid-container').innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon" style="color: #ef4444; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);"><i class="fas fa-exclamation-triangle"></i></div>
-                            <h3>Connection Error</h3>
-                            <p>We couldn't reach the servers. Retrying...</p>
-                        </div>`;
-                });
-
-            } else {
-                window.location.replace('login.html'); 
-            }
+        // Events
+        $("tabBar").addEventListener("click", (e) => {
+            const btn = e.target.closest(".seg-btn");
+            if (!btn || btn.dataset.tab === activeTab) return;
+            document.querySelectorAll("#tabBar .seg-btn").forEach((b) => b.classList.toggle("active", b === btn));
+            activeTab = btn.dataset.tab;
+            renderGrid();
         });
-        
-        // Search bar mapping function (For UI functionality completeness)
-        document.addEventListener('DOMContentLoaded', () => {
-            const mSearch = document.getElementById('mobileSearchInput');
-            const pcSearch = document.getElementById('searchInput');
-            if(mSearch && pcSearch) {
-                mSearch.addEventListener('input', (e) => {
-                    pcSearch.value = e.target.value;
-                    pcSearch.dispatchEvent(new Event('input')); 
-                });
+
+        $("filterInput").addEventListener("input", (e) => {
+            queryText = e.target.value;
+            renderGrid();
+        });
+
+        $("sortBtn").addEventListener("click", () => {
+            sortMode = sortMode === "recent" ? "az" : "recent";
+            $("sortBtn").querySelector("span").textContent = sortMode === "recent" ? "Recent" : "A–Z";
+            renderGrid();
+        });
+
+        $("posterGrid").addEventListener("click", async (e) => {
+            const del = e.target.closest("[data-del-id]");
+            if (!del) return;
+            e.preventDefault(); e.stopPropagation();
+            const targetId = del.dataset.delId;
+            lists[activeTab] = (lists[activeTab] || []).filter((i) => String(i.id || i.tmdbId || i.link) !== targetId);
+            await persistCurrentTab();
+            toast(`Removed from ${activeTab === "favorites" ? "Favorites" : "My List"}`);
+        });
+
+        $("clearAllBtn").addEventListener("click", async () => {
+            const label = activeTab === "favorites" ? "Favorites" : "My List";
+            if (!confirm(`Clear all titles from ${label}?`)) return;
+            lists[activeTab] = [];
+            await persistCurrentTab();
+            toast(`${label} cleared`);
+        });
+
+        // Auth & Real-Time Firestore Sync
+        function setAvatarUI(av) {
+            const emoji = av && av.length <= 10 && !av.includes("http") && !av.includes("data:image");
+            const topBtn = $("topAuthBtn"), botBtn = $("bottomAuthBtn");
+            if (topBtn) {
+                topBtn.href = "profile.html";
+                topBtn.classList.add("avatar-only");
+                topBtn.innerHTML = emoji
+                    ? `<div style="width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--accent-bright);display:grid;place-items:center;">${av}</div>`
+                    : `<img src="${av}" alt="Profile" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1.5px solid var(--accent-bright);">`;
             }
+            if (botBtn) {
+                botBtn.href = "profile.html";
+                botBtn.innerHTML = emoji
+                    ? `<div style="width:22px;height:22px;border-radius:50%;border:1px solid var(--accent-bright);display:grid;place-items:center;font-size:0.8rem;">${av}</div><span>Profile</span>`
+                    : `<img src="${av}" alt="Profile" style="width:22px;height:22px;border-radius:50%;object-fit:cover;border:1px solid var(--accent-bright);"><span>Profile</span>`;
+            }
+        }
+
+        loadLocalLists();
+        renderGrid();
+
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            if (!user) {
+                userDocRef = null;
+                return;
+            }
+            userDocRef = doc(db, "users", user.uid);
+            try { applySubscriptionPrivileges(await getSubscriptionStatus(db, user.uid)); } catch {}
+
+            onSnapshot(userDocRef, (snap) => {
+                if (!snap.exists()) return;
+                const d = snap.data();
+                const fallbackAv = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(user.displayName || user.email || "U")}`;
+
+                if (d.profiles?.length) {
+                    hasProfiles = true;
+                    userProfiles = d.profiles;
+                    const savedId = localStorage.getItem("dramakan_active_profile_id");
+                    activeIdx = Math.max(0, userProfiles.findIndex((p) => p.id === savedId));
+                    const prof = userProfiles[activeIdx];
+                    lists.mylist = prof.myList || [];
+                    lists.favorites = prof.favorites || [];
+                    setAvatarUI(prof.avatar || d.avatarUrl || fallbackAv);
+                } else {
+                    hasProfiles = false;
+                    lists.mylist = d.myList || [];
+                    lists.favorites = d.favorites || [];
+                    setAvatarUI(d.avatarUrl || user.photoURL || fallbackAv);
+                }
+
+                saveLocalLists();
+                renderGrid();
+            });
         });
     </script>
 </body>
