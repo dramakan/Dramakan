@@ -356,11 +356,7 @@
             color: #fff;
             min-width: 0;
         }
-        .shelf-title-link span {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        .shelf-title-link span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .shelf-title-link i { font-size: 0.8rem; color: var(--muted); transition: transform 0.2s var(--ease), color 0.2s ease; flex-shrink: 0; }
         .shelf-title-link:hover i { transform: translateX(3px); color: #fff; }
 
@@ -452,7 +448,6 @@
         .card-title { margin-top: 8px; font-size: 0.84rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-sub { margin-top: 2px; font-size: 0.74rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Top 10 Rank Numbers */
         .card.ranked { margin-left: 34px; }
         .card-rank {
             position: absolute;
@@ -467,7 +462,6 @@
             letter-spacing: -6px;
         }
 
-        /* Continue Watching 16:9 Up Next Cards */
         .cw-card { flex: 0 0 264px; width: 264px; position: relative; cursor: pointer; }
         .cw-thumb { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: var(--surface); transition: transform 0.25s var(--ease); }
         .cw-card:hover .cw-thumb { transform: scale(1.03); }
@@ -504,11 +498,11 @@
         }
         @keyframes sk { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-        /* --- HYBRID AD BANDS (HILLTOPADS + ADSTERRA) --- */
+        /* --- PURE BANNER-ONLY AD BANDS (NO POPUNDERS) --- */
         .ad-band { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px var(--pad) 16px; gap: 4px; }
         .ad-lbl { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255, 255, 255, 0.28); user-select: none; }
         .ad-slot { width: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; border-radius: 12px; }
-        .ad-slot iframe, .ad-slot img, .ad-slot ins { max-width: 100%; border: none; border-radius: 10px; }
+        .ad-slot iframe { max-width: 100%; border: none; border-radius: 10px; }
         .ad-728-box { width: 728px; height: 90px; display: flex; justify-content: center; align-items: center; transform-origin: center; }
 
         .card.ad-inline { display: flex; align-items: center; justify-content: center; aspect-ratio: 2 / 3; border-radius: 12px; background: var(--surface); overflow: hidden; }
@@ -554,7 +548,7 @@
         #home-profile-switcher-overlay {
             position: fixed;
             inset: 0;
-            z-index: 10000;
+            z-index: 100000;
             background: rgba(0, 0, 0, 0.92);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
@@ -591,14 +585,13 @@
         body.premium-ad-free-mode .ad-inline,
         body.premium-ad-free-mode iframe[src*='ad-160x300'],
         body.premium-ad-free-mode iframe[src*='highrevenueformat'],
-        body.premium-ad-free-mode iframe[src*='mammothsubway'],
-        body.premium-ad-free-mode iframe[src*='untimely-hello'] {
+        body.premium-ad-free-mode iframe[src*='mammothsubway'] {
             display: none !important;
         }
 
-        /* --- RESPONSIVE MOBILE / TABLET (ZERO DUPLICATE PROFILE BUTTONS) --- */
+        /* --- RESPONSIVE MOBILE / TABLET --- */
         @media (max-width: 960px) {
-            body { padding-bottom: 92px; }
+            body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
             .tv-nav-pill, .search-capsule, .auth-pill, .hero-arrow, .shelf-arrows { display: none !important; }
             .mobile-filter-pill { display: inline-flex; }
             .tv-header { padding: 12px 16px; }
@@ -632,35 +625,45 @@
             .cw-del { opacity: 1; }
             .ad-728-box { transform: scale(0.46); height: 46px; }
 
+            /* High-Priority Interactive Mobile Bottom Bar */
             .bottom-nav {
-                display: flex;
-                position: fixed;
-                bottom: 14px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: min(92%, 420px);
-                height: 58px;
-                padding: 0 8px;
-                border-radius: 999px;
-                background: rgba(24, 24, 30, 0.76);
-                backdrop-filter: blur(26px) saturate(190%);
-                -webkit-backdrop-filter: blur(26px) saturate(190%);
-                border: 1px solid rgba(255, 255, 255, 0.16);
-                box-shadow: var(--glass-shine), 0 18px 40px rgba(0, 0, 0, 0.68);
-                z-index: 999;
+                display: flex !important;
+                position: fixed !important;
+                bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                width: min(92%, 420px) !important;
+                height: 58px !important;
+                padding: 0 8px !important;
+                border-radius: 999px !important;
+                background: rgba(24, 24, 30, 0.82) !important;
+                backdrop-filter: blur(26px) saturate(190%) !important;
+                -webkit-backdrop-filter: blur(26px) saturate(190%) !important;
+                border: 1px solid rgba(255, 255, 255, 0.16) !important;
+                box-shadow: var(--glass-shine), 0 18px 40px rgba(0, 0, 0, 0.68) !important;
+                z-index: 99999 !important;
+                pointer-events: auto !important;
+                isolation: isolate;
+                touch-action: manipulation;
             }
             .bottom-nav-item {
                 flex: 1;
+                height: 100%;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
                 gap: 3px;
-                color: rgba(255, 255, 255, 0.56);
+                color: rgba(255, 255, 255, 0.58);
                 font-size: 1.08rem;
-                transition: color 0.2s ease;
+                pointer-events: auto;
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: transparent;
+                transition: color 0.18s ease, transform 0.15s ease;
             }
-            .bottom-nav-item span { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.01em; }
+            .bottom-nav-item:active { transform: scale(0.92); }
+            .bottom-nav-item span { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.01em; pointer-events: none; }
+            .bottom-nav-item i, .bottom-nav-item img { pointer-events: none; }
             .bottom-nav-item.active { color: #fff; }
             .bottom-nav-item.active i { color: var(--accent-bright); }
 
@@ -671,8 +674,8 @@
                 bottom: 0;
                 height: 84px;
                 background: linear-gradient(0deg, rgba(0, 0, 0, 0.94), transparent);
-                pointer-events: none;
-                z-index: 990;
+                pointer-events: none !important;
+                z-index: 99990;
             }
         }
     </style>
@@ -785,24 +788,8 @@
             <div id="trending-india-grid" class="rail"></div>
         </section>
 
-        <!-- PRIMARY HILLTOPADS BANNER -->
-        <div class="ad-band" data-ad="hilltop">
-            <span class="ad-lbl">Sponsored</span>
-            <div class="ad-slot" id="hilltopPrimary">
-                <script>
-                    if (!document.documentElement.classList.contains('premium-ad-free-mode')) {
-                        (function(msdj){
-                        var d = document, s = d.createElement('script'), l = d.currentScript || d.scripts[d.scripts.length - 1];
-                        s.settings = msdj || {};
-                        s.src = "\/\/untimely-hello.com\/b\/X.VMsFd\/GWlq0fYzW\/c_\/weYmJ9du\/Z\/Uolrk\/PvTnc\/2cNoD\/Av4\/O\/TLMytCNMzUYG0nMkDpgS5NNiwI";
-                        s.async = true;
-                        s.referrerPolicy = 'no-referrer-when-downgrade';
-                        l.parentNode.insertBefore(s, l);
-                        })({});
-                    }
-                </script>
-            </div>
-        </div>
+        <!-- PURE BANNER SLOT (SANDBOXED — ZERO POPUNDERS) -->
+        <div id="primaryBannerMount"></div>
 
         <!-- 104+ ENDLESS CATEGORIES MOUNT -->
         <div id="infiniteRoot"></div>
@@ -824,7 +811,7 @@
     </footer>
 
     <!-- SINGLE FUNCTIONAL MOBILE BOTTOM BAR -->
-    <nav class="bottom-nav" aria-label="Mobile Navigation">
+    <nav class="bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
         <a href="index.html" class="bottom-nav-item active"><i class="fa-solid fa-house"></i><span>Home</span></a>
         <a href="category.html" class="bottom-nav-item"><i class="fa-solid fa-compass"></i><span>Browse</span></a>
         <a href="updates.html" class="bottom-nav-item"><i class="fa-solid fa-bell"></i><span>Updates</span></a>
@@ -864,7 +851,7 @@
             return (fb = { auth: au.getAuth(app), db: fs.getFirestore(app), au, fs });
         }
 
-        // 104 Categories synced 1:1 with category.html slugs: [Title, 'm'|'t', TMDB path, cluster tags]
+        // 104 Categories synced 1:1 with category.html slugs
         const CATS = [
             ["Blockbuster Movies", "m", "/discover/movie?sort_by=popularity.desc", "m"],
             ["Binge-Worthy Series", "t", "/discover/tv?sort_by=popularity.desc", "t"],
@@ -972,42 +959,45 @@
             ["1980s Retro Legends", "m", "/discover/movie?primary_release_date.gte=1980-01-01&primary_release_date.lte=1989-12-31&sort_by=vote_count.desc", "era m"]
         ];
 
-        // Live Server–Safe Hybrid Ad Builder (HilltopAds + Adsterra rotation)
+        // Pure Banner-Only Ad Builder (Sandboxed iframes — ZERO popunders or click-hijacking)
         let adSeq = 0;
         const buildSrcdoc = (opts, src) =>
             "<!DOCTYPE html><ht" + "ml><bo" + 'dy style="margin:0;overflow:hidden;background:transparent;display:flex;justify-content:center;align-items:center;">' +
             "<scr" + "ipt>atOptions=" + JSON.stringify(opts) + ";</scr" + "ipt>" +
             "<scr" + 'ipt src="' + src + '"></scr' + "ipt></bo" + "dy></ht" + "ml>";
 
-        function makeComboAd() {
+        function makeBannerAd() {
             if (isVip()) return null;
             adSeq++;
-            const mode = adSeq % 4;
+            const isLeaderboard = adSeq % 2 === 1;
             const band = document.createElement("div");
             band.className = "ad-band";
             band.innerHTML = '<span class="ad-lbl">Sponsored</span><div class="ad-slot"></div>';
             const slot = band.querySelector(".ad-slot");
 
-            if (mode === 1 || mode === 3) {
-                const s = document.createElement("script");
-                s.async = true;
-                s.referrerPolicy = "no-referrer-when-downgrade";
-                s.src = mode === 1
-                    ? "//untimely-hello.com/b.XjV/sbdaG_lq0bYIWwcz/ueJmI9YuxZ/U/l/knPaTPcI2vNQDjAg5SMwTIcYtcNvzsYG0kMQD/kZy/M/QQ"
-                    : "//untimely-hello.com/b/X.VMsFd/GWlq0fYzW/c_/weYmJ9du/Z/Uolrk/PvTnc/2cNoD/Av4/O/TLMytCNMzUYG0nMkDpgS5NNiwI";
-                slot.appendChild(s);
-            } else if (mode === 2) {
+            const f = document.createElement("iframe");
+            f.loading = "lazy";
+            f.scrolling = "no";
+            f.title = "Sponsored";
+            // Sandboxed: banner clicks can open advertiser tab, but ad script CANNOT touch parent page or hijack bottom bar
+            f.setAttribute("sandbox", "allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox");
+
+            if (isLeaderboard) {
                 const wrap = document.createElement("div");
                 wrap.className = "ad-728-box";
-                const f = document.createElement("iframe");
-                f.width = "728"; f.height = "90"; f.loading = "lazy"; f.scrolling = "no"; f.title = "Sponsored";
-                f.srcdoc = buildSrcdoc({ key: "4fdd6864aba39e4c8a5b742055171953", format: "iframe", height: 90, width: 728, params: {} }, "https://www.highrevenueformat.com/4fdd6864aba39e4c8a5b742055171953/invoke.js");
+                f.width = "728"; f.height = "90";
+                f.srcdoc = buildSrcdoc(
+                    { key: "4fdd6864aba39e4c8a5b742055171953", format: "iframe", height: 90, width: 728, params: {} },
+                    "https://www.highrevenueformat.com/4fdd6864aba39e4c8a5b742055171953/invoke.js"
+                );
                 wrap.appendChild(f);
                 slot.appendChild(wrap);
             } else {
-                const f = document.createElement("iframe");
-                f.width = "300"; f.height = "250"; f.loading = "lazy"; f.scrolling = "no"; f.title = "Sponsored";
-                f.srcdoc = buildSrcdoc({ key: "addf362578ed40f89958d30d95c6f346", format: "iframe", height: 250, width: 300, params: {} }, "https://mammothsubway.com/addf362578ed40f89958d30d95c6f346/invoke.js");
+                f.width = "300"; f.height = "250";
+                f.srcdoc = buildSrcdoc(
+                    { key: "addf362578ed40f89958d30d95c6f346", format: "iframe", height: 250, width: 300, params: {} },
+                    "https://mammothsubway.com/addf362578ed40f89958d30d95c6f346/invoke.js"
+                );
                 slot.appendChild(f);
             }
             return band;
@@ -1073,7 +1063,7 @@
                 if (inlineAd && !isVip() && idx === adPos) {
                     const adCard = document.createElement("div");
                     adCard.className = "card ad-inline";
-                    adCard.innerHTML = `<iframe src="ad-160x300.html?r=${Math.random().toString(36).slice(2, 7)}" width="160" height="300" frameborder="0" scrolling="no" loading="lazy" title="Sponsored"></iframe>`;
+                    adCard.innerHTML = `<iframe src="ad-160x300.html?r=${Math.random().toString(36).slice(2, 7)}" width="160" height="300" frameborder="0" scrolling="no" loading="lazy" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" title="Sponsored"></iframe>`;
                     frag.appendChild(adCard);
                 }
             });
@@ -1185,7 +1175,7 @@
             if (c?.dataset.href) window.location.href = c.dataset.href;
         });
 
-        // Endless 104+ Category Engine (Direct to category.html?c=<slug> with View All button)
+        // Endless 104+ Category Engine
         const infRoot = document.getElementById("infiniteRoot");
         const shelfMap = new Map();
         let cluster = "all", catIdx = 0, wave = 1, mounted = 2, spawning = false;
@@ -1250,7 +1240,7 @@
                 grids.push(rail);
 
                 if (mounted % 3 === 0) {
-                    const ad = makeComboAd();
+                    const ad = makeBannerAd();
                     if (ad) frag.appendChild(ad);
                 }
             }
@@ -1290,6 +1280,10 @@
         const resetHeroAuto = () => { clearInterval(heroTimer); heroTimer = setInterval(() => { if (!document.hidden) setSlide(heroIdx + 1); }, 6500); };
 
         async function initHome() {
+            const primaryMount = document.getElementById("primaryBannerMount");
+            const firstBanner = makeBannerAd();
+            if (primaryMount && firstBanner) primaryMount.appendChild(firstBanner);
+
             fillSkels(document.getElementById("trending-grid"), 8);
             fillSkels(document.getElementById("trending-india-grid"), 8);
             spawnBatch(5);
@@ -1374,7 +1368,7 @@
             } catch {}
         }
 
-        // Global Delegated Events (Hero, Shelves, Header Scroll, Search)
+        // Global Delegated Events
         document.getElementById("heroPrev").addEventListener("click", () => { setSlide(heroIdx - 1); resetHeroAuto(); });
         document.getElementById("heroNext").addEventListener("click", () => { setSlide(heroIdx + 1); resetHeroAuto(); });
         document.getElementById("heroDots").addEventListener("click", (e) => { const d = e.target.closest("[data-dot]"); if (d) { setSlide(+d.dataset.dot); resetHeroAuto(); } });
@@ -1555,14 +1549,6 @@
                     });
                 });
             } catch { renderCW(); }
-        }
-
-        // Auto-hide empty Hilltop slot if desktop receives no fill
-        if (!isVip()) {
-            setTimeout(() => {
-                const el = document.querySelector('.ad-band[data-ad="hilltop"]');
-                if (el && el.querySelector(".ad-slot").getBoundingClientRect().height < 40) el.style.display = "none";
-            }, 7000);
         }
 
         document.addEventListener("DOMContentLoaded", () => {
